@@ -15,4 +15,4 @@
   ~ limitations under the License.
   -->
 
-SELECT (pg_catalog.quote_ident('${schemaName}') || '.' || pg_catalog.quote_ident('${tableName}'))::REGCLASS::OID AS tid;
+SELECT (pg_catalog.quote_ident('${schemaName?replace("'", "''")}') || '.' || pg_catalog.quote_ident('${tableName?replace("'", "''")}'))::REGCLASS::OID AS tid;

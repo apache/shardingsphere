@@ -66,7 +66,7 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
                 return;
             case MAX_SEGMENT:
             case TOTAL_LENGTH:
-                writeIntValue(payload, type, getSegmentLength());
+                writeIntValue(payload, type, blobLength);
                 return;
             case TYPE:
                 writeIntValue(payload, type, streamBlob ? BLOB_TYPE_STREAM : BLOB_TYPE_SEGMENTED);
@@ -80,10 +80,6 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
         payload.writeInt1(type.getCode());
         payload.writeInt2LE(4);
         payload.writeInt4LE(value);
-    }
-    
-    private int getSegmentLength() {
-        return blobLength;
     }
     
     private int getSegmentCount() {

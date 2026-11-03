@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.config.validator;
 
+import org.apache.shardingsphere.infra.datasource.pool.config.DataSourceConfiguration;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.DuplicateStorageUnitException;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,6 +30,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,30 +38,27 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 class ProxyConfigurationLoadResultValidatorTest {
     
     @Test
     void assertValidateWithoutDuplicates() {
-        ProxyConfigurationLoadResult loadResult = createConfig("foo_db", "foo_db", Collections.singletonMap("global_ds", new YamlProxyDataSourceConfiguration()),
-                Collections.singletonMap("db_ds", new YamlProxyDataSourceConfiguration()));
+        ProxyConfigurationLoadResult loadResult = createConfig("foo_db", "foo_db", Collections.singletonMap("global_ds", mock(DataSourceConfiguration.class)),
+                Collections.singletonMap("db_ds", mock(DataSourceConfiguration.class)));
         assertDoesNotThrow(() -> ProxyConfigurationLoadResultValidator.validate(loadResult));
     }
     
-    private ProxyConfigurationLoadResult createConfig(final String databaseKey, final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> globalDataSources,
-                                                      final Map<String, YamlProxyDataSourceConfiguration> databaseDataSources) {
-        YamlProxyServerConfiguration serverConfig = new YamlProxyServerConfiguration();
-        serverConfig.setDataSources(globalDataSources);
-        YamlProxyDatabaseConfiguration databaseConfig = new YamlProxyDatabaseConfiguration();
-        databaseConfig.setDatabaseName(databaseName);
-        databaseConfig.setDataSources(databaseDataSources);
-        return new ProxyConfigurationLoadResult(serverConfig, Collections.singletonMap(databaseKey, databaseConfig));
+    private ProxyConfigurationLoadResult createConfig(final String databaseKey, final String databaseName, final Map<String, DataSourceConfiguration> globalDataSources,
+                                                      final Map<String, DataSourceConfiguration> databaseDataSources) {
+        return new ProxyConfigurationLoadResult(null, globalDataSources, Collections.emptyList(), new Properties(),
+                Collections.singletonMap(databaseKey, new ProxyDatabaseConfiguration(databaseName, databaseDataSources, Collections.emptyList())));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("duplicateDataSourceArguments")
     void assertValidateWithDuplicateDataSource(final String name, final String databaseKey, final String databaseName, final String dataSourceName, final String expectedMessage) {
-        Map<String, YamlProxyDataSourceConfiguration> dataSources = Collections.singletonMap(dataSourceName, new YamlProxyDataSourceConfiguration());
+        Map<String, DataSourceConfiguration> dataSources = Collections.singletonMap(dataSourceName, mock(DataSourceConfiguration.class));
         ProxyConfigurationLoadResult loadResult = createConfig(databaseKey, databaseName, dataSources, dataSources);
         DuplicateStorageUnitException actual = assertThrows(DuplicateStorageUnitException.class, () -> ProxyConfigurationLoadResultValidator.validate(loadResult));
         assertThat(actual.getMessage(), is(expectedMessage));
@@ -81,9 +78,9 @@ class ProxyConfigurationLoadResultValidatorTest {
     
     @Test
     void assertValidateWithMultipleDuplicateDataSources() {
-        Map<String, YamlProxyDataSourceConfiguration> dataSources = new HashMap<>(2, 1F);
-        dataSources.put("ds_0", new YamlProxyDataSourceConfiguration());
-        dataSources.put("ds_1", new YamlProxyDataSourceConfiguration());
+        Map<String, DataSourceConfiguration> dataSources = new HashMap<>(2, 1F);
+        dataSources.put("ds_0", mock(DataSourceConfiguration.class));
+        dataSources.put("ds_1", mock(DataSourceConfiguration.class));
         ProxyConfigurationLoadResult loadResult = createConfig("foo_db", "foo_db", dataSources, dataSources);
         DuplicateStorageUnitException actual = assertThrows(DuplicateStorageUnitException.class, () -> ProxyConfigurationLoadResultValidator.validate(loadResult));
         assertThat(actual.getMessage(), anyOf(is("Duplicate storage unit names 'ds_0, ds_1' on database 'foo_db'."), is("Duplicate storage unit names 'ds_1, ds_0' on database 'foo_db'.")));

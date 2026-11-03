@@ -284,6 +284,10 @@ def parse_args() -> argparse.Namespace:
         help="Accept an explicitly user-authorized change to this baseline policy source; repeatable.",
     )
     parser.add_argument("--timeout", type=int, default=600, help="Codex timeout in seconds.")
+    parser.add_argument(
+        "--serial-initial-evaluation", action="store_true",
+        help="Run initial semantic batches one at a time; confirmation samples retain their existing limits.",
+    )
     parser.add_argument("--allow-failures", action="store_true", help="Return zero when policy cases fail.")
     parser.add_argument(
         "--transport-check", action="store_true",
@@ -292,6 +296,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--semantic-stability-check", action="store_true",
         help="Require focused repeatable non-regression against the original same-case V0.",
+    )
+    parser.add_argument(
+        "--resume-confirmation", type=Path,
+        help="Resume only missing final confirmation responses from this failed summary, one side at a time.",
     )
     parser.add_argument(
         "--mode", choices=("semantic", "trace", "validate", "all"), default="validate",
@@ -1527,14 +1535,16 @@ def grade(cases: list[dict[str, Any]], actual: dict[str, Any]) -> list[dict[str,
 def run_cases(
         policy: bytes, codex_home: Path, output_dir: Path, cases: list[dict[str, Any]],
         policy_sha256: str, timeout: int,
-        semantic_policy_assertions: dict[str, list[dict[str, Any]]] | None = None
+        semantic_policy_assertions: dict[str, list[dict[str, Any]]] | None = None, *,
+        serial: bool = False
 ) -> tuple[int, float, dict[str, Any], list[dict[str, Any]]]:
-    """Run bounded case batches concurrently and grade each case once without retrying."""
+    """Run bounded case batches and grade each case once without retrying."""
     semantic_policy_assertions = semantic_policy_assertions or {}
     batches = partition_cases(policy, cases, policy_sha256, semantic_policy_assertions)
     futures = []
     started = time.monotonic()
-    with ThreadPoolExecutor(max_workers=min(MAX_PARALLEL_EVALUATIONS, len(batches))) as executor:
+    parallel_limit = 1 if serial else MAX_PARALLEL_EVALUATIONS
+    with ThreadPoolExecutor(max_workers=min(parallel_limit, len(batches))) as executor:
         for evaluation_number, batch in enumerate(batches, 1):
             case_ids = [each["id"] for each in batch]
             schema_path = output_dir / f"decision-evaluation-{evaluation_number}.schema.json"
@@ -1578,6 +1588,7 @@ def run_cases(
             ]
         evaluations.append({
             "evaluation": evaluation_number,
+            "parallel_limit": parallel_limit,
             "case_count": len(batch),
             "case_ids": [each["id"] for each in batch],
             "returned_case_ids": returned_case_ids,
@@ -1853,9 +1864,9 @@ def run_confirmation_sample(
 
 def run_confirmation_round(
         round_number: int, side_specs: dict[str, dict[str, Any]],
-        codex_home: Path, confirmation_root: Path, timeout: int
+        codex_home: Path, confirmation_root: Path, timeout: int, *, serial: bool = False
 ) -> dict[str, tuple[dict[str, Any], dict[str, Any]]]:
-    """Run at most one baseline and one candidate confirmation sample concurrently."""
+    """Run bounded baseline and candidate confirmation samples."""
     requests = []
     for side in ("baseline", "candidate"):
         spec = side_specs.get(side)
@@ -1872,7 +1883,7 @@ def run_confirmation_round(
         ))
         for _, selected_cases, spec in requests
     ]
-    max_workers = 1 if any(each > 1 for each in batch_counts) else min(MAX_PARALLEL_EVALUATIONS, len(requests))
+    max_workers = 1 if serial or any(each > 1 for each in batch_counts) else min(MAX_PARALLEL_EVALUATIONS, len(requests))
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {
             side: executor.submit(
@@ -1891,12 +1902,224 @@ def total_usage(samples: list[dict[str, Any]]) -> dict[str, int]:
     return {key: sum(each["usage"][key] for each in samples) for key in keys}
 
 
+def read_preserved_semantic_sample(
+        record: dict[str, Any], cases: list[dict[str, Any]], policy: bytes,
+        assertions: dict[str, list[dict[str, Any]]], output_dir: Path,
+        evaluator: ModuleType, *, missing: bool = False
+) -> tuple[dict[str, Any], dict[str, str]]:
+    """Verify preserved inputs and raw responses before reusing an observation."""
+    if output_dir.is_symlink() or Path(record["output_dir"]).resolve() != output_dir.resolve():
+        raise ValueError("Preserved sample directory does not belong to the original run.")
+    policy_sha256 = hashlib.sha256(policy).hexdigest()
+    batches = evaluator.partition_cases(policy, cases, policy_sha256, assertions)
+    evaluations = record["evaluations"]
+    if len(evaluations) != len(batches) or (missing and len(batches) != 1):
+        raise ValueError("Preserved sample has an unexpected batch set.")
+    artifacts = {}
+    actual_by_id = {}
+    for number, (batch, evaluation) in enumerate(zip(batches, evaluations), 1):
+        case_ids = [each["id"] for each in batch]
+        prompt = evaluator.create_prompt(batch, policy_sha256, assertions)
+        schema = evaluator.serialize_schema(case_ids).encode("utf-8")
+        if (evaluation["evaluation"] != number or evaluation["case_ids"] != case_ids
+                or evaluation["case_count"] != len(batch)
+                or evaluation["input_bytes"] != len(policy) + len(prompt.encode("utf-8")) + len(schema)
+                or evaluation["prompt_sha256"] != hashlib.sha256(prompt.encode("utf-8")).hexdigest()):
+            raise ValueError("Preserved sample input fingerprint does not match its source snapshot.")
+        schema_file = ensure_regular_source(output_dir, PurePosixPath(f"decision-evaluation-{number}.schema.json"))
+        if schema_file.read_bytes() != schema:
+            raise ValueError("Preserved sample schema does not match its source snapshot.")
+        artifacts[str(schema_file.resolve())] = hashlib.sha256(schema).hexdigest()
+        for field, name in (("events_log", f"events-evaluation-{number}.jsonl"),
+                            ("stderr_log", f"stderr-evaluation-{number}.log")):
+            artifact = ensure_regular_source(output_dir, PurePosixPath(name))
+            if Path(evaluation[field]).resolve() != artifact.resolve():
+                raise ValueError("Preserved sample log belongs to another run.")
+            artifacts[str(artifact.resolve())] = hashlib.sha256(artifact.read_bytes()).hexdigest()
+        result_path = output_dir / f"result-evaluation-{number}.json"
+        events = [json.loads(line) for line in (output_dir / f"events-evaluation-{number}.jsonl").read_text().splitlines()]
+        if missing:
+            if (not evaluation["runner_exit_code"] or evaluation["returned_case_ids"]
+                    or evaluation["failed_case_ids"] or record["results"] or not record["runner_exit_code"]
+                    or any(output_dir.glob("result-evaluation-*.json"))
+                    or (output_dir / "result.json").exists() or (output_dir / "result.json").is_symlink()
+                    or not events or events[-1].get("type") != "turn.failed"
+                    or "429 Too Many Requests" not in events[-1].get("error", {}).get("message", "")
+                    or any(each.get("type") == "turn.completed"
+                           or each.get("item", {}).get("type") == "agent_message" for each in events)):
+                raise ValueError("Only a final HTTP 429 without a semantic response can be recovered.")
+            continue
+        result_file = ensure_regular_source(output_dir, PurePosixPath(result_path.name))
+        data = result_file.read_bytes()
+        artifacts[str(result_file.resolve())] = hashlib.sha256(data).hexdigest()
+        actual = json.loads(data)
+        messages = [each["item"]["text"] for each in events if each.get("item", {}).get("type") == "agent_message"]
+        if not events or events[-1].get("type") != "turn.completed" or not messages or json.loads(messages[-1]) != actual:
+            raise ValueError("Preserved sample result does not match its completed event stream.")
+        returned_ids = [each["case_id"] for each in actual["results"]]
+        failed_ids = [each["case_id"] for each in evaluator.grade(batch, actual) if not each["passed"]]
+        if (evaluation["runner_exit_code"] or evaluation["returned_case_ids"] != returned_ids
+                or len(returned_ids) != len(set(returned_ids)) or set(returned_ids) != set(case_ids)
+                or evaluation["failed_case_ids"] != failed_ids):
+            raise ValueError("Preserved sample responses do not match its batch metadata.")
+        actual_by_id.update((each["case_id"], each) for each in actual["results"])
+    actual = {} if missing else {"results": [actual_by_id[each["id"]] for each in cases]}
+    if not missing:
+        result_file = ensure_regular_source(output_dir, PurePosixPath("result.json"))
+        data = result_file.read_bytes()
+        artifacts[str(result_file.resolve())] = hashlib.sha256(data).hexdigest()
+        if json.loads(data) != actual or record["results"] != evaluator.grade(cases, actual):
+            raise ValueError("Preserved sample grading or aggregation does not match its raw responses.")
+    transport = summarize_transport_validation(cases, actual, evaluations)
+    if transport != record["transport_validation"] or (not missing and not transport["passed"]):
+        raise ValueError("Preserved sample transport metadata does not match its raw responses.")
+    if "case_ids" in record and record["case_ids"] != [each["id"] for each in cases]:
+        raise ValueError("Preserved sample case order does not match its request.")
+    return actual, artifacts
+
+
+def load_confirmation_recovery(
+        path: Path, baseline_path: Path, baseline: dict[str, Any], bundle: dict[str, Any],
+        cases: list[dict[str, Any]], bindings: list[dict[str, Any]]
+) -> dict[str, Any]:
+    """Load one complete initial sample and its missing final paired confirmation."""
+    summary_path = path / "summary.json" if path.is_dir() else path
+    baseline_summary_path = baseline_path / "summary.json" if baseline_path.is_dir() else baseline_path
+    previous = load_baseline(summary_path)
+    output_dir = summary_path.parent
+    if (summary_path.resolve() != Path(previous["output_dir"]).resolve() / "summary.json"
+            or baseline_summary_path.resolve() != Path(baseline["output_dir"]).resolve() / "summary.json"
+            or previous.get("mode") != "all" or not previous.get("semantic_stability_check")
+            or previous.get("confirmation_recovery") is not None
+            or previous["semantic_stability"]["blockers"] != ["semantic-stability-confirmation-runner-failed"]):
+        raise ValueError("Recovery requires the original full run with only a missing final confirmation.")
+    current_inventory = {each["id"]: each for each in bundle["inventory"]}
+    if set(current_inventory) != {each["id"] for each in previous["policy_sources"]}:
+        raise ValueError("Recovery policy source set changed.")
+    for source in previous["policy_sources"]:
+        current = current_inventory[source["id"]]
+        if current != source and (source["id"] not in {"harness-runner", "harness-tests"}
+                                 or source["semantic"] or current["semantic"]
+                                 or any(current[key] != source[key] for key in ("id", "path", "kind"))):
+            raise ValueError(f"Recovery policy source changed: {source['id']}")
+    artifacts = {}
+    evaluators = {}
+    for side, record, record_path in (("candidate", previous, summary_path), ("baseline", baseline, baseline_summary_path)):
+        if Path(record["policy_snapshot_dir"]).resolve() != Path(record["output_dir"]).resolve() / "policy-snapshot":
+            raise ValueError("Recovery source snapshot belongs to another run.")
+        for source in record["policy_sources"]:
+            load_baseline_source(record, source["id"])
+        evaluator = load_baseline_evaluator(record)
+        evaluators[side] = evaluator
+        preserved_core = semantic_core_source_digest(load_baseline_source(record, "harness-runner"))
+        if (record["evaluator"] != {"model": EVALUATOR_MODEL, "reasoning_effort": EVALUATOR_REASONING_EFFORT}
+                or record["semantic_core_sha256"] != preserved_core
+                or preserved_core != semantic_core_source_digest(Path(__file__).read_bytes())
+                or record["runner_sha256"] != hashlib.sha256(load_baseline_source(record, "harness-runner")).hexdigest()):
+            raise ValueError("Recovery evaluator or semantic core changed.")
+        preserved_bundle = evaluator.load_policy_manifest(Path(record["policy_snapshot_dir"]))
+        preserved_cases = evaluator.load_cases(None)
+        preserved_bindings = evaluator.normalize_case_policy_bindings(preserved_cases, preserved_bundle)
+        fingerprints = {
+            "case_count": len(preserved_cases),
+            "cases_sha256": hashlib.sha256(load_baseline_source(record, "harness-cases")).hexdigest(),
+            "action_catalog_sha256": digest_json(ACTIONS),
+            "reason_catalog_sha256": digest_json(REASONS),
+            "schema_sha256": digest_json(create_schema([each["id"] for each in preserved_cases])),
+            "policy_bundle_sha256": preserved_bundle["bundle_sha256"],
+            "policy_manifest_sha256": preserved_bundle["manifest_sha256"],
+            "semantic_prompt_sha256": digest_json([
+                {"case_ids": each["case_ids"], "prompt_sha256": each["prompt_sha256"]} for each in record["evaluations"]
+            ]),
+        }
+        if (any(record.get(key) != value for key, value in fingerprints.items())
+                or record["policy_sources"] != preserved_bundle["inventory"]
+                or record["case_contracts"] != evaluator.normalize_case_contracts(preserved_cases)
+                or record["policy_bindings"] != preserved_bindings
+                or record["semantic_surface_sha256"] != evaluator.semantic_surface_digest(
+                    preserved_bundle, preserved_cases, preserved_bindings)):
+            raise ValueError("Recovery fingerprints do not match the preserved source snapshot.")
+        if side == "candidate" and (record["case_contracts"] != normalize_case_contracts(cases)
+                                    or record["policy_bindings"] != bindings):
+            raise ValueError("Recovery cases or policy bindings changed.")
+        actual, hashes = read_preserved_semantic_sample(
+            record, preserved_cases, load_baseline_policy(record),
+            evaluator.select_semantic_policy_assertions(preserved_cases, preserved_bindings),
+            Path(record["output_dir"]), evaluator
+        )
+        artifacts.update(hashes)
+        artifacts[str(record_path.resolve())] = hashlib.sha256(record_path.read_bytes()).hexdigest()
+        if side == "candidate":
+            initial_actual = actual
+    if (previous["semantic_stability"]["baseline_failed_case_ids"] != [
+            each["case_id"] for each in baseline["results"] if not each["passed"]]
+            or previous["semantic_stability"]["baseline_case_count"] != len(baseline["case_contracts"])):
+        raise ValueError("Recovery V0 differs from the original confirmation baseline.")
+    samples = previous["semantic_stability"]["confirmation"]["samples"]
+    if [(each["round"], each["side"]) for each in samples] != [
+            (2, "baseline"), (2, "candidate"), (3, "baseline"), (3, "candidate")]:
+        raise ValueError("Recovery supports only the missing final paired confirmation.")
+    round_results = {}
+    for sample in samples:
+        side = sample["side"]
+        record = baseline if side == "baseline" else previous
+        evaluator = evaluators[side]
+        original_cases = record["case_contracts"] if side == "baseline" else evaluator.load_cases(None)
+        side_cases = {each["id"]: each for each in original_cases}
+        selected_cases = [side_cases[case_id] for case_id in sample["case_ids"]]
+        sample_dir = output_dir / "semantic-confirmation" / f"round-{sample['round']}" / side
+        actual, hashes = read_preserved_semantic_sample(
+            sample, selected_cases, load_baseline_policy(record),
+            evaluator.select_semantic_policy_assertions(
+                original_cases, record["policy_bindings"]
+            ),
+            sample_dir, evaluator, missing=sample["round"] == 3
+        )
+        artifacts.update(hashes)
+        if sample["round"] == 2:
+            if sample["runner_exit_code"]:
+                raise ValueError("Recovery cannot replace a failed second confirmation.")
+            round_results[side] = sample, actual
+    return {
+        "summary": previous,
+        "actual": initial_actual,
+        "round_results": round_results,
+        "failed_samples": samples[2:],
+        "provenance": {
+            "summary_path": str(summary_path.resolve()),
+            "baseline_summary_path": str(baseline_summary_path.resolve()),
+            "initial_runner_sha256": previous["runner_sha256"],
+            "initial_semantic_surface_sha256": previous["semantic_surface_sha256"],
+            "recovery_runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            "failed_attempts": samples[2:],
+            "preserved_artifacts_sha256": artifacts,
+        },
+    }
+
+
+def claim_confirmation_recovery(recovery: dict[str, Any], output_dir: Path) -> None:
+    """Claim the missing third observations once without overwriting prior evidence."""
+    provenance = recovery["provenance"]
+    for path, expected in provenance["preserved_artifacts_sha256"].items():
+        if hashlib.sha256(Path(path).read_bytes()).hexdigest() != expected:
+            raise ValueError("Preserved recovery evidence changed before the final confirmation.")
+    claim_path = Path(recovery["summary"]["output_dir"]) / "confirmation-recovery.json"
+    with claim_path.open("x", encoding="utf-8") as claim_file:
+        json.dump({
+            "summary_path": provenance["summary_path"],
+            "summary_sha256": provenance["preserved_artifacts_sha256"][provenance["summary_path"]],
+            "output_dir": str(output_dir.resolve()),
+        }, claim_file, indent=2)
+        claim_file.write("\n")
+    provenance["claim_path"] = str(claim_path.resolve())
+
+
 def run_semantic_confirmation(
         cases: list[dict[str, Any]], initial_actual: dict[str, Any], initial_results: list[dict[str, Any]],
         baseline: dict[str, Any], contract_changes: list[str], candidate_policy: bytes,
         candidate_policy_sha256: str,
         candidate_assertions: dict[str, list[dict[str, Any]]], codex_home: Path,
-        output_dir: Path, timeout: int) -> dict[str, Any]:
+        output_dir: Path, timeout: int, *, recovery: dict[str, Any] | None = None) -> dict[str, Any]:
     """Confirm only disputed cases through preserved paired samples."""
     changed_contract_ids = {each.split(":", maxsplit=1)[0] for each in contract_changes}
     safety_evidence = semantic_safety_regressions(cases, initial_actual, baseline, changed_contract_ids)
@@ -1965,9 +2188,24 @@ def run_semantic_confirmation(
                 "semantic_policy_assertions": candidate_assertions,
             },
         }
-        round_results = run_confirmation_round(
-            round_number, side_specs, codex_home, confirmation_root, timeout
-        )
+        if recovery is not None and round_number == 2:
+            round_results = recovery["round_results"]
+            if set(round_results) != {side for side, spec in side_specs.items() if spec["case_ids"]} or any(
+                    sample["case_ids"] != side_specs[side]["case_ids"]
+                    for side, (sample, _) in round_results.items()):
+                raise ValueError("Preserved second confirmation does not match the reconstructed plan.")
+        elif recovery is not None:
+            expected_pending = {each["side"]: each["case_ids"] for each in recovery["failed_samples"]}
+            if pending != expected_pending:
+                raise ValueError("Missing final confirmation does not match the reconstructed plan.")
+            claim_confirmation_recovery(recovery, output_dir)
+            round_results = run_confirmation_round(
+                round_number, side_specs, codex_home, confirmation_root, timeout, serial=True
+            )
+        else:
+            round_results = run_confirmation_round(
+                round_number, side_specs, codex_home, confirmation_root, timeout
+            )
         for side, (sample, actual) in round_results.items():
             samples.append(sample)
             if sample["runner_exit_code"]:
@@ -2012,6 +2250,8 @@ def run_semantic_confirmation(
             "candidate": list(dict.fromkeys(pending_candidate)),
         }
         if not pending["baseline"] and not pending["candidate"]:
+            if recovery is not None:
+                raise ValueError("The reconstructed plan has no missing final confirmation.")
             break
     confirmed_case_regressions = []
     changed_contract_failures = []
@@ -2237,6 +2477,9 @@ def semantic_surface_digest(
         run_confirmation_sample,
         run_confirmation_round,
         run_semantic_confirmation,
+        read_preserved_semantic_sample,
+        load_confirmation_recovery,
+        claim_confirmation_recovery,
         baseline_single_pass_metrics,
         validate_semantic_stability_evaluator,
         summarize_semantic_stability,
@@ -2430,6 +2673,10 @@ def compare_with_baseline(
 def main() -> int:
     """Run, grade, compare, and summarize the selected policy canaries."""
     args = parse_args()
+    if args.resume_confirmation and (args.mode != "all" or not args.semantic_stability_check
+                                     or args.baseline is None or args.allow_failures or args.transport_check
+                                     or args.case_ids or args.profiles or args.impact_source_ids or args.list_cases):
+        raise ValueError("--resume-confirmation requires unfiltered --mode all --semantic-stability-check and the original --baseline.")
     if args.transport_check and args.allow_failures:
         raise ValueError("--transport-check cannot be combined with --allow-failures.")
     if args.semantic_stability_check and (args.allow_failures or args.transport_check):
@@ -2510,6 +2757,9 @@ def main() -> int:
         )
         if preflight_blockers:
             raise ValueError(f"Semantic-stability deterministic preflight failed: {', '.join(preflight_blockers)}")
+    recovery = load_confirmation_recovery(
+        args.resume_confirmation, args.baseline, baseline, bundle, cases, policy_bindings
+    ) if args.resume_confirmation else None
     output_dir = create_output_dir(args.output_dir)
     snapshot_dir = write_policy_snapshot(output_dir, bundle)
     trace_results = []
@@ -2574,9 +2824,16 @@ def main() -> int:
     evaluation_unchanged = (
         args.semantic_stability_check and semantic_evaluation_unchanged(baseline, semantic_input_metadata)
     )
-    exit_code, duration, actual, evaluations = run_cases(
-        policy, codex_home, output_dir, cases, policy_sha256, args.timeout, semantic_policy_assertions
-    )
+    if recovery is None:
+        exit_code, duration, actual, evaluations = run_cases(
+            policy, codex_home, output_dir, cases, policy_sha256, args.timeout, semantic_policy_assertions,
+            serial=args.serial_initial_evaluation
+        )
+    else:
+        exit_code = 0
+        duration = recovery["summary"]["duration_seconds"]
+        actual = recovery["actual"]
+        evaluations = recovery["summary"]["evaluations"]
     if exit_code:
         summary = write_runner_failure_summary(output_dir, snapshot_dir, args.label, exit_code, evaluations, impact)
         print(json.dumps(summary, indent=2))
@@ -2608,7 +2865,8 @@ def main() -> int:
     if args.semantic_stability_check and transport_validation["passed"] and not evaluation_unchanged:
         semantic_confirmation = run_semantic_confirmation(
             cases, actual, results, baseline, contract_changes, policy, policy_sha256,
-            semantic_policy_assertions, codex_home, output_dir, args.timeout
+            semantic_policy_assertions, codex_home, output_dir, args.timeout,
+            **({"recovery": recovery} if recovery is not None else {})
         )
     semantic_stability = summarize_semantic_stability(
         cases, actual, results, baseline, deterministic_blockers, contract_changes,
@@ -2624,7 +2882,7 @@ def main() -> int:
     else:
         regressions = one_pass_regressions
     passed = sum(1 for each in results if each["passed"])
-    usage = read_usage(output_dir / "events.jsonl")
+    usage = recovery["summary"]["usage"] if recovery is not None else read_usage(output_dir / "events.jsonl")
     baseline_metrics = None
     if baseline is not None:
         baseline_usage = baseline.get("usage", {})
@@ -2678,6 +2936,7 @@ def main() -> int:
         "transport_validation": transport_validation,
         "transport_blockers": transport_blockers,
         "semantic_stability": semantic_stability,
+        **({"confirmation_recovery": recovery["provenance"]} if recovery is not None else {}),
         "contract_changes": contract_changes,
         "authorized_contract_changes": sorted(args.authorized_contract_change),
         "one_pass_critical_regressions": one_pass_regressions,

@@ -19,11 +19,18 @@ package org.apache.shardingsphere.mcp.feature.broadcast.tool.model;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 
 class BroadcastWorkflowRequestTest {
     
@@ -33,6 +40,24 @@ class BroadcastWorkflowRequestTest {
         request.setTables(" t_order, t_order_item ");
         assertThat(request.getTables(), is(List.of("t_order", "t_order_item")));
         assertThat(request.getTargetTables(), is(List.of("t_order", "t_order_item")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("setTablesArguments")
+    void assertSetTablesFromCollection(final String scenario, final Collection<String> values, final Collection<String> expectedValues) {
+        BroadcastWorkflowRequest request = new BroadcastWorkflowRequest();
+        Collection<String> actualValues = request.getTables();
+        actualValues.add("foo_previous");
+        request.setTables(values);
+        assertThat(request.getTables(), sameInstance(actualValues));
+        assertThat(actualValues, is(expectedValues));
+    }
+    
+    private static Stream<Arguments> setTablesArguments() {
+        return Stream.of(
+                Arguments.of("null collection", null, List.of("foo_previous")),
+                Arguments.of("empty collection", List.of(), List.of("foo_previous")),
+                Arguments.of("normalized values and duplicates", Arrays.asList(null, "", " ", " foo_table ", "bar_value", "foo_table"), List.of("foo_table", "bar_value", "foo_table")));
     }
     
     @Test

@@ -47,11 +47,6 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
         if (null == tableName) {
             return;
         }
-        String tableKey = buildTableKey(schemaName, tableName);
-        if (columnSizes.isEmpty()) {
-            COLUMN_SIZES.remove(tableKey);
-            return;
-        }
         Map<String, Integer> normalizedColumnSizes = new HashMap<>(columnSizes.size(), 1F);
         for (Entry<String, Integer> entry : columnSizes.entrySet()) {
             if (null == entry.getKey()) {
@@ -59,6 +54,7 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
             }
             normalizedColumnSizes.put(toKey(entry.getKey()), entry.getValue());
         }
+        String tableKey = buildTableKey(schemaName, tableName);
         if (normalizedColumnSizes.isEmpty()) {
             COLUMN_SIZES.remove(tableKey);
             return;
@@ -78,18 +74,13 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
         if (null == tableName || null == columnName) {
             return OptionalInt.empty();
         }
-        Map<String, Integer> tableSizes = COLUMN_SIZES.get(buildTableKey(schemaName, tableName));
-        if (null == tableSizes) {
-            return OptionalInt.empty();
-        }
-        Integer columnSize = tableSizes.get(toKey(columnName));
+        Integer columnSize = COLUMN_SIZES.getOrDefault(buildTableKey(schemaName, tableName), Collections.emptyMap()).get(toKey(columnName));
         return null == columnSize ? OptionalInt.empty() : OptionalInt.of(columnSize);
     }
     
     private static String buildTableKey(final String schemaName, final String tableName) {
         String schemaKey = null == schemaName ? "" : toKey(schemaName);
-        String logicTable = trimToLogicTableName(tableName);
-        return schemaKey + "." + toKey(logicTable);
+        return schemaKey + "." + toKey(trimToLogicTableName(tableName));
     }
     
     private static String trimToLogicTableName(final String tableName) {

@@ -56,24 +56,17 @@ public final class FirebirdStatementResourceCleaner {
         ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
         if (null != proxyBackendHandler) {
             connectionSession.getDatabaseConnectionManager().removeResource(proxyBackendHandler);
-            FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
-            connectionSession.getConnectionContext().clearCursorContext();
-            try {
-                proxyBackendHandler.close();
-            } finally {
-                invalidatePreparedStatementCacheIfNecessary(connectionSession, statementId, invalidatePreparedStatementCache);
-            }
-            return;
         }
         FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
         connectionSession.getConnectionContext().clearCursorContext();
-        invalidatePreparedStatementCacheIfNecessary(connectionSession, statementId, invalidatePreparedStatementCache);
-    }
-    
-    private static void invalidatePreparedStatementCacheIfNecessary(final ConnectionSession connectionSession, final int statementId,
-                                                                    final boolean invalidatePreparedStatementCache) {
-        if (invalidatePreparedStatementCache) {
-            connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
+        try {
+            if (null != proxyBackendHandler) {
+                proxyBackendHandler.close();
+            }
+        } finally {
+            if (invalidatePreparedStatementCache) {
+                connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
+            }
         }
     }
 }

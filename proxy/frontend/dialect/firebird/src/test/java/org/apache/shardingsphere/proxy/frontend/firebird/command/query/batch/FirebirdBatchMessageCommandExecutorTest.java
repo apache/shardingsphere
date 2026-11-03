@@ -116,7 +116,6 @@ class FirebirdBatchMessageCommandExecutorTest {
     void assertExecuteWhenBatchStatementMissing() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(null);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             assertThrows(InvalidBatchHandleException.class, () -> new FirebirdBatchMessageCommandExecutor(packet, connectionSession).execute());
@@ -199,12 +198,6 @@ class FirebirdBatchMessageCommandExecutorTest {
     }
     
     private ByteBuf buildBatchMessage(final int value) {
-        return Unpooled.buffer()
-                .writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue())
-                .writeInt(STATEMENT_ID)
-                .writeInt(1)
-                .writeByte(0)
-                .writeZero(3)
-                .writeInt(value);
+        return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(STATEMENT_ID).writeInt(1).writeByte(0).writeZero(3).writeInt(value);
     }
 }

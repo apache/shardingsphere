@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -63,7 +62,6 @@ class FirebirdFetchStatementPacketTest {
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 2, (short) 0, blrType, (short) BlrConstants.blr_end);
-        when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(payload);
         verify(payload).skipReserved(4);
         assertThat(packet.getStatementId(), is(3));

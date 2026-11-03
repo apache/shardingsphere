@@ -82,8 +82,8 @@ public final class MCPItemsPayload implements MCPSuccessPayload {
     
     private String resolveContinuationMode() {
         Object value = navigation.get(CONTINUATION_MODE);
-        if (value instanceof String && !((String) value).isEmpty()) {
-            return value.toString();
+        if (value instanceof String continuationMode && !continuationMode.isEmpty()) {
+            return continuationMode;
         }
         return null == nextPageToken || nextPageToken.isEmpty() ? CONTINUATION_MODE_NONE : CONTINUATION_MODE_PAGINATION;
     }

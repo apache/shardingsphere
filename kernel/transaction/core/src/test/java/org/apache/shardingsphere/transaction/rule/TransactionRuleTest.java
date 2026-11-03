@@ -148,22 +148,9 @@ class TransactionRuleTest {
     
     private ShardingSphereDatabase createAddDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        ResourceMetaData resourceMetaData = createAddResourceMetaData();
+        ResourceMetaData resourceMetaData = createResourceMetaData();
         when(result.getResourceMetaData()).thenReturn(resourceMetaData);
         when(result.getName()).thenReturn(BAR_DB);
-        return result;
-    }
-    
-    private ResourceMetaData createAddResourceMetaData() {
-        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
-        DataSourcePoolProperties dataSourcePoolProps0 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps0.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(ImmutableMap.of("url", "jdbc:mock://127.0.0.1/ds_0", "username", "test"));
-        storageUnits.put("ds_0", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps0, new MockedDataSource()));
-        DataSourcePoolProperties dataSourcePoolProps1 = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
-        when(dataSourcePoolProps1.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(ImmutableMap.of("url", "jdbc:mock://127.0.0.1/ds_1", "username", "test"));
-        storageUnits.put("ds_1", new StorageUnit(mock(StorageNode.class), dataSourcePoolProps1, new MockedDataSource()));
-        ResourceMetaData result = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageUnits()).thenReturn(storageUnits);
         return result;
     }
 }

@@ -43,19 +43,17 @@ class FirebirdAcceptDataPacketTest {
     @MethodSource("writeArguments")
     void assertWrite(final String name, final byte[] salt, final String publicKey, final FirebirdAuthenticationMethod plugin,
                      final int authenticated, final String keys, final int expectedPayloadLength, final boolean expectedPayloadData) {
-        FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys);
-        packet.write((PacketPayload) payload);
+        new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys).write((PacketPayload) payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt4(expectedPayloadLength);
-        verifyPayloadData(order, payload, salt, publicKey, expectedPayloadLength, expectedPayloadData);
+        verifyPayloadData(order, salt, publicKey, expectedPayloadLength, expectedPayloadData);
         order.verify(payload).writeString(plugin.getMethodName());
         order.verify(payload).writeInt4(authenticated);
         order.verify(payload).writeString(keys);
         order.verifyNoMoreInteractions();
     }
     
-    private void verifyPayloadData(final InOrder order, final FirebirdPacketPayload payload, final byte[] salt, final String publicKey, final int expectedPayloadLength,
-                                   final boolean expectedPayloadData) {
+    private void verifyPayloadData(final InOrder order, final byte[] salt, final String publicKey, final int expectedPayloadLength, final boolean expectedPayloadData) {
         if (!expectedPayloadData) {
             return;
         }

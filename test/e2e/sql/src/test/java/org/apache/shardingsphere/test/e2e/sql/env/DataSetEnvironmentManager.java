@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMeta
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValueGroup;
+import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -213,7 +215,8 @@ public final class DataSetEnvironmentManager {
     }
     
     private String getTruncateSQL(final String tableName, final DatabaseType databaseType) {
-        return TRUNCATE_SQL_CACHE.computeIfAbsent(databaseType.getType() + ':' + tableName, unused -> String.format("TRUNCATE TABLE %s", getQuotedTableName(tableName, databaseType)));
+        return TRUNCATE_SQL_CACHE.computeIfAbsent(databaseType.getType() + ':' + tableName, unused -> String.format(DatabaseTypedSPILoader.findService(DialectQueryBehaviorProvider.class, databaseType)
+                .flatMap(DialectQueryBehaviorProvider::getDeleteAllRowsSQLTemplate).orElse("TRUNCATE TABLE %s"), getQuotedTableName(tableName, databaseType)));
     }
     
     private static String getQuotedTableName(final String tableName, final DatabaseType databaseType) {

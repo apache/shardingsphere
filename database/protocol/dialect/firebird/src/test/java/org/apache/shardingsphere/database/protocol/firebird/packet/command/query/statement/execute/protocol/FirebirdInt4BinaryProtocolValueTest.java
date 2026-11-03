@@ -54,10 +54,7 @@ class FirebirdInt4BinaryProtocolValueTest {
     }
     
     private static Stream<Arguments> writeArguments() {
-        return Stream.of(
-                Arguments.of("big decimal", BigDecimal.ONE, 1),
-                Arguments.of("integer", 1, 1),
-                Arguments.of("long", 1L, 1));
+        return Stream.of(Arguments.of("big decimal", BigDecimal.ONE, 1), Arguments.of("integer", 1, 1), Arguments.of("long", 1L, 1));
     }
     
     @Test

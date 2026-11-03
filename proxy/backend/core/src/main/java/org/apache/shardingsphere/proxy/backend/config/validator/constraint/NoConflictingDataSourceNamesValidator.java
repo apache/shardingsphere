@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.config.validator.constraint;
 
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyDatabaseConfiguration;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -34,8 +34,8 @@ public final class NoConflictingDataSourceNamesValidator implements ConstraintVa
     
     @Override
     public boolean isValid(final ProxyConfigurationLoadResult value, final ConstraintValidatorContext context) {
-        Collection<String> globalDataSourceNames = value.getServerConfiguration().getDataSources().keySet();
-        for (Entry<String, YamlProxyDatabaseConfiguration> entry : value.getDatabaseConfigurations().entrySet()) {
+        Collection<String> globalDataSourceNames = value.getDataSources().keySet();
+        for (Entry<String, ProxyDatabaseConfiguration> entry : value.getDatabaseConfigurations().entrySet()) {
             Collection<String> duplicatedDataSourceNames = globalDataSourceNames.stream().filter(entry.getValue().getDataSources().keySet()::contains).collect(Collectors.toSet());
             if (!duplicatedDataSourceNames.isEmpty()) {
                 context.disableDefaultConstraintViolation();

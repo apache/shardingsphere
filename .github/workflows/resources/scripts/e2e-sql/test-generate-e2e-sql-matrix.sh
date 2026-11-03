@@ -67,12 +67,12 @@ pass() {
 fail() {
   FAIL_COUNT=$((FAIL_COUNT + 1))
   echo "  FAIL: $1"
-  [ -n "${2:-}" ] && echo "        $2"
+  [[ -n "${2:-}" ]] && echo "        $2"
 }
 
 assert_eq() {
   local desc="$1" expected="$2" actual="$3"
-  if [ "$expected" = "$actual" ]; then
+  if [[ "$expected" = "$actual" ]]; then
     pass "$desc"
   else
     fail "$desc" "expected='$expected', actual='$actual'"
@@ -81,7 +81,7 @@ assert_eq() {
 
 assert_not_empty() {
   local desc="$1" actual="$2"
-  if [ -n "$actual" ]; then
+  if [[ -n "$actual" ]]; then
     pass "$desc"
   else
     fail "$desc" "expected non-empty value"
@@ -173,7 +173,7 @@ assert_all_dimensions() {
 
 assert_less_than() {
   local desc="$1" actual="$2" upper_bound="$3"
-  if [ "$actual" -lt "$upper_bound" ]; then
+  if [[ "$actual" -lt "$upper_bound" ]]; then
     pass "$desc"
   else
     fail "$desc" "actual='$actual' is not less than upper_bound='$upper_bound'"
@@ -221,12 +221,12 @@ assert_full_trigger() {
 # ---------- prerequisite check ----------
 
 if ! command -v jq &> /dev/null; then
-  echo "ERROR: jq is required but not installed."
+  echo "ERROR: jq is required but not installed." >&2
   exit 1
 fi
 
-if [ ! -f "$TARGET_SCRIPT" ]; then
-  echo "ERROR: Target script not found: $TARGET_SCRIPT"
+if [[ ! -f "$TARGET_SCRIPT" ]]; then
+  echo "ERROR: Target script not found: $TARGET_SCRIPT" >&2
   exit 1
 fi
 
@@ -506,7 +506,7 @@ echo ""
 echo "============================================================"
 total=$((PASS_COUNT + FAIL_COUNT))
 echo "Results: $PASS_COUNT passed, $FAIL_COUNT failed (total $total)"
-if [ "$FAIL_COUNT" -gt 0 ]; then
+if [[ "$FAIL_COUNT" -gt 0 ]]; then
   exit 1
 fi
 echo "All tests passed!"

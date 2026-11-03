@@ -41,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -109,6 +110,7 @@ class FederationMetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(databaseType).build());
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
         engine.refresh(metaDataManagerPersistService, database);
+        verifyNoInteractions(metaDataManagerPersistService, database);
     }
     
     @Test

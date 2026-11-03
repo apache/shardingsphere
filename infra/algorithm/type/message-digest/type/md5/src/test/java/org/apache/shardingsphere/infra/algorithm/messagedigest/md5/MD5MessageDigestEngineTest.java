@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.algorithm.messagedigest.md5;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -30,13 +30,7 @@ class MD5MessageDigestEngineTest {
     
     @Test
     void assertDigest() throws GeneralSecurityException {
-        assertThat(Hex.encodeHexString(MD5MessageDigestEngine.digest("test", "salt")), is("315240c61218a4a861ec949166a85ef0"));
-    }
-    
-    @Test
-    void assertDigestWithProperties() throws GeneralSecurityException {
-        Properties props = new Properties();
-        props.setProperty("salt", "salt");
-        assertThat(Hex.encodeHexString(MD5MessageDigestEngine.digest("test", props)), is("315240c61218a4a861ec949166a85ef0"));
+        assertThat(Hex.encodeHexString(MD5MessageDigestEngine.digest("testsalt".getBytes(StandardCharsets.UTF_8))), is("315240c61218a4a861ec949166a85ef0"));
+        assertThat(Hex.encodeHexString(MD5MessageDigestEngine.digest(new byte[]{(byte) 0xC3, 0x28})), is("0999cc4fa36693c7d5ab8482d6bdc367"));
     }
 }

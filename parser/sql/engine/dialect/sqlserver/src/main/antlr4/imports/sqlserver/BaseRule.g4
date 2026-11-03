@@ -273,16 +273,8 @@ predicate
     ;
 
 bitExpr
-    : bitExpr VERTICAL_BAR_ bitExpr
-    | bitExpr AMPERSAND_ bitExpr
-    | bitExpr SIGNED_LEFT_SHIFT_ bitExpr
-    | bitExpr SIGNED_RIGHT_SHIFT_ bitExpr
-    | bitExpr PLUS_ bitExpr
-    | bitExpr MINUS_ bitExpr
-    | bitExpr ASTERISK_ bitExpr
-    | bitExpr SLASH_ bitExpr
-    | bitExpr MOD_ bitExpr
-    | bitExpr CARET_ bitExpr
+    : bitExpr (ASTERISK_ | SLASH_ | MOD_) bitExpr
+    | bitExpr (PLUS_ | MINUS_ | AMPERSAND_ | CARET_ | VERTICAL_BAR_ | SIGNED_LEFT_SHIFT_ | SIGNED_RIGHT_SHIFT_) bitExpr
     | simpleExpr
     ;
 

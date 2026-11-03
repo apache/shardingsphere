@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.data.pipeline.cdc;
 
 import ch.qos.logback.classic.spi.ThrowableProxy;
-import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineCDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
-import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseUtils;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.sink.spi.CDCSink;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
@@ -74,11 +71,15 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -99,7 +100,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -114,7 +114,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({
         PipelineJobIdUtils.class, PipelineProcessConfigurationUtils.class, PipelineDataSourceConfigurationFactory.class,
         OrderedSPILoader.class, PipelineAPIFactory.class, PipelineJobProgressPersistService.class,
-        PipelineDistributedBarrier.class, ElasticJobServiceLoader.class, CDCResponseUtils.class
+        PipelineDistributedBarrier.class, ElasticJobServiceLoader.class
 })
 @MockitoSettings(strictness = Strictness.LENIENT)
 class CDCJobTest {
@@ -273,8 +273,10 @@ class CDCJobTest {
     }
     
     @SuppressWarnings("unchecked")
-    @Test
-    void assertExecuteIncrementalFailureSendError(final LogCaptureAssertion logCaptureAssertion) {
+    @ParameterizedTest(name = "notificationFailure={0}, stopFailure={1}, disableFailure={2}, originalError={3}")
+    @CsvSource({"false, false, false, false", "true, false, false, false", "false, true, false, false", "false, false, true, false", "true, true, true, false", "true, true, true, true"})
+    void assertExecuteIncrementalFailure(final boolean notificationFailure, final boolean stopFailure, final boolean disableFailure, final boolean reuseOriginalError,
+                                         final LogCaptureAssertion logCaptureAssertion) {
         CDCJobConfiguration jobConfig = mockJobConfiguration(
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("logic_tbl", Collections.singletonList(new DataNode("ds_0.tbl_0")))))));
         ShardingContext shardingContext = mockShardingContext("param");
@@ -299,11 +301,29 @@ class CDCJobTest {
             when(PipelineDistributedBarrier.getInstance(CONTEXT_KEY)).thenReturn(mock(PipelineDistributedBarrier.class));
             when(OrderedSPILoader.getServices(eq(PipelineRequiredColumnsExtractor.class), anyCollection())).thenReturn(Collections.emptyMap());
             when(PipelineDataSourceConfigurationFactory.newInstance(anyString(), anyString())).thenReturn(mock(PipelineDataSourceConfiguration.class));
-            PipelineCDCSocketSink sink = mock(PipelineCDCSocketSink.class);
-            Channel channel = mock(Channel.class);
-            when(sink.getChannel()).thenReturn(channel);
-            CDCResponse response = mock(CDCResponse.class);
-            when(CDCResponseUtils.failed(anyString(), anyString(), anyString())).thenReturn(response);
+            CDCSink sink = mock(CDCSink.class);
+            Collection<Throwable> expectedSuppressed = new ArrayList<>(3);
+            if (notificationFailure) {
+                RuntimeException notificationException = reuseOriginalError ? expectedException : new IllegalStateException("notification failed");
+                doThrow(notificationException).when(sink).onFailure(expectedException);
+                if (!reuseOriginalError) {
+                    expectedSuppressed.add(notificationException);
+                }
+            }
+            if (stopFailure) {
+                RuntimeException stopException = reuseOriginalError ? expectedException : new IllegalStateException("stop failed");
+                jobRegistryMocked.when(() -> PipelineJobRegistry.stop("foo_job_id")).thenThrow(stopException);
+                if (!reuseOriginalError) {
+                    expectedSuppressed.add(stopException);
+                }
+            }
+            if (disableFailure) {
+                RuntimeException disableException = reuseOriginalError ? expectedException : new IllegalStateException("disable failed");
+                doThrow(disableException).when(jobAPI).disable("foo_job_id");
+                if (!reuseOriginalError) {
+                    expectedSuppressed.add(disableException);
+                }
+            }
             AtomicInteger triggerCounter = new AtomicInteger();
             triggerMocked.when(() -> PipelineExecuteEngine.trigger(anyCollection(), any())).thenAnswer(invocation -> {
                 ExecuteCallback callback = invocation.getArgument(1);
@@ -316,8 +336,9 @@ class CDCJobTest {
             });
             CDCJob job = new CDCJob(sink);
             job.execute(shardingContext);
-            verify(channel, atLeastOnce()).writeAndFlush(response);
-            verify(governanceFacade.getJobItemFacade().getErrorMessage()).update(eq("foo_job_id"), anyInt(), any(RuntimeException.class));
+            verify(sink).onFailure(expectedException);
+            assertThat(Arrays.asList(expectedException.getSuppressed()), is(expectedSuppressed));
+            verify(governanceFacade.getJobItemFacade().getErrorMessage()).update(eq("foo_job_id"), anyInt(), eq(expectedException));
             verify(jobAPI).disable("foo_job_id");
             jobRegistryMocked.verify(() -> PipelineJobRegistry.stop("foo_job_id"));
         }
@@ -326,7 +347,7 @@ class CDCJobTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    void assertExecuteIncrementalFailureWithoutSocketSink(final LogCaptureAssertion logCaptureAssertion) {
+    void assertExecuteIncrementalFailureWithoutCDCSink(final LogCaptureAssertion logCaptureAssertion) {
         CDCJobConfiguration jobConfig = mockJobConfiguration(
                 Collections.singletonList(new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("logic_tbl", Collections.singletonList(new DataNode("ds_0.tbl_0")))))));
         ShardingContext shardingContext = mockShardingContext("param");

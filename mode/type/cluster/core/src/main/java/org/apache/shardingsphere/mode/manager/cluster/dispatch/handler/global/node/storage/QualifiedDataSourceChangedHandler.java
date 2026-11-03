@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.qualified.QualifiedDataSourceState;
@@ -68,8 +69,8 @@ public final class QualifiedDataSourceChangedHandler implements GlobalDataChange
     }
     
     private void handleQualifiedDataSourceStateChanged(final ShardingSphereMetaData metaData, final QualifiedDataSource qualifiedDataSource, final QualifiedDataSourceState state) {
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(qualifiedDataSource.getDatabaseName()), () -> new UnknownDatabaseException(qualifiedDataSource.getDatabaseName()));
-        metaData.getDatabase(qualifiedDataSource.getDatabaseName()).getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class)
-                .forEach(each -> each.updateStatus(qualifiedDataSource, state.getState()));
+        ShardingSphereDatabase database = metaData.getDatabase(qualifiedDataSource.getDatabaseName());
+        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(qualifiedDataSource.getDatabaseName()));
+        database.getRuleMetaData().getAttributes(StaticDataSourceRuleAttribute.class).forEach(each -> each.updateStatus(qualifiedDataSource, state.getState()));
     }
 }

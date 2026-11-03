@@ -72,8 +72,7 @@ public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecu
         }
         BlobSegment segment = blobSegment.get();
         int segmentState = segment.isComplete() ? getLastSegmentState(segment.getData().length) : SEGMENT_STATE_PARTIAL;
-        FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(segment.getData());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(responsePacket));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(new FirebirdGetBlobSegmentResponsePacket(segment.getData())));
     }
     
     private int getMaxSegmentDataLength() {

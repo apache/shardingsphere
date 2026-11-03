@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,20 +34,18 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLTablePropertiesLoaderTest {
     
-    @Test
-    void assertLoad() throws SQLException {
+    @ParameterizedTest(name = "PostgreSQL {0}")
+    @ValueSource(ints = {9, 10, 11, 12, 14, 15, 17})
+    void assertLoad(final int majorVersion) throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn("foo_db");
         ResultSet fetchDatabaseIdResultSet = mockFetchDatabaseIdResultSet();
-        when(connection.createStatement().executeQuery("\n" + "SELECT oid AS did, datlastsysoid FROM pg_catalog.pg_database WHERE datname = 'foo_db';" + "\n"))
-                .thenReturn(fetchDatabaseIdResultSet);
+        when(connection.createStatement().executeQuery("\nSELECT oid AS did FROM pg_catalog.pg_database WHERE datname = 'foo_db';\n")).thenReturn(fetchDatabaseIdResultSet);
         ResultSet fetchSchemaIdResultSet = mockFetchSchemaIdResultSet();
-        when(connection.createStatement().executeQuery("\n" + "SELECT oid AS scid FROM pg_catalog.pg_namespace WHERE nspname = 'foo_schema';" + "\n"))
-                .thenReturn(fetchSchemaIdResultSet);
-        Map<String, Object> actual = new PostgreSQLTablePropertiesLoader(connection, "foo_tbl", "foo_schema", 12, 0).load();
-        assertThat(actual.size(), is(7));
+        when(connection.createStatement().executeQuery("\nSELECT oid AS scid FROM pg_catalog.pg_namespace WHERE nspname = 'foo_schema';\n")).thenReturn(fetchSchemaIdResultSet);
+        Map<String, Object> actual = new PostgreSQLTablePropertiesLoader(connection, "foo_tbl", "foo_schema", majorVersion, 0).load();
+        assertThat(actual.size(), is(6));
         assertThat(actual.get("did"), is(1));
-        assertThat(actual.get("datlastsysoid"), is(10));
         assertThat(actual.get("scid"), is(20));
         assertThat(actual.get("autovacuum_enabled"), is("x"));
         assertThat(actual.get("toast_autovacuum_enabled"), is("x"));
@@ -56,12 +55,10 @@ class PostgreSQLTablePropertiesLoaderTest {
     
     private ResultSet mockFetchDatabaseIdResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaData().getColumnCount()).thenReturn(2);
+        when(result.getMetaData().getColumnCount()).thenReturn(1);
         when(result.next()).thenReturn(true);
         when(result.getMetaData().getColumnName(1)).thenReturn("did");
         when(result.getObject(1)).thenReturn(1);
-        when(result.getMetaData().getColumnName(2)).thenReturn("datlastsysoid");
-        when(result.getObject(2)).thenReturn(10);
         return result;
     }
     

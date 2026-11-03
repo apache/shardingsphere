@@ -84,8 +84,8 @@ public final class EncryptWorkflowRequest extends WorkflowRequest {
         if (null == previousRequest) {
             return new EncryptWorkflowRequest();
         }
-        if (previousRequest instanceof EncryptWorkflowRequest) {
-            return ((EncryptWorkflowRequest) previousRequest).copy();
+        if (previousRequest instanceof EncryptWorkflowRequest request) {
+            return request.copy();
         }
         EncryptWorkflowRequest result = new EncryptWorkflowRequest();
         copyFieldsTo(previousRequest, result);

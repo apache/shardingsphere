@@ -80,8 +80,7 @@ class FirebirdBlobWriteCacheTest {
         int blobHandle = 8;
         long blobId = 9L;
         CACHE.registerConnection(connectionId);
-        boolean actualClosedWhenMissing = CACHE.isClosed(connectionId, blobId);
-        assertFalse(actualClosedWhenMissing);
+        assertFalse(CACHE.isClosed(connectionId, blobId));
         CACHE.registerBlob(connectionId, blobHandle, blobId, false);
         OptionalInt actualSizeAfterAppend = CACHE.appendSegment(connectionId, blobHandle, new byte[]{1, 2, 3});
         assertTrue(actualSizeAfterAppend.isPresent());

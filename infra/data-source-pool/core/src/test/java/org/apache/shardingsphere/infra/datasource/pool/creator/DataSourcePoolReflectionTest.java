@@ -84,17 +84,8 @@ class DataSourcePoolReflectionTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("setFieldWithConvertedValues")
-    void assertSetFieldWithConvertedValues(final String name, final String fieldName, final Object fieldValue, final String actualFieldName, final Object expectedFieldValue) {
-        DataSourcePoolReflectionFixture dataSource = new DataSourcePoolReflectionFixture();
-        new DataSourcePoolReflection(dataSource).setField(fieldName, fieldValue);
-        Object actualFieldValue = getFieldValue(dataSource, actualFieldName);
-        assertThat(actualFieldValue, is(expectedFieldValue));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("setFieldWithIgnoredValues")
-    void assertSetFieldWithIgnoredValues(final String name, final String fieldName, final Object fieldValue, final String actualFieldName, final Object expectedFieldValue) {
+    @MethodSource({"setFieldWithConvertedValues", "setFieldWithIgnoredValues"})
+    void assertSetField(final String name, final String fieldName, final Object fieldValue, final String actualFieldName, final Object expectedFieldValue) {
         DataSourcePoolReflectionFixture dataSource = new DataSourcePoolReflectionFixture();
         new DataSourcePoolReflection(dataSource).setField(fieldName, fieldValue);
         Object actualFieldValue = getFieldValue(dataSource, actualFieldName);

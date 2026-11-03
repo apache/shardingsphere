@@ -34,7 +34,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
@@ -89,7 +88,7 @@ public final class FirebirdCommandExecutorFactory {
     public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
         switch (commandPacketType) {
             case INFO_DATABASE:
-                return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
+                return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket);
             case INFO_BLOB:
                 return new FirebirdBlobInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
             case TRANSACTION:
@@ -113,7 +112,7 @@ public final class FirebirdCommandExecutorFactory {
             case CLOSE_BLOB:
                 return new FirebirdCloseBlobCommandExecutor((FirebirdCloseBlobCommandPacket) commandPacket, connectionSession);
             case ALLOCATE_STATEMENT:
-                return new FirebirdAllocateStatementCommandExecutor((FirebirdAllocateStatementPacket) commandPacket, connectionSession);
+                return new FirebirdAllocateStatementCommandExecutor(connectionSession);
             case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementCommandExecutor((FirebirdPrepareStatementPacket) commandPacket, connectionSession);
             case EXECUTE:

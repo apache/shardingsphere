@@ -35,7 +35,7 @@
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
         <assertion parameters="12:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
@@ -171,7 +171,7 @@
     <!--        <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />-->
     <!--    </test-case>-->
     
-    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT * FROM t_merchant WHERE business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator percentage wildcard in simple select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in simple select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>

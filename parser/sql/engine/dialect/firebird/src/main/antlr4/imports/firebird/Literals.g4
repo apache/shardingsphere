@@ -19,6 +19,10 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
+UNDERSCORE_CHARSET
+    : '_' [A-Za-z0-9_]+
+    ;
+
 IDENTIFIER_
     : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
     |  DQ_ ~'"'+ DQ_

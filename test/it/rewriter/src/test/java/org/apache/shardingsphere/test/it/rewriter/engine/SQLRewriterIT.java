@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -181,7 +182,8 @@ public abstract class SQLRewriterIT {
     
     private ShardingSphereDatabase createDatabase(final YamlRootConfiguration rootConfig, final SQLStatement sqlStatement, final DatabaseType databaseType) throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
-                new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
+                DataSourcePoolCreator.create(new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(rootConfig), true),
+                new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules()));
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), createStorageUnits(databaseConfig, databaseType));
         String databaseName = null == rootConfig.getDatabaseName() ? DefaultDatabase.LOGIC_NAME : rootConfig.getDatabaseName();
         String schemaName = DefaultSchemaNameResolver.resolveProtocol(databaseType, databaseName);

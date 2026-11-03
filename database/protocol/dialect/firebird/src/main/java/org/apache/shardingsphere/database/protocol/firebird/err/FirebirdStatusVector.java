@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
@@ -41,7 +42,7 @@ public final class FirebirdStatusVector extends FirebirdPacket {
     private final List<Segment> segments;
     
     public FirebirdStatusVector(final SQLException ex) {
-        errorMessage = stripStateSuffix(null == ex.getMessage() ? "" : ex.getMessage());
+        errorMessage = stripStateSuffix(Strings.nullToEmpty(ex.getMessage()));
         segments = FirebirdErrorSegmentResolver.resolve(ex.getErrorCode(), errorMessage, ex.getSQLState());
         gdsCode = segments.get(0).gdsCode;
     }

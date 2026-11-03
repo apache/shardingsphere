@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
@@ -27,10 +27,7 @@ public final class FirebirdByteBinaryProtocolValue implements FirebirdBinaryProt
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        ByteBuf buffer = payload.readBuffer();
-        byte[] result = new byte[buffer.readableBytes()];
-        buffer.getBytes(buffer.readerIndex(), result);
-        return result;
+        return ByteBufUtil.getBytes(payload.readBuffer());
     }
     
     @Override

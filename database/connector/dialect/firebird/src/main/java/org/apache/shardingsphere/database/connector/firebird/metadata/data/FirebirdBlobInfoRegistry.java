@@ -77,8 +77,7 @@ public final class FirebirdBlobInfoRegistry {
         if (null == tableName || null == columnName) {
             return false;
         }
-        Map<String, Integer> blobColumns = BLOB_COLUMNS.get(buildTableKey(schemaName, tableName));
-        return null != blobColumns && blobColumns.containsKey(toKey(columnName));
+        return BLOB_COLUMNS.getOrDefault(buildTableKey(schemaName, tableName), Collections.emptyMap()).containsKey(toKey(columnName));
     }
     
     /**
@@ -93,11 +92,7 @@ public final class FirebirdBlobInfoRegistry {
         if (null == tableName || null == columnName) {
             return OptionalInt.empty();
         }
-        Map<String, Integer> blobColumns = BLOB_COLUMNS.get(buildTableKey(schemaName, tableName));
-        if (null == blobColumns) {
-            return OptionalInt.empty();
-        }
-        Integer subtype = blobColumns.get(toKey(columnName));
+        Integer subtype = BLOB_COLUMNS.getOrDefault(buildTableKey(schemaName, tableName), Collections.emptyMap()).get(toKey(columnName));
         return null == subtype ? OptionalInt.empty() : OptionalInt.of(subtype);
     }
     

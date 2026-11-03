@@ -28,8 +28,7 @@ import java.util.Collection;
  */
 public final class FirebirdFunctionOption implements DialectFunctionOption {
     
-    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
-            "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER"));
+    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList("CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER"));
     
     @Override
     public Collection<String> getUnparenthesizedFunctionNames() {

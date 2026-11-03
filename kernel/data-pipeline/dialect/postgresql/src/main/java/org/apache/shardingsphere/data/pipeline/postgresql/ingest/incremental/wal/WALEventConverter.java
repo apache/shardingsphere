@@ -110,14 +110,14 @@ public final class WALEventConverter {
             return createPlaceholderRecord(event);
         }
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(expectedSchemaName, actualTableName);
-        if (event instanceof WriteRowEvent) {
-            return handleWriteRowEvent((WriteRowEvent) event, tableMetaData, logicTableName);
+        if (event instanceof WriteRowEvent writeRowEvent) {
+            return handleWriteRowEvent(writeRowEvent, tableMetaData, logicTableName);
         }
-        if (event instanceof UpdateRowEvent) {
-            return handleUpdateRowEvent((UpdateRowEvent) event, tableMetaData, logicTableName);
+        if (event instanceof UpdateRowEvent updateRowEvent) {
+            return handleUpdateRowEvent(updateRowEvent, tableMetaData, logicTableName);
         }
-        if (event instanceof DeleteRowEvent) {
-            return handleDeleteRowEvent((DeleteRowEvent) event, tableMetaData, logicTableName);
+        if (event instanceof DeleteRowEvent deleteRowEvent) {
+            return handleDeleteRowEvent(deleteRowEvent, tableMetaData, logicTableName);
         }
         throw new UnsupportedSQLOperationException("");
     }

@@ -83,6 +83,7 @@ public final class ShadowRuleWorkflowRequest extends WorkflowRequest {
      *
      * @param algorithmType algorithm type
      */
+    @Override
     public void setAlgorithmType(final String algorithmType) {
         this.algorithmType = null == algorithmType ? "" : algorithmType.trim();
     }
@@ -151,8 +152,8 @@ public final class ShadowRuleWorkflowRequest extends WorkflowRequest {
     }
     
     private static ShadowRuleWorkflowRequest copyPreviousRequest(final WorkflowRequest previousRequest) {
-        if (previousRequest instanceof ShadowRuleWorkflowRequest) {
-            return ((ShadowRuleWorkflowRequest) previousRequest).copy();
+        if (previousRequest instanceof ShadowRuleWorkflowRequest request) {
+            return request.copy();
         }
         ShadowRuleWorkflowRequest result = new ShadowRuleWorkflowRequest();
         if (null != previousRequest) {

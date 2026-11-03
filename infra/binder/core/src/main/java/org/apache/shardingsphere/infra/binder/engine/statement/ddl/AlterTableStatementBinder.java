@@ -46,6 +46,7 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
                 .replaceTable(sqlStatement.getReplaceTable().orElse(null)).convertTableDefinition(sqlStatement.getConvertTableDefinition().orElse(null))
                 .modifyCollectionRetrieval(sqlStatement.getModifyCollectionRetrieval().orElse(null)).algorithmSegment(sqlStatement.getGetAlgorithmSegment().orElse(null))
                 .lockTableSegment(sqlStatement.getLockTableSegment().orElse(null)).dropPrimaryKeyDefinition(sqlStatement.getDropPrimaryKeyDefinition().orElse(null))
+                .setSchemaDefinition(sqlStatement.getSetSchemaDefinition().orElse(null))
                 .setPropertiesDefinitions(sqlStatement.getSetPropertiesDefinitions()).enableFeatureDefinitions(sqlStatement.getEnableFeatureDefinitions())
                 .modifyTableCommentDefinitions(sqlStatement.getModifyTableCommentDefinitions()).modifyEngineDefinitions(sqlStatement.getModifyEngineDefinitions())
                 .modifyDistributionDefinitions(sqlStatement.getModifyDistributionDefinitions()).addColumnDefinitions(sqlStatement.getAddColumnDefinitions())
@@ -57,7 +58,9 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
                 .replaceColumnDefinitions(sqlStatement.getReplaceColumnDefinitions()).addRollupDefinitions(sqlStatement.getAddRollupDefinitions())
                 .dropRollupDefinitions(sqlStatement.getDropRollupDefinitions()).renameRollupDefinitions(sqlStatement.getRenameRollupDefinitions())
                 .renamePartitionDefinitions(sqlStatement.getRenamePartitionDefinitions()).addPartitionDefinitions(sqlStatement.getAddPartitionDefinitions())
-                .addPartitionsSegments(sqlStatement.getAddPartitionsSegments()).modifyPartitionDefinitions(sqlStatement.getModifyPartitionDefinitions()).build();
+                .addPartitionsSegments(sqlStatement.getAddPartitionsSegments()).modifyPartitionDefinitions(sqlStatement.getModifyPartitionDefinitions())
+                .exchangePartitionDefinitions(sqlStatement.getExchangePartitionDefinitions())
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

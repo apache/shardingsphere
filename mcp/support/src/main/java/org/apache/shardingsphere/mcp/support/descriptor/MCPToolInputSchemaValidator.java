@@ -228,6 +228,6 @@ public final class MCPToolInputSchemaValidator {
     }
     
     private static BigInteger toBigInteger(final Object value) {
-        return value instanceof BigInteger ? (BigInteger) value : BigInteger.valueOf(((Number) value).longValue());
+        return value instanceof BigInteger bigInteger ? bigInteger : BigInteger.valueOf(((Number) value).longValue());
     }
 }

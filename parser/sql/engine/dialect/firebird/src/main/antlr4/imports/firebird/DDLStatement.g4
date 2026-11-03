@@ -340,7 +340,7 @@ addConstraintSpecification
     ;
 
 dropConstraintSpecification
-    : DROP constraintDefinition
+    : DROP CONSTRAINT constraintName
     ;
 
 returnStatement
@@ -496,7 +496,7 @@ executeBlock
     ;
 
 inputArgumentList
-    : LP_ announcementArgument EQ_ QUESTION_  (COMMA_ (announcementArgument EQ_ QUESTION_))* RP_
+    : LP_ announcementArgument EQ_ parameterMarker (COMMA_ (announcementArgument EQ_ parameterMarker))* RP_
     ;
 
 outputArgumentList

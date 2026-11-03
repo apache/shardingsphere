@@ -203,8 +203,8 @@ class InstanceMethodAdviceExecutorTest {
         private final List<LogRecord> records;
         
         @Override
-        public void publish(final LogRecord record) {
-            records.add(record);
+        public void publish(final LogRecord logRecord) {
+            records.add(logRecord);
         }
         
         @Override

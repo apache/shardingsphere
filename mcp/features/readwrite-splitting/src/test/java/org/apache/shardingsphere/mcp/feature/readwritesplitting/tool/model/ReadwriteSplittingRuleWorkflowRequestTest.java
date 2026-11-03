@@ -19,12 +19,19 @@ package org.apache.shardingsphere.mcp.feature.readwritesplitting.tool.model;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ReadwriteSplittingRuleWorkflowRequestTest {
@@ -34,6 +41,24 @@ class ReadwriteSplittingRuleWorkflowRequestTest {
         ReadwriteSplittingRuleWorkflowRequest actual = new ReadwriteSplittingRuleWorkflowRequest();
         actual.setReadStorageUnits("read_ds_0, read_ds_1");
         assertThat(actual.getReadStorageUnits(), is(List.of("read_ds_0", "read_ds_1")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("setReadStorageUnitsArguments")
+    void assertSetReadStorageUnitsFromCollection(final String scenario, final Collection<String> values, final Collection<String> expectedValues) {
+        ReadwriteSplittingRuleWorkflowRequest request = new ReadwriteSplittingRuleWorkflowRequest();
+        Collection<String> actualValues = request.getReadStorageUnits();
+        actualValues.add("foo_previous");
+        request.setReadStorageUnits(values);
+        assertThat(request.getReadStorageUnits(), sameInstance(actualValues));
+        assertThat(actualValues, is(expectedValues));
+    }
+    
+    private static Stream<Arguments> setReadStorageUnitsArguments() {
+        return Stream.of(
+                Arguments.of("null collection", null, List.of("foo_previous")),
+                Arguments.of("empty collection", List.of(), List.of("foo_previous")),
+                Arguments.of("normalized values and duplicates", Arrays.asList(null, "", " ", " foo_read ", "bar_value", "foo_read"), List.of("foo_read", "bar_value", "foo_read")));
     }
     
     @Test

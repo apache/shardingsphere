@@ -107,7 +107,7 @@ public final class DriverExecuteBatchExecutor {
      * @return generated keys
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public int[] executeBatch(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues,
                               final StatementOption statementOption, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
                               final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
@@ -115,18 +115,10 @@ public final class DriverExecuteBatchExecutor {
             return new int[0];
         }
         // TODO add raw SQL executor
-        return doExecuteBatch(database, batchPreparedStatementExecutor, sqlStatementContext, generatedValues, statementOption, executionContext, addCallback, replayCallback, generatedKeyCallback);
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private int[] doExecuteBatch(final ShardingSphereDatabase database, final BatchPreparedStatementExecutor batchExecutor,
-                                 final SQLStatementContext sqlStatementContext, final Collection<Comparable<?>> generatedValues, final StatementOption statementOption,
-                                 final ExecutionContext executionContext, final StatementAddCallback addCallback, final PreparedStatementParametersReplayCallback replayCallback,
-                                 final GeneratedKeyCallback generatedKeyCallback) throws SQLException {
-        initBatchPreparedStatementExecutor(database, batchExecutor, executionContext, replayCallback);
-        int[] result = batchExecutor.executeBatch(sqlStatementContext);
+        initBatchPreparedStatementExecutor(database, batchPreparedStatementExecutor, executionContext, replayCallback);
+        int[] result = batchPreparedStatementExecutor.executeBatch(sqlStatementContext);
         if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
-            addCallback.add(batchExecutor.getStatements(), Collections.emptyList());
+            addCallback.add(batchPreparedStatementExecutor.getStatements(), Collections.emptyList());
             generatedKeyCallback.generateKeys();
         }
         return result;

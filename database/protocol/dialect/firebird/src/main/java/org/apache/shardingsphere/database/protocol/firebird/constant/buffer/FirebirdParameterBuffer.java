@@ -60,11 +60,7 @@ public final class FirebirdParameterBuffer {
         boolean traditionalStyle = isTraditionalType.apply(version);
         switch (type.getFormat()) {
             case INT:
-                if (traditionalStyle) {
-                    parameterBuffer.skipBytes(1);
-                } else {
-                    parameterBuffer.skipBytes(4);
-                }
+                parameterBuffer.skipBytes(traditionalStyle ? 1 : 4);
                 return parameterBuffer.readIntLE();
             case SIZED_INT:
                 return readSizedIntValue(parameterBuffer, traditionalStyle ? parameterBuffer.readUnsignedByte() : parameterBuffer.readIntLE());

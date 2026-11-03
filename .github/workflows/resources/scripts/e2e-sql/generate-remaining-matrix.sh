@@ -29,7 +29,7 @@ SMOKE_MATRIX="$3"
 # Parse completed jobs from smoke matrix
 COMPLETED_JOBS=$(echo "$SMOKE_MATRIX" | jq -c '.include // []')
 
-if [ -z "$TARGET_MATRIX" ]; then
+if [[ -z "$TARGET_MATRIX" ]]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-remaining-jobs=false" >> "$GITHUB_OUTPUT"
   exit 0
@@ -55,7 +55,7 @@ REMAINING_JOBS=$(jq -cn \
 
 JOB_COUNT=$(echo "$REMAINING_JOBS" | jq 'length')
 
-if [ "$JOB_COUNT" -eq 0 ]; then
+if [[ "$JOB_COUNT" -eq 0 ]]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-remaining-jobs=false" >> "$GITHUB_OUTPUT"
   exit 0

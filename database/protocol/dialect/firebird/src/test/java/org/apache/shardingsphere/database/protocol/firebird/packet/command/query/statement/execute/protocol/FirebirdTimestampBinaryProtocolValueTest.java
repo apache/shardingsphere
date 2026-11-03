@@ -21,12 +21,16 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -48,40 +52,24 @@ class FirebirdTimestampBinaryProtocolValueTest {
         assertThat(new FirebirdTimestampBinaryProtocolValue().read(payload), is(FirebirdDateTimeUtils.getDateTime(encodedDate, encodedTime)));
     }
     
-    @Test
-    void assertWriteWithDate() {
-        LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
-        new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
-        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
-        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
-    }
-    
-    @Test
-    void assertWriteWithSubMillisecondTimestamp() {
-        LocalDateTime dateTime = LocalDateTime.of(2024, 2, 29, 23, 59, 59, 999_900_000);
-        new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
-        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
-        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
-    }
-    
-    @Test
-    void assertWriteWithJavaUtilDate() {
-        LocalDateTime dateTime = LocalDateTime.of(2024, 1, 3, 14, 0, 0, 123_000_000);
-        new FirebirdTimestampBinaryProtocolValue().write(payload, new Date(Timestamp.valueOf(dateTime).getTime()));
-        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
-        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
-    }
-    
-    @Test
-    void assertWriteWithLocalDateTime() {
-        LocalDateTime dateTime = LocalDateTime.parse("2024-01-02T13:00:00");
-        new FirebirdTimestampBinaryProtocolValue().write(payload, dateTime);
-        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
-        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final Object value, final LocalDateTime expectedDateTime) {
+        new FirebirdTimestampBinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(expectedDateTime));
+        verify(payload).writeInt4(new FirebirdDateTimeUtils(expectedDateTime).getEncodedTime());
     }
     
     @Test
     void assertGetLength() {
         assertThat(new FirebirdTimestampBinaryProtocolValue().getLength(payload), is(8));
+    }
+    
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("timestamp", Timestamp.valueOf(LocalDateTime.of(2024, 1, 1, 12, 0)), LocalDateTime.of(2024, 1, 1, 12, 0)),
+                Arguments.of("sub_millisecond_timestamp", Timestamp.valueOf(LocalDateTime.of(2024, 2, 29, 23, 59, 59, 999_900_000)), LocalDateTime.of(2024, 2, 29, 23, 59, 59, 999_900_000)),
+                Arguments.of("java_util_date", new Date(Timestamp.valueOf(LocalDateTime.of(2024, 1, 3, 14, 0, 0, 123_000_000)).getTime()), LocalDateTime.of(2024, 1, 3, 14, 0, 0, 123_000_000)),
+                Arguments.of("local_date_time", LocalDateTime.parse("2024-01-02T13:00:00"), LocalDateTime.parse("2024-01-02T13:00:00")));
     }
 }

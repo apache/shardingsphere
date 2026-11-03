@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.messagedigest.md5;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.algorithm.core.util.AlgorithmValueUtils;
 import org.apache.shardingsphere.infra.algorithm.messagedigest.spi.MessageDigestAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
@@ -42,7 +43,11 @@ public final class MD5MessageDigestAlgorithm implements MessageDigestAlgorithm {
     @SneakyThrows(GeneralSecurityException.class)
     @Override
     public byte[] digest(final Object plainValue) {
-        return null == plainValue ? null : MD5MessageDigestEngine.digest(plainValue, salt);
+        if (null == plainValue) {
+            return null;
+        }
+        String plainText = AlgorithmValueUtils.convertToUTF8Text(plainValue) + salt;
+        return MD5MessageDigestEngine.digest(AlgorithmValueUtils.convertToBytes(plainText, null));
     }
     
     @Override

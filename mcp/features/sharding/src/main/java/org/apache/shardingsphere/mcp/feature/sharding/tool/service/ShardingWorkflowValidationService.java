@@ -64,23 +64,19 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         queryFacade.checkDatabaseCapability(request.getDatabase());
         if (ShardingFeatureDefinition.TABLE_RULE_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             List<Map<String, Object>> rows = inspectionService.queryTableRule(queryFacade, request.getDatabase(), request.getTable());
-            return validateNamedState(snapshot, validationReport, rows, queryFacade, request.getDatabase(), "table", request.getTable(),
-                    matchesTableRule(rows, queryFacade, request));
+            return validateNamedState(snapshot, validationReport, rows, queryFacade, "table", request.getTable(), matchesTableRule(rows, queryFacade, request));
         }
         if (ShardingFeatureDefinition.TABLE_REFERENCE_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             List<Map<String, Object>> rows = inspectionService.queryTableReferenceRule(queryFacade, request.getDatabase(), request.getRuleName());
-            return validateNamedState(snapshot, validationReport, rows, queryFacade, request.getDatabase(), "name", request.getRuleName(),
-                    matchesTableReferenceRule(rows, queryFacade, request));
+            return validateNamedState(snapshot, validationReport, rows, queryFacade, "name", request.getRuleName(), matchesTableReferenceRule(rows, queryFacade, request));
         }
         if (ShardingFeatureDefinition.KEY_GENERATOR_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             List<Map<String, Object>> rows = inspectionService.queryKeyGenerator(queryFacade, request.getDatabase(), request.getKeyGeneratorName());
-            return validateNamedState(snapshot, validationReport, rows, queryFacade, request.getDatabase(), "name", request.getKeyGeneratorName(),
-                    matchesKeyGenerator(rows, queryFacade, request));
+            return validateNamedState(snapshot, validationReport, rows, queryFacade, "name", request.getKeyGeneratorName(), matchesKeyGenerator(rows, queryFacade, request));
         }
         if (ShardingFeatureDefinition.KEY_GENERATE_STRATEGY_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             List<Map<String, Object>> rows = inspectionService.queryKeyGenerateStrategy(queryFacade, request.getDatabase(), request.getKeyGenerateStrategyName());
-            return validateNamedState(snapshot, validationReport, rows, queryFacade, request.getDatabase(), "name", request.getKeyGenerateStrategyName(),
-                    matchesKeyGenerateStrategy(rows, queryFacade, request));
+            return validateNamedState(snapshot, validationReport, rows, queryFacade, "name", request.getKeyGenerateStrategyName(), matchesKeyGenerateStrategy(rows, queryFacade, request));
         }
         if (ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND.equals(snapshot.getWorkflowKind())) {
             return validateDefaultStrategy(snapshot, validationReport, inspectionService.queryDefaultStrategy(queryFacade, request.getDatabase()), queryFacade, request);
@@ -88,10 +84,9 @@ public final class ShardingWorkflowValidationService implements MCPWorkflowRunti
         return validateCleanup(validationReport, queryFacade, request);
     }
     
-    private ValidationSection validateNamedState(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
-                                                 final List<Map<String, Object>> rows, final MCPFeatureQueryFacade queryFacade, final String databaseName,
-                                                 final String fieldName, final String expected, final boolean shapeMatches) {
-        boolean ruleExists = containsNamedRow(rows, queryFacade, databaseName, fieldName, expected);
+    private ValidationSection validateNamedState(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport, final List<Map<String, Object>> rows,
+                                                 final MCPFeatureQueryFacade queryFacade, final String fieldName, final String expected, final boolean shapeMatches) {
+        boolean ruleExists = containsNamedRow(rows, queryFacade, snapshot.getRequest().getDatabase(), fieldName, expected);
         boolean dropWorkflow = WorkflowLifecycleUtils.isDropWorkflow(snapshot);
         boolean expectedRuleExists = !dropWorkflow;
         if (expectedRuleExists != ruleExists) {

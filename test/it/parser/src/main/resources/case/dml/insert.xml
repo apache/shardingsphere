@@ -1498,29 +1498,29 @@
                 <assignment-value>
                     <binary-operation-expression start-index="94" stop-index="126" literal-start-index="98" literal-stop-index="130">
                         <left>
-                            <binary-operation-expression start-index="94" stop-index="122" literal-start-index="98" literal-stop-index="126">
+                            <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
+                                <parameter>
+                                    <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
+                                </parameter>
+                                <literalText>VALUES(salary)</literalText>
+                            </function>
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <binary-operation-expression start-index="109" stop-index="126" literal-start-index="113" literal-stop-index="130">
                                 <left>
-                                    <function function-name="VALUES" text="VALUES(salary)" start-index="94" stop-index="107" literal-start-index="98" literal-stop-index="111">
-                                        <parameter>
-                                            <column name="salary" start-index="101" stop-index="106" literal-start-index="105" literal-stop-index="110" />
-                                        </parameter>
-                                        <literalText>VALUES(salary)</literalText>
-                                    </function>
-                                </left>
-                                <operator>+</operator>
-                                <right>
                                     <function function-name="VALUES" text="VALUES(salary)" start-index="109" stop-index="122" literal-start-index="113" literal-stop-index="126">
                                         <parameter>
                                             <column name="salary" start-index="116" stop-index="121" literal-start-index="120" literal-stop-index="125" />
                                         </parameter>
                                         <literalText>VALUES(salary)</literalText>
                                     </function>
+                                </left>
+                                <operator>*</operator>
+                                <right>
+                                    <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
                                 </right>
                             </binary-operation-expression>
-                        </left>
-                        <operator>*</operator>
-                        <right>
-                            <literal-expression value="0.2" start-index="124" stop-index="126" literal-start-index="128" literal-stop-index="130" />
                         </right>
                     </binary-operation-expression>
                 </assignment-value>

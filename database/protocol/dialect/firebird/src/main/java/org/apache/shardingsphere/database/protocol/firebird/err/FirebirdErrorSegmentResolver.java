@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector.Segment;
@@ -63,7 +64,7 @@ public final class FirebirdErrorSegmentResolver {
             return buildTemplatedSegments(code, parameters, message);
         }
         if (GDSExceptionHelper.getMessage(code).getParamCount() >= 2) {
-            return Collections.singletonList(new Segment(ISCConstants.isc_random, toArguments(message), blankToNull(sqlState)));
+            return Collections.singletonList(new Segment(ISCConstants.isc_random, toArguments(message), Strings.emptyToNull(sqlState)));
         }
         return Collections.singletonList(new Segment(code, toArguments(message), null));
     }
@@ -114,9 +115,5 @@ public final class FirebirdErrorSegmentResolver {
     
     private static String stripSeparator(final String remainder) {
         return remainder.startsWith(SEGMENT_SEPARATOR) ? remainder.substring(SEGMENT_SEPARATOR.length()) : remainder;
-    }
-    
-    private static String blankToNull(final String sqlState) {
-        return null == sqlState || sqlState.isEmpty() ? null : sqlState;
     }
 }

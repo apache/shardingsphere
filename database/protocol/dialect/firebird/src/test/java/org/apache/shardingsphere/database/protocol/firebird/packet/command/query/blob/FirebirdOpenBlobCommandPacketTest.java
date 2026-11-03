@@ -78,5 +78,4 @@ class FirebirdOpenBlobCommandPacketTest {
         assertThat(FirebirdOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB2, payload), is(26));
         verify(payload).getBufferLength(4);
     }
-    
 }

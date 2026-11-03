@@ -53,10 +53,7 @@ public final class FirebirdBlobInfoExecutor implements CommandExecutor {
     
     private int getBlobLength(final int connectionId, final int blobHandle) {
         OptionalInt totalSize = FirebirdBlobReadCache.getInstance().getTotalSize(connectionId, blobHandle);
-        if (totalSize.isPresent()) {
-            return totalSize.getAsInt();
-        }
-        return FirebirdBlobWriteCache.getInstance().getBlobSizeByHandle(connectionId, blobHandle).orElse(0);
+        return totalSize.isPresent() ? totalSize.getAsInt() : FirebirdBlobWriteCache.getInstance().getBlobSizeByHandle(connectionId, blobHandle).orElse(0);
     }
     
     @HighFrequencyInvocation
