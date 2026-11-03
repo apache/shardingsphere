@@ -40,7 +40,7 @@ public final class FirebirdBatchCreateCommandPacket extends FirebirdCommandPacke
     
     public FirebirdBatchCreateCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementHandle = payload.readInt4();
+        statementHandle = payload.readObjectHandle();
         batchBlr = payload.readBuffer();
         ShardingSpherePreconditions.checkState(batchBlr.isReadable(), () -> new DatabaseProtocolException("Missing required format info in createBatch()"));
         batchMessageLength = payload.readInt4Unsigned();

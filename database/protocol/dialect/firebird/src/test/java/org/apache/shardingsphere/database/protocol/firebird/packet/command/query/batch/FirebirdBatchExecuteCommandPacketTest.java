@@ -31,7 +31,8 @@ class FirebirdBatchExecuteCommandPacketTest {
     @Test
     void assertConstructor() {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readInt4()).thenReturn(7, 9);
+        when(payload.readObjectHandle()).thenReturn(7);
+        when(payload.readInt4()).thenReturn(9);
         FirebirdBatchExecuteCommandPacket actualPacket = new FirebirdBatchExecuteCommandPacket(payload);
         assertThat(actualPacket.getStatementHandle(), is(7));
         assertThat(actualPacket.getTransactionHandle(), is(9));

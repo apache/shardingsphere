@@ -47,10 +47,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -117,6 +120,10 @@ class FirebirdSQLInfoExecutorTest {
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, statementId);
+        return executeWithEncodedHandle(statementId, encodedHandle);
+    }
+    
+    private FirebirdSQLInfoReturnPacket executeWithEncodedHandle(final int statementId, final int encodedHandle) {
         ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.INFO_SQL.getValue()).writeInt(encodedHandle).writeInt(0).writeInt(1)
                 .writeByte(FirebirdSQLInfoPacketType.RECORDS.getCode()).writeZero(3).writeInt(100);
         FirebirdInfoPacket infoPacket = new FirebirdInfoPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), FirebirdSQLInfoPacketType::valueOf);
@@ -130,6 +137,20 @@ class FirebirdSQLInfoExecutorTest {
     void assertExecuteWithSignExtendedLastStatementHandle() {
         FirebirdSQLInfoReturnPacket actual = executeWithLastStatementHandle(0xFFFFFFFF);
         assertThat(actual.getRecordsInfo().getInsertCount(), is(3L));
+    }
+    
+    @Test
+    void assertExecuteWithSignExtendedStatementHandle() throws ReflectiveOperationException {
+        getStatementCounter().set(0x8000);
+        FirebirdSQLInfoReturnPacket actual = executeWithEncodedHandle(FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID), 0xFFFF8001);
+        assertThat(actual.getRecordsInfo().getInsertCount(), is(3L));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private AtomicInteger getStatementCounter() throws ReflectiveOperationException {
+        Map<Integer, AtomicInteger> connectionRegistry = (Map<Integer, AtomicInteger>) Plugins.getMemberAccessor().get(
+                FirebirdStatementIdGenerator.class.getDeclaredField("connectionRegistry"), FirebirdStatementIdGenerator.getInstance());
+        return connectionRegistry.get(CONNECTION_ID);
     }
     
     @Test

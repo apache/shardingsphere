@@ -83,7 +83,7 @@ public final class FirebirdStatementIdGenerator {
     
     private Set<Integer> getAllocatedStatements(final int connectionId) {
         Set<Integer> result = allocatedStatementRegistry.get(connectionId);
-        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException("No statement ID generator found for connectionId: " + connectionId));
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException(String.format("No statement ID generator found for connectionId: %d", connectionId)));
         return result;
     }
     

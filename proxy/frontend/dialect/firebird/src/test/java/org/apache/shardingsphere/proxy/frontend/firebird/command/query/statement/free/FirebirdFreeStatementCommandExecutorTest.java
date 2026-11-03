@@ -44,6 +44,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -51,6 +52,8 @@ import org.mockito.quality.Strictness;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -166,6 +169,10 @@ class FirebirdFreeStatementCommandExecutorTest {
     private void dropWithLastStatementHandle(final int encodedHandle) throws SQLException {
         FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
         FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, STATEMENT_ID);
+        dropWithEncodedHandle(encodedHandle);
+    }
+    
+    private void dropWithEncodedHandle(final int encodedHandle) throws SQLException {
         ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.FREE_STATEMENT.getValue()).writeInt(encodedHandle).writeInt(FirebirdFreeStatementPacket.DROP);
         FirebirdFreeStatementPacket freeStatementPacket = new FirebirdFreeStatementPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
         new FirebirdFreeStatementCommandExecutor(freeStatementPacket, connectionSession).execute();
@@ -176,6 +183,22 @@ class FirebirdFreeStatementCommandExecutorTest {
         dropWithLastStatementHandle(0xFFFFFFFF);
         verify(registry).removePreparedStatement(STATEMENT_ID);
         assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithSignExtendedStatementHandle() throws Exception {
+        getStatementCounter().set(0x8000);
+        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        dropWithEncodedHandle(0xFFFF8001);
+        verify(registry).removePreparedStatement(statementId);
+        assertFalse(FirebirdStatementIdGenerator.getInstance().isStatementAllocated(CONNECTION_ID, statementId));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private AtomicInteger getStatementCounter() throws ReflectiveOperationException {
+        Map<Integer, AtomicInteger> connectionRegistry = (Map<Integer, AtomicInteger>) Plugins.getMemberAccessor().get(
+                FirebirdStatementIdGenerator.class.getDeclaredField("connectionRegistry"), FirebirdStatementIdGenerator.getInstance());
+        return connectionRegistry.get(CONNECTION_ID);
     }
     
     @Test
