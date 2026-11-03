@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
 import com.google.common.base.Suppliers;
+import com.google.common.collect.Iterables;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
@@ -64,7 +65,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
@@ -72,7 +72,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -486,6 +485,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private int getOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                  final Supplier<Optional<ShardingSphereSchema>> schema) {
+        int result = getBinaryOperationType(expr, sqlStatementContext, database, schema);
+        return Types.OTHER == result ? Types.INTEGER : result;
+    }
+    
+    private int getBinaryOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                                       final Supplier<Optional<ShardingSphereSchema>> schema) {
         switch (expr.getOperator()) {
             case "||":
                 return Types.VARCHAR;
@@ -495,18 +500,21 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "/":
                 return getArithmeticOperationType(expr, sqlStatementContext, database, schema);
             default:
-                return Types.INTEGER;
+                return Types.OTHER;
         }
     }
     
     private int getArithmeticOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                            final Supplier<Optional<ShardingSphereSchema>> schema) {
-        if (expr.getLeft() instanceof CommonExpressionSegment || expr.getRight() instanceof CommonExpressionSegment || isNullLiteral(expr.getLeft()) && isNullLiteral(expr.getRight())) {
-            return Types.INTEGER;
-        }
         int leftType = getOperandType(expr.getLeft(), sqlStatementContext, database, schema);
         int rightType = getOperandType(expr.getRight(), sqlStatementContext, database, schema);
-        return getArithmeticType(expr.getOperator(), isNullLiteral(expr.getLeft()) ? rightType : leftType, isNullLiteral(expr.getRight()) ? leftType : rightType);
+        if (Types.OTHER == leftType || Types.OTHER == rightType) {
+            return Types.OTHER;
+        }
+        if (Types.NULL == leftType && Types.NULL == rightType) {
+            return Types.INTEGER;
+        }
+        return getArithmeticType(expr.getOperator(), Types.NULL == leftType ? rightType : leftType, Types.NULL == rightType ? leftType : rightType);
     }
     
     private int getOperandType(final ExpressionSegment operand, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -521,7 +529,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return getFunctionOperandType((FunctionSegment) operand, sqlStatementContext, database, schema);
         }
         if (operand instanceof BinaryOperationExpression) {
-            return getOperationType((BinaryOperationExpression) operand, sqlStatementContext, database, schema);
+            return getBinaryOperationType((BinaryOperationExpression) operand, sqlStatementContext, database, schema);
         }
         if (operand instanceof AggregationProjectionSegment) {
             return getAggregationType((AggregationProjectionSegment) operand, sqlStatementContext, database, schema);
@@ -529,7 +537,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (operand instanceof SubqueryExpressionSegment) {
             return getSubqueryType(((SubqueryExpressionSegment) operand).getSubquery().getSelect(), sqlStatementContext, database, schema);
         }
-        return Types.NULL;
+        return operand instanceof ParameterMarkerExpressionSegment ? Types.NULL : Types.OTHER;
     }
     
     private int getColumnType(final ColumnSegmentBoundInfo boundInfo, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -539,10 +547,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             tableName = getTableNames(sqlStatementContext).stream().findFirst().orElse("");
         }
         if (tableName.isEmpty()) {
-            return Types.NULL;
+            return Types.OTHER;
         }
         ShardingSphereColumn column = getTable(tableName, database, schema).getColumn(boundInfo.getOriginalColumn().getValue());
-        return null == column ? Types.NULL : column.getDataType();
+        return null == column ? Types.OTHER : column.getDataType();
     }
     
     private int getFunctionOperandType(final FunctionSegment function, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -551,10 +559,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "cast":
                 return getCastType(function);
             case "coalesce":
+                return getCommonType(function.getParameters(), sqlStatementContext, database, schema);
             case "nullif":
-                return getFirstTypedParameterType(function.getParameters(), sqlStatementContext, database, schema);
-            default:
+                return getCommonType(Iterables.limit(function.getParameters(), 1), sqlStatementContext, database, schema);
+            case "iif":
+                return getCommonType(Iterables.skip(function.getParameters(), 1), sqlStatementContext, database, schema);
+            case "gen_id":
+            case "current_date":
+            case "localtime":
+            case "current_timestamp":
+            case "localtimestamp":
                 return getFunctionType(function.getFunctionName());
+            default:
+                return Types.OTHER;
         }
     }
     
@@ -564,11 +581,22 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return getDataTypeNameType(((DataTypeSegment) each).getDataTypeName());
             }
         }
-        return Types.NULL;
+        return Types.OTHER;
     }
     
     private int getDataTypeNameType(final String dataTypeName) {
         switch (dataTypeName.toUpperCase(Locale.ENGLISH)) {
+            case "SMALLINT":
+                return Types.SMALLINT;
+            case "INT":
+            case "INTEGER":
+                return Types.INTEGER;
+            case "BIGINT":
+                return Types.BIGINT;
+            case "NUMERIC":
+            case "DECIMAL":
+            case "DEC":
+                return Types.NUMERIC;
             case "DATE":
                 return Types.DATE;
             case "TIME":
@@ -584,32 +612,56 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case "DOUBLE PRECISION":
                 return Types.DOUBLE;
             default:
-                return Types.NULL;
+                return Types.OTHER;
         }
     }
     
-    private int getFirstTypedParameterType(final Collection<ExpressionSegment> parameters, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
-                                           final Supplier<Optional<ShardingSphereSchema>> schema) {
-        for (ExpressionSegment each : parameters) {
-            int result = getOperandType(each, sqlStatementContext, database, schema);
-            if (Types.NULL != result) {
-                return result;
+    private int getCommonType(final Iterable<ExpressionSegment> params, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
+                              final Supplier<Optional<ShardingSphereSchema>> schema) {
+        int result = Types.NULL;
+        for (ExpressionSegment each : params) {
+            int paramType = getOperandType(each, sqlStatementContext, database, schema);
+            if (Types.NULL != paramType) {
+                result = Types.NULL == result ? paramType : getCommonDataType(result, paramType);
             }
         }
-        return Types.NULL;
+        return result;
+    }
+    
+    private int getCommonDataType(final int leftType, final int rightType) {
+        if (leftType == rightType) {
+            return leftType;
+        }
+        if (isNumericType(leftType) && isNumericType(rightType)) {
+            return isApproximateNumericType(leftType) || isApproximateNumericType(rightType) ? Types.DOUBLE : Types.NUMERIC;
+        }
+        return isDateOrTimestampType(leftType) && isDateOrTimestampType(rightType) ? Types.TIMESTAMP : Types.OTHER;
+    }
+    
+    private boolean isDateOrTimestampType(final int dataType) {
+        return Types.DATE == dataType || Types.TIMESTAMP == dataType;
     }
     
     private int getAggregationType(final AggregationProjectionSegment aggregation, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                    final Supplier<Optional<ShardingSphereSchema>> schema) {
-        AggregationType type = aggregation.getType();
-        return AggregationType.MAX == type || AggregationType.MIN == type ? getFirstTypedParameterType(aggregation.getParameters(), sqlStatementContext, database, schema) : Types.NULL;
+        switch (aggregation.getType()) {
+            case COUNT:
+                return Types.BIGINT;
+            case MAX:
+            case MIN:
+            case SUM:
+            case AVG:
+                return getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema);
+            default:
+                return Types.OTHER;
+        }
     }
     
     private int getSubqueryType(final SelectStatement subquery, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                 final Supplier<Optional<ShardingSphereSchema>> schema) {
         List<ProjectionSegment> projections = subquery.getProjections().getProjections();
         if (1 != projections.size()) {
-            return Types.NULL;
+            return Types.OTHER;
         }
         ProjectionSegment projection = projections.get(0);
         if (projection instanceof ColumnProjectionSegment) {
@@ -618,11 +670,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (projection instanceof ExpressionProjectionSegment) {
             return getOperandType(((ExpressionProjectionSegment) projection).getExpr(), sqlStatementContext, database, schema);
         }
-        return projection instanceof AggregationProjectionSegment ? getOperandType((AggregationProjectionSegment) projection, sqlStatementContext, database, schema) : Types.NULL;
-    }
-    
-    private boolean isNullLiteral(final ExpressionSegment operand) {
-        return operand instanceof LiteralExpressionSegment && null == ((LiteralExpressionSegment) operand).getLiterals();
+        return projection instanceof AggregationProjectionSegment ? getOperandType((AggregationProjectionSegment) projection, sqlStatementContext, database, schema) : Types.OTHER;
     }
     
     private int getArithmeticType(final String operator, final int leftType, final int rightType) {
@@ -632,11 +680,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
             return Types.DATE == leftType && Types.DATE == rightType ? Types.INTEGER : Types.NUMERIC;
         }
-        if (isDateTimeType(leftType)) {
+        if (isDateTimeType(leftType) && isNumericType(rightType)) {
             return leftType;
         }
-        if (isDateTimeType(rightType)) {
+        if (isNumericType(leftType) && isDateTimeType(rightType)) {
             return rightType;
+        }
+        if (!isNumericType(leftType) || !isNumericType(rightType)) {
+            return Types.OTHER;
         }
         return isApproximateNumericType(leftType) || isApproximateNumericType(rightType) ? Types.DOUBLE : Types.BIGINT;
     }
@@ -651,6 +702,20 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return true;
             default:
                 return false;
+        }
+    }
+    
+    private boolean isNumericType(final int dataType) {
+        switch (dataType) {
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.NUMERIC:
+            case Types.DECIMAL:
+                return true;
+            default:
+                return isApproximateNumericType(dataType);
         }
     }
     

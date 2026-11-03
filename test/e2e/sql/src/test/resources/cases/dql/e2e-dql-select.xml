@@ -44,7 +44,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT order_id, order_id + 1 - 2 AS shifted_id, (user_id + 1) * 2 AS doubled_user_id FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
+    <test-case sql="SELECT order_id, order_id + 1 - 2 AS SHIFTED_ID, (user_id + 1) * 2 AS DOUBLED_USER_ID FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -52,7 +52,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT RDB$RELATION_ID + 1 AS next_relation_id, RDB$RELATION_ID * 2 FROM RDB$DATABASE" db-types="Firebird" scenario-types="db">
+    <test-case sql="SELECT RDB$RELATION_ID + 1 AS NEXT_RELATION_ID, RDB$RELATION_ID * 2 FROM RDB$DATABASE" db-types="Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
