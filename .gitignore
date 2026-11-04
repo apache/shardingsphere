@@ -53,6 +53,8 @@ gen/
 .profiler/
 
 # hugo ignore
+/docs/document/themes/hugo-theme-learn/
+/docs/community/themes/hugo-theme-learn/
 blog/public/
 community/public/
 document/public/
