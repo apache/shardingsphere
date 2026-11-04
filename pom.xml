@@ -94,6 +94,7 @@
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         
         <antlr4.version>4.13.2</antlr4.version>
+        <stax2-api.version>4.2.1</stax2-api.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <gson.version>2.10.1</gson.version>
         <jackson.version>2.22.3</jackson.version>
@@ -271,6 +272,11 @@
                 <groupId>org.antlr</groupId>
                 <artifactId>antlr4-runtime</artifactId>
                 <version>${antlr4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <version>${stax2-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
