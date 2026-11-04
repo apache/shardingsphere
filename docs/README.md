@@ -2,19 +2,15 @@
 
 ## HOW to build ShardingSphere website?
 
-To build ShardingSphere website by means of [hugo](http://gohugo.io/overview/introduction/) and [hugo theme learn](https://github.com/matcornic/hugo-theme-learn).
+This directory contains the document, community and blog content and article media.
+Maintain Markdown files under each site's `content` directory and article media under its existing `static` paths.
+Keep the existing language suffixes, front matter and shortcode calls when editing content.
 
-Follow the steps below to deploy ShardingSphere website, 
-
-1. Execute `docs/build.sh` to generate `html` files at the directory of `docs/target/`.
-2. Clone [shardingsphere-doc](https://github.com/apache/shardingsphere-doc.git).
-3. Checkout to `asf-site` branch.
-4. Overwrite `document/current` with `docs/target/document/current`, `community` with `docs/target/community` and `blog` with `docs/target/blog`.
-5. Commit changes and raise a PR for [shardingsphere-doc](https://github.com/apache/shardingsphere-doc.git).
-
-### Note:
-
-1. If you modify `docs/build.sh`, please test it locally.
+The [shardingsphere-doc](https://github.com/apache/shardingsphere-doc.git) repository owns the website's templates, styles, fonts, Hugo configuration and build scripts.
+Its `.github/scripts/build-shardingsphere-docs.sh` entry assembles the content with `.github/website/shardingsphere` presentation sources and fixed Learn theme commits in a temporary directory.
+The build uses Hugo `0.83.1` extended and preserves the `document/current`, `community` and `blog` publishing paths.
+Rebuilding a historical content version uses the current presentation sources; existing published historical pages are not automatically rebuilt.
+Changes to presentation or theme versions belong in `shardingsphere-doc`, including updates to the document version selector.
 
 ## HOW to insert a video of Bilibili or YouTube?
 

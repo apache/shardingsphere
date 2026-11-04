@@ -1,7 +1,0 @@
-{{ if .Params.tags }}
-<div class="tags">
-{{range .Params.tags}}
-  <a class="tag-link" href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
-{{end}}
-</div>
-{{end}}
