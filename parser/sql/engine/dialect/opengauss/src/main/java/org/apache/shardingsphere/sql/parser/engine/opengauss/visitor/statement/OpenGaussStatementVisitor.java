@@ -217,7 +217,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Statement visitor for openGauss.
@@ -679,10 +678,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        IdentifierContext identifierContext = ctx.identifier();
-        return new KeywordValue(null == identifierContext
-                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
-                : identifierContext.getText());
+        return new KeywordValue(null != ctx.numericTypeName() && null != ctx.numericTypeName().DOUBLE()
+                ? String.join(" ", ctx.numericTypeName().DOUBLE().getText(), ctx.numericTypeName().PRECISION().getText())
+                : ctx.getChild(0).getText());
     }
     
     @Override
