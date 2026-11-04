@@ -108,6 +108,7 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <bval.version>2.0.6</bval.version>
         
+        <httpcore5.version>5.4.3</httpcore5.version>
         <netty.version>4.2.19.Final</netty.version>
         <bouncycastle-bom.version>1.86.2</bouncycastle-bom.version>
         
@@ -351,6 +352,17 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${commons-text.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>${httpcore5.version}</version>
             </dependency>
             
             <dependency>
