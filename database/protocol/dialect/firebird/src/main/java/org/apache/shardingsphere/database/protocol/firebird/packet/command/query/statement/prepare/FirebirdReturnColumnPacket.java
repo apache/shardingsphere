@@ -109,7 +109,10 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
         if (FirebirdBinaryColumnType.BLOB == columnType) {
             return null == blobSubType ? columnType.getSubtype() : blobSubType;
         }
-        // the sub type of a text column is its character set, binary strings are stored in OCTETS
-        return Types.BINARY == column.getDataType() || Types.VARBINARY == column.getDataType() ? ISCConstants.CS_BINARY : columnType.getSubtype();
+        return isOctetsColumn() ? ISCConstants.CS_BINARY : columnType.getSubtype();
+    }
+    
+    private boolean isOctetsColumn() {
+        return Types.BINARY == column.getDataType() || Types.VARBINARY == column.getDataType();
     }
 }

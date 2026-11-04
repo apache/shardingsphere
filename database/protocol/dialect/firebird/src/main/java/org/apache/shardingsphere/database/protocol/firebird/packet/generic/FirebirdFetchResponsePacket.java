@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.firebirdsql.gds.ISCConstants;
 
 /**
@@ -69,15 +70,18 @@ public final class FirebirdFetchResponsePacket extends FirebirdPacket {
         }
     }
     
+    @HighFrequencyInvocation
     private static void writeCellData(final FirebirdPacketPayload payload, final BinaryCell cell) {
         if (FirebirdBinaryColumnType.TEXT == cell.getColumnType()) {
-            // a text value is read by the client with the described length and without a length prefix
-            byte[] value = (byte[]) cell.getData();
-            payload.writeBytes(value);
-            payload.writePadding(value.length);
+            writeFixedLengthTextValue(payload, (byte[]) cell.getData());
             return;
         }
         FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(cell.getColumnType()).write(payload, cell.getData());
+    }
+    
+    private static void writeFixedLengthTextValue(final FirebirdPacketPayload payload, final byte[] value) {
+        payload.writeBytes(value);
+        payload.writePadding(value.length);
     }
     
     /**

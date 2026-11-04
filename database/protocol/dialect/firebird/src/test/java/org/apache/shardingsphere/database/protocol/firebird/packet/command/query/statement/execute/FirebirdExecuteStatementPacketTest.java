@@ -126,9 +126,7 @@ class FirebirdExecuteStatementPacketTest {
     
     @Test
     void assertExecuteStatementPacketWithTextParameter() {
-        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(2).writeByte(0)
-                .writeByte(BlrConstants.blr_text2).writeShortLE(4).writeShortLE(3).writeZero(2)
-                .writeByte(BlrConstants.blr_end);
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(2).writeByte(0).writeByte(BlrConstants.blr_text2).writeShortLE(4).writeShortLE(3).writeZero(2).writeByte(BlrConstants.blr_end);
         FirebirdPacketPayload packetPayload = createExecutePayload(blr);
         packetPayload.writeBytes("foo".getBytes(StandardCharsets.UTF_8));
         packetPayload.writePadding(3);

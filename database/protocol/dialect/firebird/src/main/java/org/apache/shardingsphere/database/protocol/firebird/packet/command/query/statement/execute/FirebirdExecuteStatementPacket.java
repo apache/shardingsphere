@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.firebirdsql.gds.ISCConstants;
 
 import java.util.ArrayList;
@@ -98,20 +99,23 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
         }
     }
     
+    @HighFrequencyInvocation
     private Object readParameterValue(final FirebirdPacketPayload payload, final FirebirdBlrRowMetadata parameterMetadata, final int index) {
         FirebirdBinaryColumnType type = parameterMetadata.getColumnTypes().get(index);
         boolean octets = ISCConstants.CS_BINARY == parameterMetadata.getColumnCharsets().get(index);
         if (FirebirdBinaryColumnType.TEXT == type) {
-            // a text value is sent with the length from BLR and without a length prefix
-            int length = parameterMetadata.getColumnLengths().get(index);
-            ByteBuf value = payload.readBytes(length);
-            payload.skipPadding(length);
-            return octets ? ByteBufUtil.getBytes(value) : value.toString(payload.getCharset());
+            return readFixedLengthTextValue(payload, parameterMetadata.getColumnLengths().get(index), octets);
         }
         if (FirebirdBinaryColumnType.VARYING == type && octets) {
             return ByteBufUtil.getBytes(payload.readBuffer());
         }
         return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(type).read(payload);
+    }
+    
+    private Object readFixedLengthTextValue(final FirebirdPacketPayload payload, final int length, final boolean octets) {
+        ByteBuf value = payload.readBytes(length);
+        payload.skipPadding(length);
+        return octets ? ByteBufUtil.getBytes(value) : value.toString(payload.getCharset());
     }
     
     /**
