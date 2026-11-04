@@ -6320,4 +6320,165 @@
             <dataType value="Array(Nullable(DateTime64(6, 'UTC')))" start-index="33" stop-index="69" length-present="false" />
         </column-definition>
     </create-table>
+    <create-table sql-case-id="create_table_postgresql_data_types">
+        <table name="foo_types" start-index="13" stop-index="21" />
+        <column-definition type="BIGINT" start-index="24" stop-index="44">
+            <column name="foo_bigint" />
+            <dataType value="BIGINT" start-index="35" stop-index="44" length-present="true" scale="0">
+                <dataLength><precision>20</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="INT" start-index="47" stop-index="60">
+            <column name="foo_int" />
+            <dataType value="INT" start-index="55" stop-index="60" length-present="true" scale="0">
+                <dataLength><precision>2</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="63" stop-index="85">
+            <column name="foo_varchar" />
+            <dataType value="VARCHAR" start-index="75" stop-index="85" length-present="true" scale="0">
+                <dataLength><precision>20</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="NUMERIC" start-index="88" stop-index="112">
+            <column name="foo_numeric" />
+            <dataType value="NUMERIC" start-index="100" stop-index="112" length-present="true" scale="2">
+                <dataLength><precision>10</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="DOUBLE PRECISION" start-index="115" stop-index="141">
+            <column name="foo_double" />
+            <dataType value="DOUBLE PRECISION" start-index="126" stop-index="141" length-present="false" />
+        </column-definition>
+        <column-definition type="TIMESTAMP" start-index="144" stop-index="169">
+            <column name="foo_timestamp" />
+            <dataType value="TIMESTAMP" start-index="158" stop-index="169" length-present="true" scale="0">
+                <dataLength><precision>3</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="TIMESTAMP(3)WITHTIMEZONE" start-index="172" stop-index="217">
+            <column name="foo_timestamp_zone" />
+            <dataType value="TIMESTAMP(3)WITHTIMEZONE" start-index="191" stop-index="217" length-present="false" />
+        </column-definition>
+        <column-definition type="foo_schema.foo_type(10)" start-index="220" stop-index="253">
+            <column name="foo_schema" />
+            <dataType value="foo_schema.foo_type(10)" start-index="231" stop-index="253" length-present="false" />
+        </column-definition>
+        <column-definition type="&quot;FooType&quot;" start-index="256" stop-index="279">
+            <column name="foo_quoted" />
+            <dataType value="&quot;FooType&quot;" start-index="267" stop-index="279" length-present="true" scale="0">
+                <dataLength><precision>10</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="INT[]" start-index="282" stop-index="296">
+            <column name="foo_array" />
+            <dataType value="INT[]" start-index="292" stop-index="296" length-present="false" />
+        </column-definition>
+        <column-definition type="CHARACTERVARYING(20)" start-index="299" stop-index="333">
+            <column name="foo_character" />
+            <dataType value="CHARACTERVARYING(20)" start-index="313" stop-index="333" length-present="false" />
+        </column-definition>
+        <column-definition type="BITVARYING(8)" start-index="336" stop-index="357">
+            <column name="foo_bit" />
+            <dataType value="BITVARYING(8)" start-index="344" stop-index="357" length-present="false" />
+        </column-definition>
+        <column-definition type="NUMERIC(10,-2)" start-index="360" stop-index="392">
+            <column name="foo_negative_scale" />
+            <dataType value="NUMERIC(10,-2)" start-index="379" stop-index="392" length-present="false" />
+        </column-definition>
+        <column-definition type="ENUM('a','b')" start-index="395" stop-index="416">
+            <column name="foo_enum" />
+            <dataType value="ENUM('a','b')" start-index="404" stop-index="416" length-present="false" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="419" stop-index="474">
+            <column name="foo_collation" />
+            <dataType value="VARCHAR" start-index="433" stop-index="474" length-present="true" scale="0">
+                <dataLength><precision>20</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="FLOAT" start-index="477" stop-index="494">
+            <column name="foo_float" />
+            <dataType value="FLOAT" start-index="487" stop-index="494" length-present="true" scale="0">
+                <dataLength><precision>5</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="BIT" start-index="497" stop-index="516">
+            <column name="foo_fixed_bit" />
+            <dataType value="BIT" start-index="511" stop-index="516" length-present="true" scale="0">
+                <dataLength><precision>8</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="INT4RANGE" start-index="519" stop-index="541">
+            <column name="foo_range" />
+            <dataType value="INT4RANGE" start-index="529" stop-index="541" length-present="true" scale="0">
+                <dataLength><precision>12</precision></dataLength>
+            </dataType>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_postgresql_type_name_modifiers">
+        <table name="foo_types" start-index="13" stop-index="21" />
+        <column-definition type="DEC(12,2)" start-index="24" stop-index="44">
+            <column name="foo_decimal" />
+            <dataType value="DEC(12,2)" start-index="36" stop-index="44" length-present="false" />
+        </column-definition>
+        <column-definition type="NCHAR(12)" start-index="47" stop-index="65">
+            <column name="foo_nchar" />
+            <dataType value="NCHAR(12)" start-index="57" stop-index="65" length-present="false" />
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_opengauss_type_name_modifiers">
+        <table name="foo_types" start-index="13" stop-index="21" />
+        <column-definition type="DEC" start-index="24" stop-index="44">
+            <column name="foo_decimal" />
+            <dataType value="DEC" start-index="36" stop-index="44" length-present="true" scale="2">
+                <dataLength><precision>12</precision></dataLength>
+            </dataType>
+        </column-definition>
+        <column-definition type="NCHAR" start-index="47" stop-index="65">
+            <column name="foo_nchar" />
+            <dataType value="NCHAR" start-index="57" stop-index="65" length-present="true" scale="0">
+                <dataLength><precision>12</precision></dataLength>
+            </dataType>
+        </column-definition>
+    </create-table>
+    <create-table sql-case-id="create_table_as_select_xmlserialize_postgresql">
+        <table name="foo_xml" start-index="13" stop-index="19" />
+        <select>
+            <projections start-index="31" stop-index="229">
+                <expression-projection text="XMLSERIALIZE(CONTENT '&lt;foo/&gt;' AS pg_catalog.varchar(10))" alias="foo_qualified" start-index="31" stop-index="103">
+                    <expr>
+                        <function function-name="XMLSERIALIZE" text="XMLSERIALIZE(CONTENT '&lt;foo/&gt;' AS pg_catalog.varchar(10))" start-index="31" stop-index="86">
+                            <parameter>
+                                <literal-expression value="&lt;foo/&gt;" start-index="52" stop-index="59" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="10" start-index="83" stop-index="84" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+                <expression-projection text="XMLSERIALIZE(CONTENT '&lt;bar/&gt;' AS &quot;varchar&quot;(12))" alias="foo_quoted" start-index="106" stop-index="166">
+                    <expr>
+                        <function function-name="XMLSERIALIZE" text="XMLSERIALIZE(CONTENT '&lt;bar/&gt;' AS &quot;varchar&quot;(12))" start-index="106" stop-index="152">
+                            <parameter>
+                                <literal-expression value="&lt;bar/&gt;" start-index="127" stop-index="134" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="12" start-index="149" stop-index="150" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+                <expression-projection text="XMLSERIALIZE(CONTENT '&lt;baz/&gt;' AS CHARACTER(20))" alias="foo_native" start-index="169" stop-index="229">
+                    <expr>
+                        <function function-name="XMLSERIALIZE" text="XMLSERIALIZE(CONTENT '&lt;baz/&gt;' AS CHARACTER(20))" start-index="169" stop-index="215">
+                            <parameter>
+                                <literal-expression value="&lt;baz/&gt;" start-index="190" stop-index="197" />
+                            </parameter>
+                        </function>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </create-table>
 </sql-parser-test-cases>
