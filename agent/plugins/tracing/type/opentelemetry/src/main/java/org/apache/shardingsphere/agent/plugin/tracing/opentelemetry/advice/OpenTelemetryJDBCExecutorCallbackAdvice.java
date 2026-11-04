@@ -52,9 +52,33 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
      */
     private static final Map<JDBCExecutionUnit, PendingSpan> PENDING_SPANS = new ConcurrentHashMap<>();
     
+    /**
+     * Keep a pending invocation observable after the plugin is disabled. The executor skips every advice hook of a disabled plugin, so without this
+     * the completion hooks of an invocation whose span is still pending would never run and the span, execution unit and statement would be retained.
+     *
+     * @return true when the plugin is enabled or the current thread owns a pending span
+     */
+    @Override
+    public boolean isPluginEnabled() {
+        return super.isPluginEnabled() || hasPendingSpanOnCurrentThread();
+    }
+    
+    private static boolean hasPendingSpanOnCurrentThread() {
+        Thread currentThread = Thread.currentThread();
+        for (PendingSpan each : PENDING_SPANS.values()) {
+            if (currentThread == each.getThread()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     @Override
     protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread,
                                      final ConnectionProperties connectionProps, final DatabaseType databaseType) {
+        if (!super.isPluginEnabled()) {
+            return;
+        }
         Tracer tracer = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME);
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
         if (null != parentSpan) {
@@ -68,7 +92,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan()));
+        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan(), Thread.currentThread()));
     }
     
     @Override
@@ -119,6 +143,8 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     private static final class PendingSpan {
         
         private final Span span;
+        
+        private final Thread thread;
         
         @Setter
         private Throwable throwable;

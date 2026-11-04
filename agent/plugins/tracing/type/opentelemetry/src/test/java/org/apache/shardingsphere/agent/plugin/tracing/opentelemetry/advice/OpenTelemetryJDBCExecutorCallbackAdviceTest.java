@@ -31,6 +31,8 @@ import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.OpenTelemetryTracingPluginLifecycleService;
@@ -38,12 +40,14 @@ import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.Ope
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.JDBCExecutorCallbackFixture;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -125,11 +129,18 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         parentSpan.end();
         testExporter.reset();
         getPendingSpans().clear();
+        ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
     }
     
     @SuppressWarnings("unchecked")
     private static Map<?, ?> getPendingSpans() throws ReflectiveOperationException {
         return (Map<?, ?>) Plugins.getMemberAccessor().get(OpenTelemetryJDBCExecutorCallbackAdvice.class.getDeclaredField("PENDING_SPANS"), null);
+    }
+    
+    private void setPluginEnabled(final boolean enabled) {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(enabled);
+        ShardingSphereDataSourceContextHolder.put("foo_instance", new ShardingSphereDataSourceContext("foo_db", contextManager));
     }
     
     @Test
@@ -209,6 +220,45 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         assertThat(actualOuterSpan.getAttributes().get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
         assertThat(actualOuterSpan.getStatus().getStatusCode(), is(StatusCode.ERROR));
         assertThat(actualOuterSpan.getEvents().size(), is(1));
+    }
+    
+    /**
+     * The executor skips every advice hook of a disabled plugin. An invocation that started while tracing was enabled must still end its span when
+     * the plugin gets disabled before it completes, instead of retaining it until the plugin stops.
+     */
+    @Test
+    void assertSpanEndsWhenPluginDisabledDuringExecution() throws Exception {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        InstanceMethodAdviceExecutor executor = new InstanceMethodAdviceExecutor(Collections.singletonMap("OpenTelemetry", Collections.singleton(advice)));
+        Method executeMethod = Object.class.getDeclaredMethod("toString");
+        executor.advice(targetObject, executeMethod, new Object[]{executionUnit, false}, () -> {
+            setPluginEnabled(false);
+            return null;
+        });
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(1));
+        assertThat(actualSpanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
+        assertTrue(getPendingSpans().isEmpty());
+    }
+    
+    /**
+     * The same completion path must keep the failure outcome of an invocation that throws while the plugin is disabled.
+     */
+    @Test
+    void assertSpanRecordsFailureWhenPluginDisabledDuringExecution() throws Exception {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        InstanceMethodAdviceExecutor executor = new InstanceMethodAdviceExecutor(Collections.singletonMap("OpenTelemetry", Collections.singleton(advice)));
+        Method executeMethod = Object.class.getDeclaredMethod("toString");
+        assertThrows(IOException.class, () -> executor.advice(targetObject, executeMethod, new Object[]{executionUnit, false}, () -> {
+            setPluginEnabled(false);
+            throw new IOException("mock");
+        }));
+        Collection<SpanData> actualSpanItems = testExporter.getFinishedSpanItems();
+        assertThat(actualSpanItems.size(), is(1));
+        SpanData actualSpan = actualSpanItems.iterator().next();
+        assertThat(actualSpan.getStatus().getStatusCode(), is(StatusCode.ERROR));
+        assertThat(actualSpan.getEvents().size(), is(1));
+        assertTrue(getPendingSpans().isEmpty());
     }
     
     /**
