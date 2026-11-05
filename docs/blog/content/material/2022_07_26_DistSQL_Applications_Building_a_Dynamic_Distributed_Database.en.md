@@ -126,7 +126,7 @@ Next, we’ll adopt regular sharding and use the `INLINE` expression algorithm t
 
 **Primary key generator**
 
-The primary key generator can generate a secure and unique primary key for a data table in a distributed scenario. For details, refer to the document [Distributed Primary Key](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/key-generator/).
+The primary key generator can generate a secure and unique primary key for a data table in a distributed scenario. For details, refer to the document [Distributed Primary Key](https://shardingsphere.apache.org/document/5.1.2/en/features/sharding/concept/key-generator/).
 
 1.Create the primary key generator.
 
@@ -182,7 +182,7 @@ mysql> SHOW SHARDING ALGORITHMS;
 ```
 **Default sharding strategy**
 
-Sharding strategy consists of sharding key and sharding algorithm. Please refer to [Sharding Strategy](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/) for its concept.
+Sharding strategy consists of sharding key and sharding algorithm. Please refer to [Sharding Strategy](https://shardingsphere.apache.org/document/5.1.2/en/features/sharding/concept/sharding/) for its concept.
 
 Sharding strategy consists of `databaseStrategy` and `tableStrategy`.
 
@@ -486,11 +486,11 @@ If you have any questions or suggestions about [Apache ShardingSphere](https://s
 
 ## References
 
-1. [Concept-DistSQL](https://shardingsphere.apache.org/document/current/en/concepts/distsql/)
+1. [Concept-DistSQL](https://shardingsphere.apache.org/document/5.1.2/en/concepts/distsql/)
 
-2. [Concept-Distributed Primary Key](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/key-generator/)
+2. [Concept-Distributed Primary Key](https://shardingsphere.apache.org/document/5.1.2/en/features/sharding/concept/key-generator/)
 
-3. [Concept-Sharding Strategy](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/sharding/)
+3. [Concept-Sharding Strategy](https://shardingsphere.apache.org/document/5.1.2/en/features/sharding/concept/sharding/)
 
 4. [Concept INLINE Expression
 ](https://shardingsphere.apache.org/document/current/en/features/sharding/concept/inline-expression/)

@@ -42,7 +42,7 @@ Based on the situation described above, Dangdang’s tech team proposed a wareho
 
 However, at that time, there wasn’t a versatile and mature enough open source database middleware living up to Dangdang’s expectations, so they created one and named it Sharding-JDBC.
 
-[ShardingSphere-JDBC](https://shardingsphere.apache.org/document/current/en/concepts/adaptor/#shardingsphere-jdbc) is positioned as a lightweight Java framework that provides additional services at the Java Database Connectivity (JDBC) layer. It is lightweight, efficient, easy to use, and compatible.
+[ShardingSphere-JDBC](https://shardingsphere.apache.org/document/5.1.0/en/concepts/adaptor/#shardingsphere-jdbc) is positioned as a lightweight Java framework that provides additional services at the Java Database Connectivity (JDBC) layer. It is lightweight, efficient, easy to use, and compatible.
 
 With ShardingSphere providing services in the form of the `.jar` files package, users can connect the client directly to the database without additional deployment and dependencies. It can be seen as an enhanced JDBC driver, fully compatible with JDBC and all ORM frameworks.
 
