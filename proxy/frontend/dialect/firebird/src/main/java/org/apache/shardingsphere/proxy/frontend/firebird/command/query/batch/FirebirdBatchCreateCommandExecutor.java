@@ -76,10 +76,6 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(statementId));
         int connectionId = connectionSession.getConnectionId();
         ShardingSpherePreconditions.checkState(null == FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId), () -> new BatchAlreadyOpenedException(statementId));
-        if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
-            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, packet.getBatchBlr());
-            throw new InvalidBatchStatementTypeException();
-        }
         ByteBuf batchBlr = packet.getBatchBlr();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes());
         ShardingSpherePreconditions.checkNotEmpty(messageFormat.getFields(), () -> new BatchParametersRequiredException(statementId));
@@ -88,6 +84,10 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                     String.format("invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength()));
         }
         BatchParameters batchParameters = BatchParameters.parse(packet.getBatchParametersBuffer());
+        if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
+            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, packet.getBatchBlr());
+            throw new InvalidBatchStatementTypeException();
+        }
         FirebirdBatchStatementManager.getInstance().registerBatchStatement(
                 connectionId, statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));

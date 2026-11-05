@@ -23,6 +23,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.List;
@@ -118,6 +119,7 @@ public final class FirebirdBatchRegistry {
      * @param statementId statement ID
      * @return message format, or {@code null} if no format is available
      */
+    @HighFrequencyInvocation
     public List<FirebirdBatchColumnDescriptor> getMessageFormat(final int connectionId, final int statementId) {
         ConnectionBatches batches = batchRegistry.get(connectionId);
         if (null == batches) {
