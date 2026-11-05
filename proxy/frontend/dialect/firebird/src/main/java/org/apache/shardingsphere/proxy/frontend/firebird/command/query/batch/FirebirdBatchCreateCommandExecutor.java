@@ -76,6 +76,11 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(statementId));
         int connectionId = connectionSession.getConnectionId();
         ShardingSpherePreconditions.checkState(null == FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId), () -> new BatchAlreadyOpenedException(statementId));
+        if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
+            BatchParameters.validateVersion(packet.getBatchParametersBuffer());
+            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, packet.getBatchBlr());
+            throw new InvalidBatchStatementTypeException();
+        }
         ByteBuf batchBlr = packet.getBatchBlr();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes());
         ShardingSpherePreconditions.checkNotEmpty(messageFormat.getFields(), () -> new BatchParametersRequiredException(statementId));
@@ -84,10 +89,6 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                     String.format("invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength()));
         }
         BatchParameters batchParameters = BatchParameters.parse(packet.getBatchParametersBuffer());
-        if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
-            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, packet.getBatchBlr());
-            throw new InvalidBatchStatementTypeException();
-        }
         FirebirdBatchStatementManager.getInstance().registerBatchStatement(
                 connectionId, statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
@@ -106,12 +107,12 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         private final boolean multiError;
         
         static BatchParameters parse(final ByteBuf batchParametersBuffer) {
+            int version = validateVersion(batchParametersBuffer);
             if (!batchParametersBuffer.isReadable()) {
-                return new BatchParameters(BATCH_VERSION_1, DEFAULT_BUFFER_SIZE, false, false);
+                return new BatchParameters(version, DEFAULT_BUFFER_SIZE, false, false);
             }
             ByteBuf reader = batchParametersBuffer.duplicate();
-            int version = reader.readUnsignedByte();
-            ShardingSpherePreconditions.checkState(BATCH_VERSION_1 == version, () -> new InvalidBatchParameterVersionException(version, BATCH_VERSION_1));
+            reader.skipBytes(1);
             long bufferSize = DEFAULT_BUFFER_SIZE;
             boolean recordCounts = false;
             boolean multiError = false;
@@ -134,6 +135,12 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
                 }
             }
             return new BatchParameters(version, bufferSize, recordCounts, multiError);
+        }
+        
+        private static int validateVersion(final ByteBuf batchParametersBuffer) {
+            int result = batchParametersBuffer.isReadable() ? batchParametersBuffer.getUnsignedByte(batchParametersBuffer.readerIndex()) : BATCH_VERSION_1;
+            ShardingSpherePreconditions.checkState(BATCH_VERSION_1 == result, () -> new InvalidBatchParameterVersionException(result, BATCH_VERSION_1));
+            return result;
         }
         
         private static long getBufferSize(final int requestedBufferSize) {

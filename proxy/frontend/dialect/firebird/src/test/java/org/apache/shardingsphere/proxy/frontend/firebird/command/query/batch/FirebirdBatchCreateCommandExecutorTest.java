@@ -181,7 +181,6 @@ class FirebirdBatchCreateCommandExecutorTest {
         mockPreparedStatement();
         when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
         when(packet.getBatchBlr()).thenReturn(createBatchBlr());
-        when(packet.getBatchMessageLength()).thenReturn(6L);
         when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
         assertThrows(InvalidBatchStatementTypeException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
@@ -191,13 +190,23 @@ class FirebirdBatchCreateCommandExecutorTest {
     @Test
     void assertExecuteWithSelectAndInvalidParameterVersion() {
         mockPreparedStatement();
-        lenient().when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        when(packet.getBatchBlr()).thenReturn(createBatchBlr());
-        when(packet.getBatchMessageLength()).thenReturn(6L);
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        lenient().when(packet.getBatchBlr()).thenReturn(createBatchBlr());
         when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{2}));
         assertThrows(InvalidBatchParameterVersionException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
         assertNull(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWithSelectWithoutParameters() {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
+        assertThrows(InvalidBatchStatementTypeException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertTrue(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).isEmpty());
     }
     
     @Test
