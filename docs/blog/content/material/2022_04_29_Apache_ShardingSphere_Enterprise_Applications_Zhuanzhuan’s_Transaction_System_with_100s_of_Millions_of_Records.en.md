@@ -51,7 +51,7 @@ Advantages of ShardingSphere:
 
 ShardingSphere initiated the Database Plus concept and adopts a plugin oriented architecture where all modules are independent of each other, allowing each to be used individually or flexibly combined.
 
-It consists of three products, namely [JDBC](https://shardingsphere.apache.org/), [Proxy](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy) and [Sidecar ](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-sidecartodo)(Planning), which supports both independent and hybrid deployment.
+It consists of three products, namely [JDBC](https://shardingsphere.apache.org/), [Proxy](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy) and [Sidecar ](https://shardingsphere.apache.org/document/5.1.1/en/overview/#shardingsphere-sidecartodo)(Planning), which supports both independent and hybrid deployment.
 
 Below is a feature comparison of the three products:
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/7517wpdgk6gmgb0s8202.png)

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -32,13 +33,20 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -48,8 +56,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class SimpleTableSegmentBinderTest {
@@ -57,6 +68,32 @@ class SimpleTableSegmentBinderTest {
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final DatabaseType hiveDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
+    
+    @ParameterizedTest(name = "alias={0}")
+    @ValueSource(strings = {"", "gp_alias", "\"GP Alias\""})
+    void assertBindExternalTableProjectionOwner(final String alias) {
+        IdentifierValue tableName = new IdentifierValue("cte_orders");
+        IdentifierValue expectedOwner = alias.isEmpty() ? tableName : new IdentifierValue(alias);
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 9, tableName));
+        if (!alias.isEmpty()) {
+            segment.setAlias(new AliasSegment(11, 11 + alias.length() - 1, expectedOwner));
+        }
+        SQLStatementBinderContext context = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(),
+                SelectStatement.builder().databaseType(databaseType).build(), Collections.emptyList());
+        SimpleTableSegmentBinderContext externalContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        externalContext.setFromWithSegment(true);
+        context.getExternalTableBinderContexts().put(CaseInsensitiveString.of(tableName.getValue()), externalContext);
+        ProjectionSegment projection = new ColumnProjectionSegment(new ColumnSegment(0, 6, new IdentifierValue("user_id")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedStatic<SubqueryTableBindUtils> ignored = mockStatic(SubqueryTableBindUtils.class)) {
+            ignored.when(() -> SubqueryTableBindUtils.createSubqueryProjections(anyCollection(), eq(expectedOwner), eq(databaseType), eq(TableSourceType.TEMPORARY_TABLE)))
+                    .thenReturn(Collections.singletonList(projection));
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.get(CaseInsensitiveString.of(expectedOwner.getValue())).iterator().next();
+            assertThat(actual.getProjectionSegments().iterator().next(), is(projection));
+            assertTrue(actual.isFromWithSegment());
+        }
+    }
     
     @SuppressWarnings("resource")
     @Test

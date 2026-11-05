@@ -96,7 +96,7 @@ public final class PostgreSQLConstraintsPropertiesAppender {
         if (column.endsWith("\"")) {
             result = result.substring(0, result.length() - 1);
         }
-        return result;
+        return result.replace("\"\"", "\"");
     }
     
     private Collection<Map<String, Object>> fetchConstraintsCols(final Map<String, Object> constraintColProps) {
@@ -159,7 +159,7 @@ public final class PostgreSQLConstraintsPropertiesAppender {
         for (Map<String, Object> each : result) {
             Collection<Map<String, Object>> columns = new LinkedList<>();
             Set<String> cols = new HashSet<>();
-            for (Map<String, Object> col : getForeignKeysCols(tid, each)) {
+            for (Map<String, Object> col : getForeignKeysCols(each)) {
                 Map<String, Object> foreignKeysRef = new HashMap<>(4, 1F);
                 foreignKeysRef.put("local_column", col.get("conattname"));
                 foreignKeysRef.put("references", each.get("confrelid"));
@@ -185,14 +185,8 @@ public final class PostgreSQLConstraintsPropertiesAppender {
         foreignKey.put("remote_table", parents.get("table"));
     }
     
-    private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreignKeyProps) {
-        Map<String, Object> params = new HashMap<>(2, 1F);
-        params.put("tid", tid);
-        Map<String, Object> key = new HashMap<>(2, 1F);
-        key.put("confkey", foreignKeyProps.get("confkey"));
-        key.put("conkey", foreignKeyProps.get("conkey"));
-        params.put("keys", Collections.singleton(key));
-        return templateExecutor.executeByTemplate(params, "component/foreign_key/%s/get_constraint_cols.ftl");
+    private Collection<Map<String, Object>> getForeignKeysCols(final Map<String, Object> foreignKeyProps) {
+        return templateExecutor.executeByTemplate(Collections.singletonMap("cid", foreignKeyProps.get("oid")), "component/foreign_key/%s/get_constraint_cols.ftl");
     }
     
     private boolean isPartitionAndConstraintInherited(final Map<String, Object> constraint, final Map<String, Object> context) {

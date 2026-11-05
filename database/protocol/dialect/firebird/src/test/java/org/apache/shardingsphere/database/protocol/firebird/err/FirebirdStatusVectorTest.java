@@ -102,6 +102,21 @@ class FirebirdStatusVectorTest {
     }
     
     @Test
+    void assertWriteSqldaError() {
+        FirebirdStatusVector actual = new FirebirdStatusVector(new SQLException("", "07002", ISCConstants.isc_dsql_sqlda_err));
+        actual.write((PacketPayload) payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_sqlerr);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(-804);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_dsql_sqlda_err);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
     void assertWriteWithNullMessage() {
         FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException(null, "28000", ISCConstants.isc_login));
         assertThat(vector.getErrorMessage(), is(""));
