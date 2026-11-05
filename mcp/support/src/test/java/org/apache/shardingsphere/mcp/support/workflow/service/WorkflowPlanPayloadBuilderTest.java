@@ -44,6 +44,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WorkflowPlanPayloadBuilderTest {
     
     @Test
+    void assertBuildWithPreviewedPlan() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_PREVIEWED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        assertThat(actual.get("summary"), is("Workflow plan `plan-1` for mask.rule is `previewed`."));
+        assertThat(actual.get("status"), is(WorkflowLifecycle.STATUS_PREVIEWED));
+    }
+    
+    @Test
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");

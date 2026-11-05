@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierCon
 import org.apache.shardingsphere.mcp.support.database.metadata.TransactionCapability;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseProfile;
 
-import java.util.LinkedHashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 /**
@@ -65,12 +65,8 @@ public final class MCPDatabaseCapability {
     }
     
     private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseCapabilityOption option) {
-        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
-        result.add(SupportedMCPMetadataObjectType.SCHEMA);
-        result.add(SupportedMCPMetadataObjectType.TABLE);
-        result.add(SupportedMCPMetadataObjectType.VIEW);
-        result.add(SupportedMCPMetadataObjectType.COLUMN);
-        result.add(SupportedMCPMetadataObjectType.INDEX);
+        Set<SupportedMCPMetadataObjectType> result = EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW,
+                SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX);
         if (option.getSequenceQuery().isPresent()) {
             result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }
@@ -78,11 +74,7 @@ public final class MCPDatabaseCapability {
     }
     
     private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean explainSupported) {
-        Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
-        result.add(SupportedMCPStatement.QUERY);
-        result.add(SupportedMCPStatement.DML);
-        result.add(SupportedMCPStatement.DDL);
-        result.add(SupportedMCPStatement.DCL);
+        Set<SupportedMCPStatement> result = EnumSet.of(SupportedMCPStatement.QUERY, SupportedMCPStatement.DML, SupportedMCPStatement.DDL, SupportedMCPStatement.DCL);
         if (TransactionCapability.NONE != transactionCapability) {
             result.add(SupportedMCPStatement.TRANSACTION_CONTROL);
         }

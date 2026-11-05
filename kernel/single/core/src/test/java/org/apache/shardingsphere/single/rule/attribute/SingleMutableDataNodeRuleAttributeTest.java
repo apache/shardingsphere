@@ -132,6 +132,22 @@ class SingleMutableDataNodeRuleAttributeTest {
         assertTrue(tableMapperRuleAttribute.getLogicTableNames().isEmpty());
     }
     
+    @Test
+    void assertRemoveWithCaseInsensitiveTableNames() {
+        Collection<DataNode> initialDataNodes = Arrays.asList(new DataNode("foo_ds", "foo_schema", "Foo_Tbl"), new DataNode("foo_ds", "foo_schema", "FOO_TBL"));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(new LinkedList<>(createDataNodeStrings(initialDataNodes)), null);
+        Map<String, Collection<DataNode>> singleTableDataNodes = new LinkedHashMap<>(2, 1F);
+        for (DataNode each : initialDataNodes) {
+            singleTableDataNodes.put(each.getTableName(), new LinkedHashSet<>(Collections.singleton(each)));
+        }
+        SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
+        SingleMutableDataNodeRuleAttribute ruleAttribute = createRuleAttribute(ruleConfig, Collections.singleton("foo_ds"), singleTableDataNodes, tableMapperRuleAttribute);
+        ruleAttribute.remove(Collections.singleton("foo_schema"), "foo_tbl");
+        assertTrue(singleTableDataNodes.isEmpty());
+        assertTrue(ruleConfig.getTables().isEmpty());
+        assertTrue(tableMapperRuleAttribute.getLogicTableNames().isEmpty());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("findTableDataNodeArguments")
     void assertFindTableDataNode(final String name, final Collection<DataNode> initialDataNodes, final String schemaName, final String tableName,

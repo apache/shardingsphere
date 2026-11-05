@@ -122,7 +122,6 @@ class DistSQLUpdateProxyBackendHandlerTest {
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.containsSchema(new IdentifierValue("foo_db"))).thenReturn(true);
         when(database.getSchema(new IdentifierValue("foo_db"))).thenReturn(schema);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
@@ -136,7 +135,8 @@ class DistSQLUpdateProxyBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.containsSchema(any(IdentifierValue.class))).thenReturn(true);
+        when(database.getDefaultSchemaName()).thenReturn("foo_schema");
+        when(database.getSchema(new IdentifierValue("foo_schema"))).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement();

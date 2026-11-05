@@ -39,7 +39,6 @@ import org.junit.jupiter.api.Test;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -386,7 +385,7 @@ class SearchMetadataToolHandlerTest {
     }
     
     private List<DatabaseMetadataFixture> createLargeDatabaseMetadata() {
-        List<TableMetadataFixture> tables = IntStream.range(0, 101).mapToObj(index -> ResourceTestDataFactory.createTable("table_" + index, List.of(), List.of())).collect(Collectors.toList());
+        List<TableMetadataFixture> tables = IntStream.range(0, 101).mapToObj(index -> ResourceTestDataFactory.createTable("table_" + index, List.of(), List.of())).toList();
         return List.of(ResourceTestDataFactory.createDatabase("large_db", "MySQL", "", List.of(ResourceTestDataFactory.createSchema("public", tables, List.of(), List.of()))));
     }
     

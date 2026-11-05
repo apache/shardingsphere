@@ -36,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBlobHandleGeneratorTest {
     
+    private static final FirebirdBlobHandleGenerator GENERATOR = FirebirdBlobHandleGenerator.getInstance();
+    
     private static final int CONNECTION_ID = 91;
     
     private static final int INVALID_OBJECT_HANDLE = 0xFFFF;
@@ -44,146 +46,135 @@ class FirebirdBlobHandleGeneratorTest {
     
     @BeforeEach
     void setUp() {
-        FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
+        GENERATOR.registerConnection(CONNECTION_ID);
     }
     
     @AfterEach
     void tearDown() {
-        FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        GENERATOR.unregisterConnection(CONNECTION_ID);
     }
     
     @Test
     void assertNextBlobHandleIncrements() {
-        assertThat(FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID), is(1));
-        assertThat(FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID), is(2));
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(1));
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(2));
     }
     
     @Test
     void assertNextBlobHandleWhenAllHandlesAreActive() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        int firstHandle = generator.nextBlobHandle(CONNECTION_ID);
-        assertThat(firstHandle, is(1));
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(1));
         for (int i = 1; i < MAX_OBJECT_HANDLE; i++) {
-            generator.nextBlobHandle(CONNECTION_ID);
+            GENERATOR.nextBlobHandle(CONNECTION_ID);
         }
-        assertThrows(DatabaseProtocolException.class, () -> generator.nextBlobHandle(CONNECTION_ID));
+        assertThrows(DatabaseProtocolException.class, () -> GENERATOR.nextBlobHandle(CONNECTION_ID));
     }
     
     @Test
     void assertNextBlobHandleWhenConnectionIsNotRegistered() {
-        FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID));
+        GENERATOR.unregisterConnection(CONNECTION_ID);
+        assertThrows(DatabaseProtocolException.class, () -> GENERATOR.nextBlobHandle(CONNECTION_ID));
     }
     
     @Test
     void assertNextBlobHandleReusesReleasedHandle() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        generator.nextBlobHandle(CONNECTION_ID);
-        int releasedHandle = generator.nextBlobHandle(CONNECTION_ID);
-        int lastHandle = generator.nextBlobHandle(CONNECTION_ID);
-        generator.releaseBlobHandle(CONNECTION_ID, releasedHandle);
-        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(releasedHandle));
-        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(lastHandle + 1));
+        GENERATOR.nextBlobHandle(CONNECTION_ID);
+        int releasedHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        int lastHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.releaseBlobHandle(CONNECTION_ID, releasedHandle);
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(releasedHandle));
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(lastHandle + 1));
     }
     
     @Test
     void assertNextBlobHandleReusesLowestReleasedHandle() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        int lowestHandle = generator.nextBlobHandle(CONNECTION_ID);
-        generator.nextBlobHandle(CONNECTION_ID);
-        int highestHandle = generator.nextBlobHandle(CONNECTION_ID);
-        generator.releaseBlobHandle(CONNECTION_ID, lowestHandle);
-        generator.releaseBlobHandle(CONNECTION_ID, highestHandle);
-        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(lowestHandle));
-        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(highestHandle));
+        int lowestHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.nextBlobHandle(CONNECTION_ID);
+        int highestHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.releaseBlobHandle(CONNECTION_ID, lowestHandle);
+        GENERATOR.releaseBlobHandle(CONNECTION_ID, highestHandle);
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(lowestHandle));
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(highestHandle));
     }
     
     @Test
     void assertResolveBlobHandleWithRegularHandleExpectsSameHandle() {
-        assertThat(FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(CONNECTION_ID, 5), is(5));
+        assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, 5), is(5));
     }
     
     @Test
     void assertResolveBlobHandleWithPlaceholderExpectsLastGeneratedHandle() {
-        FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
-        int expected = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
-        assertThat(FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(expected));
+        GENERATOR.nextBlobHandle(CONNECTION_ID);
+        int expected = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(expected));
     }
     
     @Test
     void assertResolveBlobHandleWithPlaceholderAndNoGeneratedHandleExpectsPlaceholder() {
-        assertThat(FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
+        assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
     }
     
     @Test
     void assertResolveBlobHandleWithPlaceholderAndUnknownConnectionExpectsPlaceholder() {
-        assertThat(FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(92, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
+        assertThat(GENERATOR.resolveBlobHandle(92, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
     }
     
     @Test
     void assertIsAllocatedWithActiveHandle() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        assertTrue(generator.isAllocated(CONNECTION_ID, generator.nextBlobHandle(CONNECTION_ID)));
+        assertTrue(GENERATOR.isAllocated(CONNECTION_ID, GENERATOR.nextBlobHandle(CONNECTION_ID)));
     }
     
     @Test
     void assertIsAllocatedAfterRelease() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        int blobHandle = generator.nextBlobHandle(CONNECTION_ID);
-        generator.releaseBlobHandle(CONNECTION_ID, blobHandle);
-        assertFalse(generator.isAllocated(CONNECTION_ID, blobHandle));
+        int blobHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.releaseBlobHandle(CONNECTION_ID, blobHandle);
+        assertFalse(GENERATOR.isAllocated(CONNECTION_ID, blobHandle));
     }
     
     @Test
     void assertIsAllocatedWhenConnectionIsNotRegistered() {
-        assertFalse(FirebirdBlobHandleGenerator.getInstance().isAllocated(92, 1));
+        assertFalse(GENERATOR.isAllocated(92, 1));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidBlobHandleProvider")
     void assertIsAllocatedWhenHandleIsOutsideValidRange(final String name, final int blobHandle) {
-        assertFalse(FirebirdBlobHandleGenerator.getInstance().isAllocated(CONNECTION_ID, blobHandle));
+        assertFalse(GENERATOR.isAllocated(CONNECTION_ID, blobHandle));
     }
     
     @Test
     void assertReleaseBlobHandleClearsLastBlobHandle() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        int blobHandle = generator.nextBlobHandle(CONNECTION_ID);
-        generator.releaseBlobHandle(CONNECTION_ID, blobHandle);
-        assertThat(generator.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
-        assertThat(generator.nextBlobHandle(CONNECTION_ID), is(blobHandle));
+        int blobHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.releaseBlobHandle(CONNECTION_ID, blobHandle);
+        assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(blobHandle));
     }
     
     @Test
     void assertReleaseBlobHandleKeepsLastActiveBlobHandle() {
-        FirebirdBlobHandleGenerator generator = FirebirdBlobHandleGenerator.getInstance();
-        int blobHandle = generator.nextBlobHandle(CONNECTION_ID);
-        int expected = generator.nextBlobHandle(CONNECTION_ID);
-        generator.releaseBlobHandle(CONNECTION_ID, blobHandle);
-        assertThat(generator.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(expected));
+        int blobHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        int expected = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.releaseBlobHandle(CONNECTION_ID, blobHandle);
+        assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(expected));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("invalidBlobHandleProvider")
     void assertReleaseBlobHandleWhenHandleIsOutsideValidRange(final String name, final int blobHandle) {
-        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
+        assertThrows(DatabaseProtocolException.class, () -> GENERATOR.releaseBlobHandle(CONNECTION_ID, blobHandle));
     }
     
     @Test
     void assertReleaseBlobHandleWhenHandleIsNotActive() {
-        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, 1));
+        assertThrows(DatabaseProtocolException.class, () -> GENERATOR.releaseBlobHandle(CONNECTION_ID, 1));
     }
     
     @Test
     void assertReleaseBlobHandleWhenConnectionIsNotRegistered() {
-        FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
-        assertDoesNotThrow(() -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, 1));
+        GENERATOR.unregisterConnection(CONNECTION_ID);
+        assertDoesNotThrow(() -> GENERATOR.releaseBlobHandle(CONNECTION_ID, 1));
     }
     
     private static Stream<Arguments> invalidBlobHandleProvider() {
-        return Stream.of(
-                Arguments.of("negative handle", -1),
-                Arguments.of("zero handle", 0),
-                Arguments.of("deferred handle", INVALID_OBJECT_HANDLE));
+        return Stream.of(Arguments.of("negative handle", -1), Arguments.of("zero handle", 0), Arguments.of("deferred handle", INVALID_OBJECT_HANDLE));
     }
 }

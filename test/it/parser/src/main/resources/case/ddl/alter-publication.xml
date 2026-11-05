@@ -23,4 +23,9 @@
     <alter-publication sql-case-id="alter_publication_add_table" />
     <alter-publication sql-case-id="alter_publication_drop_table" />
     <alter-publication sql-case-id="alter_publication_set_definition" />
+    <alter-publication sql-case-id="alter_publication_add_schema_pg" />
+    <alter-publication sql-case-id="alter_publication_set_filter_pg" />
+    <alter-publication sql-case-id="alter_publication_drop_schema_pg" />
+    <alter-publication sql-case-id="alter_publication_all_sequences_pg" />
+    <alter-publication sql-case-id="alter_publication_all_except_pg" />
 </sql-parser-test-cases>

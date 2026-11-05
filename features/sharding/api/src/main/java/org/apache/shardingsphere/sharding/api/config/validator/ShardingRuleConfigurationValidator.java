@@ -65,21 +65,19 @@ public final class ShardingRuleConfigurationValidator implements ConstraintValid
         if (null == strategyConfig || ruleConfig.getKeyGenerators().containsKey(strategyConfig.getKeyGeneratorName())) {
             return true;
         }
-        return addViolation(propertyName, String.format("references unconfigured key generator `%s`", strategyConfig.getKeyGeneratorName()), context);
+        return addViolation(propertyName, "references an unconfigured key generator", context);
     }
     
     private boolean areKeyGenerateStrategiesValid(final ShardingRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
-        return ruleConfig.getKeyGenerateStrategies().entrySet().stream().allMatch(entry -> isKeyGenerateStrategiesValid(entry.getKey(), entry.getValue(), ruleConfig, context));
+        return ruleConfig.getKeyGenerateStrategies().values().stream().allMatch(each -> isKeyGenerateStrategiesValid(each, ruleConfig, context));
     }
     
-    private boolean isKeyGenerateStrategiesValid(final String strategyName, final KeyGenerateStrategiesConfiguration strategyConfig,
-                                                 final ShardingRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
+    private boolean isKeyGenerateStrategiesValid(final KeyGenerateStrategiesConfiguration strategyConfig, final ShardingRuleConfiguration ruleConfig, final ConstraintValidatorContext context) {
         if (!(strategyConfig instanceof ColumnKeyGenerateStrategiesRuleConfiguration) && !(strategyConfig instanceof SequenceKeyGenerateStrategiesRuleConfiguration)) {
-            return addViolation("keyGenerateStrategies", String.format("strategy `%s` must use column or sequence key generation", strategyName), context);
+            return addViolation("keyGenerateStrategies", "must use column or sequence key generation", context);
         }
         if (!ruleConfig.getKeyGenerators().containsKey(strategyConfig.getKeyGeneratorName())) {
-            return addViolation("keyGenerateStrategies", String.format("strategy `%s` references unconfigured key generator `%s`",
-                    strategyName, strategyConfig.getKeyGeneratorName()), context);
+            return addViolation("keyGenerateStrategies", "references an unconfigured key generator", context);
         }
         return true;
     }
@@ -89,9 +87,8 @@ public final class ShardingRuleConfigurationValidator implements ConstraintValid
         if (null == strategyConfig) {
             return true;
         }
-        return strategyConfig.getAuditorNames().stream()
-                .filter(each -> !ruleConfig.getAuditors().containsKey(each)).findFirst()
-                .map(each -> addViolation(propertyName, String.format("references unconfigured auditor `%s`", each), context)).orElse(true);
+        return strategyConfig.getAuditorNames().stream().filter(each -> !ruleConfig.getAuditors().containsKey(each)).findFirst()
+                .map(optional -> addViolation(propertyName, "references an unconfigured auditor", context)).orElse(true);
     }
     
     private boolean isShardingStrategyValid(final ShardingStrategyConfiguration strategyConfig, final String propertyName,
@@ -99,7 +96,7 @@ public final class ShardingRuleConfigurationValidator implements ConstraintValid
         if (null == strategyConfig || strategyConfig instanceof NoneShardingStrategyConfiguration || ruleConfig.getShardingAlgorithms().containsKey(strategyConfig.getShardingAlgorithmName())) {
             return true;
         }
-        return addViolation(propertyName, String.format("references unconfigured sharding algorithm `%s`", strategyConfig.getShardingAlgorithmName()), context);
+        return addViolation(propertyName, "references an unconfigured sharding algorithm", context);
     }
     
     private boolean addViolation(final String propertyName, final String message, final ConstraintValidatorContext context) {

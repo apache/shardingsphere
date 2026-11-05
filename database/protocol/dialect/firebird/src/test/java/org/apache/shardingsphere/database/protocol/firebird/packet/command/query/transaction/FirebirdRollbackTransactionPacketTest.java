@@ -52,7 +52,6 @@ class FirebirdRollbackTransactionPacketTest {
     
     @Test
     void assertWrite() {
-        when(payload.readInt4()).thenReturn(456);
         FirebirdRollbackTransactionPacket packet = new FirebirdRollbackTransactionPacket(payload);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);

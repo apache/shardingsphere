@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -28,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierCon
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.jspecify.annotations.Nullable;
 
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Pipeline SQL segment builder.
@@ -73,6 +74,23 @@ public final class PipelineSQLSegmentBuilder {
     }
     
     /**
+     * Get escaped parsed identifier with a decoded value.
+     *
+     * @param identifierScope identifier scope
+     * @param identifier parsed identifier
+     * @return escaped identifier
+     */
+    @HighFrequencyInvocation
+    public String getEscapedIdentifier(final IdentifierScope identifierScope, final IdentifierValue identifier) {
+        return escapeActualIdentifier(identifierContext.normalizeStorage(identifierScope, identifier));
+    }
+    
+    private String escapeActualIdentifier(final String identifier) {
+        QuoteCharacter quoteCharacter = dialectDatabaseMetaData.getQuoteCharacter();
+        return quoteCharacter.wrap(identifier.replace(quoteCharacter.getEndDelimiter(), quoteCharacter.getEndDelimiter().concat(quoteCharacter.getEndDelimiter())));
+    }
+    
+    /**
      * Normalize a reference for storage, including names persisted for later cleanup.
      *
      * @param identifierScope identifier scope
@@ -81,7 +99,13 @@ public final class PipelineSQLSegmentBuilder {
      */
     @HighFrequencyInvocation
     public String normalizeStorageIdentifier(final IdentifierScope identifierScope, final String identifier) {
-        return identifierContext.normalizeStorage(identifierScope, new IdentifierValue(identifier));
+        IdentifierValue identifierValue = new IdentifierValue(identifier);
+        QuoteCharacter quoteCharacter = identifierValue.getQuoteCharacter();
+        if (QuoteCharacter.NONE != quoteCharacter && QuoteCharacter.BACK_QUOTE != quoteCharacter) {
+            String delimiter = quoteCharacter.getEndDelimiter();
+            identifierValue = new IdentifierValue(identifierValue.getValue().replace(delimiter.concat(delimiter), delimiter), quoteCharacter);
+        }
+        return identifierContext.normalizeStorage(identifierScope, identifierValue);
     }
     
     /**
@@ -92,7 +116,7 @@ public final class PipelineSQLSegmentBuilder {
      */
     @HighFrequencyInvocation
     public String getEscapedActualIdentifier(final String identifier) {
-        return "*".equals(identifier) ? identifier : dialectDatabaseMetaData.getQuoteCharacter().wrap(identifier);
+        return "*".equals(identifier) ? identifier : escapeActualIdentifier(identifier);
     }
     
     /**
@@ -131,7 +155,7 @@ public final class PipelineSQLSegmentBuilder {
         return buildQualifiedTableName(schemaName, tableName, this::getEscapedActualIdentifier);
     }
     
-    private String buildQualifiedTableName(final String schemaName, final String tableName, final Function<String, String> identifierEscaper) {
+    private String buildQualifiedTableName(final String schemaName, final String tableName, final UnaryOperator<String> identifierEscaper) {
         StringBuilder result = new StringBuilder();
         if (dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
             result.append(identifierEscaper.apply(schemaName)).append('.');

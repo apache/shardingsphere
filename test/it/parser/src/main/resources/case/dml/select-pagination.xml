@@ -2084,6 +2084,35 @@
         </from>
     </select>
 
+    <select sql-case-id="select_pagination_with_offset_and_fetch_firebird">
+        <limit start-index="22" stop-index="64">
+            <offset value="100000" start-index="29" stop-index="34" />
+            <row-count value="10" start-index="53" stop-index="54" />
+        </limit>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_pagination_with_order_by_offset_and_fetch_firebird">
+        <limit start-index="40" stop-index="82">
+            <offset value="100000" start-index="47" stop-index="52" />
+            <row-count value="10" start-index="71" stop-index="72" />
+        </limit>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <order-by>
+            <column-item name="order_id" start-index="31" stop-index="38" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_pagination_with_first_skip_parameters_firebird" parameters="1, 2">
         <limit start-index="7" stop-index="20">
             <row-count value="1" parameter-index="0" start-index="13" stop-index="13" />
@@ -2095,6 +2124,123 @@
         <from start-index="30" stop-index="41">
             <simple-table name="t_order" start-index="35" stop-index="41" />
         </from>
+    </select>
+
+    <select sql-case-id="select_pagination_with_first_parameter_and_projection_parameter_firebird" parameters="1, 2">
+        <limit start-index="7" stop-index="13">
+            <row-count value="1" parameter-index="0" start-index="13" stop-index="13" />
+        </limit>
+        <projections start-index="15" stop-index="32">
+            <expression-projection text="CAST(? AS INTEGER)" start-index="15" stop-index="32">
+                <expr>
+                    <function function-name="CAST" text="CAST(? AS INTEGER)" start-index="15" stop-index="32">
+                        <parameter>
+                            <data-type value="INTEGER" start-index="25" stop-index="31" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="39" stop-index="45" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_pagination_with_where_parameter_offset_and_fetch_firebird" parameters="1, 2, 3">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="38">
+                    <left>
+                        <column name="user_id" start-index="28" stop-index="34" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                        <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="order_id" start-index="49" stop-index="56" />
+        </order-by>
+        <limit start-index="58" stop-index="94" literal-start-index="58" literal-stop-index="94">
+            <offset value="2" parameter-index="1" start-index="65" stop-index="65" literal-start-index="65" literal-stop-index="65" />
+            <row-count value="3" parameter-index="2" start-index="84" stop-index="84" literal-start-index="84" literal-stop-index="84" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pagination_with_where_parameter_fetch_firebird" parameters="1, 2">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="38">
+                    <left>
+                        <column name="user_id" start-index="28" stop-index="34" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="38" stop-index="38" />
+                        <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <limit start-index="40" stop-index="62" literal-start-index="40" literal-stop-index="62">
+            <row-count value="2" parameter-index="1" start-index="52" stop-index="52" literal-start-index="52" literal-stop-index="52" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pagination_with_cte_where_parameter_offset_and_fetch_firebird" parameters="7, 8, 9">
+        <with start-index="0" stop-index="56">
+            <common-table-expression name="c" start-index="5" stop-index="56">
+                <subquery-expression start-index="5" stop-index="56">
+                    <select>
+                        <projections start-index="18" stop-index="24">
+                            <column-projection name="user_id" start-index="18" stop-index="24" />
+                        </projections>
+                        <from start-index="31" stop-index="37">
+                            <simple-table name="t_order" start-index="31" stop-index="37" />
+                        </from>
+                        <where start-index="39" stop-index="55">
+                            <expr>
+                                <binary-operation-expression start-index="45" stop-index="55">
+                                    <left>
+                                        <column name="user_id" start-index="45" stop-index="51" />
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="7" start-index="55" stop-index="55" />
+                                        <parameter-marker-expression parameter-index="0" start-index="55" stop-index="55" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <projections start-index="65" stop-index="65">
+            <shorthand-projection start-index="65" stop-index="65" />
+        </projections>
+        <from start-index="72" stop-index="72">
+            <simple-table name="c" start-index="72" stop-index="72" />
+        </from>
+        <limit start-index="74" stop-index="109" literal-start-index="74" literal-stop-index="109">
+            <offset value="8" parameter-index="1" start-index="81" stop-index="81" literal-start-index="81" literal-stop-index="81" />
+            <row-count value="9" parameter-index="2" start-index="99" stop-index="99" literal-start-index="99" literal-stop-index="99" />
+        </limit>
     </select>
 
     <select sql-case-id="select_limit_offset_doris">
@@ -2158,4 +2304,108 @@
 <!--                <simple-table name="t_order" start-index="27" stop-index="33"/>-->
 <!--            </from>-->
 <!--        </select>-->
+
+    <select sql-case-id="select_fetch_implicit_only_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="50" row-count-implicit="true">
+            <row-count value="1" start-index="43" stop-index="42" />
+        </limit>
+    </select>
+    <select sql-case-id="select_fetch_implicit_ties_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="54" with-ties="true" row-count-implicit="true">
+            <row-count value="1" start-index="42" stop-index="41" />
+        </limit>
+    </select>
+    <select sql-case-id="select_offset_fetch_implicit_postgresql_regression" parameters="1">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="63" row-count-implicit="true">
+            <offset parameter-index="0" start-index="38" stop-index="38" />
+            <row-count value="1" start-index="56" stop-index="55" />
+        </limit>
+    </select>
+    <select sql-case-id="select_fetch_offset_parameters_postgresql_regression" parameters="1, 2">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="67">
+            <offset parameter-index="1" start-index="62" stop-index="62" />
+            <row-count parameter-index="0" start-index="43" stop-index="43" />
+        </limit>
+    </select>
+    <select sql-case-id="select_offset_fetch_parameters_postgresql_regression" parameters="1, 2">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="71" with-ties="true">
+            <offset parameter-index="0" start-index="38" stop-index="38" />
+            <row-count parameter-index="1" start-index="56" stop-index="56" />
+        </limit>
+    </select>
+    <select sql-case-id="select_fetch_explicit_ties_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="foo" start-index="15" stop-index="17" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item name="id" order-direction="ASC" start-index="28" stop-index="29" />
+        </order-by>
+        <limit start-index="31" stop-index="72" with-ties="true">
+            <offset value="3" start-index="67" stop-index="67" />
+            <row-count value="2" start-index="43" stop-index="43" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_fetch_explicit_one_postgresql_regression">
+        <projections start-index="7" stop-index="8">
+            <column-projection start-index="7" stop-index="8" name="id" />
+        </projections>
+        <from>
+            <simple-table start-index="15" stop-index="17" name="foo" />
+        </from>
+        <order-by start-index="19" stop-index="29">
+            <column-item start-index="28" stop-index="29" name="id" order-direction="ASC" />
+        </order-by>
+        <limit start-index="31" stop-index="52">
+            <row-count start-index="43" stop-index="43" value="1" />
+        </limit>
+    </select>
 </sql-parser-test-cases>

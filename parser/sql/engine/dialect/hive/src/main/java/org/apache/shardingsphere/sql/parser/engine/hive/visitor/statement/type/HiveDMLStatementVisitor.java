@@ -332,7 +332,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitCteClause(final CteClauseContext ctx) {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createAliasSegment(ctx.identifier()),
-                new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())));
+                new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery())), null);
         if (null != ctx.columnNames()) {
             result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
         }
@@ -493,7 +493,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         if (null != ctx.windowSpecification().frameClause()) {
             result.setFrameClause(new CommonExpressionSegment(ctx.windowSpecification().frameClause().start.getStartIndex(), ctx.windowSpecification().frameClause().stop.getStopIndex(),
-                    ctx.windowSpecification().frameClause().getText()));
+                    ctx.windowSpecification().frameClause().getText(), Collections.emptyList()));
         }
         return result;
     }
@@ -508,7 +508,8 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().getStart().getStartIndex(), ctx.frameClause().getStop().getStopIndex(), ctx.frameClause().getText()));
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().getStart().getStartIndex(), ctx.frameClause().getStop().getStopIndex(), ctx.frameClause().getText(),
+                    Collections.emptyList()));
         }
         if (null != ctx.identifier()) {
             result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
@@ -944,7 +945,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitMatchExpression(final MatchExpressionContext ctx) {
         visit(ctx.expr());
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     @Override
@@ -1372,7 +1373,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != expr) {
             return visit(expr);
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override

@@ -68,8 +68,6 @@ public final class ToolDefinitionRegistry {
     
     private static MCPToolDefinition createToolDefinition(final String toolName, final MCPToolHandler<?> handler) {
         MCPToolDescriptor descriptor = MCPDescriptorCatalogIndex.getRequiredToolDescriptor(toolName);
-        ShardingSpherePreconditions.checkNotNull(descriptor.getAnnotations(),
-                () -> new IllegalArgumentException(String.format("Tool `%s` MCP annotations are required for `%s`.", toolName, handler.getClass().getName())));
         return new MCPToolDefinition(descriptor, handler);
     }
     

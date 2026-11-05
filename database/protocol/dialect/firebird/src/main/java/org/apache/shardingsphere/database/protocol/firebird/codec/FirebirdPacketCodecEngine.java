@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.ReferenceCountUtil;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
@@ -35,6 +36,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -51,10 +54,6 @@ import java.util.Map;
 public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngine {
     
     private static final int MESSAGE_TYPE_LENGTH = 4;
-    
-    private static final int ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 4;
-    
-    private static final int FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH = MESSAGE_TYPE_LENGTH + 8;
     
     private final List<ByteBuf> pendingMessages = new LinkedList<>();
     
@@ -74,13 +73,13 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         try {
             if (pendingMessages.isEmpty()) {
-                int type = in.getInt(in.readerIndex());
-                pendingPacketType = FirebirdCommandPacketType.valueOf(type);
-                if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
-                    handleMultiPacket(context, in, out, ALLOCATE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                pendingPacketType = FirebirdCommandPacketType.valueOf(in.getInt(in.readerIndex()));
+                if (FirebirdCommandPacketType.ALLOCATE_STATEMENT == pendingPacketType) {
+                    handleMultiPacket(context, in, out, FirebirdAllocateStatementPacket.getLength());
                     return;
-                } else if (pendingPacketType == FirebirdCommandPacketType.FREE_STATEMENT) {
-                    handleMultiPacket(context, in, out, FREE_STATEMENT_REQUEST_PAYLOAD_LENGTH);
+                }
+                if (FirebirdCommandPacketType.FREE_STATEMENT == pendingPacketType) {
+                    handleMultiPacket(context, in, out, FirebirdFreeStatementPacket.getLength());
                     return;
                 }
             }
@@ -88,11 +87,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            for (Object each : out) {
-                if (each instanceof ByteBuf) {
-                    ((ByteBuf) each).release();
-                }
-            }
+            out.forEach(ReferenceCountUtil::release);
             out.clear();
             resetState();
             in.skipBytes(in.readableBytes());
@@ -104,14 +99,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
     }
     
-    private void resetState() {
-        for (ByteBuf each : pendingMessages) {
-            each.release();
-        }
-        pendingMessages.clear();
-        pendingPacketType = null;
-    }
-    
     private void handleMultiPacket(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out, final int firstPacketLength) {
         out.add(in.readRetainedSlice(firstPacketLength));
         if (in.readableBytes() > MESSAGE_TYPE_LENGTH) {
@@ -121,11 +108,10 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         ByteBuf buffer = mergePendingMessages(context, in);
-        boolean shouldRelease = buffer != in;
         try {
             processPackets(context, buffer, out);
         } finally {
-            if (shouldRelease) {
+            if (buffer != in) {
                 buffer.release();
             }
         }
@@ -149,8 +135,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
                 return;
             }
-            int readerIndex = buffer.readerIndex();
-            FirebirdCommandPacketType commandType = (null == pendingPacketType) ? FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex)) : pendingPacketType;
+            FirebirdCommandPacketType commandType = null == pendingPacketType ? FirebirdCommandPacketType.valueOf(buffer.getInt(buffer.readerIndex())) : pendingPacketType;
             if (FirebirdCommandPacketType.VOID == commandType) {
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;
@@ -175,9 +160,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
-        int readerIndex = buffer.readerIndex();
         int readableBytes = buffer.readableBytes();
-        ByteBuf slice = buffer.retainedSlice(readerIndex, readableBytes);
+        ByteBuf slice = buffer.retainedSlice();
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
             int expectedLength = getExpectedLength(context, buffer, commandType, payload);
@@ -228,8 +212,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     private void rememberBatchFormat(final ByteBuf buffer, final int packetLength, final Charset charset) {
-        FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(
-                new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
+        FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
         ByteBuf batchBlr = packet.getBatchBlr();
         deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes()).getFields());
     }
@@ -241,6 +224,12 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             FirebirdBatchSetBpbCommandPacket packet = new FirebirdBatchSetBpbCommandPacket(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
             batchBlobStreams.computeIfAbsent(packet.getStatementHandle(), key -> new FirebirdBatchBlobStream()).setDefaultBpb(packet.getBpb());
         }
+    }
+    
+    private void resetState() {
+        pendingMessages.forEach(ByteBuf::release);
+        pendingMessages.clear();
+        pendingPacketType = null;
     }
     
     @Override
@@ -255,7 +244,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            payload.getByteBuf().resetWriterIndex();
+            out.resetWriterIndex();
             FirebirdErrorPacketFactory.newInstance(ex).write(payload);
         }
     }

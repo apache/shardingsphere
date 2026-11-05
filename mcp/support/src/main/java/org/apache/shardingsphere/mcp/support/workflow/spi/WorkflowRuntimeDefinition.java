@@ -58,6 +58,6 @@ public final class WorkflowRuntimeDefinition {
     }
     
     private static MCPWorkflowApplyArtifactValidator createApplyArtifactValidator(final MCPWorkflowRuntimeHandler runtimeHandler) {
-        return runtimeHandler instanceof MCPWorkflowApplyArtifactValidator ? (MCPWorkflowApplyArtifactValidator) runtimeHandler : MCPWorkflowApplyArtifactValidator.NO_OP;
+        return runtimeHandler instanceof MCPWorkflowApplyArtifactValidator validator ? validator : MCPWorkflowApplyArtifactValidator.NO_OP;
     }
 }

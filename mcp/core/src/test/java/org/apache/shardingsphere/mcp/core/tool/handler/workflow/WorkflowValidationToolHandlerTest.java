@@ -35,7 +35,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -62,7 +61,7 @@ class WorkflowValidationToolHandlerTest {
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
                 WorkflowHandlerTestFixture.createDefinition("encrypt.rule", workflowRuntimeHandler, MCPWorkflowApplyArtifactValidator.NO_OP))));
         MCPSuccessPayload actual = handler.handle(fixture.requestContext(), Map.of("plan_id", "plan-1"));
-        verify(workflowRuntimeHandler).validate(eq(snapshot), eq(fixture.queryFacade()));
+        verify(workflowRuntimeHandler).validate(snapshot, fixture.queryFacade());
         assertThat(actual.toPayload().get("status"), is("validated"));
     }
     

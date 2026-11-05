@@ -36,6 +36,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPDescriptorCatalogIndexTest {
     
     @Test
+    void assertGetRequiredShardingSphereResourceMetadataWithUnknownResource() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogIndex.getRequiredShardingSphereResourceMetadata("shardingsphere://foo_unknown"));
+        assertThat(actual.getMessage(), is("ShardingSphere MCP resource metadata descriptor is required for `shardingsphere://foo_unknown`."));
+    }
+    
+    @Test
+    void assertGetRequiredPromptTemplateBindingWithUnknownPrompt() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> MCPDescriptorCatalogIndex.getRequiredPromptTemplateBinding("foo_unknown"));
+        assertThat(actual.getMessage(), is("MCP prompt template binding is required for `foo_unknown`."));
+    }
+    
+    @Test
     void assertGetResourceDescriptors() {
         Collection<MCPResourceDescriptor> actualDescriptors = MCPDescriptorCatalogIndex.getResourceDescriptors();
         assertTrue(actualDescriptors.stream().anyMatch(each -> "shardingsphere://workflows/{plan_id}".equals(each.getUriTemplate())));

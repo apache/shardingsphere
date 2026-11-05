@@ -61,7 +61,6 @@ class FirebirdBlobInfoExecutorTest {
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getHandle()).thenReturn(BLOB_HANDLE);
-        when(packet.getInfoItems()).thenReturn(Collections.emptyList());
     }
     
     @AfterEach

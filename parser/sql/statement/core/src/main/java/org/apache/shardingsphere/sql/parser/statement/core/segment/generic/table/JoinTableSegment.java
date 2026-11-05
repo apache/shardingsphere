@@ -41,6 +41,8 @@ public final class JoinTableSegment implements TableSegment {
     
     private AliasSegment alias;
     
+    private AliasSegment usingAlias;
+    
     private TableSegment left;
     
     private boolean natural;
@@ -80,5 +82,14 @@ public final class JoinTableSegment implements TableSegment {
      */
     public Optional<AliasSegment> getAliasSegment() {
         return Optional.ofNullable(alias);
+    }
+    
+    /**
+     * Get the alias of the USING columns.
+     *
+     * @return USING alias segment
+     */
+    public Optional<AliasSegment> getUsingAliasSegment() {
+        return Optional.ofNullable(usingAlias);
     }
 }

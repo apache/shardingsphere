@@ -85,5 +85,4 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
         length += 8;
         return length;
     }
-    
 }

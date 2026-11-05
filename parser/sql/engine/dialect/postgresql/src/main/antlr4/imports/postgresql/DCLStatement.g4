@@ -26,11 +26,11 @@ grant
     ;
 
 revoke
-    : REVOKE optionForClause? (privilegeClause | roleClause) (CASCADE | RESTRICT)?
+    : REVOKE ((GRANT OPTION FOR)? privilegeClause | optionForClause? roleClause) (CASCADE | RESTRICT)?
     ;
 
 optionForClause
-    : (GRANT | ADMIN) OPTION FOR
+    : (ADMIN | INHERIT | SET) OPTION FOR
     ;
 
 createUser

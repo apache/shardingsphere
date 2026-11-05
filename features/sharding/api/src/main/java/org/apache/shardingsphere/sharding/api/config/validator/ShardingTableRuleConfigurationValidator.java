@@ -44,8 +44,7 @@ public final class ShardingTableRuleConfigurationValidator implements Constraint
             String configuredSchemaName = schemaNamesByDataSource.putIfAbsent(dataNode.getDataSourceName(), dataNode.getSchemaName());
             if (null != configuredSchemaName && !configuredSchemaName.equalsIgnoreCase(dataNode.getSchemaName())) {
                 context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(String.format("contains multiple schemas for storage unit `%s` in sharding table `%s`",
-                        dataNode.getDataSourceName(), value.getLogicTable())).addPropertyNode("actualDataNodes").addConstraintViolation();
+                context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate()).addPropertyNode("actualDataNodes").addConstraintViolation();
                 return false;
             }
         }

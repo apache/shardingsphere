@@ -17,7 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.value.identifier;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -48,6 +54,29 @@ class IdentifierValueTest {
         assertThat(new IdentifierValue(text).getValue(), is("ds_${[1,2]}.t_order"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDecodedQuotedNames")
+    void assertFromDecodedQuotedName(final String name, final String value, final String expectedQuotedValue) {
+        IdentifierValue actual = IdentifierValue.fromDecodedQuotedName(value);
+        assertThat(actual.getValue(), is(value));
+        assertThat(actual.getValueWithQuoteCharacters(), is(expectedQuotedValue));
+    }
+    
+    private static Stream<Arguments> getDecodedQuotedNames() {
+        return Stream.of(
+                Arguments.of("normal name", "foo_table", "\"foo_table\""),
+                Arguments.of("single interior quote", "foo_\"table", "\"foo_\"\"table\""),
+                Arguments.of("adjacent interior quotes", "foo_\"\"table", "\"foo_\"\"\"\"table\""));
+    }
+    
+    @Test
+    void assertFromDecodedQuotedNameWithExistingEquality() {
+        IdentifierValue actual = IdentifierValue.fromDecodedQuotedName("foo_\"table");
+        IdentifierValue expected = new IdentifierValue("foo_\"table", QuoteCharacter.QUOTE);
+        assertThat(actual, is(expected));
+        assertThat(actual.hashCode(), is(expected.hashCode()));
+    }
+    
     @Test
     void assertGetValueWithQuoteCharactersWithNullValue() {
         assertThat(new IdentifierValue(null).getValueWithQuoteCharacters(), is(""));
@@ -57,5 +86,19 @@ class IdentifierValueTest {
     void assertGetValueWithQuoteCharactersWithValue() {
         String text = "[foo]";
         assertThat(new IdentifierValue(text).getValueWithQuoteCharacters(), is("[foo]"));
+    }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithEscapedRawName() {
+        IdentifierValue actual = new IdentifierValue("\"foo_\"\"table\"");
+        assertThat(actual.getValue(), is("foo_\"\"table"));
+        assertThat(actual.getValueWithQuoteCharacters(), is("\"foo_\"\"table\""));
+    }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithEscapedExplicitName() {
+        IdentifierValue actual = new IdentifierValue("foo_\"\"table", QuoteCharacter.QUOTE);
+        assertThat(actual.getValue(), is("foo_\"\"table"));
+        assertThat(actual.getValueWithQuoteCharacters(), is("\"foo_\"\"table\""));
     }
 }

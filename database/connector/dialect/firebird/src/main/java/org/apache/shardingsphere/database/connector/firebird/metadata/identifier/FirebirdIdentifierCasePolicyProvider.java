@@ -36,12 +36,12 @@ public final class FirebirdIdentifierCasePolicyProvider implements IdentifierCas
                 each -> each, FirebirdIdentifierCasePolicyProvider::toUpperCase, FirebirdIdentifierCasePolicyProvider::toUpperCase, each -> true));
     }
     
+    private static String toUpperCase(final String value) {
+        return value.toUpperCase(Locale.ENGLISH);
+    }
+    
     @Override
     public String getDatabaseType() {
         return "Firebird";
-    }
-    
-    private static String toUpperCase(final String value) {
-        return value.toUpperCase(Locale.ENGLISH);
     }
 }

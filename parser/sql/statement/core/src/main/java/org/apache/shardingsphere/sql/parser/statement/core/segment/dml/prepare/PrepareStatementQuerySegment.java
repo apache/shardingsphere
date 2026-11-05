@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
@@ -47,6 +48,8 @@ public final class PrepareStatementQuerySegment implements SQLSegment {
     private UpdateStatement update;
     
     private DeleteStatement delete;
+    
+    private MergeStatement merge;
     
     /**
      * Get select statement.
@@ -82,5 +85,14 @@ public final class PrepareStatementQuerySegment implements SQLSegment {
      */
     public Optional<DeleteStatement> getDelete() {
         return Optional.ofNullable(delete);
+    }
+    
+    /**
+     * Get merge statement.
+     *
+     * @return merge statement
+     */
+    public Optional<MergeStatement> getMerge() {
+        return Optional.ofNullable(merge);
     }
 }

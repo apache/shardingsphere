@@ -30,4 +30,11 @@ class ClarifiedIntentTest {
         actual.setOperationType(" create ");
         assertThat(actual.getOperationType(), is("create"));
     }
+    
+    @Test
+    void assertSetOperationTypeWithNull() {
+        ClarifiedIntent actual = new ClarifiedIntent();
+        actual.setOperationType(null);
+        assertThat(actual.getOperationType(), is(""));
+    }
 }

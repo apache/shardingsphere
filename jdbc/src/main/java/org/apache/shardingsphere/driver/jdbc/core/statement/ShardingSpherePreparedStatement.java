@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
@@ -148,6 +149,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         sql = SQLHintUtils.removeHint(originSQL);
         hintValueContext = SQLHintUtils.extractHint(originSQL);
         ShardingSphereDatabase currentDatabase = metaData.getDatabase(connection.getCurrentDatabaseName());
+        ShardingSpherePreconditions.checkNotNull(currentDatabase,
+                () -> SQLExceptionTransformEngine.toSQLException(new UnknownDatabaseException(connection.getCurrentDatabaseName()), metaData.getProtocolType()));
         SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(currentDatabase.getProtocolType()).parse(sql, true);
         sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new CommonSQLStatementContext(sqlStatement)
@@ -155,6 +158,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         String usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         usedDatabase = metaData.getDatabase(usedDatabaseName);
+        ShardingSpherePreconditions.checkNotNull(usedDatabase, () -> SQLExceptionTransformEngine.toSQLException(new UnknownDatabaseException(usedDatabaseName), currentDatabase.getProtocolType()));
         statementOption = returnGeneratedKeys ? new StatementOption(true, columns) : new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
         connection.registerStatementManager(statementManager);

@@ -91,9 +91,9 @@ class MySQLNegotiateHandlerTest {
         mysqlNegotiateHandler = new MySQLNegotiateHandler(USER_NAME, PASSWORD, authResultCallback);
     }
     
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("handshakeParams")
-    void assertChannelReadHandshakeInitPacket(final String password, final boolean expectEmptyAuth) throws ReflectiveOperationException {
+    void assertChannelReadHandshakeInitPacket(final String name, final String password, final boolean expectEmptyAuth) throws ReflectiveOperationException {
         MySQLNegotiateHandler handler = new MySQLNegotiateHandler(USER_NAME, password, authResultCallback);
         MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, false, new MySQLAuthenticationPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
@@ -172,10 +172,12 @@ class MySQLNegotiateHandlerTest {
     }
     
     private String publicKey() {
-        return "-----BEGIN PUBLIC KEY-----\n"
-                + "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL8eq+i+GtqR4344d18PT9bjK5YfX/8r\n"
-                + "O8uRAZ3kKQEiC5EvhczHxVn9Yx8RJWb1x1oGf4bm/FYnGV8eK3opg+cCAwEAAQ==\n"
-                + "-----END PUBLIC KEY-----";
+        return """
+                -----BEGIN PUBLIC KEY-----
+                MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL8eq+i+GtqR4344d18PT9bjK5YfX/8r
+                O8uRAZ3kKQEiC5EvhczHxVn9Yx8RJWb1x1oGf4bm/FYnGV8eK3opg+cCAwEAAQ==
+                -----END PUBLIC KEY-----\
+                """;
     }
     
     private MySQLAuthSwitchResponsePacket captureAuthSwitchResponse() {
@@ -185,7 +187,7 @@ class MySQLNegotiateHandlerTest {
     }
     
     private static Stream<Arguments> handshakeParams() {
-        return Stream.of(Arguments.of(PASSWORD, false), Arguments.of("", true));
+        return Stream.of(Arguments.of("password provided", PASSWORD, false), Arguments.of("empty password", "", true));
     }
     
     @SneakyThrows(NoSuchAlgorithmException.class)

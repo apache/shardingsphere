@@ -100,10 +100,6 @@ public final class EncryptProjectionTokenGenerator {
      * @return generated SQL tokens
      */
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        return generateSQLTokens(sqlStatementContext, "");
-    }
-    
-    private Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext, final String operator) {
         Collection<SQLToken> sqlTokens = sqlStatementContext instanceof SelectStatementContext
                 ? generateSelectSQLTokens((SelectStatementContext) sqlStatementContext)
                 : Collections.emptyList();
@@ -114,25 +110,23 @@ public final class EncryptProjectionTokenGenerator {
             if (each instanceof BinaryOperationExpression) {
                 BinaryOperationExpression binaryExpression = (BinaryOperationExpression) each;
                 checkBinaryOperationEncryptor(binaryExpression);
-                String expressionOperator = binaryExpression.getOperator();
-                generateExpressionSQLTokens(binaryExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result, expressionOperator);
-                generateExpressionSQLTokens(binaryExpression.getRight(), subqueryContexts, processedSubqueryIndexes, result, expressionOperator);
+                generateExpressionSQLTokens(binaryExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result);
+                generateExpressionSQLTokens(binaryExpression.getRight(), subqueryContexts, processedSubqueryIndexes, result);
             } else if (each instanceof InExpression) {
                 InExpression inExpression = (InExpression) each;
                 checkInExpressionEncryptor(inExpression);
-                generateExpressionSQLTokens(inExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result, "IN");
-                generateExpressionSQLTokens(inExpression.getRight(), subqueryContexts, processedSubqueryIndexes, result, "IN");
+                generateExpressionSQLTokens(inExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result);
+                generateExpressionSQLTokens(inExpression.getRight(), subqueryContexts, processedSubqueryIndexes, result);
             } else if (each instanceof BetweenExpression) {
                 BetweenExpression betweenExpression = (BetweenExpression) each;
-                generateExpressionSQLTokens(betweenExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result, "BETWEEN");
-                generateExpressionSQLTokens(betweenExpression.getBetweenExpr(), subqueryContexts, processedSubqueryIndexes, result, "BETWEEN");
-                generateExpressionSQLTokens(betweenExpression.getAndExpr(), subqueryContexts, processedSubqueryIndexes, result, "BETWEEN");
+                generateExpressionSQLTokens(betweenExpression.getLeft(), subqueryContexts, processedSubqueryIndexes, result);
+                generateExpressionSQLTokens(betweenExpression.getBetweenExpr(), subqueryContexts, processedSubqueryIndexes, result);
+                generateExpressionSQLTokens(betweenExpression.getAndExpr(), subqueryContexts, processedSubqueryIndexes, result);
             }
         }
-        String subqueryOperator = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).isContainsCombine() ? "COMBINE" : "";
         for (Entry<Integer, SelectStatementContext> entry : subqueryContexts.entrySet()) {
             if (!processedSubqueryIndexes.contains(entry.getKey())) {
-                result.addAll(generateSQLTokens(entry.getValue(), subqueryOperator));
+                result.addAll(generateSQLTokens(entry.getValue()));
             }
         }
         return result;
@@ -154,13 +148,12 @@ public final class EncryptProjectionTokenGenerator {
     }
     
     private void generateExpressionSQLTokens(final ExpressionSegment expressionSegment, final Map<Integer, SelectStatementContext> subqueryContexts,
-                                             final Collection<Integer> processedSubqueryIndexes,
-                                             final Collection<SQLToken> result, final String operator) {
+                                             final Collection<Integer> processedSubqueryIndexes, final Collection<SQLToken> sqlTokens) {
         Integer subqueryStartIndex = getSubqueryStartIndex(expressionSegment);
         if (null != subqueryStartIndex && processedSubqueryIndexes.add(subqueryStartIndex)) {
             SelectStatementContext subqueryContext = subqueryContexts.get(subqueryStartIndex);
             if (null != subqueryContext) {
-                result.addAll(generateSQLTokens(subqueryContext, operator));
+                sqlTokens.addAll(generateSQLTokens(subqueryContext));
             }
         }
     }

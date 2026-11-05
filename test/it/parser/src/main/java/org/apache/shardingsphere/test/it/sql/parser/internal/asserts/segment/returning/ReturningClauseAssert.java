@@ -21,9 +21,15 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.projection.ProjectionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedReturningClause;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Returning clause assert.
@@ -39,9 +45,22 @@ public final class ReturningClauseAssert {
      * @param expected expected returning clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ReturningSegment actual, final ExpectedReturningClause expected) {
+        assertAlias(actual.getOldAlias(), expected.getOldAlias(), expected.getOldAliasStartIndex(), expected.getOldAliasStopIndex());
+        assertAlias(actual.getNewAlias(), expected.getNewAlias(), expected.getNewAliasStartIndex(), expected.getNewAliasStopIndex());
         ProjectionsSegment actualProjections = actual.getProjections();
         if (null != actualProjections.getProjections() || expected.getProjections().getSize() > 0) {
             ProjectionAssert.assertIs(assertContext, actualProjections, expected.getProjections());
         }
+    }
+    
+    private static void assertAlias(final AliasSegment actual, final String expectedName, final Integer expectedStartIndex, final Integer expectedStopIndex) {
+        if (null == expectedName) {
+            assertNull(actual);
+            return;
+        }
+        assertNotNull(actual);
+        assertThat(actual.getIdentifier().getValue(), is(expectedName));
+        assertThat(actual.getStartIndex(), is(expectedStartIndex));
+        assertThat(actual.getStopIndex(), is(expectedStopIndex));
     }
 }

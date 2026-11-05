@@ -125,7 +125,7 @@
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
         <module name="MatchXpath">
-            <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE]]]" />
+            <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE or self::DOT[./IDENT[@text=('TRUE', 'FALSE')] and (./IDENT[@text='Boolean'] or ./DOT[./IDENT[@text='Boolean'] and ./DOT[./IDENT[@text='java'] and ./IDENT[@text='lang']]])]]]]" />
             <message key="matchxpath.match" value="Use assertTrue/assertFalse instead of assertThat(..., is(true/false))." />
         </module>
         <module name="MatchXpath">

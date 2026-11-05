@@ -72,8 +72,7 @@ public final class PaginationContext {
             return ((ExpressionRowNumberValueSegment) paginationValueSegment).getValue(params);
         }
         if (paginationValueSegment instanceof ExpressionPaginationValueSegment) {
-            Long result = getValueFromExpression(((ExpressionPaginationValueSegment) paginationValueSegment).getExpression(), params);
-            return result;
+            return getValueFromExpression(((ExpressionPaginationValueSegment) paginationValueSegment).getExpression(), params);
         }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
     }

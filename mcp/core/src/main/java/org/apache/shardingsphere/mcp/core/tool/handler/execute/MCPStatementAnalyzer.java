@@ -50,12 +50,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 final class MCPStatementAnalyzer {
     
     private static final CacheOption DISABLED_CACHE_OPTION = new CacheOption(0, 0L);
     
     private static final Set<String> DDL_STATEMENT_TYPES = Set.of("CREATE", "ALTER", "DROP", "TRUNCATE");
+    
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     
     private final Collection<MCPRuleDistSQLStatementClassifier> ruleDistSQLStatementClassifiers =
             ShardingSphereServiceLoader.getServiceInstances(MCPRuleDistSQLStatementClassifier.class);
@@ -122,22 +125,17 @@ final class MCPStatementAnalyzer {
         if (ruleDistSQL && DDL_STATEMENT_TYPES.contains(leadingKeyword)) {
             return SupportedMCPStatement.DDL;
         }
-        if (sqlStatement instanceof SelectStatement && hasExpectedLeadingKeyword(leadingKeyword, "SELECT")) {
-            return SupportedMCPStatement.QUERY;
-        }
-        if (sqlStatement instanceof InsertStatement && hasExpectedLeadingKeyword(leadingKeyword, "INSERT")
-                || sqlStatement instanceof UpdateStatement && hasExpectedLeadingKeyword(leadingKeyword, "UPDATE")
-                || sqlStatement instanceof DeleteStatement && hasExpectedLeadingKeyword(leadingKeyword, "DELETE")
-                || sqlStatement instanceof MergeStatement && hasExpectedLeadingKeyword(leadingKeyword, "MERGE")) {
-            return SupportedMCPStatement.DML;
-        }
-        if (sqlStatement instanceof DDLStatement && DDL_STATEMENT_TYPES.contains(leadingKeyword)) {
-            return SupportedMCPStatement.DDL;
-        }
-        if (sqlStatement instanceof GrantStatement && "GRANT".equals(leadingKeyword) || sqlStatement instanceof RevokeStatement && "REVOKE".equals(leadingKeyword)) {
-            return SupportedMCPStatement.DCL;
-        }
-        throw new MCPUnsupportedSQLStatementException();
+        return switch (sqlStatement) {
+            case SelectStatement ignored when hasExpectedLeadingKeyword(leadingKeyword, "SELECT") -> SupportedMCPStatement.QUERY;
+            case InsertStatement ignored when hasExpectedLeadingKeyword(leadingKeyword, "INSERT") -> SupportedMCPStatement.DML;
+            case UpdateStatement ignored when hasExpectedLeadingKeyword(leadingKeyword, "UPDATE") -> SupportedMCPStatement.DML;
+            case DeleteStatement ignored when hasExpectedLeadingKeyword(leadingKeyword, "DELETE") -> SupportedMCPStatement.DML;
+            case MergeStatement ignored when hasExpectedLeadingKeyword(leadingKeyword, "MERGE") -> SupportedMCPStatement.DML;
+            case DDLStatement ignored when DDL_STATEMENT_TYPES.contains(leadingKeyword) -> SupportedMCPStatement.DDL;
+            case GrantStatement ignored when "GRANT".equals(leadingKeyword) -> SupportedMCPStatement.DCL;
+            case RevokeStatement ignored when "REVOKE".equals(leadingKeyword) -> SupportedMCPStatement.DCL;
+            case null, default -> throw new MCPUnsupportedSQLStatementException();
+        };
     }
     
     private boolean hasExpectedLeadingKeyword(final String leadingKeyword, final String expectedKeyword) {
@@ -195,11 +193,11 @@ final class MCPStatementAnalyzer {
         if (upperSql.startsWith("RELEASE SAVEPOINT")) {
             return "RELEASE SAVEPOINT";
         }
-        return upperSql.split("\\s+")[0];
+        return WHITESPACE_PATTERN.split(upperSql)[0];
     }
     
     private String extractSavepointName(final String sql) {
-        String[] tokens = sql.split("\\s+");
+        String[] tokens = WHITESPACE_PATTERN.split(sql);
         if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && 2 == tokens.length) {
             return tokens[1];
         }

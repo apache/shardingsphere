@@ -22,6 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.InsertStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.MergeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.UpdateStatementTestCase;
 
@@ -42,6 +43,9 @@ public final class ExpectedPrepareStatementQuery extends AbstractExpectedSQLSegm
     
     @XmlElement(name = "update")
     private UpdateStatementTestCase updateClause;
+    
+    @XmlElement(name = "merge")
+    private MergeStatementTestCase mergeClause;
     
     @XmlElement(name = "delete")
     private DeleteStatementTestCase deleteClause;

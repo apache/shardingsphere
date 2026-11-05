@@ -1114,4 +1114,28 @@
             </expr>
         </having>
     </select>
+
+    <select sql-case-id="select_postgresql_group_by_all">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="foo_order_id" start-index="7" stop-index="18" />
+        </projections>
+        <from>
+            <simple-table start-index="25" stop-index="31" name="t_order" />
+        </from>
+        <group-by start-index="33" stop-index="57">
+            <column-item name="foo_order_id" start-index="46" stop-index="57" />
+        </group-by>
+    </select>
+
+    <select sql-case-id="select_postgresql_group_by_distinct">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="foo_order_id" start-index="7" stop-index="18" />
+        </projections>
+        <from>
+            <simple-table start-index="25" stop-index="31" name="t_order" />
+        </from>
+        <group-by start-index="33" stop-index="62">
+            <column-item name="foo_order_id" start-index="51" stop-index="62" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>

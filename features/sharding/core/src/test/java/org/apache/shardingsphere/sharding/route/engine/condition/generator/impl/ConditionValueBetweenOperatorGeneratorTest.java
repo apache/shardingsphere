@@ -39,6 +39,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -100,7 +101,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
     void assertGenerateErrorConditionValue() {
         int between = 1;
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, between);
-        ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
+        ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()", Collections.emptyList());
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
         assertThrows(ClassCastException.class, () -> generator.generate(value, column, new LinkedList<>(), timestampServiceRule));
     }
@@ -110,7 +111,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
     void assertGenerateOneNowConditionValue() {
         Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, timestamp);
-        ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
+        ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()", Collections.emptyList());
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
@@ -126,8 +127,8 @@ class ConditionValueBetweenOperatorGeneratorTest {
     void assertGenerateNowConditionValue() {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 1);
-        ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()");
-        ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
+        ExpressionSegment betweenSegment = new CommonExpressionSegment(0, 0, "now()", Collections.emptyList());
+        ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()", Collections.emptyList());
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());

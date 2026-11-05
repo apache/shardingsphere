@@ -18,4 +18,6 @@
 
 <sql-cases>
     <sql-case id="security_label" value="SECURITY LABEL ON TABLE seclabel_tbl1 IS 'classified';" db-types="PostgreSQL" />
+    <sql-case id="security_label_on_role" value="SECURITY LABEL ON ROLE &quot;foo_role&quot; IS 'classified';" db-types="PostgreSQL" />
+    <sql-case id="security_label_on_role_with_provider" value="SECURITY LABEL FOR foo_provider ON ROLE foo_role IS NULL;" db-types="PostgreSQL" />
 </sql-cases>

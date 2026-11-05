@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.connector.firebird.metadata.data.loader;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
@@ -49,12 +50,9 @@ final class FirebirdBlobColumnLoader {
             return Collections.emptyMap();
         }
         Map<String, Map<String, Integer>> result = new HashMap<>(material.getActualTableNames().size(), 1F);
-        try (
-                MetaDataLoaderConnection connection = new MetaDataLoaderConnection(
-                        material.getStorageType(), material.getDataSource().getConnection())) {
+        try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(material.getStorageType(), material.getDataSource().getConnection())) {
             for (String each : material.getActualTableNames()) {
-                Map<String, Integer> blobColumns = loadTableBlobColumns(connection, each);
-                result.put(each, blobColumns);
+                result.put(each, loadTableBlobColumns(connection, each));
             }
         }
         return result;
@@ -66,22 +64,14 @@ final class FirebirdBlobColumnLoader {
             preparedStatement.setString(1, formattedTableName.toUpperCase(Locale.ENGLISH));
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    String normalizedColumnName = normalizeColumnName(resultSet.getString("COLUMN_NAME"));
-                    if (null != normalizedColumnName) {
-                        result.put(normalizedColumnName, getColumnSubtype(resultSet));
+                    String columnName = Strings.nullToEmpty(resultSet.getString("COLUMN_NAME")).trim();
+                    if (!columnName.isEmpty()) {
+                        result.put(columnName.toUpperCase(Locale.ENGLISH), getColumnSubtype(resultSet));
                     }
                 }
             }
         }
-        return result.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(result);
-    }
-    
-    private String normalizeColumnName(final String columnName) {
-        if (null == columnName) {
-            return null;
-        }
-        String trimmed = columnName.trim();
-        return trimmed.isEmpty() ? null : trimmed.toUpperCase(Locale.ENGLISH);
+        return result;
     }
     
     private Integer getColumnSubtype(final ResultSet resultSet) throws SQLException {

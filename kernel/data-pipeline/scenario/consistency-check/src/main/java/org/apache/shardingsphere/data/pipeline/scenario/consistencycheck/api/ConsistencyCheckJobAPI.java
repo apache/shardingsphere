@@ -36,8 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.Pi
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.config.YamlConsistencyCheckJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.swapper.YamlConsistencyCheckJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -96,7 +94,7 @@ public final class ConsistencyCheckJobAPI {
         governanceFacade.getJobFacade().getCheck().persistLatestCheckJobId(parentJobId, result);
         governanceFacade.getJobFacade().getCheck().initCheckJobResult(parentJobId, result);
         jobManager.drop(result);
-        jobManager.start(new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(getYamlConfiguration(result, parentJobId, param)));
+        jobManager.start(new ConsistencyCheckJobConfiguration(result, parentJobId, param.getAlgorithmTypeName(), param.getAlgorithmProps(), param.getSourceDatabaseType()));
         return result;
     }
     
@@ -107,16 +105,6 @@ public final class ConsistencyCheckJobAPI {
         }
         ShardingSpherePreconditions.checkContains(supportedDatabaseTypes, param.getSourceDatabaseType(), () -> new UnsupportedPipelineDatabaseTypeException(param.getSourceDatabaseType()));
         ShardingSpherePreconditions.checkContains(supportedDatabaseTypes, param.getTargetDatabaseType(), () -> new UnsupportedPipelineDatabaseTypeException(param.getTargetDatabaseType()));
-    }
-    
-    private YamlConsistencyCheckJobConfiguration getYamlConfiguration(final String jobId, final String parentJobId, final CreateConsistencyCheckJobParameter param) {
-        YamlConsistencyCheckJobConfiguration result = new YamlConsistencyCheckJobConfiguration();
-        result.setJobId(jobId);
-        result.setParentJobId(parentJobId);
-        result.setAlgorithmTypeName(param.getAlgorithmTypeName());
-        result.setAlgorithmProps(param.getAlgorithmProps());
-        result.setSourceDatabaseType(param.getSourceDatabaseType().getType());
-        return result;
     }
     
     /**

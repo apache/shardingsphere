@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection.engine;
 
+import com.google.common.collect.Iterables;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
@@ -27,11 +28,13 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -43,6 +46,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProjectionsContextEngineTest {
     
@@ -173,5 +177,83 @@ class ProjectionsContextEngineTest {
         ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
         ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), orderByContext);
         assertThat(actual.getProjections().size(), is(2));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithNullOrderByText() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(Iterables.getOnlyElement(actual.getProjections()).getExpression(), is("*"));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithNullGroupByText() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        OrderByItem groupByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.singleton(groupByItem)), new OrderByContext(Collections.emptyList(), false));
+        assertThat(Iterables.getOnlyElement(actual.getProjections()).getExpression(), is("*"));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithNullOrderByTextAndEmptyProjections() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, null, OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertTrue(actual.getProjections().isEmpty());
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithMatchingColumnName() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_column"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_table")));
+        projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
+        ColumnSegment orderColumn = new ColumnSegment(0, 0, new IdentifierValue("`FOO_COLUMN`"));
+        OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(orderColumn, OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(actual.getProjections().size(), is(1));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithMatchingQualifiedColumnName() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("foo_column"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_table")));
+        projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
+        ColumnSegment orderColumn = new ColumnSegment(0, 0, new IdentifierValue("\"FOO_COLUMN\""));
+        orderColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("\"FOO_TABLE\"")));
+        OrderByItem orderByItem = new OrderByItem(new ColumnOrderByItemSegment(orderColumn, OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(actual.getProjections().size(), is(1));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithMatchingAlias() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "foo_column + 1");
+        projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("`foo_alias`")));
+        projectionsSegment.getProjections().add(projectionSegment);
+        OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, "`FOO_ALIAS`", OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(actual.getProjections().size(), is(1));
+    }
+    
+    @Test
+    void assertCreateProjectionsContextWithMatchingExpression() {
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new ExpressionProjectionSegment(0, 0, "`foo_column` + 1"));
+        OrderByItem orderByItem = new OrderByItem(new ExpressionOrderByItemSegment(0, 0, "`FOO_COLUMN` + 1", OrderDirection.ASC, NullsOrderType.FIRST));
+        ProjectionsContextEngine engine = new ProjectionsContextEngine(databaseType);
+        ProjectionsContext actual = engine.createProjectionsContext(projectionsSegment, new GroupByContext(Collections.emptyList()), new OrderByContext(Collections.singleton(orderByItem), false));
+        assertThat(actual.getProjections().size(), is(1));
     }
 }

@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.spec.ProtocolVersions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -34,8 +33,6 @@ import java.util.Map;
 public final class MCPInteractionProtocolSupport {
     
     public static final String PROTOCOL_VERSION = ProtocolVersions.MCP_2025_11_25;
-    
-    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     /**
      * Create initialize request parameters for the given client name.
@@ -108,8 +105,8 @@ public final class MCPInteractionProtocolSupport {
     
     private static String toJsonString(final Object value) {
         try {
-            return JSON_MAPPER.writeValueAsString(value);
-        } catch (final IOException ex) {
+            return JsonEngine.marshal(value);
+        } catch (final JsonException ex) {
             throw new IllegalStateException("Failed to serialize MCP JSON-RPC payload.", ex);
         }
     }

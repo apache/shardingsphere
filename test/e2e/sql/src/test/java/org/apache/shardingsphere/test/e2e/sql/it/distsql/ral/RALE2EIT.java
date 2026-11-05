@@ -167,8 +167,8 @@ class RALE2EIT implements SQLE2EIT {
     
     private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet, final AssertionTestParameter testParam) throws SQLException, IOException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(context), context, testParam);
-        if ("jdbc".equals(testParam.getAdapter()) && ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile())
-                || "show_sharding_table_rule.xml".equals(context.getAssertion().getExpectedDataFile()) || "show_tables.xml".equals(context.getAssertion().getExpectedDataFile()))) {
+        if ("show_sharding_table_rule.xml".equals(context.getAssertion().getExpectedDataFile()) || "jdbc".equals(testParam.getAdapter())
+                && ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile()) || "show_tables.xml".equals(context.getAssertion().getExpectedDataFile()))) {
             assertThat(getActualRows(resultSet), containsInAnyOrder(getExpectedJdbcRows(context, testParam).toArray()));
         } else {
             assertRows(resultSet, getIgnoreAssertColumns(context), context.getDataSet().getRows());

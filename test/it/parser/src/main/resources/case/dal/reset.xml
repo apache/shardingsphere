@@ -46,4 +46,16 @@
     <reset-persist sql-case-id="reset_persist" />
     <reset-persist sql-case-id="reset_persist_identifier" identifier="TEST_ID" />
     <reset-persist sql-case-id="reset_persist_exist_identifier" if-exists="true" identifier="TEST_ID" />
+    <reset-parameter sql-case-id="reset_session_authorization_pg" configuration-parameter="session_authorization" />
+    <reset-parameter sql-case-id="reset_session_authorization_lowercase_pg" configuration-parameter="session_authorization" />
+
+    <reset-parameter sql-case-id="reset_session_authorization_comments_pg" configuration-parameter="session_authorization">
+        <comment start-index="6" stop-index="14" text="/* foo */" />
+        <comment start-index="24" stop-index="32" text="/* bar */" />
+    </reset-parameter>
+    <reset-parameter sql-case-id="reset_time_zone_pg" configuration-parameter="timezone" />
+    <reset-parameter sql-case-id="reset_dotted_pg" configuration-parameter="custom.my_guc" />
+    <reset-parameter sql-case-id="reset_quoted_dotted_pg" configuration-parameter="&quot;foo&quot;.&quot;bar&quot;" />
+    <reset-parameter sql-case-id="reset_session_parameter_pg" configuration-parameter="session" />
+    <reset-parameter sql-case-id="reset_time_parameter_pg" configuration-parameter="time" />
 </sql-parser-test-cases>

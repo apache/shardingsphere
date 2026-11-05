@@ -51,7 +51,8 @@ class ShardingTableResourceHandlerTest {
                         ShardingInspectionService.class, (mock, context) -> stubInspectionService(mock, rows))) {
             MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
             when(requestContext.getQueryFacade()).thenReturn(mock(MCPFeatureQueryFacade.class));
-            MCPSuccessPayload actual = handlerSupplier.get().handle(requestContext, uriVariables);
+            ShardingTableResourceHandler handler = handlerSupplier.get();
+            MCPSuccessPayload actual = handler.handle(handler.getContextType().cast(requestContext), uriVariables);
             assertThat(((List<?>) actual.toPayload().get("items")).size(), is(rows.size()));
             assertThat(((Map<?, ?>) actual.toPayload().get("self_resource")).get("uri"), is(expectedSelfUri));
         }

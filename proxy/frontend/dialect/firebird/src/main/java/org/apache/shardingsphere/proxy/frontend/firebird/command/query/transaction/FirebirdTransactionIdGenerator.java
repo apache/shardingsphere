@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transact
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 import java.util.Set;
@@ -121,18 +122,13 @@ public final class FirebirdTransactionIdGenerator {
     
     private AtomicInteger getTransactionCounter(final int connectionId) {
         AtomicInteger result = connectionRegistry.get(connectionId);
-        if (null == result) {
-            throw new IllegalStateException("No transaction ID generator found for connectionId: " + connectionId);
-        }
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException("No transaction ID generator found for connectionId: " + connectionId));
         return result;
     }
     
     private Set<Integer> getActiveTransactions(final int connectionId) {
         Set<Integer> result = activeTransactionRegistry.get(connectionId);
-        if (null == result) {
-            throw new IllegalStateException("No transaction ID generator found for connectionId: " + connectionId);
-        }
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalStateException("No transaction ID generator found for connectionId: " + connectionId));
         return result;
     }
-    
 }

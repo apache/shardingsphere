@@ -21,6 +21,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +31,7 @@ class ExpressionConditionUtilsTest {
     @Test
     void assertIsNowExpression() {
         assertFalse(ExpressionConditionUtils.isNowExpression(new LiteralExpressionSegment(0, 0, new Object())));
-        assertFalse(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "shardingsphere")));
-        assertTrue(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "NOW()")));
+        assertFalse(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "shardingsphere", Collections.emptyList())));
+        assertTrue(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "NOW()", Collections.emptyList())));
     }
 }

@@ -87,10 +87,14 @@ public final class ProjectionsContextEngine {
         Collection<Projection> result = new LinkedList<>();
         int derivedColumnOffset = 0;
         for (OrderByItem each : orderItems) {
-            if (!containsProjection(each.getSegment(), projections)) {
-                result.add(new DerivedProjection(((TextOrderByItemSegment) each.getSegment()).getText(), new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)),
-                        each.getSegment()));
+            if (containsProjection(each.getSegment(), projections)) {
+                continue;
             }
+            String expression = ((TextOrderByItemSegment) each.getSegment()).getText();
+            if (null == expression) {
+                continue;
+            }
+            result.add(new DerivedProjection(expression, new IdentifierValue(derivedColumn.getDerivedColumnAlias(derivedColumnOffset++)), each.getSegment()));
         }
         return result;
     }
@@ -99,26 +103,29 @@ public final class ProjectionsContextEngine {
         if (orderByItem instanceof IndexOrderByItemSegment) {
             return true;
         }
+        String normalizedText = SQLUtils.getExactlyValue(((TextOrderByItemSegment) orderByItem).getText());
+        if (null == normalizedText) {
+            return false;
+        }
         for (Projection each : projections) {
-            if (orderByItem instanceof ColumnOrderByItemSegment && isSameColumn(each, ((ColumnOrderByItemSegment) orderByItem).getColumn())) {
+            if (orderByItem instanceof ColumnOrderByItemSegment && isSameColumn(each, ((ColumnOrderByItemSegment) orderByItem).getColumn(), normalizedText)) {
                 return true;
             }
-            String text = ((TextOrderByItemSegment) orderByItem).getText();
-            if (isSameAlias(each, text) || isSameQualifiedName(each, text)) {
+            if (isSameAlias(each, normalizedText) || isSameQualifiedName(each, normalizedText)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isSameColumn(final Projection projection, final ColumnSegment columnSegment) {
+    private boolean isSameColumn(final Projection projection, final ColumnSegment columnSegment, final String normalizedText) {
         Collection<ColumnProjection> columns = getColumnProjections(projection);
         if (columns.isEmpty()) {
             return false;
         }
         boolean columnSegmentPresent = columnSegment.getOwner().isPresent();
         for (ColumnProjection each : columns) {
-            if (columnSegmentPresent ? isSameQualifiedName(each, columnSegment.getQualifiedName()) : isSameName(each, columnSegment.getQualifiedName())) {
+            if (columnSegmentPresent ? isSameQualifiedName(each, normalizedText) : isSameName(each, normalizedText)) {
                 return true;
             }
         }
@@ -136,15 +143,15 @@ public final class ProjectionsContextEngine {
         return result;
     }
     
-    private boolean isSameName(final ColumnProjection projection, final String text) {
-        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(projection.getName().getValue());
+    private boolean isSameName(final ColumnProjection projection, final String normalizedText) {
+        return normalizedText.equalsIgnoreCase(projection.getName().getValue());
     }
     
-    private boolean isSameAlias(final Projection projection, final String text) {
-        return projection.getAlias().isPresent() && SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getAlias().get().getValue()));
+    private boolean isSameAlias(final Projection projection, final String normalizedText) {
+        return projection.getAlias().isPresent() && normalizedText.equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getAlias().get().getValue()));
     }
     
-    private boolean isSameQualifiedName(final Projection projection, final String text) {
-        return SQLUtils.getExactlyValue(text).equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getExpression()));
+    private boolean isSameQualifiedName(final Projection projection, final String normalizedText) {
+        return normalizedText.equalsIgnoreCase(SQLUtils.getExactlyValue(projection.getExpression()));
     }
 }

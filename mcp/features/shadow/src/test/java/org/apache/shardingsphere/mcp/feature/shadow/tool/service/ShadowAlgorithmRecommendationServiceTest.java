@@ -22,10 +22,14 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,23 +39,23 @@ class ShadowAlgorithmRecommendationServiceTest {
     
     private final ShadowAlgorithmRecommendationService service = new ShadowAlgorithmRecommendationService();
     
-    @Test
-    void assertRecommendSpecifiedAlgorithm() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertRecommendAlgorithmCases")
+    void assertRecommendAlgorithm(final String name, final String algorithmType, final List<Map<String, Object>> algorithmRows, final String expectedType, final String expectedReason) {
         WorkflowRequest request = new WorkflowRequest();
-        request.setAlgorithmType("value_match");
-        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
-                request, List.of(Map.of("type", "VALUE_MATCH")), new LinkedList<>());
-        assertThat(actual.getFirst().getAlgorithmType(), is("VALUE_MATCH"));
+        request.setAlgorithmType(algorithmType);
+        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(request, algorithmRows, new LinkedList<>());
+        assertThat(actual.getFirst().getAlgorithmType(), is(expectedType));
+        assertThat(actual.getFirst().getRecommendationReason(), is(expectedReason));
     }
     
-    @Test
-    void assertRecommendSqlHintDefault() {
-        WorkflowRequest request = new WorkflowRequest();
-        List<AlgorithmCandidate> actual = service.recommendShadowAlgorithms(
-                request, List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")), new LinkedList<>());
-        assertThat(actual.getFirst().getAlgorithmType(), is("SQL_HINT"));
-        assertThat(actual.getFirst().getRecommendationReason(), is(
-                "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."));
+    private static Stream<Arguments> assertRecommendAlgorithmCases() {
+        return Stream.of(
+                Arguments.of("specified algorithm", "value_match", List.of(Map.of("type", "VALUE_MATCH")), "VALUE_MATCH", "User specified shadow algorithm."),
+                Arguments.of("default algorithm", "", List.of(Map.of("type", "VALUE_MATCH"), Map.of("type", "SQL_HINT")), "SQL_HINT",
+                        "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."),
+                Arguments.of("first available algorithm", "", List.of(Map.of("type", "FOO_ALGORITHM")), "FOO_ALGORITHM",
+                        "Selected from algorithms reported by the current Proxy using MCP's built-in shadow preference order."));
     }
     
     @Test

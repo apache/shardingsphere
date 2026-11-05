@@ -24,8 +24,8 @@ on:
       - '**/*.md'
   workflow_dispatch:
     inputs:
-      full_matrix_algorithm:
-        description: Full matrix generation algorithm
+      target_matrix_algorithm:
+        description: Target matrix generation algorithm
         required: false
         default: auto
         type: choice
@@ -60,12 +60,12 @@ jobs:
     timeout-minutes: 5
     outputs:
       smoke-matrix: ${{ steps.generate-matrix.outputs.smoke-matrix }}
-      full-matrix: ${{ steps.generate-matrix.outputs.full-matrix }}
+      target-matrix: ${{ steps.generate-matrix.outputs.target-matrix }}
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
-      full-matrix-algorithm: ${{ steps.generate-matrix.outputs.full-matrix-algorithm }}
-      full-smoke-overlap-count: ${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}
-      estimated-stage2-jobs: ${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}
+      target-matrix-algorithm: ${{ steps.generate-matrix.outputs.target-matrix-algorithm }}
+      target-smoke-overlap-count: ${{ steps.generate-matrix.outputs.target-smoke-overlap-count }}
+      estimated-remaining-tests-jobs: ${{ steps.generate-matrix.outputs.estimated-remaining-tests-jobs }}
       total-two-stage-jobs: ${{ steps.generate-matrix.outputs.total-two-stage-jobs }}
       effective-reduction-ratio: ${{ steps.generate-matrix.outputs.effective-reduction-ratio }}
       filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
@@ -95,7 +95,7 @@ jobs:
           FILTER_CORE_INFRA: ${{ steps.filter.outputs.core_infra }}
           FILTER_TEST_FRAMEWORK: ${{ steps.filter.outputs.test_framework }}
           FILTER_POM_CHANGES: ${{ steps.filter.outputs.pom_changes }}
-          FULL_MATRIX_ALGORITHM_INPUT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_matrix_algorithm || 'auto' }}
+          TARGET_MATRIX_ALGORITHM_INPUT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_matrix_algorithm || 'auto' }}
         run: |
           filters=$(jq -cn \
             --arg adapter_proxy          "$FILTER_ADAPTER_PROXY" \
@@ -123,9 +123,9 @@ jobs:
         run: |
           echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
           echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
-          echo "full-matrix-algorithm=${{ steps.generate-matrix.outputs.full-matrix-algorithm }}"
-          echo "full-smoke-overlap-count=${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}"
-          echo "estimated-stage2-jobs=${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}"
+          echo "target-matrix-algorithm=${{ steps.generate-matrix.outputs.target-matrix-algorithm }}"
+          echo "target-smoke-overlap-count=${{ steps.generate-matrix.outputs.target-smoke-overlap-count }}"
+          echo "estimated-remaining-tests-jobs=${{ steps.generate-matrix.outputs.estimated-remaining-tests-jobs }}"
           echo "total-two-stage-jobs=${{ steps.generate-matrix.outputs.total-two-stage-jobs }}"
           echo "effective-reduction-ratio=${{ steps.generate-matrix.outputs.effective-reduction-ratio }}"
           echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
@@ -227,20 +227,20 @@ jobs:
         id: generate
         env:
           FILTER_JSON: ${{ needs.detect-and-generate-matrix.outputs.filter-json }}
-          FULL_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.full-matrix }}
+          TARGET_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.target-matrix }}
           SMOKE_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.smoke-matrix }}
         run: |
           bash .github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh \
             "$FILTER_JSON" \
-            "$FULL_MATRIX" \
+            "$TARGET_MATRIX" \
             "$SMOKE_MATRIX"
       - name: Logs
         run: |
           echo "matrix=${{ steps.generate.outputs.matrix }}"
           echo "has-remaining-jobs=${{ steps.generate.outputs.has-remaining-jobs }}"
 
-  e2e-sql-stage2:
-    name: E2E - SQL (Stage 2)
+  e2e-sql-remaining-tests:
+    name: E2E - SQL (Remaining Tests)
     needs: [ detect-remaining-matrix, prepare-e2e-artifacts, global-environment ]
     if: >-
       always()

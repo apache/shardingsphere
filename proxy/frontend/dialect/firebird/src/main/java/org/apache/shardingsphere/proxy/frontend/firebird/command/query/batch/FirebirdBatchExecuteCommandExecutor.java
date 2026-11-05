@@ -73,15 +73,12 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdBatchStatementManager batchStatementManager = FirebirdBatchStatementManager.getInstance();
         FirebirdBatchStatement batchStatement = batchStatementManager.getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
-        if (null == batchStatement) {
-            throw new InvalidBatchHandleException(packet.getStatementHandle());
-        }
+        ShardingSpherePreconditions.checkNotNull(batchStatement, () -> new InvalidBatchHandleException(packet.getStatementHandle()));
         validateTransactionHandle();
         registerStreamBlobs(batchStatementManager, batchStatement);
-        int messageCount = batchStatement.getParameterValues().size();
         if (batchStatement.getParameterValues().isEmpty()) {
             batchStatementManager.resetBatchStatement(batchStatement);
-            return Collections.singleton(new FirebirdBatchCompletionStateResponse().setHandle(packet.getStatementHandle()).setRecordsCount(messageCount).setUpdateCounts(NO_UPDATE_COUNTS));
+            return Collections.singleton(new FirebirdBatchCompletionStateResponse().setHandle(packet.getStatementHandle()).setRecordsCount(0).setUpdateCounts(NO_UPDATE_COUNTS));
         }
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
         FirebirdBatchCompletion completion = executeBatch(batchStatement, preparedStatement);

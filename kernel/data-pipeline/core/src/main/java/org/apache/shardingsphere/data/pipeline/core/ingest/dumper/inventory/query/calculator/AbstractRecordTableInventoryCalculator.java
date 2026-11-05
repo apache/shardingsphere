@@ -281,7 +281,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     
     private void setParameters(final PreparedStatement preparedStatement, final TableInventoryCalculateParameter param) throws SQLException {
         QueryType queryType = param.getQueryType();
-        if (queryType == QueryType.RANGE_QUERY) {
+        if (QueryType.RANGE_QUERY == queryType) {
             Range<?> range = param.getRange();
             ShardingSpherePreconditions.checkNotNull(range,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values range is null.")));
@@ -295,7 +295,9 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
             if (StreamingRangeType.SMALL == streamingRangeType) {
                 setParameter(preparedStatement, parameterIndex, chunkSize * streamingChunkCount);
             }
-        } else if (queryType == QueryType.POINT_QUERY) {
+            return;
+        }
+        if (QueryType.POINT_QUERY == queryType) {
             Collection<Object> uniqueKeysValues = param.getUniqueKeysValues();
             ShardingSpherePreconditions.checkNotNull(uniqueKeysValues,
                     () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Unique keys values is null.")));
@@ -311,9 +313,9 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
                     setParameter(preparedStatement, parameterIndex++, each);
                 }
             }
-        } else {
-            throw new UnsupportedOperationException("Query type: " + queryType);
+            return;
         }
+        throw new UnsupportedOperationException("Query type: " + queryType);
     }
     
     private void setParameter(final PreparedStatement preparedStatement, final int parameterIndex, final Object value) throws SQLException {

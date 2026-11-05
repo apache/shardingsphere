@@ -19,11 +19,14 @@ package org.apache.shardingsphere.infra.exception.external.sql.type.kernel;
 
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class KernelSQLExceptionTest {
@@ -47,5 +50,45 @@ class KernelSQLExceptionTest {
         assertThat(actual.getErrorCode(), is(11001));
         assertThat(actual.getMessage(), is("reason" + System.lineSeparator() + "More details: java.lang.RuntimeException: test"));
         assertThat(actual.getCause(), is(cause));
+    }
+    
+    @ParameterizedTest(name = "{index}: literal reason={0}")
+    @ValueSource(strings = {"foo_reason", "foo_%s_%1$s_%n_%%_%", ""})
+    void assertToSQLExceptionWithLiteralReason(final String reason) {
+        SQLException actual = new KernelSQLException(reason, XOpenSQLState.GENERAL_ERROR, 1, 1, null) {
+        }.toSQLException();
+        assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorCode(), is(11001));
+        assertThat(actual.getMessage(), is(reason));
+        assertNull(actual.getCause());
+    }
+    
+    @Test
+    void assertToSQLExceptionWithLiteralReasonAndCause() {
+        Exception cause = new RuntimeException("foo_cause_%s");
+        SQLException actual = new KernelSQLException("foo_%s_%n_%%_%", XOpenSQLState.GENERAL_ERROR, 1, 1, cause) {
+        }.toSQLException();
+        assertThat(actual.getSQLState(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
+        assertThat(actual.getErrorCode(), is(11001));
+        assertThat(actual.getMessage(), is("foo_%s_%n_%%_%" + System.lineSeparator() + "More details: java.lang.RuntimeException: foo_cause_%s"));
+        assertThat(actual.getCause(), sameInstance(cause));
+    }
+    
+    @Test
+    void assertToSQLExceptionWithExceptionMessageArgument() {
+        Exception messageArg = new RuntimeException("foo_argument");
+        SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, "foo_%s", messageArg) {
+        }.toSQLException();
+        assertThat(actual.getMessage(), is("foo_java.lang.RuntimeException: foo_argument"));
+        assertNull(actual.getCause());
+    }
+    
+    @Test
+    void assertToSQLExceptionWithCauseAndMessageArguments() {
+        Exception cause = new RuntimeException("foo_cause");
+        SQLException actual = new KernelSQLException(XOpenSQLState.GENERAL_ERROR, 1, 1, cause, "foo_%s_%d", "bar_value", 2) {
+        }.toSQLException();
+        assertThat(actual.getMessage(), is("foo_bar_value_2" + System.lineSeparator() + "More details: java.lang.RuntimeException: foo_cause"));
+        assertThat(actual.getCause(), sameInstance(cause));
     }
 }

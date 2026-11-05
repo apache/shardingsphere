@@ -35,7 +35,6 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -98,7 +97,7 @@ class MaskRuleConfigurationTest {
     void assertUnconfiguredMaskAlgorithmViolation() {
         MaskRuleConfiguration ruleConfig = createRuleConfiguration(new MaskColumnRuleConfiguration("foo_col", "bar_mask"));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), containsString("Property `tables` references unconfigured maskAlgorithms `bar_mask`."));
+        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` references unconfigured maskAlgorithms."));
     }
     
     @Test
@@ -107,7 +106,7 @@ class MaskRuleConfigurationTest {
                 new MaskTableRuleConfiguration("bar_tbl", Collections.emptyList()), new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()),
                 new MaskTableRuleConfiguration("bar_tbl", Collections.emptyList()), new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap());
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names `foo_tbl, bar_tbl`."));
+        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names."));
         SQLException actualSQLException = actual.toSQLException();
         assertThat(actualSQLException.getMessage(), is(actual.getMessage()));
         assertThat(actualSQLException.getSQLState(), is("44000"));
@@ -120,8 +119,8 @@ class MaskRuleConfigurationTest {
                 new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(new MaskColumnRuleConfiguration("foo_col", "bar_mask"))),
                 new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList())), Collections.emptyMap());
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names `foo_tbl`.; "
-                + "Property `tables` references unconfigured maskAlgorithms `bar_mask`."));
+        assertThat(actual.getMessage(), is("Invalid 'MaskRuleConfiguration' rule, error message is: Property `tables` must not contain duplicate table names.; "
+                + "Property `tables` references unconfigured maskAlgorithms."));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {

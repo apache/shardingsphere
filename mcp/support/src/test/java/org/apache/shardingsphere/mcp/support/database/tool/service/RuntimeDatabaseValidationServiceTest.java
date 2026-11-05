@@ -85,6 +85,49 @@ class RuntimeDatabaseValidationServiceTest {
     }
     
     @Test
+    void assertValidateWithVisibleMetadataCatalog() throws SQLException {
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        ResultSet catalogs = mock(ResultSet.class);
+        when(databaseMetaData.getCatalogs()).thenReturn(catalogs);
+        when(catalogs.next()).thenReturn(true, true, false);
+        when(catalogs.getString(1)).thenReturn("foo_other", "logic_db");
+        when(getProfileLoader().load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL,
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet())));
+        when(getMetadataLoader().load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"), ignored -> Optional.of(runtimeDatabaseConfig));
+        assertThat(actual.getStatus(), is("ready"));
+        verify(catalogs).close();
+    }
+    
+    @Test
+    void assertValidateWithVisibleMetadataSchema() throws SQLException {
+        RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        ResultSet catalogs = mock(ResultSet.class);
+        when(databaseMetaData.getCatalogs()).thenReturn(catalogs);
+        ResultSet schemas = mock(ResultSet.class);
+        when(databaseMetaData.getSchemas()).thenReturn(schemas);
+        when(schemas.next()).thenReturn(true, true, false);
+        when(schemas.getString("TABLE_SCHEM")).thenReturn("foo_other", "logic_db");
+        when(getProfileLoader().load(any(), any(RuntimeDatabaseConfiguration.class))).thenReturn(new RuntimeDatabaseProfile("logic_db", "FixtureDB", "1.0", TransactionCapability.LOCAL,
+                new DatabaseIdentifierContext(IdentifierCasePolicyFactory.newSensitivePolicySet())));
+        when(getMetadataLoader().load(any(), any(RuntimeDatabaseConfiguration.class), any(RuntimeDatabaseProfile.class))).thenReturn(createMetadata("public"));
+        RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest("logic_db"), ignored -> Optional.of(runtimeDatabaseConfig));
+        assertThat(actual.getStatus(), is("ready"));
+        verify(catalogs).close();
+        verify(schemas).close();
+    }
+    
+    @Test
     void assertValidateWithMissingDatabase() {
         RuntimeDatabaseValidationService service = new RuntimeDatabaseValidationService();
         RuntimeDatabaseValidationResult actual = service.validate(new RuntimeDatabaseValidationRequest(""), ignored -> Optional.empty());

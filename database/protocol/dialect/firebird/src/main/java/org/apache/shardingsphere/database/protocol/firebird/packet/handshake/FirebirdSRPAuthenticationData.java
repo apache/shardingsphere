@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.handshake;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
@@ -124,10 +125,7 @@ public final class FirebirdSRPAuthenticationData {
     
     private static byte[] pad(final BigInteger n) {
         byte[] byteArray = toBigByteArray(n);
-        if (byteArray.length > SRP_KEY_SIZE) {
-            return Arrays.copyOfRange(byteArray, byteArray.length - SRP_KEY_SIZE, byteArray.length);
-        }
-        return byteArray;
+        return byteArray.length > SRP_KEY_SIZE ? Arrays.copyOfRange(byteArray, byteArray.length - SRP_KEY_SIZE, byteArray.length) : byteArray;
     }
     
     private BigInteger getScramble(final BigInteger x, final BigInteger y) {
@@ -159,8 +157,7 @@ public final class FirebirdSRPAuthenticationData {
         } finally {
             sha1Md.reset();
         }
-        byte[] hash2 = sha1(salt, hash1);
-        return fromBigByteArray(hash2);
+        return fromBigByteArray(sha1(salt, hash1));
     }
     
     private byte[] computeServerSessionKey() {
@@ -181,13 +178,8 @@ public final class FirebirdSRPAuthenticationData {
         byte[] serverSessionKey = computeServerSessionKey();
         BigInteger n1 = fromBigByteArray(sha1(toBigByteArray(N)));
         BigInteger n2 = fromBigByteArray(sha1(toBigByteArray(G)));
-        byte[] clientProof = clientProofHash(
-                toBigByteArray(n1.modPow(n2, N)),
-                stripLeadingZeroes(sha1(normalizeLogin(user).getBytes(StandardCharsets.UTF_8))),
-                salt,
-                toBigByteArray(clientPublicKey),
-                toBigByteArray(publicKey),
-                serverSessionKey);
+        byte[] clientProof = clientProofHash(toBigByteArray(n1.modPow(n2, N)), stripLeadingZeroes(sha1(normalizeLogin(user).getBytes(StandardCharsets.UTF_8))), salt, toBigByteArray(clientPublicKey),
+                toBigByteArray(publicKey), serverSessionKey);
         sessionKey = serverSessionKey;
         return clientProof;
     }
@@ -215,7 +207,7 @@ public final class FirebirdSRPAuthenticationData {
      * @return normalized login
      */
     static String normalizeLogin(final String login) {
-        if (null == login || login.isEmpty()) {
+        if (Strings.isNullOrEmpty(login)) {
             return login;
         }
         if (login.length() > 2 && login.charAt(0) == '"' && login.charAt(login.length() - 1) == '"') {
@@ -227,18 +219,12 @@ public final class FirebirdSRPAuthenticationData {
     private static String normalizeQuotedLogin(final String login) {
         StringBuilder sb = new StringBuilder(login.length() - 2);
         sb.append(login, 1, login.length() - 1);
-        int idx = 0;
-        while (idx < sb.length()) {
-            if (sb.charAt(idx) == '"') {
+        for (int idx = 0; idx < sb.length(); idx++) {
+            if ('"' == sb.charAt(idx)) {
                 sb.deleteCharAt(idx);
-                if (idx < sb.length() && sb.charAt(idx) == '"') {
-                    idx++;
-                } else {
-                    sb.setLength(idx);
-                    return sb.toString();
+                if (idx >= sb.length() || '"' != sb.charAt(idx)) {
+                    return sb.substring(0, idx);
                 }
-            } else {
-                idx++;
             }
         }
         return sb.toString();

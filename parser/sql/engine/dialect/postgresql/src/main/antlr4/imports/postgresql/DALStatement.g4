@@ -53,7 +53,7 @@ configurationParameterClause
     ;
 
 resetParameter
-    : RESET (ALL | identifier)
+    : RESET (ALL | varName | SESSION AUTHORIZATION | TIME ZONE)
     ;
 
 explain
@@ -65,7 +65,16 @@ explain
     ;
 
 explainableStmt
-    : select | insert | update | delete | declare | executeStmt | createMaterializedView | refreshMatViewStmt
+    : select
+    | insert
+    | update
+    | delete
+    | merge
+    | declare
+    | executeStmt
+    | createTable {null != $createTable.ctx.AS()}?
+    | createMaterializedView
+    | refreshMatViewStmt
     ;
 
 explainOptionList
@@ -77,7 +86,7 @@ explainOptionElem
     ;
 
 explainOptionArg
-    : booleanOrString | numericOnly
+    : booleanOrString | numericOnly | JSON
     ;
 
 explainOptionName
@@ -97,7 +106,7 @@ vacuumRelationList
     ;
 
 vacuumRelation
-    : qualifiedName optNameList
+    : ONLY? qualifiedName optNameList
     ;
 
 vacAnalyzeOptionList

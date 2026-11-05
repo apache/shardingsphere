@@ -87,8 +87,7 @@ class ReadwriteSplittingRuleConfigurationTest {
         ReadwriteSplittingRuleConfiguration ruleConfig = createRuleConfiguration(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
                 "foo_group", "foo_write", Collections.singletonList("foo_read"), "bar_load_balancer"));
         InvalidRuleConfigurationException actual = assertThrows(InvalidRuleConfigurationException.class, () -> RuleConfigurationValidator.validate(ruleConfig));
-        assertThat(actual.getMessage(),
-                is("Invalid 'ReadwriteSplittingRuleConfiguration' rule, error message is: Property `dataSourceGroups` references unconfigured loadBalancers `bar_load_balancer`."));
+        assertThat(actual.getMessage(), is("Invalid 'ReadwriteSplittingRuleConfiguration' rule, error message is: Property `dataSourceGroups` references unconfigured loadBalancers."));
     }
     
     private static Stream<Arguments> invalidRuleConfigurationArguments() {

@@ -86,7 +86,6 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }

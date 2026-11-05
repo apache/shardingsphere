@@ -81,7 +81,7 @@ public final class MCPRegistryMetadataCommand {
      */
     public static void execute(final String... args) throws IOException {
         CommandOptions options = parseOptions(args);
-        Map<String, Object> server = JsonEngine.unmarshal(Files.readString(options.path()), new JsonTypeReference<Map<String, Object>>() {
+        Map<String, Object> server = JsonEngine.unmarshal(Files.readString(options.path()), new JsonTypeReference<>() {
         });
         if (!options.validateOnly()) {
             ShardingSpherePreconditions.checkState(!options.version().isBlank() && !options.identifier().isBlank(),
@@ -220,8 +220,7 @@ public final class MCPRegistryMetadataCommand {
     
     private static void validateString(final Map<String, Object> target, final String key, final int maxLength) {
         Object value = target.get(key);
-        ShardingSpherePreconditions.checkState(value instanceof String && !((String) value).isBlank(),
-                () -> new IllegalArgumentException("server.json field " + key + " must be a non-empty string."));
+        ShardingSpherePreconditions.checkState(value instanceof String string && !string.isBlank(), () -> new IllegalArgumentException("server.json field " + key + " must be a non-empty string."));
         ShardingSpherePreconditions.checkState(((String) value).length() <= maxLength,
                 () -> new IllegalArgumentException("server.json field " + key + " must be at most " + maxLength + " characters."));
     }
@@ -237,8 +236,7 @@ public final class MCPRegistryMetadataCommand {
     }
     
     private static void validateHttpUrl(final Object value) {
-        ShardingSpherePreconditions.checkState(value instanceof String && !((String) value).isBlank(),
-                () -> new IllegalArgumentException("streamable-http transport must define a URL."));
+        ShardingSpherePreconditions.checkState(value instanceof String string && !string.isBlank(), () -> new IllegalArgumentException("streamable-http transport must define a URL."));
         try {
             URI uri = new URI((String) value);
             ShardingSpherePreconditions.checkState(("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) && null != uri.getHost(),

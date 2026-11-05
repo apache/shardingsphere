@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -69,5 +70,16 @@ class EncryptWorkflowRequestTest {
         assertThat(actualRequest.getOptions().getLikeQueryAlgorithmType(), is("CHAR_DIGEST_LIKE"));
         assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("current-key"));
         assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().get("digest-algorithm-name"), is("SHA-256"));
+    }
+    
+    @Test
+    void assertMergeFromBaseRequest() {
+        WorkflowRequest previous = new WorkflowRequest();
+        previous.setDatabase("foo_db");
+        EncryptWorkflowRequest current = new EncryptWorkflowRequest();
+        current.setColumn("foo_column");
+        EncryptWorkflowRequest actual = EncryptWorkflowRequest.merge(previous, current);
+        assertThat(actual.getDatabase(), is("foo_db"));
+        assertThat(actual.getColumn(), is("foo_column"));
     }
 }

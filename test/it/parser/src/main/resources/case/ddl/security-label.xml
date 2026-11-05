@@ -18,4 +18,6 @@
 
 <sql-parser-test-cases>
     <security-label sql-case-id="security_label" />
+    <security-label sql-case-id="security_label_on_role" />
+    <security-label sql-case-id="security_label_on_role_with_provider" />
 </sql-parser-test-cases>

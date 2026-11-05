@@ -149,8 +149,8 @@ public final class PostgreSQLIncrementalDumper extends AbstractPipelineLifecycle
             channel.push(records);
             return;
         }
-        if (event instanceof AbstractRowEvent) {
-            rowEvents.add((AbstractRowEvent) event);
+        if (event instanceof AbstractRowEvent rowEvent) {
+            rowEvents.add(rowEvent);
         }
     }
     

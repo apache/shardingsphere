@@ -84,10 +84,10 @@ final class SQLStatementObjectExtractor {
     
     private void extractDCLTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         Collection<PrivilegeObjectSegment> privilegeObjects;
-        if (sqlStatement instanceof GrantStatement) {
-            privilegeObjects = ((GrantStatement) sqlStatement).getPrivilegeObjects();
-        } else if (sqlStatement instanceof RevokeStatement) {
-            privilegeObjects = ((RevokeStatement) sqlStatement).getPrivilegeObjects();
+        if (sqlStatement instanceof GrantStatement grant) {
+            privilegeObjects = grant.getPrivilegeObjects();
+        } else if (sqlStatement instanceof RevokeStatement revoke) {
+            privilegeObjects = revoke.getPrivilegeObjects();
         } else {
             return;
         }
@@ -103,8 +103,7 @@ final class SQLStatementObjectExtractor {
     private void extractQualifiedFunctions(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         new SQLStatementTreeWalker(each -> {
         }, expression -> {
-            if (expression instanceof FunctionSegment) {
-                FunctionSegment function = (FunctionSegment) expression;
+            if (expression instanceof FunctionSegment function) {
                 if (null != function.getOwner()) {
                     result.add(SQLStatementObjectName.from(Optional.of(function.getOwner()), new IdentifierValue(function.getFunctionName())));
                 }
@@ -113,25 +112,23 @@ final class SQLStatementObjectExtractor {
     }
     
     private void extractDirectTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
-        if (sqlStatement instanceof InsertStatement) {
-            ((InsertStatement) sqlStatement).getTable().ifPresent(optional -> addTable(optional, result));
-        } else if (sqlStatement instanceof UpdateStatement) {
-            addTableSegment(((UpdateStatement) sqlStatement).getTable(), result);
-        } else if (sqlStatement instanceof DeleteStatement) {
-            addTableSegment(((DeleteStatement) sqlStatement).getTable(), result);
-        } else if (sqlStatement instanceof MergeStatement) {
-            addTableSegment(((MergeStatement) sqlStatement).getTarget(), result);
-        } else if (sqlStatement instanceof CreateTableStatement) {
-            CreateTableStatement createTableStatement = (CreateTableStatement) sqlStatement;
+        if (sqlStatement instanceof InsertStatement insert) {
+            insert.getTable().ifPresent(optional -> addTable(optional, result));
+        } else if (sqlStatement instanceof UpdateStatement update) {
+            addTableSegment(update.getTable(), result);
+        } else if (sqlStatement instanceof DeleteStatement delete) {
+            addTableSegment(delete.getTable(), result);
+        } else if (sqlStatement instanceof MergeStatement merge) {
+            addTableSegment(merge.getTarget(), result);
+        } else if (sqlStatement instanceof CreateTableStatement createTableStatement) {
             addTable(createTableStatement.getTable(), result);
             createTableStatement.getLikeTable().ifPresent(table -> addTable(table, result));
             createTableStatement.getSelectStatement().ifPresent(select -> addSelectTables(select, result));
-        } else if (sqlStatement instanceof AlterTableStatement) {
-            addTable(((AlterTableStatement) sqlStatement).getTable(), result);
-        } else if (sqlStatement instanceof CreateViewStatement) {
-            addTable(((CreateViewStatement) sqlStatement).getView(), result);
-        } else if (sqlStatement instanceof AlterViewStatement) {
-            AlterViewStatement alterViewStatement = (AlterViewStatement) sqlStatement;
+        } else if (sqlStatement instanceof AlterTableStatement alterTableStatement) {
+            addTable(alterTableStatement.getTable(), result);
+        } else if (sqlStatement instanceof CreateViewStatement createViewStatement) {
+            addTable(createViewStatement.getView(), result);
+        } else if (sqlStatement instanceof AlterViewStatement alterViewStatement) {
             addTable(alterViewStatement.getView(), result);
             alterViewStatement.getRenameView().ifPresent(view -> addTable(view, result));
             alterViewStatement.getSelect().ifPresent(select -> addSelectTables(select, result));
@@ -143,53 +140,53 @@ final class SQLStatementObjectExtractor {
     }
     
     private void extractIndexTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
-        if (sqlStatement instanceof CreateIndexStatement) {
-            addIndex(((CreateIndexStatement) sqlStatement).getIndex(), result);
-        } else if (sqlStatement instanceof AlterIndexStatement) {
-            ((AlterIndexStatement) sqlStatement).getIndex().ifPresent(index -> addIndex(index, result));
-            ((AlterIndexStatement) sqlStatement).getRenameIndex().ifPresent(index -> addIndex(index, result));
-        } else if (sqlStatement instanceof DropIndexStatement) {
-            for (IndexSegment each : ((DropIndexStatement) sqlStatement).getIndexes()) {
+        if (sqlStatement instanceof CreateIndexStatement createIndexStatement) {
+            addIndex(createIndexStatement.getIndex(), result);
+        } else if (sqlStatement instanceof AlterIndexStatement alterIndexStatement) {
+            alterIndexStatement.getIndex().ifPresent(index -> addIndex(index, result));
+            alterIndexStatement.getRenameIndex().ifPresent(index -> addIndex(index, result));
+        } else if (sqlStatement instanceof DropIndexStatement dropIndexStatement) {
+            for (IndexSegment each : dropIndexStatement.getIndexes()) {
                 addIndex(each, result);
             }
         }
     }
     
     private void extractDatabaseTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
-        if (sqlStatement instanceof CreateDatabaseStatement) {
-            addNamespaceName(((CreateDatabaseStatement) sqlStatement).getDatabaseName(), result);
-        } else if (sqlStatement instanceof AlterDatabaseStatement) {
-            addNamespaceName(((AlterDatabaseStatement) sqlStatement).getDatabaseName(), result);
-            ((AlterDatabaseStatement) sqlStatement).getRenameDatabaseName().ifPresent(name -> addNamespaceName(name, result));
-        } else if (sqlStatement instanceof DropDatabaseStatement) {
-            addNamespaceName(((DropDatabaseStatement) sqlStatement).getDatabaseName(), result);
+        if (sqlStatement instanceof CreateDatabaseStatement createDatabaseStatement) {
+            addNamespaceName(createDatabaseStatement.getDatabaseName(), result);
+        } else if (sqlStatement instanceof AlterDatabaseStatement alterDatabaseStatement) {
+            addNamespaceName(alterDatabaseStatement.getDatabaseName(), result);
+            alterDatabaseStatement.getRenameDatabaseName().ifPresent(name -> addNamespaceName(name, result));
+        } else if (sqlStatement instanceof DropDatabaseStatement dropDatabaseStatement) {
+            addNamespaceName(dropDatabaseStatement.getDatabaseName(), result);
         }
     }
     
     private void extractSchemaTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
-        if (sqlStatement instanceof CreateSchemaStatement) {
-            ((CreateSchemaStatement) sqlStatement).getSchemaName().ifPresent(schema -> addNamespaceIdentifier(schema, result));
-        } else if (sqlStatement instanceof AlterSchemaStatement) {
-            addNamespaceIdentifier(((AlterSchemaStatement) sqlStatement).getSchemaName(), result);
-            ((AlterSchemaStatement) sqlStatement).getRenameSchema().ifPresent(schema -> addNamespaceIdentifier(schema, result));
-        } else if (sqlStatement instanceof DropSchemaStatement) {
-            for (IdentifierValue each : ((DropSchemaStatement) sqlStatement).getSchemaNames()) {
+        if (sqlStatement instanceof CreateSchemaStatement createSchemaStatement) {
+            createSchemaStatement.getSchemaName().ifPresent(schema -> addNamespaceIdentifier(schema, result));
+        } else if (sqlStatement instanceof AlterSchemaStatement alterSchemaStatement) {
+            addNamespaceIdentifier(alterSchemaStatement.getSchemaName(), result);
+            alterSchemaStatement.getRenameSchema().ifPresent(schema -> addNamespaceIdentifier(schema, result));
+        } else if (sqlStatement instanceof DropSchemaStatement dropSchemaStatement) {
+            for (IdentifierValue each : dropSchemaStatement.getSchemaNames()) {
                 addNamespaceIdentifier(each, result);
             }
         }
     }
     
     private void extractSequenceTargets(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
-        if (sqlStatement instanceof CreateSequenceStatement) {
-            addName(((CreateSequenceStatement) sqlStatement).getSequenceName(), result);
-        } else if (sqlStatement instanceof AlterSequenceStatement) {
-            addName(((AlterSequenceStatement) sqlStatement).getSequenceName(), result);
-        } else if (sqlStatement instanceof DropSequenceStatement) {
-            for (Object each : ((DropSequenceStatement) sqlStatement).getSequenceNames()) {
-                if (each instanceof String) {
-                    addName((String) each, result);
-                } else if (each instanceof SimpleTableSegment) {
-                    addTable((SimpleTableSegment) each, result);
+        if (sqlStatement instanceof CreateSequenceStatement createSequenceStatement) {
+            addName(createSequenceStatement.getSequenceName(), result);
+        } else if (sqlStatement instanceof AlterSequenceStatement alterSequenceStatement) {
+            addName(alterSequenceStatement.getSequenceName(), result);
+        } else if (sqlStatement instanceof DropSequenceStatement dropSequenceStatement) {
+            for (Object each : dropSequenceStatement.getSequenceNames()) {
+                if (each instanceof String sequenceName) {
+                    addName(sequenceName, result);
+                } else if (each instanceof SimpleTableSegment simpleTable) {
+                    addTable(simpleTable, result);
                 } else {
                     throw new MCPUnsupportedSQLStatementException();
                 }
@@ -198,8 +195,8 @@ final class SQLStatementObjectExtractor {
     }
     
     private void extractMergeTables(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
-        if (sqlStatement instanceof MergeStatement) {
-            addTableSegment(((MergeStatement) sqlStatement).getSource(), result);
+        if (sqlStatement instanceof MergeStatement merge) {
+            addTableSegment(merge.getSource(), result);
         }
     }
     
@@ -232,44 +229,44 @@ final class SQLStatementObjectExtractor {
                 collectCommonTableExpressionAliases(each.getSubquery().getSelect(), result);
             }
         });
-        if (sqlStatement instanceof CreateTableStatement) {
-            ((CreateTableStatement) sqlStatement).getSelectStatement().ifPresent(each -> collectCommonTableExpressionAliases(each, result));
-        } else if (sqlStatement instanceof CreateViewStatement) {
-            collectCommonTableExpressionAliases(((CreateViewStatement) sqlStatement).getSelect(), result);
-        } else if (sqlStatement instanceof AlterViewStatement) {
-            ((AlterViewStatement) sqlStatement).getSelect().ifPresent(each -> collectCommonTableExpressionAliases(each, result));
+        if (sqlStatement instanceof CreateTableStatement createTableStatement) {
+            createTableStatement.getSelectStatement().ifPresent(each -> collectCommonTableExpressionAliases(each, result));
+        } else if (sqlStatement instanceof CreateViewStatement createViewStatement) {
+            collectCommonTableExpressionAliases(createViewStatement.getSelect(), result);
+        } else if (sqlStatement instanceof AlterViewStatement alterViewStatement) {
+            alterViewStatement.getSelect().ifPresent(each -> collectCommonTableExpressionAliases(each, result));
         }
     }
     
     private Optional<WithSegment> findWithSegment(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement) {
-            return ((SelectStatement) sqlStatement).getWith();
+        if (sqlStatement instanceof SelectStatement select) {
+            return select.getWith();
         }
-        if (sqlStatement instanceof InsertStatement) {
-            return ((InsertStatement) sqlStatement).getWith();
+        if (sqlStatement instanceof InsertStatement insert) {
+            return insert.getWith();
         }
-        if (sqlStatement instanceof UpdateStatement) {
-            return ((UpdateStatement) sqlStatement).getWith();
+        if (sqlStatement instanceof UpdateStatement update) {
+            return update.getWith();
         }
-        if (sqlStatement instanceof DeleteStatement) {
-            return ((DeleteStatement) sqlStatement).getWith();
+        if (sqlStatement instanceof DeleteStatement delete) {
+            return delete.getWith();
         }
-        return sqlStatement instanceof MergeStatement ? ((MergeStatement) sqlStatement).getWith() : Optional.empty();
+        return sqlStatement instanceof MergeStatement merge ? merge.getWith() : Optional.empty();
     }
     
     private void addTableSegment(final TableSegment tableSegment, final Collection<SQLStatementObjectName> result) {
-        if (tableSegment instanceof SimpleTableSegment) {
-            addTable((SimpleTableSegment) tableSegment, result);
-        } else if (tableSegment instanceof JoinTableSegment) {
-            addTableSegment(((JoinTableSegment) tableSegment).getLeft(), result);
-            addTableSegment(((JoinTableSegment) tableSegment).getRight(), result);
-        } else if (tableSegment instanceof SubqueryTableSegment) {
+        if (tableSegment instanceof SimpleTableSegment simpleTable) {
+            addTable(simpleTable, result);
+        } else if (tableSegment instanceof JoinTableSegment joinTable) {
+            addTableSegment(joinTable.getLeft(), result);
+            addTableSegment(joinTable.getRight(), result);
+        } else if (tableSegment instanceof SubqueryTableSegment subqueryTable) {
             TableExtractor extractor = new TableExtractor();
-            extractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
+            extractor.extractTablesFromSelect(subqueryTable.getSubquery().getSelect());
             addTableSegments(extractor.getTableContext(), result);
-        } else if (tableSegment instanceof DeleteMultiTableSegment) {
-            addTables(((DeleteMultiTableSegment) tableSegment).getActualDeleteTables(), result);
-            addTableSegment(((DeleteMultiTableSegment) tableSegment).getRelationTable(), result);
+        } else if (tableSegment instanceof DeleteMultiTableSegment deleteMultiTable) {
+            addTables(deleteMultiTable.getActualDeleteTables(), result);
+            addTableSegment(deleteMultiTable.getRelationTable(), result);
         }
     }
     

@@ -19,8 +19,10 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 
 /**
  * Segment for returning clause.
@@ -34,4 +36,10 @@ public final class ReturningSegment implements SQLSegment {
     private final int stopIndex;
     
     private final ProjectionsSegment projections;
+    
+    @Setter
+    private AliasSegment oldAlias;
+    
+    @Setter
+    private AliasSegment newAlias;
 }

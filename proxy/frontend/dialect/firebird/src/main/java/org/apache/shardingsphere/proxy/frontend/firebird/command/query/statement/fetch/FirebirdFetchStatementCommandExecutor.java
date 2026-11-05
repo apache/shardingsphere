@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
-import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -64,23 +63,20 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     @Override
     public boolean next() throws SQLException {
-        return 0 <= fetchCount;
+        return fetchCount >= 0;
     }
     
     @Override
     public DatabasePacket getQueryRowPacket() throws SQLException {
         fetchCount--;
-        if (0 <= fetchCount) {
-            if (proxyBackendHandler.next()) {
-                BinaryRow row = FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData());
-                return FirebirdFetchResponsePacket.getFetchRowPacket(row);
-            } else {
-                connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
-                fetchCount = -1;
-                return FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
-            }
+        if (fetchCount < 0) {
+            return FirebirdFetchResponsePacket.getFetchEndPacket();
         }
-        return FirebirdFetchResponsePacket.getFetchEndPacket();
+        if (proxyBackendHandler.next()) {
+            return FirebirdFetchResponsePacket.getFetchRowPacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+        }
+        connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
+        fetchCount = -1;
+        return FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
     }
-    
 }

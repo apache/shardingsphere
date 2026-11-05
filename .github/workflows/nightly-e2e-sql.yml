@@ -113,6 +113,10 @@ jobs:
             mode: Standalone
             database: Hive
             scenario: mask
+          - adapter: proxy
+            mode: Cluster
+            database: Firebird
+            scenario: db
         exclude:
           - adapter: jdbc
             scenario: passthrough

@@ -46,6 +46,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MySQLIdentifierCasePolicyProviderTest {
     
@@ -64,16 +66,16 @@ class MySQLIdentifierCasePolicyProviderTest {
         assertThat(actual.getPolicy(IdentifierScope.COLUMN).normalizeForDefinition("FooColumn", QuoteCharacter.NONE), is("FooColumn"));
         assertThat(actual.getPolicy(IdentifierScope.INDEX).normalizeForDefinition("FooIndex", QuoteCharacter.NONE), is("FooIndex"));
         assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).normalizeForDefinition("FooConstraint", QuoteCharacter.NONE), is("FooConstraint"));
-        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_column", "FOO_COLUMN", QuoteCharacter.NONE), is(Boolean.TRUE));
-        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_index", "FOO_INDEX", QuoteCharacter.NONE), is(Boolean.TRUE));
-        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_constraint", "FOO_CONSTRAINT", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertTrue(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_column", "FOO_COLUMN", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.INDEX).matches("foo_index", "FOO_INDEX", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_constraint", "FOO_CONSTRAINT", QuoteCharacter.NONE));
     }
     
     @Test
     void assertProvideWithQuotedTableName() {
         IdentifierCasePolicy actual = provider.provide(new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 1))).getPolicy(IdentifierScope.TABLE);
         assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
-        assertThat(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE), is(Boolean.TRUE));
+        assertTrue(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE));
     }
     
     private static Stream<Arguments> provideArguments() {
@@ -96,13 +98,13 @@ class MySQLIdentifierCasePolicyProviderTest {
     void assertProvideWithLowerCaseTableNamesZeroUsesScopedPolicies() {
         IdentifierCasePolicyProviderContext context = new IdentifierCasePolicyProviderContext(DATABASE_TYPE, new FixtureDataSource(true, 0));
         IdentifierCasePolicySet actual = provider.provide(context);
-        assertThat(actual.getPolicy(IdentifierScope.DATABASE).matches("foo_db", "FOO_DB", QuoteCharacter.NONE), is(Boolean.FALSE));
-        assertThat(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE), is(Boolean.FALSE));
-        assertThat(actual.getPolicy(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE), is(Boolean.FALSE));
-        assertThat(actual.getPolicy(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE), is(Boolean.FALSE));
-        assertThat(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE), is(Boolean.TRUE));
-        assertThat(actual.getPolicy(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE), is(Boolean.TRUE));
-        assertThat(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_fk", "FOO_FK", QuoteCharacter.NONE), is(Boolean.TRUE));
+        assertFalse(actual.getPolicy(IdentifierScope.DATABASE).matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
+        assertFalse(actual.getPolicy(IdentifierScope.SCHEMA).matches("foo_schema", "FOO_SCHEMA", QuoteCharacter.NONE));
+        assertFalse(actual.getPolicy(IdentifierScope.TABLE).matches("foo_tbl", "FOO_TBL", QuoteCharacter.NONE));
+        assertFalse(actual.getPolicy(IdentifierScope.VIEW).matches("foo_view", "FOO_VIEW", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.COLUMN).matches("foo_col", "FOO_COL", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.INDEX).matches("foo_idx", "FOO_IDX", QuoteCharacter.NONE));
+        assertTrue(actual.getPolicy(IdentifierScope.CONSTRAINT).matches("foo_fk", "FOO_FK", QuoteCharacter.NONE));
     }
     
     @ParameterizedTest(name = "{0}")

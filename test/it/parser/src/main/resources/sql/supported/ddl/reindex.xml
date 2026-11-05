@@ -24,5 +24,9 @@
     <sql-case id="reindex_index" value="REINDEX INDEX concur_reindex_part;" db-types="PostgreSQL" />
     <sql-case id="reindex_schema" value="REINDEX SCHEMA CONCURRENTLY pg_catalog;" db-types="PostgreSQL" />
     <sql-case id="reindex_system" value="REINDEX SYSTEM CONCURRENTLY postgres;" db-types="PostgreSQL" />
+    <sql-case id="reindex_system_without_name" value="REINDEX SYSTEM;" db-types="PostgreSQL" />
+    <sql-case id="reindex_database_without_name" value="REINDEX DATABASE CONCURRENTLY;" db-types="PostgreSQL" />
+    <sql-case id="reindex_system_without_name_with_options" value="REINDEX (VERBOSE) SYSTEM CONCURRENTLY;" db-types="PostgreSQL" />
+    <sql-case id="reindex_database_without_name_with_options" value="REINDEX (VERBOSE) DATABASE;" db-types="PostgreSQL" />
     <sql-case id="reindex_table" value="REINDEX TABLE CONCURRENTLY concur_appclass_tab;" db-types="PostgreSQL" />
 </sql-cases>

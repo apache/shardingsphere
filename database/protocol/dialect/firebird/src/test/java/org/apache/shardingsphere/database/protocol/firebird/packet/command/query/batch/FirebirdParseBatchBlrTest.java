@@ -131,6 +131,15 @@ class FirebirdParseBatchBlrTest {
         assertThrows(IllegalArgumentException.class, () -> FirebirdParseBatchBlr.parse(blr, blr.readableBytes()));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blobFieldArguments")
+    void assertParseForFramingAcceptsBlobStructurally(final String name, final byte[] fieldBlr, final int expectedSubType, final int expectedCharset) {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5, fieldBlr, 2);
+        FirebirdParseBatchBlr actual = FirebirdParseBatchBlr.parseForFraming(blr, blr.readableBytes());
+        assertThat(actual.getFields().size(), is(1));
+        assertDescriptor(actual.getFields().get(0), FirebirdBinaryColumnType.BLOB, 8, expectedCharset, 0);
+    }
+    
     private static Stream<Arguments> validSingleFieldArguments() {
         return Stream.of(
                 Arguments.of("legacy_text", BlrConstants.blr_version5, field(BlrConstants.blr_text, 3, 0), FirebirdBinaryColumnType.LEGACY_TEXT, 3, 0, 6, 4),
@@ -170,8 +179,7 @@ class FirebirdParseBatchBlrTest {
     }
     
     private static byte[] longFieldBlr(final int... terminator) {
-        byte[] base = {(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
-                2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0};
+        byte[] base = {(byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0, 2, 0, (byte) BlrConstants.blr_long, 0, (byte) BlrConstants.blr_short, 0};
         return append(base, terminator);
     }
     

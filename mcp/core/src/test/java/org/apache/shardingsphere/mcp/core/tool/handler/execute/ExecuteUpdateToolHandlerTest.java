@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
+import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
@@ -29,24 +30,59 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFa
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.result.SQLExecutionResult;
+import org.apache.shardingsphere.mcp.support.descriptor.CoreToolNames;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.MockedStatic;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteUpdateToolHandlerTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("previewSideEffectCases")
+    void assertHandlePreviewSideEffectScope(final String name, final String sql, final SupportedMCPStatement statementClass, final String statementType, final String savepointName,
+                                            final String expectedClass, final String expectedScope) {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        MCPFeatureRequestContext requestContext = mock(MCPFeatureRequestContext.class);
+        when(requestContext.getExecutionFacade()).thenReturn(executionFacade);
+        ClassificationResult classificationResult = new ClassificationResult(statementClass, statementType, sql, savepointName, List.of(), false);
+        try (MockedStatic<SQLExecutionToolHandlerSupport> mocked = mockStatic(SQLExecutionToolHandlerSupport.class)) {
+            mocked.when(() -> SQLExecutionToolHandlerSupport.analyze(eq(requestContext), any(MCPToolArguments.class), eq(sql))).thenReturn(classificationResult);
+            mocked.when(() -> SQLExecutionToolHandlerSupport.checkExecutionArguments(any(MCPToolArguments.class), eq(CoreToolNames.EXECUTE_UPDATE))).thenCallRealMethod();
+            mocked.when(() -> SQLExecutionToolHandlerSupport.isQueryStatement(any(ClassificationResult.class))).thenCallRealMethod();
+            Map<String, Object> actual = new ExecuteUpdateToolHandler().handle(requestContext, Map.of("database", "logic_db", "sql", sql, "execution_mode", "preview")).toPayload();
+            assertThat(actual.get("statement_class"), is(expectedClass));
+            assertThat(actual.get("side_effect_scope"), is(List.of(expectedScope)));
+            assertFalse((boolean) actual.get("would_execute"));
+            verifyNoInteractions(executionFacade);
+        }
+    }
+    
+    private static Stream<Arguments> previewSideEffectCases() {
+        return Stream.of(
+                Arguments.of("privilege metadata", "GRANT SELECT ON foo_table TO foo_user", SupportedMCPStatement.DCL, "GRANT", "", "dcl", "privilege-metadata"),
+                Arguments.of("transaction state", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "", "transaction_control", "transaction-state"),
+                Arguments.of("savepoint state", "SAVEPOINT foo_savepoint", SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", "foo_savepoint", "savepoint", "transaction-state"));
+    }
     
     @Test
     void assertHandleUpdateStatement() {

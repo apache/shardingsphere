@@ -62,6 +62,10 @@ public final class RuleItemChangedNodePathBuilder {
                 return Optional.of(databaseRuleNodePath);
             }
         }
+        return buildUniqueItem(databaseName, path, eventType, databaseRuleNode);
+    }
+    
+    private Optional<DatabaseRuleNodePath> buildUniqueItem(final String databaseName, final String path, final Type eventType, final DatabaseRuleNode databaseRuleNode) {
         for (String each : databaseRuleNode.getUniqueItems()) {
             DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, databaseRuleNode.getRuleType(), new DatabaseRuleItem(each));
             if (Type.DELETED == eventType) {

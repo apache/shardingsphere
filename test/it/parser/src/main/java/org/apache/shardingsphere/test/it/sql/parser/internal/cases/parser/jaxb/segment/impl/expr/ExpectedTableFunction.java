@@ -22,6 +22,9 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Expected table function.
@@ -29,6 +32,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Getter
 @Setter
 public final class ExpectedTableFunction extends AbstractExpectedSQLSegment implements ExpectedExpressionSegment {
+    
+    @XmlElement(name = "function-parameter")
+    private final List<ExpectedExpression> parameters = new LinkedList<>();
+    
+    @XmlElement(name = "xml-column")
+    private final List<ExpectedXmlTableColumn> xmlColumns = new LinkedList<>();
     
     @XmlAttribute(name = "function-name")
     private String functionName;

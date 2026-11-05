@@ -463,7 +463,7 @@ plsqlBlock
     ;
 
 procedureCall
-    : (packageName DOT_)? procedureName (LP_ (procedureCallParameter (COMMA_ procedureCallParameter)*)? RP_)? SEMI_
+    : (packageName DOT_)? procedureName (AT_ dbLink)? (LP_ (procedureCallParameter (COMMA_ procedureCallParameter)*)? RP_)? SEMI_
     ;
 
 procedureCallParameter
@@ -651,10 +651,10 @@ typeDefinition
     ;
 
 recordTypeDefinition
-    : TYPE typeName IS RECORD  LP_ fieldDefinition (COMMA_ fieldDefinition)* RP_ SEMI_
+    : TYPE typeName IS RECORD LP_ recordFieldDefinition (COMMA_ recordFieldDefinition)* RP_ SEMI_
     ;
 
-fieldDefinition
+recordFieldDefinition
     : typeName dataType ((NOT NULL)? (ASSIGNMENT_OPERATOR_ | DEFAULT) expr)?
     ;
 

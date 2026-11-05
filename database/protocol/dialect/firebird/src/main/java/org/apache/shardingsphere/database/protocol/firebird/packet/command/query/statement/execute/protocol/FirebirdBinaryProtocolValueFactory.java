@@ -60,11 +60,6 @@ public final class FirebirdBinaryProtocolValueFactory {
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.LEGACY_TEXT, binaryProtocolValue);
     }
     
-    private static void setBlobBinaryProtocolValue() {
-        FirebirdBlobBinaryProtocolValue binaryProtocolValue = new FirebirdBlobBinaryProtocolValue();
-        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.BLOB, binaryProtocolValue);
-    }
-    
     private static void setInt16BinaryProtocolValue() {
         FirebirdInt16BinaryProtocolValue binaryProtocolValue = new FirebirdInt16BinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.INT128, binaryProtocolValue);
@@ -129,6 +124,11 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setNullBinaryProtocolValue() {
         FirebirdNullBinaryProtocolValue binaryProtocolValue = new FirebirdNullBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.NULL, binaryProtocolValue);
+    }
+    
+    private static void setBlobBinaryProtocolValue() {
+        FirebirdBlobBinaryProtocolValue binaryProtocolValue = new FirebirdBlobBinaryProtocolValue();
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.BLOB, binaryProtocolValue);
     }
     
     /**

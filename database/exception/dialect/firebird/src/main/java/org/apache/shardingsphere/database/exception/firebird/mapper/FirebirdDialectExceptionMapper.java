@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.table.
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdException.StatusVectorEntry;
+import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobBufferFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobContinuationBpbException;
@@ -101,6 +102,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         if (sqlDialectException instanceof AccessDeniedException) {
             return toSQLException(FirebirdVendorError.LOGIN_FAILED);
         }
+        if (sqlDialectException instanceof LoginErrorException) {
+            return toSQLException(FirebirdVendorError.LOGIN_ERROR);
+        }
         if (sqlDialectException instanceof InvalidBatchHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_BATCH_HANDLE);
         }
@@ -130,8 +134,7 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
             return toSQLException(FirebirdVendorError.EXCESS_TRANSACTIONS, ((ExcessTransactionsException) sqlDialectException).getMaxTransactions());
         }
         if (sqlDialectException instanceof DialectSQLParsingException) {
-            DialectSQLParsingException ex = (DialectSQLParsingException) sqlDialectException;
-            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, ex.getMessage());
+            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, sqlDialectException.getMessage());
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(FirebirdVendorError.TABLE_ALREADY_EXISTS, ((TableExistsException) sqlDialectException).getTableName());

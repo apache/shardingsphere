@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -61,9 +62,7 @@ public final class FirebirdBatchRegistry {
      */
     public void registerBatchStatement(final int connectionId, final int statementId, final FirebirdBatchStatement batchStatement) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
-        if (null == statements) {
-            throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
-        }
+        ShardingSpherePreconditions.checkNotNull(statements, () -> new IllegalStateException("Connection [" + connectionId + "] is not registered."));
         statements.put(statementId, batchStatement);
     }
     
@@ -76,10 +75,7 @@ public final class FirebirdBatchRegistry {
      */
     public FirebirdBatchStatement getBatchStatement(final int connectionId, final int statementId) {
         Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
-        if (null == statements) {
-            return null;
-        }
-        return statements.get(statementId);
+        return null == statements ? null : statements.get(statementId);
     }
     
     /**

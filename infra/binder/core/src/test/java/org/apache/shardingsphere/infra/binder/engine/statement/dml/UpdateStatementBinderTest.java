@@ -35,7 +35,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.comp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -48,11 +50,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -71,7 +79,9 @@ class UpdateStatementBinderTest {
     void assertBind() {
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         ErrorLoggingSegment errorLogging = new ErrorLoggingSegment(0, 0, null, null, "UNLIMITED");
-        ReturningSegment returning = new ReturningSegment(0, 0, new ProjectionsSegment(0, 0));
+        ProjectionsSegment projections = new ProjectionsSegment(10, 15);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(10, 15, new IdentifierValue("status"))));
+        ReturningSegment returning = new ReturningSegment(0, 15, projections);
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(databaseType)
                 .table(simpleTableSegment)
@@ -83,7 +93,11 @@ class UpdateStatementBinderTest {
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
         assertThat(actual.getErrorLogging().get(), is(errorLogging));
-        assertThat(actual.getReturning().get(), is(returning));
+        assertThat(actual.getReturning().get().getStartIndex(), is(returning.getStartIndex()));
+        assertThat(actual.getReturning().get().getStopIndex(), is(returning.getStopIndex()));
+        ColumnProjectionSegment returningProjection = (ColumnProjectionSegment) actual.getReturning().get().getProjections().getProjections().iterator().next();
+        assertThat(returningProjection.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(returningProjection.getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
         assertThat(actual.getTable(), not(updateStatement.getTable()));
         assertThat(actual.getTable(), isA(SimpleTableSegment.class));
         assertTrue(actual.getWhere().isPresent());
@@ -185,7 +199,7 @@ class UpdateStatementBinderTest {
     private WithSegment createWithSegment() {
         return new WithSegment(0, 0, new LinkedList<>(Collections.singletonList(
                 new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("combined_users")),
-                        new SubquerySegment(0, 0, createWithSelectStatement(), "")))),
+                        new SubquerySegment(0, 0, createWithSelectStatement(), ""), null))),
                 false);
     }
     
@@ -194,6 +208,51 @@ class UpdateStatementBinderTest {
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
         return SelectStatement.builder().databaseType(databaseType).projections(projections)
                 .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("returningScopes")
+    void assertBindReturningWithSourceTables(final ShorthandProjectionSegment projection, final List<String> expectedTables) {
+        SimpleTableSegment target = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        target.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment source = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")));
+        source.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
+        ProjectionsSegment projections = new ProjectionsSegment(10, 20);
+        projections.getProjections().add(projection);
+        UpdateStatement statement = UpdateStatement.builder().databaseType(databaseType).table(target).from(source).returning(new ReturningSegment(0, 20, projections)).build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(statement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+        ShorthandProjectionSegment actualProjection = (ShorthandProjectionSegment) actual.getReturning().get().getProjections().getProjections().iterator().next();
+        List<String> actualTables = new ArrayList<>(actualProjection.getActualProjectionSegments().size());
+        for (ProjectionSegment each : actualProjection.getActualProjectionSegments()) {
+            actualTables.add(((ColumnProjectionSegment) each).getColumn().getColumnBoundInfo().getOriginalTable().getValue());
+        }
+        assertThat(actualTables, is(expectedTables));
+    }
+    
+    @Test
+    void assertBindReturningSourceColumn() {
+        SimpleTableSegment target = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        target.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
+        SimpleTableSegment source = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")));
+        source.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
+        ColumnSegment column = new ColumnSegment(10, 20, new IdentifierValue("user_id"));
+        column.setOwner(new OwnerSegment(10, 10, new IdentifierValue("u")));
+        ProjectionsSegment projections = new ProjectionsSegment(10, 20);
+        projections.getProjections().add(new ColumnProjectionSegment(column));
+        UpdateStatement statement = UpdateStatement.builder().databaseType(databaseType).table(target).from(source).returning(new ReturningSegment(0, 20, projections)).build();
+        UpdateStatement actual = new UpdateStatementBinder().bind(statement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+        ColumnProjectionSegment actualProjection = (ColumnProjectionSegment) actual.getReturning().get().getProjections().getProjections().iterator().next();
+        assertThat(actualProjection.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    private static Stream<Arguments> returningScopes() {
+        ShorthandProjectionSegment all = new ShorthandProjectionSegment(10, 20);
+        ShorthandProjectionSegment target = new ShorthandProjectionSegment(10, 20);
+        target.setOwner(new OwnerSegment(10, 10, new IdentifierValue("o")));
+        ShorthandProjectionSegment source = new ShorthandProjectionSegment(10, 20);
+        source.setOwner(new OwnerSegment(10, 10, new IdentifierValue("u")));
+        return Stream.of(Arguments.of(all, Arrays.asList("t_order", "t_order", "t_order", "t_user")),
+                Arguments.of(target, Arrays.asList("t_order", "t_order", "t_order")), Arguments.of(source, Collections.singletonList("t_user")));
     }
     
     private ShardingSphereMetaData createMetaData() {
