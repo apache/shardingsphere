@@ -246,7 +246,7 @@ We use TPC-C to conduct the ShardingSphere-Proxy benchmark test, to verify the p
 
 To highlight the performance loss of ShardingSphere-Proxy itself, this test will use ShardingSphere-Proxy with sharding data (1 shard) against PostgreSQL 14.2.
 
-The test is conducted following the official file [BenchmarkSQL Performance Test](https://shardingsphere.apache.org/document/current/cn/reference/test/performance-test/benchmarksql-test/), and the configuration is reduced from 4 shards to 1 shard.
+The test is conducted following the official file [BenchmarkSQL Performance Test](https://shardingsphere.apache.org/document/5.1.0/cn/reference/test/performance-test/benchmarksql-test/), and the configuration is reduced from 4 shards to 1 shard.
 
 **Testing Environment**
 ![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/irmtm4oucizld7hmuf5y.png)
