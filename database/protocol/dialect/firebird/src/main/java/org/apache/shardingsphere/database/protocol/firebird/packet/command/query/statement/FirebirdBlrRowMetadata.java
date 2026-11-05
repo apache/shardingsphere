@@ -61,13 +61,16 @@ public final class FirebirdBlrRowMetadata {
         while (blrType != BlrConstants.blr_end) {
             FirebirdBinaryColumnType type = FirebirdBinaryColumnType.valueOfBLRType(blrType);
             result.add(type);
-            buffer.skipBytes(getSkipCount(type) + 2);
+            buffer.skipBytes(getSkipCount(blrType, type) + 2);
             blrType = buffer.readUnsignedByte();
         }
         return result;
     }
     
-    private static int getSkipCount(final FirebirdBinaryColumnType type) {
+    private static int getSkipCount(final int blrType, final FirebirdBinaryColumnType type) {
+        if (BlrConstants.blr_blob2 == blrType) {
+            return 4;
+        }
         switch (type) {
             case VARYING:
             case TEXT:

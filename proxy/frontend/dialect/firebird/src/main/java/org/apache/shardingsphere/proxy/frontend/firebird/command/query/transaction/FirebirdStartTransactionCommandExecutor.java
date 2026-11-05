@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -35,24 +39,59 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdStartTransactionCommandExecutor implements CommandExecutor {
     
-    private static final int MAX_CONCURRENT_TRANSACTIONS = 1;
-    
     private final FirebirdStartTransactionPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket> execute() {
-        validateNoActiveTransaction();
-        connectionSession.setAutoCommit(packet.isAutoCommit());
-        connectionSession.setReadOnly(packet.isReadOnly());
-        connectionSession.setIsolationLevel(packet.getIsolationLevel());
+    @HighFrequencyInvocation
+    public Collection<DatabasePacket> execute() throws SQLException {
         int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession.getConnectionId());
+        ConnectionSession transactionSession = FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
+        transactionSession.setAutoCommit(false);
+        transactionSession.setReadOnly(packet.isReadOnly());
+        transactionSession.setIsolationLevel(packet.getIsolationLevel());
+        try {
+            registerRawTransactionOptions(transactionSession);
+        } catch (final SQLException | IllegalArgumentException ex) {
+            rollbackOnFailure(transactionSession.getDatabaseConnectionManager(), ex);
+            unregisterOnFailure(transactionId, ex);
+            throw ex;
+        }
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(transactionId));
     }
     
-    private void validateNoActiveTransaction() {
-        ShardingSpherePreconditions.checkState(!FirebirdTransactionIdGenerator.getInstance().hasActiveTransaction(connectionSession.getConnectionId()),
-                () -> new ExcessTransactionsException(MAX_CONCURRENT_TRANSACTIONS));
+    private void registerRawTransactionOptions(final ConnectionSession transactionSession) throws SQLException {
+        byte[] rawTpb = packet.getRawTpb();
+        if (0 == rawTpb.length) {
+            return;
+        }
+        ProxyDatabaseConnectionManager manager = transactionSession.getDatabaseConnectionManager();
+        manager.handleAutoCommit();
+        FirebirdRawTransactionOptionsHandler handler = new FirebirdRawTransactionOptionsHandler(rawTpb);
+        manager.getConnectionInitializers().add(handler::initialize);
+        manager.getConnectionReleaseProcessors().add(handler::release);
+        String databaseName = transactionSession.getCurrentDatabaseName();
+        for (String each : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageUnits().keySet()) {
+            manager.getConnections(databaseName, each, 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+        }
     }
+    
+    private void rollbackOnFailure(final ProxyDatabaseConnectionManager manager, final Exception cause) {
+        try {
+            new ProxyBackendTransactionManager(manager).rollback();
+        } catch (final SQLException ex) {
+            cause.addSuppressed(ex);
+        }
+    }
+    
+    private void unregisterOnFailure(final int transactionId, final Exception cause) {
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionId);
+        try {
+            FirebirdTransactionSessionRegistry.getInstance().unregister(connectionSession, transactionId);
+        } catch (final SQLException ex) {
+            cause.addSuppressed(ex);
+        }
+    }
+    
 }

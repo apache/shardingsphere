@@ -24,6 +24,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -51,7 +52,7 @@ class FirebirdSRPAuthenticationDataTest {
         assertNotNull(actual.getPrivateKey());
         assertNotNull(actual.getPublicKey());
         assertNotNull(actual.getSalt());
-        assertThat(actual.getSalt().length, is(32));
+        assertTrue(new String(actual.getSalt(), StandardCharsets.US_ASCII).matches("[0-9A-F]{1,64}"));
         assertNotNull(actual.getVerifier());
     }
     

@@ -18,10 +18,15 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharacterSets;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
@@ -35,8 +40,14 @@ public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
     
     private final FirebirdInfoPacket packet;
     
+    private final ConnectionSession connectionSession;
+    
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdDatabaseInfoReturnPacket(packet.getInfoItems())));
+        int charsetId = packet.getInfoItems().contains(FirebirdDatabaseInfoPacketType.ATT_CHARSET)
+                ? FirebirdCharacterSets.findCharacterSetId(connectionSession.getAttributeMap().attr(FirebirdConstant.ATTACHMENT_CHARSET).get())
+                : 0;
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdDatabaseInfoReturnPacket(packet.getInfoItems(), charsetId)));
     }
 }

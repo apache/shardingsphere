@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionSessionRegistry;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -102,6 +103,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWithoutRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -128,6 +130,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWithRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -150,6 +153,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteEmptyBatch() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(createPacket.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -173,6 +177,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWithFailedMessage() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -201,6 +206,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWithFailedMessageWithoutRecordCounts() throws ReflectiveOperationException, SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -228,6 +234,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWhenBatchExecutionFailed() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchStatement.getStatementHandle()).thenReturn(STATEMENT_ID);
@@ -249,6 +256,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Test
     void assertExecuteWithNoBatchStatement() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(null);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
@@ -261,13 +269,16 @@ class FirebirdBatchExecuteCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithClosedTransactionHandle() {
+    void assertExecuteWithClosedTransactionHandle() throws SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
+        int otherTransactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
-        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().unregister(connectionSession, transactionId);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, otherTransactionId);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchExecuteCommandExecutor executor = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession);

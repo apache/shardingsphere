@@ -25,7 +25,7 @@ UNDERSCORE_CHARSET
 
 IDENTIFIER_
     : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
-    |  DQ_ ~'"'+ DQ_
+    |  DQ_ (DQ_ DQ_ | ~'"')+ DQ_
     ;
 
 STRING_
@@ -37,7 +37,7 @@ NUMBER_
     ;
 
 HEX_DIGIT_
-    : '0x' HEX_+ | 'X' SQ_ HEX_+ SQ_
+    : '0' [xX] HEX_+ | [xX] SQ_ HEX_* SQ_
     ;
 
 BIT_NUM_

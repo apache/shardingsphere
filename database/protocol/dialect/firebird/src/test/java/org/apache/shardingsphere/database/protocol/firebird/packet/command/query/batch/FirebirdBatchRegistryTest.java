@@ -37,6 +37,21 @@ class FirebirdBatchRegistryTest {
     }
     
     @Test
+    void assertSignedAndUnsignedStatementHandlesUseSameBatch() {
+        FirebirdBatchRegistry actualRegistry = FirebirdBatchRegistry.getInstance();
+        actualRegistry.registerConnection(1);
+        try {
+            FirebirdBatchStatement expected = new FirebirdBatchStatement(32768);
+            actualRegistry.registerBatchStatement(1, 32768, expected);
+            assertThat(actualRegistry.getBatchStatement(1, -32768), is(expected));
+            actualRegistry.unregisterBatchStatement(1, -32768);
+            assertNull(actualRegistry.getBatchStatement(1, 32768));
+        } finally {
+            actualRegistry.unregisterConnection(1);
+        }
+    }
+    
+    @Test
     void assertRegisterBatchStatementWithoutConnection() {
         FirebirdBatchRegistry registry = FirebirdBatchRegistry.getInstance();
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> registry.registerBatchStatement(99, 1, new FirebirdBatchStatement(1)));

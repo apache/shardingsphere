@@ -25,11 +25,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionInitializer;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
@@ -72,6 +74,10 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final Collection<ProxyBackendHandler> inUseProxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
+    
+    private final Collection<ConnectionInitializer> connectionInitializers = new LinkedList<>();
+    
+    private final Collection<ConnectionPostProcessor> connectionReleaseProcessors = new LinkedList<>();
     
     @Getter(AccessLevel.NONE)
     private final Set<Connection> pendingReplayConnections = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
@@ -159,16 +165,48 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
+    @HighFrequencyInvocation
     private List<Connection> createNewConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         List<Connection> result = ProxyContext.getInstance().getBackendDataSource()
                 .getConnections(databaseName.toLowerCase(), dataSourceName, connectionSize, connectionMode, this::replayTransactionOptions);
-        setSessionVariablesIfNecessary(result);
-        if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
+        try {
             for (Connection each : result) {
-                processConnectionPostProcessors(each);
+                initializeConnection(databaseName, dataSourceName, each);
             }
+        } catch (final SQLException | IllegalArgumentException ex) {
+            releaseConnection(result, ex);
+            throw ex;
+        }
+        setSessionVariablesIfNecessary(result);
+        try {
+            if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
+                for (Connection each : result) {
+                    processConnectionPostProcessors(each);
+                }
+            }
+        } catch (final SQLException ex) {
+            if (!connectionInitializers.isEmpty()) {
+                releaseConnection(result, ex);
+            }
+            throw ex;
         }
         return result;
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    private void replayTransactionOptions(final Connection connection) throws SQLException {
+        if (connectionSession.isReadOnly()) {
+            connection.setReadOnly(true);
+        }
+        if (connectionSession.getIsolationLevel().isPresent()) {
+            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel().get()));
+        }
+    }
+    
+    private void initializeConnection(final String databaseName, final String dataSourceName, final Connection target) throws SQLException {
+        for (ConnectionInitializer each : connectionInitializers) {
+            each.initialize(databaseName, dataSourceName, target);
+        }
     }
     
     private void setSessionVariablesIfNecessary(final List<Connection> connections) throws SQLException {
@@ -208,29 +246,50 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
-    private void releaseConnection(final List<Connection> connections, final SQLException sqlException) {
+    private void releaseConnection(final List<Connection> connections, final Exception cause) {
         for (Connection each : connections) {
+            try {
+                processConnectionReleaseProcessors(each);
+            } catch (final SQLException ex) {
+                addReleaseFailure(cause, ex);
+            }
             try {
                 each.close();
             } catch (final SQLException ex) {
-                sqlException.setNextException(ex);
+                addReleaseFailure(cause, ex);
             }
+        }
+    }
+    
+    private void addReleaseFailure(final Exception cause, final SQLException failure) {
+        if (cause instanceof SQLException) {
+            ((SQLException) cause).setNextException(failure);
+        } else {
+            cause.addSuppressed(failure);
+        }
+    }
+    
+    private void processConnectionReleaseProcessors(final Connection target) throws SQLException {
+        SQLException failure = null;
+        for (ConnectionPostProcessor each : connectionReleaseProcessors) {
+            try {
+                each.process(target);
+            } catch (final SQLException ex) {
+                if (null == failure) {
+                    failure = ex;
+                } else {
+                    failure.setNextException(ex);
+                }
+            }
+        }
+        if (null != failure) {
+            throw failure;
         }
     }
     
     private void processConnectionPostProcessors(final Connection target) throws SQLException {
         for (ConnectionPostProcessor each : connectionPostProcessors) {
             each.process(target);
-        }
-    }
-    
-    @SuppressWarnings("MagicConstant")
-    private void replayTransactionOptions(final Connection connection) throws SQLException {
-        if (connectionSession.isReadOnly()) {
-            connection.setReadOnly(true);
-        }
-        if (connectionSession.getIsolationLevel().isPresent()) {
-            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel().get()));
         }
     }
     
@@ -386,6 +445,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */
+    @HighFrequencyInvocation
     public Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         synchronized (cachedConnections) {
@@ -397,6 +457,11 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                     }
                 } catch (final SQLException ignored) {
                 } finally {
+                    try {
+                        processConnectionReleaseProcessors(each);
+                    } catch (final SQLException ex) {
+                        result.add(ex);
+                    }
                     try {
                         each.close();
                     } catch (final SQLException ex) {
@@ -414,6 +479,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         if (!forceRollback) {
             connectionPostProcessors.clear();
         }
+        connectionInitializers.clear();
+        connectionReleaseProcessors.clear();
         return result;
     }
     

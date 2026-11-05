@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Firebird binary row builder.
@@ -38,12 +39,16 @@ public final class FirebirdBinaryRowBuilder {
      * Build binary row.
      *
      * @param row query response row
+     * @param columnTypes column types from the client message BLR
      * @return binary row
      */
-    public static BinaryRow build(final QueryResponseRow row) {
+    public static BinaryRow build(final QueryResponseRow row, final List<FirebirdBinaryColumnType> columnTypes) {
         Collection<BinaryCell> result = new ArrayList<>(row.getCells().size());
+        int index = 0;
         for (QueryResponseCell each : row.getCells()) {
-            result.add(new BinaryCell(FirebirdBinaryColumnType.valueOfJDBCType(each.getJdbcType()), each.getData()));
+            FirebirdBinaryColumnType columnType = index < columnTypes.size() ? columnTypes.get(index) : FirebirdBinaryColumnType.valueOfJDBCType(each.getJdbcType());
+            result.add(new BinaryCell(columnType, each.getData()));
+            index++;
         }
         return new BinaryRow(result);
     }

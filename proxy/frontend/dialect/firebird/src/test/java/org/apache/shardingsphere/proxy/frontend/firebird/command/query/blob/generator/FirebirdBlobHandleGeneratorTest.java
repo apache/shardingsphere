@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator;
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,13 @@ class FirebirdBlobHandleGeneratorTest {
     void assertNextBlobHandleIncrements() {
         assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(1));
         assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(2));
+    }
+    
+    @Test
+    void assertRegisterConnectionReleasesPreviousHandles() {
+        int blobHandle = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        GENERATOR.registerConnection(CONNECTION_ID);
+        assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(blobHandle));
     }
     
     @Test
@@ -172,6 +180,20 @@ class FirebirdBlobHandleGeneratorTest {
     void assertReleaseBlobHandleWhenConnectionIsNotRegistered() {
         GENERATOR.unregisterConnection(CONNECTION_ID);
         assertDoesNotThrow(() -> GENERATOR.releaseBlobHandle(CONNECTION_ID, 1));
+    }
+    
+    @Test
+    void assertUnregisterConnectionWithTransaction() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        try {
+            int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            assertThat(GENERATOR.nextBlobHandle(CONNECTION_ID), is(2));
+            GENERATOR.unregisterConnection(CONNECTION_ID);
+            assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, transactionId));
+            assertThat(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID), is(2));
+        } finally {
+            FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        }
     }
     
     private static Stream<Arguments> invalidBlobHandleProvider() {

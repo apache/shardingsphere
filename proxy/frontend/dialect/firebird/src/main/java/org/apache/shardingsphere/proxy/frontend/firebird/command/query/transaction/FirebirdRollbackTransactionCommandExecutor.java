@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -42,13 +43,17 @@ public final class FirebirdRollbackTransactionCommandExecutor implements Command
     private final ConnectionSession connectionSession;
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() throws SQLException {
         int transactionHandle = packet.getTransactionId();
         validateTransactionHandle(transactionHandle);
-        if (!connectionSession.isAutoCommit()) {
-            new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager()).rollback();
+        ConnectionSession transactionSession = FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, transactionHandle);
+        ShardingSpherePreconditions.checkNotNull(transactionSession, () -> new InvalidTransactionHandleException(transactionHandle));
+        if (!transactionSession.isAutoCommit()) {
+            new ProxyBackendTransactionManager(transactionSession.getDatabaseConnectionManager()).rollback();
         }
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
+        FirebirdTransactionSessionRegistry.getInstance().unregister(connectionSession, transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
     

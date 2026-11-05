@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionInitializer;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
@@ -65,6 +66,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -89,6 +91,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -99,6 +102,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
@@ -212,6 +216,89 @@ class ProxyDatabaseConnectionManagerTest {
         verify(databaseConnectionManager.getConnectionPostProcessors().iterator().next(), times(2)).process(any());
         assertThat(actualConnections.size(), is(2));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
+    }
+    
+    @Test
+    void assertInitializeAndReleaseConnection() throws SQLException {
+        Connection connection = mock(Connection.class);
+        ConnectionInitializer initializer = mock(ConnectionInitializer.class);
+        ConnectionPostProcessor release = mock(ConnectionPostProcessor.class);
+        databaseConnectionManager.getConnectionInitializers().add(initializer);
+        databaseConnectionManager.getConnectionReleaseProcessors().add(release);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
+        databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertTrue(databaseConnectionManager.closeConnections(false).isEmpty());
+        InOrder actualOrder = inOrder(initializer, release, connection);
+        actualOrder.verify(initializer).initialize("foo_db", "ds1", connection);
+        actualOrder.verify(release).process(connection);
+        actualOrder.verify(connection).close();
+    }
+    
+    @Test
+    void assertReleaseConnectionsWhenInitializerFails() throws SQLException {
+        Connection connection = mock(Connection.class);
+        ConnectionInitializer initializer = mock(ConnectionInitializer.class);
+        ConnectionPostProcessor release = mock(ConnectionPostProcessor.class);
+        SQLException expected = new SQLException("initializer failed");
+        doThrow(expected).when(initializer).initialize("foo_db", "ds1", connection);
+        databaseConnectionManager.getConnectionInitializers().add(initializer);
+        databaseConnectionManager.getConnectionReleaseProcessors().add(release);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
+        SQLException actual = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY));
+        assertThat(actual, sameInstance(expected));
+        verify(release).process(connection);
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertReleaseConnectionsWhenInitializerRejectsArgument() throws SQLException {
+        Connection connection = mock(Connection.class);
+        ConnectionInitializer initializer = mock(ConnectionInitializer.class);
+        ConnectionPostProcessor release = mock(ConnectionPostProcessor.class);
+        IllegalArgumentException expected = new IllegalArgumentException("invalid transaction argument");
+        doThrow(expected).when(initializer).initialize("foo_db", "ds1", connection);
+        databaseConnectionManager.getConnectionInitializers().add(initializer);
+        databaseConnectionManager.getConnectionReleaseProcessors().add(release);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY));
+        assertThat(actual, sameInstance(expected));
+        verify(release).process(connection);
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertReleaseConnectionsWhenPostProcessorFails() throws SQLException {
+        connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.LOCAL.name(), null);
+        Connection connection = mock(Connection.class);
+        ConnectionInitializer initializer = mock(ConnectionInitializer.class);
+        ConnectionPostProcessor postProcessor = mock(ConnectionPostProcessor.class);
+        ConnectionPostProcessor release = mock(ConnectionPostProcessor.class);
+        SQLException expected = new SQLException("post-processor failed");
+        doThrow(expected).when(postProcessor).process(connection);
+        databaseConnectionManager.getConnectionInitializers().add(initializer);
+        databaseConnectionManager.getConnectionPostProcessors().add(postProcessor);
+        databaseConnectionManager.getConnectionReleaseProcessors().add(release);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
+        SQLException actual = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY));
+        assertThat(actual, sameInstance(expected));
+        verify(release).process(connection);
+        verify(connection).close();
+    }
+    
+    @Test
+    void assertCloseConnectionWhenReleaseProcessorFails() throws SQLException {
+        Connection connection = mock(Connection.class);
+        ConnectionPostProcessor release = mock(ConnectionPostProcessor.class);
+        ConnectionPostProcessor subsequentRelease = mock(ConnectionPostProcessor.class);
+        SQLException expected = new SQLException("release failed");
+        doThrow(expected).when(release).process(connection);
+        databaseConnectionManager.getConnectionReleaseProcessors().add(release);
+        databaseConnectionManager.getConnectionReleaseProcessors().add(subsequentRelease);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any(), any())).thenReturn(Collections.singletonList(connection));
+        databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(databaseConnectionManager.closeConnections(false), is(Collections.singletonList(expected)));
+        verify(subsequentRelease).process(connection);
+        verify(connection).close();
     }
     
     @Test

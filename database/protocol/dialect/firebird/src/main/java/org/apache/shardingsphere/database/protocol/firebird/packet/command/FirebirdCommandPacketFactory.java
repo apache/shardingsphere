@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -42,16 +43,19 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
  * Command packet factory for Firebird.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdCommandPacketFactory {
     
@@ -95,6 +99,8 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdAllocateStatementPacket(payload);
             case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementPacket(payload);
+            case EXEC_IMMEDIATE:
+                return new FirebirdExecuteImmediatePacket(payload);
             case EXECUTE:
             case EXECUTE2:
                 return new FirebirdExecuteStatementPacket(payload, protocolVersion);
@@ -120,6 +126,8 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdBatchCancelCommandPacket(payload);
             case BATCH_SYNC:
                 return new FirebirdBatchSyncCommandPacket(payload);
+            case CANCEL:
+                return new FirebirdCancelCommandPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
@@ -136,6 +144,12 @@ public final class FirebirdCommandPacketFactory {
      */
     public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
         switch (commandPacketType) {
+            case CONNECT:
+                return getConnectPacketLength(payload);
+            case ATTACH:
+                return getBufferPacketLength(payload, 8, 2);
+            case CONT_AUTH:
+                return getBufferPacketLength(payload, 4, 4);
             case INFO_DATABASE:
             case INFO_SQL:
             case INFO_BLOB:
@@ -164,6 +178,8 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdAllocateStatementPacket.getLength();
             case PREPARE_STATEMENT:
                 return FirebirdPrepareStatementPacket.getLength(payload);
+            case EXEC_IMMEDIATE:
+                return FirebirdExecuteImmediatePacket.getLength(payload);
             case EXECUTE:
             case EXECUTE2:
                 return FirebirdExecuteStatementPacket.getLength(payload, protocolVersion);
@@ -187,8 +203,24 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchCancelCommandPacket.getLength();
             case BATCH_SYNC:
                 return FirebirdBatchSyncCommandPacket.getLength();
+            case CANCEL:
+                return FirebirdCancelCommandPacket.getLength();
             default:
                 return 0;
         }
+    }
+    
+    private static int getConnectPacketLength(final FirebirdPacketPayload payload) {
+        int protocolCountOffset = 16 + payload.getBufferLength(16);
+        int protocolCount = payload.getByteBuf().getInt(protocolCountOffset) & 0xFFFF;
+        return getBufferPacketLength(payload, protocolCountOffset + 4, 1) + protocolCount * 20;
+    }
+    
+    private static int getBufferPacketLength(final FirebirdPacketPayload payload, final int initialLength, final int bufferCount) {
+        int result = initialLength;
+        for (int i = 0; i < bufferCount; i++) {
+            result += payload.getBufferLength(result);
+        }
+        return result;
     }
 }

@@ -45,6 +45,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
@@ -120,6 +121,118 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
+    void assertIncompletePacketStateAcrossFragmentedTransaction() {
+        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.TRANSACTION.getValue()).writeInt(0).writeInt(4).writeInt(1);
+        ByteBuf first = packet.readRetainedSlice(8);
+        ByteBuf second = packet.readRetainedSlice(packet.readableBytes());
+        List<Object> out = new LinkedList<>();
+        assertFalse(codecEngine.hasIncompletePacket());
+        codecEngine.decode(context, first, out);
+        assertTrue(codecEngine.hasIncompletePacket());
+        codecEngine.decode(context, second, out);
+        assertFalse(codecEngine.hasIncompletePacket());
+        assertThat(out.size(), is(1));
+        ((ByteBuf) out.get(0)).release();
+        first.release();
+        second.release();
+        packet.release();
+    }
+    
+    @ParameterizedTest
+    @EnumSource(value = FirebirdCommandPacketType.class, names = {"CONNECT", "ATTACH", "CONT_AUTH"})
+    void assertDecodeFragmentedAuthenticationPacket(final FirebirdCommandPacketType type) {
+        byte[] packet = createAuthenticationPacket(type);
+        for (int split = Integer.BYTES; split < packet.length; split++) {
+            FirebirdPacketCodecEngine engine = new FirebirdPacketCodecEngine();
+            ByteBuf first = Unpooled.copiedBuffer(packet, 0, split);
+            ByteBuf second = Unpooled.copiedBuffer(packet, split, packet.length - split);
+            List<Object> out = new LinkedList<>();
+            try {
+                engine.decode(context, first, out);
+                assertTrue(out.isEmpty(), "Packet was decoded at split " + split);
+                assertTrue(engine.hasIncompletePacket());
+                engine.decode(context, second, out);
+                assertThat(out.size(), is(1));
+                ByteBuf decoded = (ByteBuf) out.get(0);
+                byte[] actual = new byte[decoded.readableBytes()];
+                decoded.getBytes(decoded.readerIndex(), actual);
+                assertThat(actual, is(packet));
+                assertFalse(engine.hasIncompletePacket());
+            } finally {
+                out.forEach(each -> ((ByteBuf) each).release());
+                first.release();
+                second.release();
+            }
+        }
+    }
+    
+    @ParameterizedTest
+    @EnumSource(value = FirebirdCommandPacketType.class, names = {"CONNECT", "ATTACH", "CONT_AUTH"})
+    void assertDecodeCoalescedAuthenticationPacket(final FirebirdCommandPacketType type) {
+        byte[] packet = createAuthenticationPacket(type);
+        ByteBuf in = Unpooled.buffer().writeBytes(packet).writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(1);
+        List<Object> out = new LinkedList<>();
+        try {
+            codecEngine.decode(context, in, out);
+            assertThat(out.size(), is(2));
+            assertThat(((ByteBuf) out.get(0)).readableBytes(), is(packet.length));
+            assertThat(((ByteBuf) out.get(1)).readableBytes(), is(8));
+            assertThat(((ByteBuf) out.get(1)).getInt(((ByteBuf) out.get(1)).readerIndex()), is(FirebirdCommandPacketType.COMMIT.getValue()));
+        } finally {
+            out.forEach(each -> ((ByteBuf) each).release());
+            in.release();
+        }
+    }
+    
+    private byte[] createAuthenticationPacket(final FirebirdCommandPacketType type) {
+        ByteBuf packet = Unpooled.buffer().writeInt(type.getValue());
+        switch (type) {
+            case CONNECT:
+                packet.writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(1);
+                writeAuthenticationBuffer(packet, "db".getBytes(StandardCharsets.US_ASCII));
+                packet.writeInt(2);
+                writeAuthenticationBuffer(packet, new byte[]{1, 2, 3});
+                packet.writeZero(40);
+                break;
+            case ATTACH:
+                packet.writeInt(0);
+                writeAuthenticationBuffer(packet, "db".getBytes(StandardCharsets.US_ASCII));
+                writeAuthenticationBuffer(packet, new byte[]{1, 2, 3, 4, 5});
+                break;
+            case CONT_AUTH:
+                writeAuthenticationBuffer(packet, new byte[]{1, 2, 3});
+                writeAuthenticationBuffer(packet, "Srp256".getBytes(StandardCharsets.US_ASCII));
+                writeAuthenticationBuffer(packet, "Srp,Srp256".getBytes(StandardCharsets.US_ASCII));
+                writeAuthenticationBuffer(packet, new byte[0]);
+                break;
+            default:
+                throw new IllegalArgumentException(type.name());
+        }
+        byte[] result = new byte[packet.readableBytes()];
+        packet.readBytes(result);
+        packet.release();
+        return result;
+    }
+    
+    private void writeAuthenticationBuffer(final ByteBuf packet, final byte[] data) {
+        packet.writeInt(data.length).writeBytes(data).writeZero((4 - data.length % 4) % 4);
+    }
+    
+    @Test
+    void assertUnreadInputStateAfterAllocateStatement() {
+        ByteBuf input = Unpooled.buffer().writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue()).writeInt(0).writeByte(0);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, input, out);
+        assertTrue(codecEngine.hasIncompletePacket());
+        input.writeZero(3);
+        codecEngine.decode(context, input, out);
+        assertFalse(codecEngine.hasIncompletePacket());
+        assertThat(out.size(), is(1));
+        ((ByteBuf) out.get(0)).release();
+        input.release();
+    }
+    
+    @Test
     void assertDecodeWithIncompleteHeader() {
         ByteBuf pendingMessage = Unpooled.wrappedBuffer(new byte[]{1, 2});
         getPendingMessages().add(pendingMessage);
@@ -140,6 +253,7 @@ class FirebirdPacketCodecEngineTest {
         codecEngine.decode(context, in, out);
         assertTrue(out.isEmpty());
         assertTrue(getPendingMessages().isEmpty());
+        assertFalse(codecEngine.hasIncompletePacket());
     }
     
     @Test
@@ -156,6 +270,46 @@ class FirebirdPacketCodecEngineTest {
         assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+    }
+    
+    @Test
+    void assertDecodeCoalescedExecuteImmediateAndCommit() {
+        byte[] sql = "SET TRANSACTION".getBytes(StandardCharsets.US_ASCII);
+        ByteBuf in = Unpooled.buffer().writeInt(FirebirdCommandPacketType.EXEC_IMMEDIATE.getValue()).writeInt(0).writeInt(0).writeInt(3)
+                .writeInt(sql.length).writeBytes(sql).writeZero((4 - sql.length % 4) % 4).writeInt(0).writeInt(0)
+                .writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(1);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(2));
+        assertThat(((ByteBuf) out.get(0)).readableBytes(), is(44));
+        assertThat(((ByteBuf) out.get(1)).readableBytes(), is(8));
+        assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+        ((ByteBuf) out.get(0)).release();
+        ((ByteBuf) out.get(1)).release();
+        in.release();
+    }
+    
+    @Test
+    void assertDecodeFragmentedExecuteImmediate() {
+        byte[] sql = "SET TRANSACTION".getBytes(StandardCharsets.US_ASCII);
+        ByteBuf packet = Unpooled.buffer().writeInt(FirebirdCommandPacketType.EXEC_IMMEDIATE.getValue()).writeInt(0).writeInt(0).writeInt(3)
+                .writeInt(sql.length).writeBytes(sql).writeZero((4 - sql.length % 4) % 4).writeInt(0).writeInt(0);
+        ByteBuf first = packet.readRetainedSlice(24);
+        ByteBuf second = packet.readRetainedSlice(packet.readableBytes());
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, first, out);
+        assertTrue(out.isEmpty());
+        codecEngine.decode(context, second, out);
+        assertThat(out.size(), is(1));
+        assertThat(((ByteBuf) out.get(0)).readableBytes(), is(44));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+        ((ByteBuf) out.get(0)).release();
+        first.release();
+        second.release();
+        packet.release();
     }
     
     @Test
@@ -425,6 +579,20 @@ class FirebirdPacketCodecEngineTest {
         List<Object> out = new LinkedList<>();
         codecEngine.decode(context, in, out);
         verify(context, never()).close();
+        assertThat(out.size(), is(2));
+        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.BATCH_MSG.getValue()));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
+    }
+    
+    @Test
+    void assertDecodeCoalescedBatchWithSignedStatementHandle() {
+        ByteBuf create = buildBatchCreate();
+        create.setInt(4, 32768);
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(create, buildBatchMessage(-32768, 100));
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
         assertThat(out.size(), is(2));
         assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
         assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.BATCH_MSG.getValue()));

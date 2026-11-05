@@ -19,10 +19,12 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionSessionRegistry;
 
 import java.sql.SQLException;
 
@@ -52,20 +54,25 @@ public final class FirebirdStatementResourceCleaner {
      * @param invalidatePreparedStatementCache whether invalidate prepared statement cache
      * @throws SQLException SQL exception
      */
+    @HighFrequencyInvocation
     public static void clean(final ConnectionSession connectionSession, final int statementId, final boolean invalidatePreparedStatementCache) throws SQLException {
         ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
+        ConnectionSession owner = FirebirdFetchStatementCache.getInstance().getOwner(connectionSession.getConnectionId(), statementId);
+        ConnectionSession resourceSession = null == owner ? connectionSession : owner;
         if (null != proxyBackendHandler) {
-            connectionSession.getDatabaseConnectionManager().removeResource(proxyBackendHandler);
+            resourceSession.getDatabaseConnectionManager().removeResource(proxyBackendHandler);
         }
         FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
-        connectionSession.getConnectionContext().clearCursorContext();
+        resourceSession.getConnectionContext().clearCursorContext();
         try {
             if (null != proxyBackendHandler) {
                 proxyBackendHandler.close();
             }
         } finally {
             if (invalidatePreparedStatementCache) {
-                connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
+                PreparedStatementCacheKey cacheKey = createPreparedStatementCacheKey(statementId);
+                connectionSession.invalidatePreparedStatementCache(cacheKey);
+                FirebirdTransactionSessionRegistry.getInstance().invalidatePreparedStatementCache(connectionSession, cacheKey);
             }
         }
     }

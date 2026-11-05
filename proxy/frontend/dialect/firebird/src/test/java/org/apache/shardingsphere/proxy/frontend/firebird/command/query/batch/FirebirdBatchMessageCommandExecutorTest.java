@@ -39,6 +39,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionSessionRegistry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -170,7 +171,9 @@ class FirebirdBatchMessageCommandExecutorTest {
     private void assertExecuteExecutesAcceptedMessages(final FirebirdBatchStatement batchStatement) throws SQLException {
         FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         when(executePacket.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(executePacket.getTransactionHandle()).thenReturn(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID));
+        int transactionHandle = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionHandle);
+        when(executePacket.getTransactionHandle()).thenReturn(transactionHandle);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         List<List<List<Object>>> executedParameterValues = new LinkedList<>();
         try (

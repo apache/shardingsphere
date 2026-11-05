@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.gen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,12 +28,13 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * p_resp_blob_id generator for Firebird.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class FirebirdBlobIdGenerator {
     
     private static final FirebirdBlobIdGenerator INSTANCE = new FirebirdBlobIdGenerator();
     
-    private final Map<Integer, AtomicLong> connectionRegistry = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<Integer, AtomicLong>> connectionRegistry = new ConcurrentHashMap<>();
     
     public static FirebirdBlobIdGenerator getInstance() {
         return INSTANCE;
@@ -44,17 +46,31 @@ public final class FirebirdBlobIdGenerator {
      * @param connectionId connection ID
      */
     public void registerConnection(final int connectionId) {
-        connectionRegistry.put(connectionId, new AtomicLong(0L));
+        connectionRegistry.put(connectionId, new ConcurrentHashMap<>());
     }
     
     /**
-     * Generate next blob ID for connection.
+     * Generate the next temporary BLOB ID for a transaction.
      *
      * @param connectionId connection ID
-     * @return generated statement ID
+     * @param transactionId transaction ID
+     * @return generated BLOB ID
      */
-    public long nextBlobId(final int connectionId) {
-        return connectionRegistry.get(connectionId).incrementAndGet();
+    public long nextBlobId(final int connectionId, final int transactionId) {
+        return connectionRegistry.get(connectionId).computeIfAbsent(transactionId & 0xFFFF, ignored -> new AtomicLong()).incrementAndGet();
+    }
+    
+    /**
+     * Remove the counter of a finished transaction.
+     *
+     * @param connectionId connection ID
+     * @param transactionId transaction ID
+     */
+    public void unregisterTransaction(final int connectionId, final int transactionId) {
+        Map<Integer, AtomicLong> transactions = connectionRegistry.get(connectionId);
+        if (null != transactions) {
+            transactions.remove(transactionId & 0xFFFF);
+        }
     }
     
     /**

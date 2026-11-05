@@ -17,27 +17,59 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdTransactionParameterBufferType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
 /**
  * Firebird start transaction packet.
  */
+@HighFrequencyInvocation
 @Getter
 public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket {
     
     private final int handle;
     
+    private final byte[] rawTpb;
+    
     private final FirebirdParameterBuffer tpb = FirebirdTransactionParameterBufferType.createBuffer();
+    
+    @Getter(AccessLevel.NONE)
+    private boolean parsed;
     
     public FirebirdStartTransactionPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         handle = payload.readInt4();
-        tpb.parseBuffer(payload.readBuffer());
+        ByteBuf buffer = payload.readBuffer();
+        rawTpb = ByteBufUtil.getBytes(buffer);
+    }
+    
+    /**
+     * Get parsed transaction parameters.
+     *
+     * @return parsed parameters
+     */
+    FirebirdParameterBuffer getTpb() {
+        if (!parsed) {
+            if (0 != rawTpb.length) {
+                ByteBuf buffer = Unpooled.wrappedBuffer(rawTpb);
+                try {
+                    tpb.parseBuffer(buffer);
+                } finally {
+                    buffer.release();
+                }
+            }
+            parsed = true;
+        }
+        return tpb;
     }
     
     /**
@@ -46,7 +78,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
      * @return auto commit or not
      */
     public boolean isAutoCommit() {
-        return null != tpb.getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT);
+        return null != getTpb().getValue(FirebirdTransactionParameterBufferType.AUTOCOMMIT);
     }
     
     /**
@@ -55,7 +87,7 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
      * @return read only or not
      */
     public boolean isReadOnly() {
-        return null != tpb.getValue(FirebirdTransactionParameterBufferType.READ);
+        return null != getTpb().getValue(FirebirdTransactionParameterBufferType.READ);
     }
     
     /**
@@ -64,13 +96,13 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
      * @return transaction isolation level
      */
     public TransactionIsolationLevel getIsolationLevel() {
-        if (null != tpb.getValue(FirebirdTransactionParameterBufferType.READ_COMMITTED)) {
+        if (null != getTpb().getValue(FirebirdTransactionParameterBufferType.READ_COMMITTED)) {
             return TransactionIsolationLevel.READ_COMMITTED;
         }
-        if (null != tpb.getValue(FirebirdTransactionParameterBufferType.CONCURRENCY)) {
+        if (null != getTpb().getValue(FirebirdTransactionParameterBufferType.CONCURRENCY)) {
             return TransactionIsolationLevel.REPEATABLE_READ;
         }
-        if (null != tpb.getValue(FirebirdTransactionParameterBufferType.CONSISTENCY)) {
+        if (null != getTpb().getValue(FirebirdTransactionParameterBufferType.CONSISTENCY)) {
             return TransactionIsolationLevel.SERIALIZABLE;
         }
         return TransactionIsolationLevel.REPEATABLE_READ;

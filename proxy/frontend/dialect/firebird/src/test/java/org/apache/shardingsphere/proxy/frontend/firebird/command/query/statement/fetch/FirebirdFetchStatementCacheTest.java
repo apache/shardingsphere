@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -71,6 +73,34 @@ class FirebirdFetchStatementCacheTest {
         cache.registerStatement(1, 10, handler);
         assertThat(cache.getFetchBackendHandler(1, 10), is(handler));
         assertNull(cache.getFetchBackendHandler(1, 11));
+    }
+    
+    @Test
+    void assertCursorOwnerIsRemovedWithStatement() {
+        ConnectionSession owner = mock(ConnectionSession.class);
+        cache.registerConnection(1);
+        cache.registerStatement(1, 10, mock(ProxyBackendHandler.class));
+        cache.registerOwner(1, 10, owner);
+        assertThat(cache.getOwner(1, 10), sameInstance(owner));
+        cache.unregisterStatement(1, 10);
+        assertNull(cache.getOwner(1, 10));
+    }
+    
+    @Test
+    void assertUnregisterOwnerLeavesOtherTransactions() {
+        ConnectionSession first = mock(ConnectionSession.class);
+        ConnectionSession second = mock(ConnectionSession.class);
+        ProxyBackendHandler secondHandler = mock(ProxyBackendHandler.class);
+        cache.registerConnection(1);
+        cache.registerStatement(1, 10, mock(ProxyBackendHandler.class));
+        cache.registerOwner(1, 10, first);
+        cache.registerStatement(1, 11, secondHandler);
+        cache.registerOwner(1, 11, second);
+        cache.unregisterOwner(1, first);
+        assertNull(cache.getOwner(1, 10));
+        assertNull(cache.getFetchBackendHandler(1, 10));
+        assertThat(cache.getOwner(1, 11), sameInstance(second));
+        assertThat(cache.getFetchBackendHandler(1, 11), sameInstance(secondHandler));
     }
     
     @Test

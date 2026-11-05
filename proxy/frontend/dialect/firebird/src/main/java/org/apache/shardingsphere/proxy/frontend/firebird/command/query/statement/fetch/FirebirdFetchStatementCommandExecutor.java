@@ -17,23 +17,32 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdFetchResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancellationRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancellationRegistry.Scope;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdBinaryRowBuilder;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Firebird fetch statement command executor.
  */
 public final class FirebirdFetchStatementCommandExecutor implements QueryCommandExecutor {
+    
+    private final int connectionId;
+    
+    private final int statementId;
     
     private final ConnectionSession connectionSession;
     
@@ -41,19 +50,39 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     private int fetchCount;
     
+    private Scope cancellationScope;
+    
+    @HighFrequencyInvocation
     public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
-        this.connectionSession = connectionSession;
-        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
+        connectionId = connectionSession.getConnectionId();
+        statementId = packet.getStatementId() & 0xFFFF;
+        ConnectionSession owner = FirebirdFetchStatementCache.getInstance().getOwner(connectionId, statementId);
+        this.connectionSession = null == owner ? connectionSession : owner;
+        proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionId, statementId);
+        List<FirebirdBinaryColumnType> columnTypes = packet.getParameterTypes();
+        if (!columnTypes.isEmpty()) {
+            FirebirdFetchStatementCache.getInstance().registerColumnTypes(connectionId, statementId, columnTypes);
+        }
         fetchCount = packet.getFetchSize();
     }
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() throws SQLException {
         if (null == proxyBackendHandler) {
             fetchCount = -1;
             return Collections.singletonList(FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket());
         }
+        cancellationScope = FirebirdCancellationRegistry.getInstance().enter(connectionSession.getConnectionId(), connectionSession.getDatabaseConnectionManager());
         return Collections.singletonList(getQueryRowPacket());
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public void close() {
+        if (null != cancellationScope) {
+            cancellationScope.close();
+        }
     }
     
     @Override
@@ -73,7 +102,8 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
             return FirebirdFetchResponsePacket.getFetchEndPacket();
         }
         if (proxyBackendHandler.next()) {
-            return FirebirdFetchResponsePacket.getFetchRowPacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+            return FirebirdFetchResponsePacket.getFetchRowPacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData(),
+                    FirebirdFetchStatementCache.getInstance().getColumnTypes(connectionId, statementId)));
         }
         connectionSession.getDatabaseConnectionManager().unmarkResourceInUse(proxyBackendHandler);
         fetchCount = -1;

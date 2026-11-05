@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVe
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.SQLException;
 
@@ -102,6 +103,18 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      */
     public FirebirdGenericResponsePacket setErrorStatusVector(final SQLException ex) {
         statusVector = new FirebirdStatusVector(ex);
+        return this;
+    }
+    
+    /**
+     * Set a prepared status vector.
+     *
+     * @param vector status vector
+     * @return this instance with updated status vector
+     */
+    @HighFrequencyInvocation
+    public FirebirdGenericResponsePacket setStatusVector(final FirebirdStatusVector vector) {
+        statusVector = vector;
         return this;
     }
     

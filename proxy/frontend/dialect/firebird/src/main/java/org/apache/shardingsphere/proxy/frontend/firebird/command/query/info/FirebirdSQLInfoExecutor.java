@@ -18,18 +18,24 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLRecordsInfo;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.firebirdsql.gds.ISCConstants;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,15 +51,22 @@ public final class FirebirdSQLInfoExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo())));
+        int connectionId = connectionSession.getConnectionId();
+        int statementId = FirebirdStatementIdGenerator.getInstance().resolveStatementId(connectionId, packet.getHandle(),
+                Boolean.TRUE.equals(connectionSession.getAttributeMap().attr(FirebirdConstant.LAZY_SEND).get()));
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
+        if (null == preparedStatement) {
+            int errorCode = FirebirdStatementIdGenerator.getInstance().isStatementAllocated(connectionId, statementId) ? ISCConstants.isc_unprepared_stmt : ISCConstants.isc_bad_req_handle;
+            FirebirdStatusVector statusVector = FirebirdStatusVector.fromSegments(Collections.singletonList(FirebirdStatusVector.Segment.withArguments(errorCode, Collections.emptyList(), null)));
+            return Collections.singleton(new FirebirdGenericResponsePacket().setStatusVector(statusVector));
+        }
+        int statementFlags = packet.getInfoItems().contains(FirebirdSQLInfoPacketType.STMT_FLAGS) ? preparedStatement.getStatementFlags() : 0;
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdSQLInfoReturnPacket(packet.getInfoItems(), getRecordsInfo(preparedStatement), statementFlags)));
     }
     
-    private FirebirdSQLRecordsInfo getRecordsInfo() {
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getHandle());
-        if (null == preparedStatement) {
-            return new FirebirdSQLRecordsInfo(0L, 0L, 0L);
-        }
+    private FirebirdSQLRecordsInfo getRecordsInfo(final FirebirdServerPreparedStatement preparedStatement) {
         long affectedRows = preparedStatement.getAffectedRows();
         SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         long insertCount = sqlStatement instanceof InsertStatement ? affectedRows : 0L;

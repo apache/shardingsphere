@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
@@ -48,9 +50,12 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExe
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -64,6 +69,7 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -155,6 +161,25 @@ class FirebirdCommandExecuteEngineTest {
     @Test
     void assertGetErrorPacket() {
         Exception cause = new Exception("error");
+        when(FirebirdErrorPacketFactory.newInstance(cause)).thenReturn(errorPacket);
+        assertThat(engine.getErrorPacket(cause), is(errorPacket));
+    }
+    
+    @ParameterizedTest
+    @CsvSource({"OCTETS, 335545104", "BINARY, 335545104", "octets, 335545104", "MISSING_CHARSET, 335544509", "not;found, 335544509"})
+    void assertGetAttachCharsetErrorPacket(final String charsetName, final int expectedErrorCode) {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) engine.getErrorPacket(new InvalidParameterValueException("lc_ctype", charsetName));
+        assertThat(actual.getStatusVector().getSegments().size(), is(2));
+        assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_bad_dpb_content));
+        assertTrue(actual.getStatusVector().getSegments().get(0).getArguments().isEmpty());
+        assertThat(actual.getStatusVector().getSegments().get(1).getGdsCode(), is(expectedErrorCode));
+        assertThat(actual.getStatusVector().getSegments().get(1).getArguments(), is(Collections.singletonList(charsetName)));
+        assertThat(actual.getStatusVector().getSegments().get(1).getTypedArguments().get(0).getType(), is(ISCConstants.isc_arg_string));
+    }
+    
+    @Test
+    void assertGetOtherParameterErrorPacket() {
+        InvalidParameterValueException cause = new InvalidParameterValueException("names", "invalid");
         when(FirebirdErrorPacketFactory.newInstance(cause)).thenReturn(errorPacket);
         assertThat(engine.getErrorPacket(cause), is(errorPacket));
     }

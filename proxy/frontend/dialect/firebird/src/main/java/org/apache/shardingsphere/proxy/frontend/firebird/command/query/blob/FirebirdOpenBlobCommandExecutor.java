@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -30,6 +32,8 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -56,8 +60,18 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket> execute() {
+        int transactionId = packet.getTransactionId();
+        if (!FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), transactionId)) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidTransactionHandleException(transactionId)));
+        }
         long blobId = packet.getBlobId();
-        byte[] blobContent = getBlobContent(blobId);
+        FirebirdBlobIdGenerator.getInstance().nextBlobId(connectionSession.getConnectionId(), transactionId);
+        byte[] blobContent;
+        try {
+            blobContent = getBlobContent(blobId);
+        } catch (final InvalidSegstrIdException ex) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(ex));
+        }
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
         FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobContent, isStreamBlob(blobId));
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
@@ -77,8 +91,9 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     }
     
     private byte[] getCreatedBlobContent(final long blobId) {
-        ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
-        return FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId).get();
+        ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), packet.getTransactionId(), blobId),
+                () -> new InvalidSegstrIdException(blobId));
+        return FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), packet.getTransactionId(), blobId).get();
     }
     
     @HighFrequencyInvocation
@@ -86,6 +101,6 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
         if (0L == blobId) {
             return false;
         }
-        return blobId < 0L || FirebirdBlobWriteCache.getInstance().isStreamBlob(connectionSession.getConnectionId(), blobId);
+        return blobId < 0L || FirebirdBlobWriteCache.getInstance().isStreamBlob(connectionSession.getConnectionId(), packet.getTransactionId(), blobId);
     }
 }

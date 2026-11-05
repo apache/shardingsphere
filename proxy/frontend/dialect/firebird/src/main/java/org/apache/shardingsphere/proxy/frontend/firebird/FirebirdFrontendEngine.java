@@ -17,20 +17,30 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird;
 
+import io.netty.channel.Channel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancellationRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.netty.FirebirdCancelInboundHandler;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
+import org.apache.shardingsphere.proxy.frontend.netty.ProxyFlowControlHandler;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.firebirdsql.gds.ISCConstants;
+
+import java.sql.SQLException;
 
 /**
  * Frontend engine for Firebird.
  */
+@HighFrequencyInvocation
 @Getter
 public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEngine {
     
@@ -41,16 +51,29 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     private final DatabasePacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
     
     @Override
+    @HighFrequencyInvocation
+    public void initChannel(final Channel channel) {
+        FirebirdCancelInboundHandler cancelHandler = new FirebirdCancelInboundHandler((FirebirdPacketCodecEngine) codecEngine);
+        channel.pipeline().addBefore(channel.pipeline().context(PacketCodec.class).name(), "FirebirdCancelRawHandler", cancelHandler.newRawHandler());
+        channel.pipeline().addBefore(ProxyFlowControlHandler.class.getSimpleName(), FirebirdCancelInboundHandler.class.getSimpleName(), cancelHandler);
+    }
+    
+    @Override
     public void release(final ConnectionSession connectionSession) {
+        FirebirdCancellationRegistry.getInstance().unregister(connectionSession.getConnectionId());
         FirebirdConnectionResourceManager.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
     @Override
     public void handleException(final ConnectionSession connectionSession, final Exception exception) {
         if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()
-                && !(exception instanceof InTransactionException)) {
+                && !(exception instanceof InTransactionException) && !isCancelled(exception)) {
             connectionSession.getConnectionContext().getTransactionContext().setExceptionOccur(true);
         }
+    }
+    
+    private boolean isCancelled(final Exception exception) {
+        return exception instanceof SQLException && ISCConstants.isc_cancelled == ((SQLException) exception).getErrorCode();
     }
     
     @Override

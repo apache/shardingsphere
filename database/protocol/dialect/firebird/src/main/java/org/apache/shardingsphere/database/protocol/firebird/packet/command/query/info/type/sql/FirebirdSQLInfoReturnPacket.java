@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.List;
 
@@ -50,20 +51,32 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
     private final FirebirdSQLRecordsInfo recordsInfo;
     
+    private final int statementFlags;
+    
     @Override
+    @HighFrequencyInvocation
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
+            if (FirebirdCommonInfoPacketType.END == type) {
+                break;
+            }
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {
                 parseSQLInfo(payload, (FirebirdSQLInfoPacketType) type);
             }
         }
+        payload.writeInt1(FirebirdCommonInfoPacketType.END.getCode());
     }
     
     private void parseSQLInfo(final FirebirdPacketPayload payload, final FirebirdSQLInfoPacketType type) {
         // TODO implement other request types handle
         switch (type) {
+            case STMT_FLAGS:
+                payload.writeInt1(type.getCode());
+                payload.writeInt2LE(4);
+                payload.writeInt4LE(statementFlags);
+                return;
             case RECORDS:
                 processRecords(payload);
                 return;

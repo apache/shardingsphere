@@ -23,6 +23,8 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -64,9 +66,18 @@ class FirebirdPrepareStatementPacketTest {
         assertTrue(createPacket(2, Collections.emptyList()).isValidStatementHandle());
     }
     
-    @Test
-    void assertIsValidStatementHandleWhenInvalid() {
-        assertFalse(createPacket(0xFFFF, Collections.emptyList()).isValidStatementHandle());
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(ints = {-1, 0xFFFF, 0x1234FFFF})
+    void assertIsValidStatementHandleWhenInvalid(final int wireHandle) {
+        assertFalse(createPacket(wireHandle, Collections.emptyList()).isValidStatementHandle());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(ints = {-32768, -2})
+    void assertIsValidStatementHandleWhenSignExtended(final int wireHandle) {
+        FirebirdPrepareStatementPacket actual = createPacket(wireHandle, Collections.emptyList());
+        assertTrue(actual.isValidStatementHandle());
+        assertThat(actual.getStatementId(), is(wireHandle));
     }
     
     @Test

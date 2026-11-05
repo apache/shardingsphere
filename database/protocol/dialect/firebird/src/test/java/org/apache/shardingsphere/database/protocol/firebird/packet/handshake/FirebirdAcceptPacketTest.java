@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -42,6 +43,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,6 +73,17 @@ class FirebirdAcceptPacketTest {
         assertThat(packet.getAcceptDataPacket().getPlugin(), is(FirebirdAuthenticationMethod.SRP));
         assertThat(packet.getAcceptDataPacket().getAuthenticated(), is(7));
         assertThat(packet.getAcceptDataPacket().getKeys(), is("keys"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"4, false", "5, true", "263, true"})
+    void assertLazySend(final int maxType, final boolean expected) {
+        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(new LinkedList<>(Collections.singletonList(createProtocol(FirebirdArchType.ARCH_GENERIC, maxType, 1))));
+        if (expected) {
+            assertTrue(packet.isLazySend());
+        } else {
+            assertFalse(packet.isLazySend());
+        }
     }
     
     @Test

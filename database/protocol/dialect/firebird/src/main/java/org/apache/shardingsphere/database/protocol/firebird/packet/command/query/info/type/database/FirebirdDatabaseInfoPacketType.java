@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.util.HashMap;
@@ -170,11 +171,29 @@ public enum FirebirdDatabaseInfoPacketType implements FirebirdInfoPacketType {
      * @return Firebird database info packet
      */
     public static FirebirdInfoPacket createPacket(final FirebirdPacketPayload payload) {
-        return new FirebirdInfoPacket(payload, FirebirdDatabaseInfoPacketType::valueOf);
+        return new FirebirdInfoPacket(payload, code -> {
+            FirebirdDatabaseInfoPacketType type = valueOf(code & 0xFF);
+            if (null != type) {
+                return type;
+            }
+            return FirebirdCommonInfoPacketType.END.getCode() == code ? FirebirdCommonInfoPacketType.END : new UnknownDatabaseInfoPacketType(code & 0xFF);
+        });
     }
     
     @Override
     public boolean isCommon() {
         return false;
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class UnknownDatabaseInfoPacketType implements FirebirdInfoPacketType {
+        
+        private final int code;
+        
+        @Override
+        public boolean isCommon() {
+            return false;
+        }
     }
 }

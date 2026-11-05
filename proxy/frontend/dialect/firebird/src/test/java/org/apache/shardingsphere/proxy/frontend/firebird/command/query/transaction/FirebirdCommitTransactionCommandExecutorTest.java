@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,6 +60,7 @@ class FirebirdCommitTransactionCommandExecutorTest {
         FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, 1);
     }
     
     @AfterEach
@@ -107,13 +109,14 @@ class FirebirdCommitTransactionCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithCommittedTransactionHandleAfterNewTransaction() throws SQLException {
+    void assertExecuteWithReusedTransactionHandle() throws SQLException {
         when(packet.getTransactionId()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
             new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
-            FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
             assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute());
-            when(packet.getTransactionId()).thenReturn(2);
+            int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            assertThat(transactionId, is(1));
+            FirebirdTransactionSessionRegistry.getInstance().register(connectionSession, transactionId);
             Collection<DatabasePacket> actual = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         }

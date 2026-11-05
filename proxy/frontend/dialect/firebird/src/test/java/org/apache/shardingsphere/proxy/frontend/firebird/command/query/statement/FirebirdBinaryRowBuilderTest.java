@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +41,7 @@ class FirebirdBinaryRowBuilderTest {
     void assertBuildPreservesCellOrderAndData() {
         byte[] expectedData = new byte[]{1, 2};
         QueryResponseRow row = new QueryResponseRow(Arrays.asList(new QueryResponseCell(Types.BLOB, expectedData), new QueryResponseCell(Types.INTEGER, null)));
-        BinaryRow actual = FirebirdBinaryRowBuilder.build(row);
+        BinaryRow actual = FirebirdBinaryRowBuilder.build(row, Collections.emptyList());
         assertThat(actual.getCells().size(), is(2));
         Iterator<BinaryCell> iterator = actual.getCells().iterator();
         BinaryCell firstCell = iterator.next();
@@ -50,5 +51,19 @@ class FirebirdBinaryRowBuilderTest {
         assertThat(secondCell.getColumnType(), is(FirebirdBinaryColumnType.LONG));
         assertNull(secondCell.getData());
         assertFalse(iterator.hasNext());
+    }
+    
+    @Test
+    void assertBuildUsesClientColumnTypes() {
+        QueryResponseRow row = new QueryResponseRow(Arrays.asList(new QueryResponseCell(Types.SMALLINT, (short) 0), new QueryResponseCell(Types.INTEGER, 1)));
+        BinaryRow actual = FirebirdBinaryRowBuilder.build(row, Arrays.asList(FirebirdBinaryColumnType.BLOB, FirebirdBinaryColumnType.LONG));
+        Iterator<BinaryCell> actualIterator = actual.getCells().iterator();
+        BinaryCell actualFirstCell = actualIterator.next();
+        assertThat(actualFirstCell.getColumnType(), is(FirebirdBinaryColumnType.BLOB));
+        assertThat(actualFirstCell.getData(), is((short) 0));
+        BinaryCell actualSecondCell = actualIterator.next();
+        assertThat(actualSecondCell.getColumnType(), is(FirebirdBinaryColumnType.LONG));
+        assertThat(actualSecondCell.getData(), is((Object) 1));
+        assertFalse(actualIterator.hasNext());
     }
 }

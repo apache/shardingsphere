@@ -29,6 +29,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -40,9 +42,11 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +57,8 @@ class FirebirdPrepareStatementReturnPacketTest {
     
     @Test
     void assertWriteWithDescribeColumns() {
-        FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket();
+        FirebirdPrepareStatementReturnPacket packet =
+                new FirebirdPrepareStatementReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.BIND));
         packet.setType(FirebirdSQLInfoReturnValue.SELECT);
         FirebirdReturnColumnPacket columnPacket = createColumnPacket(Collections.singleton(FirebirdSQLInfoPacketType.ALIAS), "tbl_alias", "col_alias", "owner");
         packet.getDescribeSelect().add(columnPacket);
@@ -70,7 +75,8 @@ class FirebirdPrepareStatementReturnPacketTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteWithNullStringMetadataArguments")
     void assertWriteWithNullStringMetadata(final String name, final FirebirdSQLInfoPacketType requestedItem, final String tableAlias, final String columnAlias, final String owner) {
-        FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket();
+        FirebirdPrepareStatementReturnPacket packet =
+                new FirebirdPrepareStatementReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.BIND));
         packet.setType(FirebirdSQLInfoReturnValue.SELECT);
         packet.getDescribeSelect().add(createColumnPacket(Collections.singleton(requestedItem), tableAlias, columnAlias, owner));
         packet.write((PacketPayload) payload);
@@ -78,6 +84,37 @@ class FirebirdPrepareStatementReturnPacketTest {
         verify(payload).writeInt2LE(0);
         verify(payload).writeBytes(argThat(each -> 0 == each.length));
         verify(payload, never()).getCharset();
+    }
+    
+    @ParameterizedTest(name = "flags={0}")
+    @ValueSource(ints = {0, 2, 3})
+    void assertWriteStatementFlags(final int flags) {
+        FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket(Collections.singleton(FirebirdSQLInfoPacketType.STMT_FLAGS));
+        packet.setStatementFlags(flags);
+        packet.write((PacketPayload) payload);
+        InOrder order = inOrder(payload);
+        order.verify(payload).writeInt1(27);
+        order.verify(payload).writeInt2LE(4);
+        order.verify(payload).writeInt4LE(flags);
+        order.verify(payload).writeInt1(1);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteRequestedItemsInOrder() {
+        FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.STMT_FLAGS, FirebirdSQLInfoPacketType.STMT_TYPE));
+        packet.setStatementFlags(3);
+        packet.setType(FirebirdSQLInfoReturnValue.SELECT);
+        packet.write((PacketPayload) payload);
+        InOrder order = inOrder(payload);
+        order.verify(payload).writeInt1(27);
+        order.verify(payload).writeInt2LE(4);
+        order.verify(payload).writeInt4LE(3);
+        order.verify(payload).writeInt1(21);
+        order.verify(payload).writeInt2LE(4);
+        order.verify(payload).writeInt4LE(1);
+        order.verify(payload).writeInt1(1);
+        verifyNoMoreInteractions(payload);
     }
     
     private FirebirdReturnColumnPacket createColumnPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final String tableAlias, final String columnAlias, final String owner) {

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.database.connector.firebird.metadata.data.Fireb
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
@@ -91,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Co
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.firebirdsql.gds.ISCConstants;
 import org.jspecify.annotations.Nullable;
 
 import java.sql.SQLException;
@@ -121,19 +124,27 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private ReturningSegment returningSegment;
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() throws SQLException {
+        int connectionId = connectionSession.getConnectionId();
+        int statementId = FirebirdStatementIdGenerator.getInstance().resolveStatementId(connectionId, packet.getStatementId(),
+                Boolean.TRUE.equals(connectionSession.getAttributeMap().attr(FirebirdConstant.LAZY_SEND).get()));
+        if (!FirebirdStatementIdGenerator.getInstance().isStatementAllocated(connectionId, statementId)) {
+            FirebirdStatusVector statusVector = FirebirdStatusVector.fromSegments(Collections.singletonList(
+                    FirebirdStatusVector.Segment.withArguments(ISCConstants.isc_bad_req_handle, Collections.emptyList(), null)));
+            return Collections.singleton(new FirebirdGenericResponsePacket().setStatusVector(statusVector));
+        }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         SQLStatement sqlStatement = resolveCurrentDatabase(sqlParserRule.getSQLParserEngine(databaseType).parse(packet.getSQL(), true));
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaDataContexts.getMetaData(), connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
-        int statementId = getStatementId();
-        if (packet.isValidStatementHandle()) {
+        if (packet.isValidStatementHandle() || null != connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId)) {
             FirebirdStatementResourceCleaner.clean(connectionSession, statementId, true);
         }
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
-        return createResponse(sqlStatementContext);
+        return createResponse(sqlStatementContext, serverPreparedStatement.getStatementFlags());
     }
     
     private SQLStatement resolveCurrentDatabase(final SQLStatement sqlStatement) {
@@ -145,15 +156,16 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return new DropDatabaseStatement(sqlStatement.getDatabaseType(), currentDatabaseName, ((DropDatabaseStatement) sqlStatement).isIfExists());
     }
     
-    private int getStatementId() {
-        return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
-    }
-    
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext) {
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final int statementFlags) {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
-        FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
+        FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket(new LinkedList<>());
         while (packet.nextItem()) {
-            switch (packet.getCurrentItem()) {
+            FirebirdSQLInfoPacketType currentItem = packet.getCurrentItem();
+            returnPacket.getRequestedItems().add(currentItem);
+            switch (currentItem) {
+                case STMT_FLAGS:
+                    returnPacket.setStatementFlags(statementFlags);
+                    break;
                 case STMT_TYPE:
                     returnPacket.setType(statementType);
                     break;

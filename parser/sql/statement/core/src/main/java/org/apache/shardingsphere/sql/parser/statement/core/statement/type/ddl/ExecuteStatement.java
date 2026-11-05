@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 /**
  * Execute statement.
  */
 public final class ExecuteStatement extends DDLStatement {
+    
+    @Getter
+    @Setter
+    private boolean returnsRows;
     
     public ExecuteStatement(final DatabaseType databaseType) {
         super(databaseType);

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -42,14 +43,18 @@ public final class FirebirdCommitTransactionCommandExecutor implements CommandEx
     private final ConnectionSession connectionSession;
     
     @Override
+    @HighFrequencyInvocation
     public Collection<DatabasePacket> execute() throws SQLException {
         int transactionHandle = packet.getTransactionId();
         validateTransactionHandle(transactionHandle);
-        if (!connectionSession.isAutoCommit()) {
+        ConnectionSession transactionSession = FirebirdTransactionSessionRegistry.getInstance().get(connectionSession, transactionHandle);
+        ShardingSpherePreconditions.checkNotNull(transactionSession, () -> new InvalidTransactionHandleException(transactionHandle));
+        if (!transactionSession.isAutoCommit()) {
             // TODO add rollback and return exception
-            new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager()).commit();
+            new ProxyBackendTransactionManager(transactionSession.getDatabaseConnectionManager()).commit();
         }
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
+        FirebirdTransactionSessionRegistry.getInstance().unregister(connectionSession, transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
     

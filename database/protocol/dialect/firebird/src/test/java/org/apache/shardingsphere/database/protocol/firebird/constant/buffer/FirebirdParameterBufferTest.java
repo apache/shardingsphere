@@ -23,10 +23,13 @@ import org.apache.shardingsphere.database.exception.core.exception.protocol.Data
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdValueFormat;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -73,6 +76,23 @@ class FirebirdParameterBufferTest {
         assertThat(parameterBuffer.<Integer>getValue(intType), is(123));
         assertTrue(parameterBuffer.<Boolean>getValue(booleanType));
         assertThat(parameterBuffer.getValue(stringType), is(expectedString));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 127, 128, 255})
+    void assertParseTraditionalStringLength(final int length) {
+        when(stringType.getFormat()).thenReturn(FirebirdValueFormat.STRING);
+        when(booleanType.getFormat()).thenReturn(FirebirdValueFormat.BOOLEAN);
+        byte[] bytes = new byte[length];
+        Arrays.fill(bytes, (byte) 'A');
+        String expected = new String(bytes, StandardCharsets.US_ASCII);
+        ByteBuf buffer = Unpooled.buffer();
+        buffer.writeByte(1).writeByte(3).writeByte(length).writeBytes(bytes);
+        buffer.writeByte(2);
+        FirebirdParameterBuffer parameterBuffer = new FirebirdParameterBuffer(createValueOf(), version -> 1 == version);
+        parameterBuffer.parseBuffer(buffer);
+        assertThat(parameterBuffer.getValue(stringType), is(expected));
+        assertTrue(parameterBuffer.<Boolean>getValue(booleanType));
     }
     
     @Test

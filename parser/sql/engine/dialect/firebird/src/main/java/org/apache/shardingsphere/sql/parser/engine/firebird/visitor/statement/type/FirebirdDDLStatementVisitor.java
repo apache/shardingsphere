@@ -336,6 +336,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
         ExecuteStatement result = new ExecuteStatement(getDatabaseType());
+        result.setReturnsRows(null != ctx.executeBlock() && null != ctx.executeBlock().outputArgumentList());
         if (null != ctx.executeBlock() && null != ctx.executeBlock().inputArgumentList()) {
             for (ParameterMarkerContext each : ctx.executeBlock().inputArgumentList().parameterMarker()) {
                 ParameterMarkerValue parameterMarker = (ParameterMarkerValue) visit(each);

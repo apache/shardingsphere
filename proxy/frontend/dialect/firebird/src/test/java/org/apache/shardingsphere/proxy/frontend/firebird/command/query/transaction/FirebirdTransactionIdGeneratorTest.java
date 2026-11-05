@@ -17,15 +17,23 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdObjectHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class FirebirdTransactionIdGeneratorTest {
     
@@ -42,9 +50,48 @@ class FirebirdTransactionIdGeneratorTest {
     }
     
     @Test
+    void assertSignedTransactionHandle() {
+        FirebirdObjectHandleGenerator objects = mock(FirebirdObjectHandleGenerator.class);
+        try (MockedStatic<FirebirdObjectHandleGenerator> ignored = mockStatic(FirebirdObjectHandleGenerator.class)) {
+            when(FirebirdObjectHandleGenerator.getInstance()).thenReturn(objects);
+            when(objects.nextHandle(CONNECTION_ID)).thenReturn(32768);
+            FirebirdTransactionIdGenerator actualTransactions = FirebirdTransactionIdGenerator.getInstance();
+            assertThat(actualTransactions.nextTransactionId(CONNECTION_ID), is(32768));
+            assertTrue(actualTransactions.isTransactionActive(CONNECTION_ID, -32768));
+            actualTransactions.closeTransaction(CONNECTION_ID, -32768);
+            assertFalse(actualTransactions.isTransactionActive(CONNECTION_ID, 32768));
+            verify(objects).releaseHandle(CONNECTION_ID, 32768);
+        }
+    }
+    
+    @Test
     void assertNextTransactionId() {
         assertThat(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID), is(1));
         assertThat(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID), is(2));
+    }
+    
+    @Test
+    void assertNextTransactionIdWithOtherObjects() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
+        try {
+            int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            assertThat(transactionId, is(1));
+            assertThat(FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID), is(2));
+            assertThat(FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID), is(3));
+            FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
+            assertThat(FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID), is(1));
+        } finally {
+            FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+            FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    @Test
+    void assertRegisterConnectionReleasesPreviousHandles() {
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        assertThat(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID), is(transactionId));
     }
     
     @Test

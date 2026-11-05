@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * the BLOB here: the client keeps sending put_segment, and once it calls close the BLOB is fully received
  * and can be substituted into the statement as a regular parameter on execute.</p>
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobWriteCache {
     
@@ -44,7 +46,7 @@ public final class FirebirdBlobWriteCache {
     
     private final Map<Integer, Map<Integer, FirebirdBlobWrite>> writesByHandle = new ConcurrentHashMap<>(16);
     
-    private final Map<Integer, Map<Long, FirebirdBlobWrite>> writesById = new ConcurrentHashMap<>(16);
+    private final Map<Integer, Map<Integer, Map<Long, FirebirdBlobWrite>>> writesById = new ConcurrentHashMap<>(16);
     
     public static FirebirdBlobWriteCache getInstance() {
         return INSTANCE;
@@ -74,14 +76,15 @@ public final class FirebirdBlobWriteCache {
      * Register a new BLOB write by handle and id.
      *
      * @param connectionId connection id
+     * @param transactionId transaction id
      * @param blobHandle blob handle
      * @param blobId blob id
      * @param streamBlob whether the BLOB is a stream BLOB
      */
-    public void registerBlob(final int connectionId, final int blobHandle, final long blobId, final boolean streamBlob) {
-        FirebirdBlobWrite write = new FirebirdBlobWrite(blobHandle, blobId, streamBlob);
+    public void registerBlob(final int connectionId, final int transactionId, final int blobHandle, final long blobId, final boolean streamBlob) {
+        FirebirdBlobWrite write = new FirebirdBlobWrite(transactionId & 0xFFFF, blobHandle, blobId, streamBlob);
         getHandleMap(connectionId).put(blobHandle, write);
-        getIdMap(connectionId).put(blobId, write);
+        getIdMap(connectionId, transactionId).put(blobId, write);
     }
     
     /**
@@ -135,11 +138,12 @@ public final class FirebirdBlobWriteCache {
      * Get buffered blob data.
      *
      * @param connectionId connection id
+     * @param transactionId transaction id
      * @param blobId blob id
      * @return optional buffered bytes
      */
-    public Optional<byte[]> getBlobData(final int connectionId, final long blobId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+    public Optional<byte[]> getBlobData(final int connectionId, final int transactionId, final long blobId) {
+        FirebirdBlobWrite write = getIdMap(connectionId, transactionId).get(blobId);
         return null == write ? Optional.empty() : Optional.of(write.getBytes());
     }
     
@@ -159,11 +163,12 @@ public final class FirebirdBlobWriteCache {
      * Check if write is closed.
      *
      * @param connectionId connection id
+     * @param transactionId transaction id
      * @param blobId blob id
      * @return whether write is closed
      */
-    public boolean isClosed(final int connectionId, final long blobId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+    public boolean isClosed(final int connectionId, final int transactionId, final long blobId) {
+        FirebirdBlobWrite write = getIdMap(connectionId, transactionId).get(blobId);
         return null != write && write.isClosed();
     }
     
@@ -171,12 +176,13 @@ public final class FirebirdBlobWriteCache {
      * Judge whether a buffered BLOB is a stream BLOB.
      *
      * @param connectionId connection id
+     * @param transactionId transaction id
      * @param blobId blob id
      * @return whether the BLOB is a stream BLOB
      */
     @HighFrequencyInvocation
-    public boolean isStreamBlob(final int connectionId, final long blobId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+    public boolean isStreamBlob(final int connectionId, final int transactionId, final long blobId) {
+        FirebirdBlobWrite write = getIdMap(connectionId, transactionId).get(blobId);
         return null != write && write.isStreamBlob();
     }
     
@@ -184,12 +190,46 @@ public final class FirebirdBlobWriteCache {
      * Remove write by blob id.
      *
      * @param connectionId connection id
+     * @param transactionId transaction id
      * @param blobId blob id
      */
-    public void removeWrite(final int connectionId, final long blobId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).remove(blobId);
+    public void removeWrite(final int connectionId, final int transactionId, final long blobId) {
+        FirebirdBlobWrite write = getIdMap(connectionId, transactionId).remove(blobId);
         if (null != write) {
             getHandleMap(connectionId).remove(write.getBlobHandle(), write);
+        }
+    }
+    
+    /**
+     * Remove a BLOB write by its handle.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     */
+    public void removeWriteByHandle(final int connectionId, final int blobHandle) {
+        FirebirdBlobWrite write = getHandleMap(connectionId).get(blobHandle);
+        if (null != write) {
+            removeWrite(connectionId, write.getTransactionId(), write.getBlobId());
+        }
+    }
+    
+    /**
+     * Remove writes belonging to a finished transaction.
+     *
+     * @param connectionId connection id
+     * @param transactionId transaction id
+     */
+    public void unregisterTransaction(final int connectionId, final int transactionId) {
+        Map<Integer, Map<Long, FirebirdBlobWrite>> transactions = writesById.get(connectionId);
+        Map<Long, FirebirdBlobWrite> removed = null == transactions ? null : transactions.remove(transactionId & 0xFFFF);
+        Map<Integer, FirebirdBlobWrite> handles = writesByHandle.get(connectionId);
+        if (null == removed || null == handles) {
+            return;
+        }
+        for (FirebirdBlobWrite each : removed.values()) {
+            if (handles.remove(each.getBlobHandle(), each) && FirebirdBlobHandleGenerator.getInstance().isAllocated(connectionId, each.getBlobHandle())) {
+                FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(connectionId, each.getBlobHandle());
+            }
         }
     }
     
@@ -198,8 +238,7 @@ public final class FirebirdBlobWriteCache {
         return null == result ? writesByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)) : result;
     }
     
-    private Map<Long, FirebirdBlobWrite> getIdMap(final int connectionId) {
-        Map<Long, FirebirdBlobWrite> result = writesById.get(connectionId);
-        return null == result ? writesById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)) : result;
+    private Map<Long, FirebirdBlobWrite> getIdMap(final int connectionId, final int transactionId) {
+        return writesById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4)).computeIfAbsent(transactionId & 0xFFFF, key -> new ConcurrentHashMap<>(4));
     }
 }

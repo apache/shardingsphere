@@ -43,10 +43,10 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
     NOWAIT(7),
     READ(8),
     WRITE(9),
-    LOCK_READ(10),
-    LOCK_WRITE(11),
-    VERB_TIME(12),
-    COMMIT_TIME(13),
+    LOCK_READ(10, FirebirdValueFormat.STRING),
+    LOCK_WRITE(11, FirebirdValueFormat.STRING),
+    VERB_TIME(12, FirebirdValueFormat.STRING),
+    COMMIT_TIME(13, FirebirdValueFormat.STRING),
     IGNORE_LIMBO(14),
     READ_COMMITTED(15),
     AUTOCOMMIT(16),
@@ -54,9 +54,11 @@ public enum FirebirdTransactionParameterBufferType implements FirebirdParameterB
     NO_REC_VERSION(18),
     RESTART_REQUESTS(19),
     NO_AUTO_UNDO(20),
-    LOCK_TIMEOUT(21, FirebirdValueFormat.INT),
+    LOCK_TIMEOUT(21, FirebirdValueFormat.SIZED_INT),
     READ_CONSISTENCY(22),
-    AT_SNAPSHOT_NUMBER(23);
+    AT_SNAPSHOT_NUMBER(23, FirebirdValueFormat.SIZED_LONG),
+    AUTO_RELEASE_TEMP_BLOBID(24),
+    LOCK_TABLE_SCHEMA(25, FirebirdValueFormat.STRING);
     
     private static final Map<Integer, FirebirdTransactionParameterBufferType> FIREBIRD_TPB_TYPE_CACHE = new HashMap<>();
     

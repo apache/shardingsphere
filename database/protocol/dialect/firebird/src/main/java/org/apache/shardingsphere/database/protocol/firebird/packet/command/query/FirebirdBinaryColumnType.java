@@ -114,6 +114,7 @@ public enum FirebirdBinaryColumnType implements BinaryColumnType {
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_sql_time, TIME);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_timestamp, TIMESTAMP);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_quad, BLOB);
+        BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_blob2, BLOB);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_long, LONG);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_short, SHORT);
         BLR_TYPE_AND_COLUMN_TYPE_MAP.put(BlrConstants.blr_int64, INT64);

@@ -17,10 +17,20 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -29,6 +39,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
@@ -45,37 +56,53 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdObjectHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionSessionRegistry;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -86,16 +113,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@StaticMockSettings({ProxyBackendHandlerFactory.class, ProxyContext.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class FirebirdPrepareStatementCommandExecutorTest {
     
@@ -114,6 +147,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
@@ -133,6 +168,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl", Collections.emptyMap());
         FirebirdBlobInfoRegistry.refreshTable("foo_db", "foo_tbl_0", Collections.emptyMap());
@@ -140,7 +176,9 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     private MetaDataContexts createMetaDataContexts() {
         SQLParserRule parserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(128, 1024L)));
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(parserRule));
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getDefaultType()).thenReturn(TransactionType.LOCAL);
+        RuleMetaData globalRuleMetaData = new RuleMetaData(Arrays.asList(parserRule, transactionRule));
         ShardingSphereColumn column = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
         ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column, blobColumn), Collections.emptyList(), Collections.emptyList());
@@ -166,6 +204,87 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {
         return (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute().iterator().next()).getData();
+    }
+    
+    @Test
+    void assertExecuteWithStatementFlags() throws Exception {
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_FLAGS);
+        Collection<DatabasePacket> actual = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute();
+        FirebirdPrepareStatementReturnPacket actualPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        assertThat(actualPacket.getStatementFlags(), is(3));
+        assertThat(actualPacket.getRequestedItems(), is(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_FLAGS)));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"-1", "65535"})
+    void assertLazyPrepareRejectsLastObjectOfAnotherType(final int wireHandle) throws Exception {
+        int otherHandle = FirebirdObjectHandleGenerator.getInstance().nextHandle(CONNECTION_ID);
+        try {
+            DefaultAttributeMap attributes = new DefaultAttributeMap();
+            attributes.attr(FirebirdConstant.LAZY_SEND).set(true);
+            when(connectionSession.getAttributeMap()).thenReturn(attributes);
+            when(packet.getStatementId()).thenReturn(wireHandle);
+            FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute().iterator().next();
+            assertThat(actual.getStatusVector().getSegments().size(), is(1));
+            assertThat(actual.getStatusVector().getSegments().get(0).getGdsCode(), is(ISCConstants.isc_bad_req_handle));
+            assertNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1));
+        } finally {
+            FirebirdObjectHandleGenerator.getInstance().releaseHandle(CONNECTION_ID, otherHandle);
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"-1, 0, false", "65535, 0, false", "-32768, 32766, true", "32768, 32766, true"})
+    void assertStatementHandleAcrossCommands(final int wireHandle, final int previousStatements, final boolean signedExecuteHandle) throws Exception {
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        for (int i = 0; i < previousStatements; i++) {
+            FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        }
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(CONNECTION_ID, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        try {
+            ConnectionSession actualSession = new ConnectionSession(databaseType, new DefaultAttributeMap());
+            actualSession.getAttributeMap().attr(FirebirdConstant.LAZY_SEND).set(true);
+            actualSession.setConnectionId(CONNECTION_ID);
+            actualSession.setGrantee(new Grantee("foo_user", "%"));
+            actualSession.setCurrentDatabaseName("foo_db");
+            actualSession.setAutoCommit(false);
+            actualSession.getDatabaseConnectionManager().handleAutoCommit();
+            Connection backendConnection = mock(Connection.class);
+            actualSession.getDatabaseConnectionManager().getCachedConnections().put("foo_db.foo_ds", backendConnection);
+            int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            FirebirdTransactionSessionRegistry.getInstance().register(actualSession, transactionId);
+            ChannelHandlerContext context = mock(ChannelHandlerContext.class, RETURNS_DEEP_STUBS);
+            when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+            when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.emptyList()));
+            when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(actualSession), eq(true))).thenReturn(proxyBackendHandler);
+            DatabaseProtocolFrontendEngine engine = DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType);
+            new CommandExecutorTask(engine, actualSession, context, Unpooled.buffer().writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue()).writeInt(0)).run();
+            ArgumentCaptor<FirebirdGenericResponsePacket> allocated = ArgumentCaptor.forClass(FirebirdGenericResponsePacket.class);
+            verify(context).write(allocated.capture());
+            int actualStatementId = allocated.getValue().getHandle();
+            ByteBuf prepareCommand = Unpooled.buffer().writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue()).writeInt(transactionId).writeInt(wireHandle)
+                    .writeInt(3).writeInt(8).writeBytes("SELECT 1".getBytes(StandardCharsets.UTF_8))
+                    .writeInt(1).writeByte(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()).writeZero(3).writeInt(1024);
+            new CommandExecutorTask(engine, actualSession, context, prepareCommand).run();
+            int executeHandle = signedExecuteHandle ? (short) actualStatementId : actualStatementId;
+            ByteBuf executeCommand = Unpooled.buffer().writeInt(FirebirdCommandPacketType.EXECUTE.getValue()).writeInt(executeHandle).writeInt(transactionId).writeInt(0).writeInt(0).writeInt(0);
+            new CommandExecutorTask(engine, actualSession, context, executeCommand).run();
+            new CommandExecutorTask(engine, actualSession, context, Unpooled.buffer().writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(transactionId)).run();
+            ArgumentCaptor<FirebirdGenericResponsePacket> responses = ArgumentCaptor.forClass(FirebirdGenericResponsePacket.class);
+            verify(context, times(4)).write(responses.capture());
+            for (FirebirdGenericResponsePacket each : responses.getAllValues()) {
+                assertNull(each.getStatusVector());
+            }
+            verify(proxyBackendHandler).execute();
+            verify(backendConnection).commit();
+            verify(backendConnection, never()).rollback();
+            assertFalse(actualSession.getTransactionStatus().isInTransaction());
+        } finally {
+            FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+            FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+            FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(CONNECTION_ID);
+        }
     }
     
     @Test

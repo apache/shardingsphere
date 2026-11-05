@@ -26,6 +26,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,6 +41,42 @@ class FirebirdStatusVectorTest {
     
     @Mock
     private FirebirdPacketPayload payload;
+    
+    @Test
+    void assertWriteReflectsChangesToLegacyStringArguments() {
+        List<String> arguments = new ArrayList<>();
+        FirebirdStatusVector.Segment segment = new FirebirdStatusVector.Segment(ISCConstants.isc_sqlerr, arguments, null);
+        arguments.add("later");
+        FirebirdStatusVector actual = FirebirdStatusVector.fromSegments(Collections.singletonList(segment));
+        actual.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_sqlerr);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("later");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteOrderedStringAndNumberArguments() {
+        FirebirdStatusVector.Segment segment = FirebirdStatusVector.Segment.withArguments(ISCConstants.isc_sqlerr, Arrays.asList(
+                FirebirdStatusVector.Argument.ofString("before"), FirebirdStatusVector.Argument.ofNumber(-901), FirebirdStatusVector.Argument.ofString("after")), null);
+        FirebirdStatusVector actual = FirebirdStatusVector.fromSegments(Collections.singletonList(segment));
+        assertThat(actual.getSegments().get(0).getArguments(), is(Arrays.asList("before", "after")));
+        actual.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_sqlerr);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("before");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(-901);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
+        inOrder.verify(payload).writeString("after");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
     
     @Test
     void assertWriteKeepsNativeCodeAndStripsStateSuffix() {

@@ -36,6 +36,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -55,6 +57,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private final Map<Integer, List<FirebirdBatchColumnDescriptor>> deferredBatchFormats = new HashMap<>(1, 1F);
     
     private FirebirdCommandPacketType pendingPacketType;
+    
+    private boolean unreadInput;
     
     @Override
     public boolean isValidHeader(final int readableBytes) {
@@ -84,6 +88,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             resetState();
             in.skipBytes(in.readableBytes());
             context.channel().writeAndFlush(FirebirdErrorPacketFactory.newInstance(ex)).addListener(ChannelFutureListener.CLOSE);
+        } finally {
+            unreadInput = in.isReadable();
         }
     }
     
@@ -170,22 +176,30 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
     }
     
-    private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
-        return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8
-                ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH))
-                : null;
+    private @Nullable List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
+        return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8 ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH) & 0xFFFF) : null;
     }
     
     private void rememberBatchFormat(final ByteBuf buffer, final int packetLength, final Charset charset) {
         FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
         ByteBuf batchBlr = packet.getBatchBlr();
-        deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parseForFraming(batchBlr, batchBlr.readableBytes()).getFields());
+        deferredBatchFormats.put(packet.getStatementHandle() & 0xFFFF, FirebirdParseBatchBlr.parseForFraming(batchBlr, batchBlr.readableBytes()).getFields());
     }
     
     private void resetState() {
         pendingMessages.forEach(ByteBuf::release);
         pendingMessages.clear();
         pendingPacketType = null;
+    }
+    
+    /**
+     * Check whether input contains the beginning of an incomplete packet.
+     *
+     * @return whether input contains an incomplete packet
+     */
+    @HighFrequencyInvocation
+    public boolean hasIncompletePacket() {
+        return unreadInput || !pendingMessages.isEmpty();
     }
     
     @Override

@@ -20,6 +20,7 @@
     <set-transaction sql-case-id="set_transaction" isolation-level="REPEATABLE_READ" />
     <set-transaction sql-case-id="set_transaction_opengauss" />
     <set-transaction sql-case-id="set_transaction_firebird" />
+    <set-transaction sql-case-id="set_transaction_without_options_firebird" />
     <set-transaction sql-case-id="set_global_transaction" scope="GLOBAL" isolation-level="REPEATABLE_READ" />
     <set-transaction sql-case-id="set_session_transaction" scope="SESSION" isolation-level="READ_COMMITTED" />
     <set-transaction sql-case-id="set_session_transaction_read_only_mysql" scope="SESSION" access-mode="READ_ONLY" />

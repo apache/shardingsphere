@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -35,15 +40,25 @@ public final class SetTransactionStatement extends TCLStatement {
     
     private final TransactionAccessType accessMode;
     
+    @Getter
+    private final SQLStatementAttributes attributes;
+    
     public SetTransactionStatement(final DatabaseType databaseType) {
         this(databaseType, null, null, null);
     }
     
     public SetTransactionStatement(final DatabaseType databaseType, final OperationScope scope, final TransactionIsolationLevel isolationLevel, final TransactionAccessType accessMode) {
+        this(databaseType, scope, isolationLevel, accessMode, new SQLStatementAttribute[0]);
+    }
+    
+    @HighFrequencyInvocation
+    public SetTransactionStatement(final DatabaseType databaseType, @Nullable final OperationScope scope, @Nullable final TransactionIsolationLevel isolationLevel,
+                                   @Nullable final TransactionAccessType accessMode, final SQLStatementAttribute... attributes) {
         super(databaseType);
         this.scope = scope;
         this.isolationLevel = isolationLevel;
         this.accessMode = accessMode;
+        this.attributes = new SQLStatementAttributes(attributes);
     }
     
     /**
