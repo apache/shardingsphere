@@ -137,8 +137,8 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
             return new BatchParameters(version, bufferSize, recordCounts, multiError);
         }
         
-        private static int validateVersion(final ByteBuf batchParametersBuffer) {
-            int result = batchParametersBuffer.isReadable() ? batchParametersBuffer.getUnsignedByte(batchParametersBuffer.readerIndex()) : BATCH_VERSION_1;
+        private static int validateVersion(final ByteBuf batchParamsBuffer) {
+            int result = batchParamsBuffer.isReadable() ? batchParamsBuffer.getUnsignedByte(batchParamsBuffer.readerIndex()) : BATCH_VERSION_1;
             ShardingSpherePreconditions.checkState(BATCH_VERSION_1 == result, () -> new InvalidBatchParameterVersionException(result, BATCH_VERSION_1));
             return result;
         }
