@@ -34,6 +34,7 @@ import java.io.StringReader;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
@@ -113,6 +114,9 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
         }
         if (value instanceof Clob) {
             return ((Clob) value).getCharacterStream();
+        }
+        if (value instanceof SQLXML) {
+            return ((SQLXML) value).getCharacterStream();
         }
         // TODO Support connection property character encoding
         if (value instanceof byte[]) {

@@ -39,6 +39,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -379,6 +380,18 @@ class JDBCMemoryQueryResultTest {
         Reader expectedReader = new StringReader("foo_value");
         when(clob.getCharacterStream()).thenReturn(expectedReader);
         when(resultSet.getClob(1)).thenReturn(clob);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(queryResult.getCharacterStream(1), sameInstance(expectedReader));
+    }
+    
+    @Test
+    void assertGetCharacterStreamWithSQLXML() throws SQLException {
+        ResultSet resultSet = getMockedResultSet(Types.SQLXML);
+        SQLXML sqlXML = mock(SQLXML.class);
+        Reader expectedReader = new StringReader("<foo>bar</foo>");
+        when(sqlXML.getCharacterStream()).thenReturn(expectedReader);
+        when(resultSet.getObject(1)).thenReturn(sqlXML);
         JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
         queryResult.next();
         assertThat(queryResult.getCharacterStream(1), sameInstance(expectedReader));
