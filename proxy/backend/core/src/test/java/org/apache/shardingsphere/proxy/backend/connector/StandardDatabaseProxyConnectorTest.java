@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
@@ -442,9 +443,9 @@ class StandardDatabaseProxyConnectorTest {
         }
     }
     
-    @ParameterizedTest(name = "{0}, Federation enabled: {1}")
+    @ParameterizedTest(name = "{0}, Federation enabled: {1}, SELECT: {2}")
     @MethodSource("getMixedStorageExecutions")
-    void assertExecuteWithMixedStorageTypes(final JDBCDriverType driverType, final boolean federationEnabled) throws SQLException {
+    void assertExecuteWithMixedStorageTypes(final JDBCDriverType driverType, final boolean federationEnabled, final boolean select) throws SQLException {
         ShardingSphereDatabase database = mockDatabase();
         StorageUnit mysqlStorageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         StorageUnit postgresqlStorageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
@@ -452,7 +453,8 @@ class StandardDatabaseProxyConnectorTest {
         when(postgresqlStorageUnit.getStorageType().getType()).thenReturn("PostgreSQL");
         when(database.getResourceMetaData().getStorageUnits().get("foo_mysql")).thenReturn(mysqlStorageUnit);
         when(database.getResourceMetaData().getStorageUnits().get("foo_postgresql")).thenReturn(postgresqlStorageUnit);
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
+        SQLStatementContext sqlStatementContext =
+                createSQLStatementContext(select ? SelectStatement.builder().databaseType(databaseType).build() : new AnalyzeTableStatement(databaseType, Collections.emptyList()));
         QueryContext queryContext = createQueryContext(sqlStatementContext, database);
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         when(proxySQLExecutor.getSqlFederationEngine().isSQLFederationEnabled()).thenReturn(federationEnabled);
@@ -472,10 +474,14 @@ class StandardDatabaseProxyConnectorTest {
     
     private static Stream<Arguments> getMixedStorageExecutions() {
         return Stream.of(
-                Arguments.of(JDBCDriverType.STATEMENT, false),
-                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, false),
-                Arguments.of(JDBCDriverType.STATEMENT, true),
-                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, true));
+                Arguments.of(JDBCDriverType.STATEMENT, false, true),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, false, true),
+                Arguments.of(JDBCDriverType.STATEMENT, true, true),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, true, true),
+                Arguments.of(JDBCDriverType.STATEMENT, false, false),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, false, false),
+                Arguments.of(JDBCDriverType.STATEMENT, true, false),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, true, false));
     }
     
     @Test

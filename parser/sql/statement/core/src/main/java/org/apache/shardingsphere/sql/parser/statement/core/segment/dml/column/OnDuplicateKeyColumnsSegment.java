@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * On duplicate key columns segment.
@@ -36,4 +37,6 @@ public final class OnDuplicateKeyColumnsSegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<ColumnAssignmentSegment> columns;
+    
+    private final Collection<ColumnSegment> conflictColumns = new LinkedList<>();
 }

@@ -20,7 +20,12 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
@@ -47,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -54,6 +60,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,6 +79,59 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SubqueryExtractorTest {
+    
+    @ParameterizedTest(name = "INSERT subquery in {0}")
+    @ValueSource(strings = {"VALUES", "SET", "ON_DUPLICATE_KEY", "RETURNING", "WITH"})
+    void assertExtractInsertSubquery(final String location) {
+        SubquerySegment subquery = new SubquerySegment(20, 30, SelectStatement.builder().projections(new ProjectionsSegment(25, 25)).build(), "SELECT 1");
+        InsertStatement statement = createInsertStatement(location, subquery);
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(statement, false);
+        assertThat(actual, is(Collections.singletonList(subquery)));
+        if ("VALUES".equals(location)) {
+            assertThat(subquery.getSelect().getSubqueryType().get(), is(SubqueryType.INSERT_VALUES));
+        }
+        if ("WITH".equals(location)) {
+            assertThat(subquery.getSelect().getSubqueryType().get(), is(SubqueryType.WITH));
+        }
+    }
+    
+    private InsertStatement createInsertStatement(final String location, final SubquerySegment subquery) {
+        SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquery);
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(10, 30, Collections.singletonList(new ColumnSegment(10, 15, new IdentifierValue("foo_column"))), value);
+        ProjectionsSegment projections = new ProjectionsSegment(20, 30);
+        projections.getProjections().add(new SubqueryProjectionSegment(subquery, "(SELECT 1)"));
+        switch (location) {
+            case "VALUES":
+                return InsertStatement.builder().values(Collections.singletonList(new InsertValuesSegment(19, 31, Collections.singletonList(value)))).build();
+            case "SET":
+                return InsertStatement.builder().setAssignment(new SetAssignmentSegment(10, 30, Collections.singletonList(assignment))).build();
+            case "ON_DUPLICATE_KEY":
+                return InsertStatement.builder().onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(10, 30, Collections.singletonList(assignment))).build();
+            case "RETURNING":
+                return InsertStatement.builder().returning(new ReturningSegment(10, 30, projections)).build();
+            default:
+                CommonTableExpressionSegment common = new CommonTableExpressionSegment(5, 30, new AliasSegment(5, 10, new IdentifierValue("foo_cte")), subquery, null);
+                return InsertStatement.builder().with(new WithSegment(0, 30, Collections.singletonList(common), false)).build();
+        }
+    }
+    
+    @Test
+    void assertExtractInsertSubqueryRecursively() {
+        SubquerySegment nested = new SubquerySegment(25, 30, SelectStatement.builder().projections(new ProjectionsSegment(28, 28)).build(), "SELECT 1");
+        ProjectionsSegment projections = new ProjectionsSegment(20, 30);
+        projections.getProjections().add(new SubqueryProjectionSegment(nested, "(SELECT 1)"));
+        SubquerySegment outer = new SubquerySegment(15, 35, SelectStatement.builder().projections(projections).build(), "SELECT (SELECT 1)");
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(createInsertStatement("VALUES", outer), true);
+        assertThat(actual, is(Arrays.asList(outer, nested)));
+        assertThat(outer.getSelect().getSubqueryType().get(), is(SubqueryType.INSERT_VALUES));
+        assertThat(nested.getSelect().getSubqueryType().get(), is(SubqueryType.PROJECTION));
+    }
+    
+    @Test
+    void assertExtractInsertWithoutSubqueries() {
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(InsertStatement.builder().build(), false);
+        assertTrue(actual.isEmpty());
+    }
     
     @Test
     void assertExtractSubquerySegmentsInWhere() {
