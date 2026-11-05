@@ -30,11 +30,9 @@ Trista discussed the evolving perception of open source and its value for develo
 
 Addressing the challenges in data value mining, Trista highlighted data security as a significant concern. With the rise of big data and artificial intelligence, ensuring data security has become paramount. ShardingSphere acknowledges user and customer expectations regarding data security and is actively working on enhancing it across various application scenarios.
 
-<figure class="third">
-    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China4.jpg" width="600" high="816.29">
-    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China5.jpg" width="600" high="369">
-    <img src="https://shardingsphere.apache.org/blog/img/AWS_Summit_China6.jpg" width="600" high="369">
-</figure>
+![](https://shardingsphere.apache.org/blog/img/AWS_Summit_China4.jpg)
+![](https://shardingsphere.apache.org/blog/img/AWS_Summit_China5.jpg)
+![](https://shardingsphere.apache.org/blog/img/AWS_Summit_China6.jpg)
 
 ## ShardingSphere: Providing Robust Data Security Features
 
