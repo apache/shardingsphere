@@ -28,7 +28,6 @@
     
     <properties>
         <seata.version>2.6.0</seata.version>
-        <httpcore5.version>5.4.3</httpcore5.version>
     </properties>
     
     <dependencyManagement>
@@ -38,11 +37,6 @@
                 <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.httpcomponents.core5</groupId>
-                <artifactId>httpcore5</artifactId>
-                <version>${httpcore5.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

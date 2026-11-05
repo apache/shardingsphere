@@ -79,6 +79,7 @@
         <guava.version>33.7.2-jre</guava.version>
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
+        <jspecify.version>1.0.1</jspecify.version>
         <java-util.version>4.103.0</java-util.version>
         <calcite.version>1.42.0</calcite.version>
         <joou.version>0.9.5</joou.version>
@@ -94,6 +95,7 @@
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
         
         <antlr4.version>4.13.2</antlr4.version>
+        <stax2-api.version>4.2.1</stax2-api.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <gson.version>2.10.1</gson.version>
         <jackson.version>2.22.3</jackson.version>
@@ -106,8 +108,11 @@
         <bytebuddy.version>1.18.8</bytebuddy.version>
         
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
+        <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
+        <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
         <bval.version>2.0.6</bval.version>
         
+        <httpcore5.version>5.4.3</httpcore5.version>
         <netty.version>4.2.19.Final</netty.version>
         <bouncycastle-bom.version>1.86.2</bouncycastle-bom.version>
         
@@ -137,6 +142,7 @@
         <mariadb-java-client.version>2.7.14</mariadb-java-client.version>
         <clickhouse-jdbc.version>0.9.8</clickhouse-jdbc.version>
         <hive.version>4.0.1</hive.version>
+        <libthrift.version>0.16.0</libthrift.version>
         <hive-server2-jdbc-driver-thin.version>1.8.2</hive-server2-jdbc-driver-thin.version>
         <presto.version>0.298.1</presto.version>
         <jaybird.version>5.0.13.java8</jaybird.version>
@@ -196,7 +202,6 @@
         <!-- Report plugin versions -->
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
-        <license-maven-plugin.version>2.7.1</license-maven-plugin.version>
         <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.2.1</jdepend-maven-plugin.version>
@@ -232,6 +237,11 @@
                 <artifactId>error_prone_annotations</artifactId>
                 <version>${error_prone_annotations.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${jspecify.version}</version>
+            </dependency>
             
             <dependency>
                 <groupId>com.cedarsoftware</groupId>
@@ -265,6 +275,16 @@
                 <version>${transmittable-thread-local.version}</version>
             </dependency>
             
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>${antlr4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <version>${stax2-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
@@ -316,6 +336,16 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>jakarta.jms</groupId>
+                <artifactId>jakarta.jms-api</artifactId>
+                <version>${jakarta.jms-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.persistence</groupId>
+                <artifactId>jakarta.persistence-api</artifactId>
+                <version>${jakarta.persistence-api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.bval</groupId>
                 <artifactId>bval-jsr</artifactId>
                 <version>${bval.version}</version>
@@ -346,6 +376,17 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${commons-text.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>${httpcore5.version}</version>
             </dependency>
             
             <dependency>
@@ -602,6 +643,11 @@
                 <artifactId>hive-jdbc</artifactId>
                 <version>${hive.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.thrift</groupId>
+                <artifactId>libthrift</artifactId>
+                <version>${libthrift.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
@@ -1039,21 +1085,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>${license-maven-plugin.version}</version>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <id>aggregate-dependency-licenses</id>
-                        <goals>
-                            <goal>aggregate-third-party-report</goal>
-                        </goals>
-                        <phase>pre-site</phase>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
         
         <extensions>
@@ -1070,19 +1101,6 @@
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>${license-maven-plugin.version}</version>
-                <inherited>false</inherited>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>aggregate-third-party-report</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>

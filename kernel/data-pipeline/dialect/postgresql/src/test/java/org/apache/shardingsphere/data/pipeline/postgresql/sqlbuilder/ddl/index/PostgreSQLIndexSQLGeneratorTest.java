@@ -22,8 +22,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.Po
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
-import org.postgresql.jdbc.PgArray;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -119,17 +119,17 @@ class PostgreSQLIndexSQLGeneratorTest {
         when(templateExecutor.getMajorVersion()).thenReturn(11);
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/indexes/%s/nodes.ftl"))).thenReturn(Collections.singletonList(Collections.singletonMap("oid", 3L)));
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/indexes/%s/properties.ftl"))).thenReturn(Collections.singletonList(createBtreeIndexProps()));
-        PgArray emptyOptions = mock(PgArray.class);
+        Array emptyOptions = mock(Array.class);
         when(emptyOptions.getArray()).thenReturn(new String[0]);
-        PgArray descOptions = mock(PgArray.class);
+        Array descOptions = mock(Array.class);
         when(descOptions.getArray()).thenReturn(new String[]{"DESC"});
-        PgArray nullsFirstOptions = mock(PgArray.class);
+        Array nullsFirstOptions = mock(Array.class);
         when(nullsFirstOptions.getArray()).thenReturn(new String[]{"ASC", "NULLS FIRST"});
-        PgArray nullsLastOptions = mock(PgArray.class);
+        Array nullsLastOptions = mock(Array.class);
         when(nullsLastOptions.getArray()).thenReturn(new String[]{"ASC", "NULLS LAST"});
-        PgArray nullsWithoutSpaceOptions = mock(PgArray.class);
+        Array nullsWithoutSpaceOptions = mock(Array.class);
         when(nullsWithoutSpaceOptions.getArray()).thenReturn(new String[]{"ASC", "NULLS"});
-        PgArray emptyArrayOptions = mock(PgArray.class);
+        Array emptyArrayOptions = mock(Array.class);
         when(emptyArrayOptions.getArray()).thenReturn(new String[0]);
         Collection<Map<String, Object>> columnDetails = Arrays.asList(createColumnDetailWithNullOptions(emptyOptions),
                 createColumnDetail("desc_col", null, null, descOptions), createColumnDetail("nulls_first_col", null, null, nullsFirstOptions),
@@ -190,7 +190,7 @@ class PostgreSQLIndexSQLGeneratorTest {
         return result;
     }
     
-    private Map<String, Object> createColumnDetailWithNullOptions(final PgArray fallbackOptions) {
+    private Map<String, Object> createColumnDetailWithNullOptions(final Array fallbackOptions) {
         Map<String, Object> result = mock(Map.class);
         when(result.get("attdef")).thenReturn("col_with_null_options");
         when(result.get("collnspname")).thenReturn(null);
@@ -209,7 +209,7 @@ class PostgreSQLIndexSQLGeneratorTest {
         return result;
     }
     
-    private Map<String, Object> createColumnDetail(final String attdef, final String collation, final String opClass, final PgArray options) {
+    private Map<String, Object> createColumnDetail(final String attdef, final String collation, final String opClass, final Array options) {
         Map<String, Object> result = new HashMap<>(4, 1F);
         result.put("attdef", attdef);
         result.put("collnspname", collation);

@@ -388,7 +388,7 @@ id = "review-pr-sql-parser"
 path = ".codex/skills/review-pr/references/sql-parser-review.md"
 kind = "reference"
 semantic = true
-references = []
+references = [".codex/skills/code-implementation/references/rules/testing.md"]
 
 [[sources]]
 id = "review-pr-corrections"
