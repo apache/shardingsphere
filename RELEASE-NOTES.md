@@ -300,6 +300,7 @@
 1. Pipeline: Support multi-columns unique key non-first column nullable - [#37647](https://github.com/apache/shardingsphere/pull/37647)
 1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
 1. JDBC: Enhance ResultSetUtils to support flexible string date/time conversions - [37424](https://github.com/apache/shardingsphere/pull/37424)
+1. Proxy: Fix Firebird system table schemas: add missing tables and columns and correct column types - [#40254](https://github.com/apache/shardingsphere/issues/40254)
 
 ### Bug Fixes
 

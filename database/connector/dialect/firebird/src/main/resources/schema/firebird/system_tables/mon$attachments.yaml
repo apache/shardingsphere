@@ -199,3 +199,17 @@ columns:
     name: MON$WIRE_CRYPT_PLUGIN
     primaryKey: false
     visible: true
+  MON$SESSION_TIMEZONE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: MON$SESSION_TIMEZONE
+    primaryKey: false
+    visible: true
+  MON$PARALLEL_WORKERS:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MON$PARALLEL_WORKERS
+    primaryKey: false
+    visible: true
