@@ -112,6 +112,7 @@
         <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
         <bval.version>2.0.6</bval.version>
         
+        <httpcore.version>4.4.15</httpcore.version>
         <httpcore5.version>5.4.3</httpcore5.version>
         <netty.version>4.2.19.Final</netty.version>
         <bouncycastle-bom.version>1.86.2</bouncycastle-bom.version>
@@ -378,6 +379,11 @@
                 <version>${commons-text.version}</version>
             </dependency>
             
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${httpcore.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents.core5</groupId>
                 <artifactId>httpcore5</artifactId>
