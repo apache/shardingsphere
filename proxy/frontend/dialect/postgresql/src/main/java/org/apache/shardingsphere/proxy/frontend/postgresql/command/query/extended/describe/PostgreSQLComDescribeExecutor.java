@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -31,12 +30,10 @@ import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOID
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -45,10 +42,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatementParameterTypeResolver;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -63,12 +58,9 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Command describe for PostgreSQL.
@@ -119,56 +111,22 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private void describeInsertStatementByDatabaseMetaData(final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
         InsertStatement insertStatement = (InsertStatement) preparedStatement.getSqlStatementContext().getSqlStatement();
-        Collection<Integer> unspecifiedTypeParameterIndexes = getUnspecifiedTypeParameterIndexes(preparedStatement);
         Optional<ReturningSegment> returningSegment = insertStatement.getReturning();
-        if (insertStatement.getParameterMarkers().isEmpty() && unspecifiedTypeParameterIndexes.isEmpty() && !returningSegment.isPresent()) {
+        if (insertStatement.getParameterMarkers().isEmpty() && !preparedStatement.getParameterTypes().contains(PostgreSQLBinaryColumnType.UNSPECIFIED) && !returningSegment.isPresent()) {
             return;
         }
         String logicTableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getUsedDatabaseName(), insertStatement, logicTableName);
-        List<ShardingSphereIdentifier> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
         preparedStatement.setRowDescription(returningSegment.isPresent()
                 ? describeReturning(returningSegment.get(), table, preparedStatement)
                 : PostgreSQLNoDataPacket.getInstance());
-        int parameterMarkerIndex = 0;
-        for (InsertValuesSegment each : insertStatement.getValues()) {
-            for (int i = 0; i < each.getValues().size(); i++) {
-                ExpressionSegment value = each.getValues().get(i);
-                if (!(value instanceof ParameterMarkerExpressionSegment)) {
-                    continue;
-                }
-                if (!unspecifiedTypeParameterIndexes.contains(parameterMarkerIndex)) {
-                    parameterMarkerIndex++;
-                    continue;
-                }
-                String columnName = columnNamesOfInsert.get(i).toString();
-                ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
-            }
-        }
-    }
-    
-    private Collection<Integer> getUnspecifiedTypeParameterIndexes(final PostgreSQLServerPreparedStatement preparedStatement) {
-        Collection<Integer> result = new HashSet<>();
-        ListIterator<PostgreSQLBinaryColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
-        for (int index = parameterTypesListIterator.nextIndex(); parameterTypesListIterator.hasNext(); index = parameterTypesListIterator.nextIndex()) {
-            if (PostgreSQLBinaryColumnType.UNSPECIFIED == parameterTypesListIterator.next()) {
-                result.add(index);
-            }
-        }
-        return result;
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveInsertParameterTypes(connectionSession, preparedStatement);
     }
     
     private ShardingSphereTable getTableFromMetaData(final String databaseName, final InsertStatement insertStatement, final String logicTableName) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(databaseName);
         String schemaName = insertStatement.getTable().flatMap(SimpleTableSegment::getOwner).map(optional -> optional.getIdentifier().getValue()).orElseGet(database::getDefaultSchemaName);
         return database.getSchema(schemaName).getTable(logicTableName);
-    }
-    
-    private List<ShardingSphereIdentifier> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
-        return insertStatement.getColumns().isEmpty()
-                ? table.getColumnNames()
-                : insertStatement.getColumns().stream().map(each -> new ShardingSphereIdentifier(each.getIdentifier().getValue())).collect(Collectors.toList());
     }
     
     private PostgreSQLRowDescriptionPacket describeReturning(final ReturningSegment returningSegment, final ShardingSphereTable table,
