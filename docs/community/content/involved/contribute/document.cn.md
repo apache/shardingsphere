@@ -22,73 +22,34 @@ Fork [ShardingSphere](https://github.com/apache/shardingsphere) 的 master 分�
 ## 目录结构说明
 
 ```
-shardingsphere
-├─docs
-  ├─community
-  │  ├─archetypes
-  │  ├─content
-  │  │  ├─contribute
-  │  │  ├─powered-by
-  │  │  ├─security
-  │  │  └─team
-  │  ├─layouts
-  │  ├─static
-  │  └─themes
-  ├─document
-  │  ├─archetypes
-  │  ├─content
-  │  │  ├─concepts
-  │  │  │  ├─adaptor
-  │  │  │  ├─distsql
-  │  │  │  ├─mode
-  │  │  │  └─pluggable         
-  │  │  ├─dev-manual
-  │  │  ├─downloads
-  │  │  ├─features
-  │  │  │  ├─encrypt
-  │  │  │  ├─governance
-  │  │  │  ├─readwrite-splitting
-  │  │  │  ├─scaling
-  │  │  │  ├─shadow
-  │  │  │  ├─sharding
-  │  │  │  │  ├─concept
-  │  │  │  │  ├─principle
-  │  │  │  │  └─use-norms
-  │  │  │  ├─test-engine
-  │  │  │  └─transaction
-  │  │  │      ├─concept
-  │  │  │      ├─principle
-  │  │  │      └─use-norms
-  │  │  ├─others
-  │  │  │  ├─api-change-history
-  │  │  │  └─faq    
-  │  │  ├─overview
-  │  │  ├─quick-start
-  │  │  ├─user-manual
-  │  │  │  ├─shardingsphere-jdbc
-  │  │  │  │  ├─configuration
-  │  │  │  │  └─usage
-  │  │  │  ├─shardingsphere-proxy
-  │  │  │  ├─shardingsphere-sidecar
-  │  │  │  └─shardingsphere-scaling  
-  │  ├─i18n
-  │  ├─layouts
-  │  ├─static
-  │  └─themes
+docs
+├─document
+│  ├─content
+│  └─static
+├─community
+│  ├─content
+│  └─static
+└─blog
+   ├─content
+   └─static
 ```
 
 ## 文档基础知识
 
-ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 html，部署于 [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site) 分支，源代码位于 [Github](https://github.com/apache/shardingsphere/tree/master)。
+ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 生成 HTML。
+Markdown 源文件和文章媒体位于 [docs 目录](https://github.com/apache/shardingsphere/tree/master/docs)，生成的网站部署于 `shardingsphere-doc` 的 [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site) 分支。
 
-- [官方教程最新版本](https://shardingsphere.apache.org/document/current/cn/overview/) 源存储在 `/document/`
-- [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/involved/) 相关文档源都储存在 `/community/content/`
+- [官方教程最新版本](https://shardingsphere.apache.org/document/current/cn/overview/) 源文件存储在 `docs/document/content/`。
+- [社区介绍及贡献](https://shardingsphere.apache.org/community/cn/involved/) 相关文档源文件存储在 `docs/community/content/`。
+- 博客文章源文件存储在 `docs/blog/content/`。
+
+文章媒体存储在各站点的 `static` 目录中。
 
 您可以从 [Github](https://github.com/apache/shardingsphere/issues) 网站上提交问题，编辑内容和查看其他人的更改。
 
 ## 页面模板
 
-页面模板位于 themes 中的 `layouts/partials/` 目录中。
+网站模板和构建配置由 [shardingsphere-doc](https://github.com/apache/shardingsphere-doc) 维护。
 
 ## 提出具体可查找的问题
 
@@ -115,6 +76,6 @@ ShardingSphere 文档使用 Markdown 编写，并使用 Hugo 进行处理生成 
 
 ## 约定
 
-- 非特别说明，请使用 Hugo 的 `0.70.0` 版本。
+- Hugo 版本请遵循 `shardingsphere-doc` 中的[网站构建工作流](https://github.com/apache/shardingsphere-doc/blob/asf-site/.github/workflows/build-website.yml)配置。
 
 - asf-site 分支由官方定期更新，您无需向 asf-site 提交 pull request。

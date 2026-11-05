@@ -28,9 +28,9 @@ Therefore, DistSQL provides a syntax structure and syntax validation system simi
 
 **Toolkit**
 
-1. ANTRL4 is a tool that translates your grammar to a parser/lexer in Java (or another target language). It’s used as a parser. You need to configure it before starting to develop your DistSQL. Want to get started with ANTLR 4? Please refer to this [ANTRL4 Concise Tutorial] (https://wizardforcel.gitbooks.io/antlr4-short-course/content/)
+1. ANTRL4 is a tool that translates your grammar to a parser/lexer in Java (or another target language). It’s used as a parser. You need to configure it before starting to develop your DistSQL. Want to get started with ANTLR 4? Please refer to this [ANTRL4 Concise Tutorial](https://wizardforcel.gitbooks.io/antlr4-short-course/content/)
 
-2. IntelliJ IDEA is an integrated development environment written in Java for developing computer software. You also need the plug-in [ANTLR v4] (https://plugins.jetbrains.com/plugin/7358-antlr-v4) to test the grammar rules defined by ANTRL4.
+2. IntelliJ IDEA is an integrated development environment written in Java for developing computer software. You also need the plug-in [ANTLR v4](https://plugins.jetbrains.com/plugin/7358-antlr-v4) to test the grammar rules defined by ANTRL4.
 
 + First, choose the right Test Rule:
 
@@ -48,7 +48,7 @@ However, you still need to take care of the following core procedures:
 
 _Note: Here, we take data sharding as an example. Be aware that different features have different visitors._
 
-###Practice
+### Practice
 
 After understanding the execution process of DistSQL, you now can appreciate the practical case and learn how to develop your first DistSQL statement.
 
@@ -102,7 +102,7 @@ Data handling is managed by the `execute`method of `Handler` or `Executor`, and 
 
 Show the execution method and the `DistSQLResultSet` as shown in the below image:
 
-![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_8.png)
+![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_8.jpg)
 
 ![](https://shardingsphere.apache.org/blog/img/DistSQL_Statement_Development_img_9.png)
 
@@ -166,4 +166,4 @@ Lan Chengxiang
 
 [ShardingSphere Twitter](https://twitter.com/ShardingSphere)
 
-[ShardingSphere Slack Channel] (https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
+[ShardingSphere Slack Channel](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
