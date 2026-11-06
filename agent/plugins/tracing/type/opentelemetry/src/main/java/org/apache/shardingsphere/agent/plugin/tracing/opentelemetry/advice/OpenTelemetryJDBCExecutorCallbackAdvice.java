@@ -33,6 +33,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeCon
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 
 import java.util.Map;
@@ -53,24 +54,27 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     private static final Map<JDBCExecutionUnit, PendingSpan> PENDING_SPANS = new ConcurrentHashMap<>();
     
     /**
+     * Number of spans the current thread registered and has not completed yet. Keeping the count on the thread makes the enablement check
+     * independent of the size of {@link #PENDING_SPANS}, so spans left pending by other threads never turn a later SQL execution into a scan
+     * of the registry. The count is raised by {@code beforeMethod} and lowered by the single completion exit, {@code afterMethod}.
+     */
+    private static final ThreadLocal<Integer> PENDING_SPAN_COUNT = new ThreadLocal<>();
+    
+    /**
      * Keep a pending invocation observable after the plugin is disabled. The executor skips every advice hook of a disabled plugin, so without this
      * the completion hooks of an invocation whose span is still pending would never run and the span, execution unit and statement would be retained.
      *
      * @return true when the plugin is enabled or the current thread owns a pending span
      */
     @Override
+    @HighFrequencyInvocation
     public boolean isPluginEnabled() {
-        return super.isPluginEnabled() || hasPendingSpanOnCurrentThread();
+        return super.isPluginEnabled() || 0 < getPendingSpanCount();
     }
     
-    private static boolean hasPendingSpanOnCurrentThread() {
-        Thread currentThread = Thread.currentThread();
-        for (PendingSpan each : PENDING_SPANS.values()) {
-            if (currentThread == each.getThread()) {
-                return true;
-            }
-        }
-        return false;
+    private static int getPendingSpanCount() {
+        Integer result = PENDING_SPAN_COUNT.get();
+        return null == result ? 0 : result;
     }
     
     @Override
@@ -92,14 +96,25 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan(), Thread.currentThread()));
+        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan()));
+        PENDING_SPAN_COUNT.set(getPendingSpanCount() + 1);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         PendingSpan pending = PENDING_SPANS.remove((JDBCExecutionUnit) args[0]);
         if (null != pending) {
+            decreasePendingSpanCount();
             endSpan(pending);
+        }
+    }
+    
+    private static void decreasePendingSpanCount() {
+        int count = getPendingSpanCount() - 1;
+        if (0 < count) {
+            PENDING_SPAN_COUNT.set(count);
+        } else {
+            PENDING_SPAN_COUNT.remove();
         }
     }
     
@@ -123,6 +138,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     
     /**
      * End and release every span that is still pending when the plugin stops, so that no span outlives the tracing it was started for.
+     * The caller thread has no pending span afterwards, so its count is cleared as well.
      */
     public static void endAllPendingSpans() {
         for (Entry<JDBCExecutionUnit, PendingSpan> entry : PENDING_SPANS.entrySet()) {
@@ -131,6 +147,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 endSpan(pending);
             }
         }
+        PENDING_SPAN_COUNT.remove();
     }
     
     /**
@@ -143,8 +160,6 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     private static final class PendingSpan {
         
         private final Span span;
-        
-        private final Thread thread;
         
         @Setter
         private Throwable throwable;

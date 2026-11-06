@@ -69,6 +69,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -123,24 +124,12 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     @AfterEach
-    @SneakyThrows(ReflectiveOperationException.class)
     void clean() {
+        OpenTelemetryJDBCExecutorCallbackAdvice.endAllPendingSpans();
         GlobalOpenTelemetry.resetForTest();
         parentSpan.end();
         testExporter.reset();
-        getPendingSpans().clear();
         ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static Map<?, ?> getPendingSpans() throws ReflectiveOperationException {
-        return (Map<?, ?>) Plugins.getMemberAccessor().get(OpenTelemetryJDBCExecutorCallbackAdvice.class.getDeclaredField("PENDING_SPANS"), null);
-    }
-    
-    private void setPluginEnabled(final boolean enabled) {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(enabled);
-        ShardingSphereDataSourceContextHolder.put("foo_instance", new ShardingSphereDataSourceContext("foo_db", contextManager));
     }
     
     @Test
@@ -239,6 +228,31 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         assertThat(actualSpanItems.size(), is(1));
         assertThat(actualSpanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
         assertTrue(getPendingSpans().isEmpty());
+    }
+    
+    private void setPluginEnabled(final boolean enabled) {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(enabled);
+        ShardingSphereDataSourceContextHolder.put("foo_instance", new ShardingSphereDataSourceContext("foo_db", contextManager));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static Map<?, ?> getPendingSpans() throws ReflectiveOperationException {
+        return (Map<?, ?>) Plugins.getMemberAccessor().get(OpenTelemetryJDBCExecutorCallbackAdvice.class.getDeclaredField("PENDING_SPANS"), null);
+    }
+    
+    /**
+     * The enablement check belongs to the current thread: a span another thread left pending must not keep the hooks of this thread running.
+     */
+    @Test
+    void assertPendingSpanOnAnotherThreadDoesNotEnableThisThread() throws Exception {
+        OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
+        Thread pendingThread = new Thread(() -> advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry"));
+        pendingThread.start();
+        pendingThread.join(5000L);
+        setPluginEnabled(false);
+        assertFalse(advice.isPluginEnabled());
+        assertThat(getPendingSpans().size(), is(1));
     }
     
     /**
