@@ -26,6 +26,20 @@
     <artifactId>shardingsphere-database-connector-hive</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <jakarta.activation-api.version>1.2.2</jakarta.activation-api.version>
+    </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${jakarta.activation-api.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
