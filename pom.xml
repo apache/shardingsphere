@@ -80,6 +80,7 @@
         <checker-qual.version>3.39.0</checker-qual.version>
         <error_prone_annotations.version>2.22.0</error_prone_annotations.version>
         <jspecify.version>1.0.1</jspecify.version>
+        <jetbrains-annotations.version>17.0.0</jetbrains-annotations.version>
         <java-util.version>4.103.0</java-util.version>
         <calcite.version>1.42.0</calcite.version>
         <joou.version>0.9.5</joou.version>
@@ -110,6 +111,7 @@
         <jakarta.jakartaee-bom.version>8.0.0</jakarta.jakartaee-bom.version>
         <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
         <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
+        <jakarta.validation-api.version>2.0.2</jakarta.validation-api.version>
         <bval.version>2.0.6</bval.version>
         
         <httpcore5.version>5.4.3</httpcore5.version>
@@ -242,6 +244,11 @@
                 <artifactId>jspecify</artifactId>
                 <version>${jspecify.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.jetbrains</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${jetbrains-annotations.version}</version>
+            </dependency>
             
             <dependency>
                 <groupId>com.cedarsoftware</groupId>
@@ -344,6 +351,11 @@
                 <groupId>jakarta.persistence</groupId>
                 <artifactId>jakarta.persistence-api</artifactId>
                 <version>${jakarta.persistence-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${jakarta.validation-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.bval</groupId>
