@@ -25,10 +25,12 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.checker.cryptographic.InsertSelectColumnsEncryptorChecker;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -84,9 +87,8 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         for (ColumnSegment each : insertColumns) {
             String columnName = each.getIdentifier().getValue();
             if (encryptTable.get().isEncryptColumn(columnName)) {
-                IdentifierValue name = new IdentifierValue(encryptTable.get().getEncryptColumn(columnName).getCipher().getName(), quoteCharacter);
-                Collection<Projection> projections = Collections.singleton(new ColumnProjection(null, name, null, databaseType));
-                result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(), projections, databaseType));
+                result.add(new SubstitutableColumnNameToken(each.getStartIndex(), each.getStopIndex(),
+                        getColumnProjections(encryptTable.get().getEncryptColumn(columnName), databaseType, quoteCharacter), databaseType));
             }
         }
         return result;
@@ -96,5 +98,17 @@ public final class EncryptInsertCipherNameTokenGenerator implements CollectionSQ
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         ShardingSpherePreconditions.checkState(insertColumns.size() == projections.size(), () -> new UnsupportedSQLOperationException("Column count doesn't match value count."));
         InsertSelectColumnsEncryptorChecker.checkIsSame(insertColumns, projections, rule);
+    }
+    
+    private Collection<Projection> getColumnProjections(final EncryptColumn encryptColumn, final DatabaseType databaseType, final QuoteCharacter quoteCharacter) {
+        Projection cipherProjection = new ColumnProjection(null, new IdentifierValue(encryptColumn.getCipher().getName(), quoteCharacter), null, databaseType);
+        if (!encryptColumn.getAssistedQuery().isPresent() && !encryptColumn.getLikeQuery().isPresent()) {
+            return Collections.singleton(cipherProjection);
+        }
+        Collection<Projection> result = new ArrayList<>(3);
+        result.add(cipherProjection);
+        encryptColumn.getAssistedQuery().ifPresent(column -> result.add(new DerivedProjection(quoteCharacter.wrap(column.getName()), null, null)));
+        encryptColumn.getLikeQuery().ifPresent(column -> result.add(new DerivedProjection(quoteCharacter.wrap(column.getName()), null, null)));
+        return result;
     }
 }
