@@ -34,14 +34,14 @@ import java.sql.Types;
 public final class ResultSetMapper {
     
     /**
-     * Dialect mapper, or {@code null} when no dialect-specific mapper is registered.
+     * Dialect mapper, or {@code null} when none is registered.
      */
     private final DialectResultSetMapper dialectResultSetMapper;
     
     private WeakReference<ResultSet> timeResultSet;
     
     /**
-     * Custom TIME reader, or {@code null} when native JDBC TIME reading is used.
+     * Custom TIME reader, or {@code null} for native JDBC reading.
      */
     private ResultSetTimeValueReader timeValueReader;
     

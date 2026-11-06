@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.merge.dql.groupby;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -50,8 +49,7 @@ final class AggregationValueUtils {
     static Comparable<?> getValue(final QueryResult queryResult, final AggregationProjection aggregationProjection) throws SQLException {
         Object result = queryResult.getValue(aggregationProjection.getIndex(), Object.class);
         ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation", result));
-        if (result instanceof LocalTime && aggregationProjection instanceof AggregationDistinctProjection && AggregationType.GROUP_CONCAT == aggregationProjection.getType()
-                && Types.TIME == queryResult.getMetaData().getColumnType(aggregationProjection.getIndex())) {
+        if (result instanceof LocalTime && AggregationType.GROUP_CONCAT == aggregationProjection.getType() && Types.TIME == queryResult.getMetaData().getColumnType(aggregationProjection.getIndex())) {
             return DateTimeFormatter.ISO_LOCAL_TIME.format((LocalTime) result);
         }
         return (Comparable<?>) result;

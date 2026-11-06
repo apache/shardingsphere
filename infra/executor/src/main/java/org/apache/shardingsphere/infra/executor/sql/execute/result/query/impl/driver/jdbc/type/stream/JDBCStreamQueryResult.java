@@ -58,7 +58,7 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
     private final boolean containsJDBCResultSet;
     
     /**
-     * Custom TIME reader, or {@code null} when native JDBC TIME reading is used.
+     * Custom TIME reader, or {@code null} for native JDBC reading.
      */
     @Getter(AccessLevel.NONE)
     private ResultSetTimeValueReader timeValueReader;
@@ -160,9 +160,10 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
      * @throws SQLException SQL exception
      */
     private Object getObjectValue(final int columnIndex, final Class<?> type) throws SQLException {
-        return Object.class == type && null != timeValueReader && Types.TIME == getMetaData().getColumnType(columnIndex)
-                ? timeValueReader.read(resultSet, columnIndex)
-                : resultSet.getObject(columnIndex);
+        if (Object.class == type && null != timeValueReader && Types.TIME == getMetaData().getColumnType(columnIndex)) {
+            return timeValueReader.read(resultSet, columnIndex);
+        }
+        return resultSet.getObject(columnIndex);
     }
     
     @Override
