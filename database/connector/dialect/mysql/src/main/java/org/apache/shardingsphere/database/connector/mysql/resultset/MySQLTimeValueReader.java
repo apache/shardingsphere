@@ -66,11 +66,11 @@ final class MySQLTimeValueReader implements ResultSetTimeValueReader {
      * @throws SQLException SQL exception
      */
     private Object getFallbackTimeValue(final ResultSet resultSet, final int columnIndex) throws SQLException {
-        Time value = resultSet.getTime(columnIndex);
-        if (null == value) {
+        Time result = resultSet.getTime(columnIndex);
+        if (null == result) {
             return null;
         }
-        LocalDateTime dateTime = new Timestamp(value.getTime()).toLocalDateTime();
-        return EPOCH_DATE.equals(dateTime.toLocalDate()) ? dateTime.toLocalTime() : value;
+        LocalDateTime dateTime = new Timestamp(result.getTime()).toLocalDateTime();
+        return EPOCH_DATE.equals(dateTime.toLocalDate()) ? dateTime.toLocalTime() : result;
     }
 }
