@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -39,7 +39,7 @@ class InternalOpenGaussParserIT extends InternalSQLParserIT {
     
     @Test
     void assertSelectWithLargeInList() {
-        List<String> expectedValues = IntStream.rangeClosed(1, 100000).mapToObj(String::valueOf).collect(Collectors.toList());
+        Collection<String> expectedValues = IntStream.rangeClosed(1, 100000).mapToObj(String::valueOf).collect(Collectors.toList());
         String sql = "SELECT * FROM foo_table WHERE foo_id IN (" + String.join(", ", expectedValues) + ")";
         SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("openGauss").visit(new SQLParserEngine("openGauss", new CacheOption(128, 1024L)).parse(sql, false));
         ListExpression actualValues = (ListExpression) ((InExpression) actual.getWhere().get().getExpr()).getRight();
