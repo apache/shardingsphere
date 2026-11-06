@@ -36,6 +36,7 @@
         <module>parser</module>
         <module>mode</module>
         <module>kernel</module>
+        <module>data-pipeline</module>
         
         <module>jdbc</module>
         <module>jdbc-dialect</module>
