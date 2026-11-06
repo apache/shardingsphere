@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.junit.jupiter.api.Test;
@@ -97,5 +98,19 @@ class CalciteSchemaBuilderTest {
             assertTrue(actual.getSubSchemaMap().containsKey("mysql_db"));
             verify(functionRegister).registerFunction(any(SchemaPlus.class), eq("mysql_db"));
         }
+    }
+    
+    @Test
+    void assertBuildWithoutDefaultSchemaNestsOtherSchemasUnderDatabaseDefaultSchema() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ShardingSphereTable orderTable = new ShardingSphereTable("T_ORDER", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        Collection<ShardingSphereSchema> schemas = Arrays.asList(new ShardingSphereSchema("SYS", databaseType),
+                new ShardingSphereSchema("LOGIC_DB", databaseType, Collections.singleton(orderTable), Collections.emptyList()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "logic_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas, new ConfigurationProperties(new Properties()));
+        CalciteSchema actual = CalciteSchemaBuilder.build(Collections.singletonList(database)).getSubSchema("logic_db", true);
+        assertNotNull(actual);
+        assertNotNull(actual.getTable("T_ORDER", true));
+        assertNotNull(actual.getSubSchema("SYS", true));
     }
 }

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -45,7 +46,7 @@ public final class SQLFederationDatabase extends AbstractSchema {
     private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final DatabaseType protocolType) {
         Map<String, Schema> result = new CaseInsensitiveMap<>(database.getAllSchemas().size(), 1F);
         for (ShardingSphereSchema each : database.getAllSchemas()) {
-            result.put(each.getName(), new SQLFederationSchema(each.getName(), each, protocolType));
+            result.put(each.getName(), new SQLFederationSchema(each.getName(), each, Collections.emptyList(), protocolType));
         }
         return result;
     }

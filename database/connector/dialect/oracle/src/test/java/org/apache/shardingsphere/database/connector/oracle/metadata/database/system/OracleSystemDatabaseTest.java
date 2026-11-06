@@ -42,11 +42,11 @@ class OracleSystemDatabaseTest {
     
     @Test
     void assertGetSystemSchemasWithDatabaseName() {
-        assertTrue(systemDatabase.getSystemSchemas("foo_db").isEmpty());
+        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Arrays.asList("SYS", "SYSTEM_LOBS")));
     }
     
     @Test
     void assertGetSystemSchemas() {
-        assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("sys", "system_lobs")));
+        assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("SYS", "SYSTEM_LOBS")));
     }
 }

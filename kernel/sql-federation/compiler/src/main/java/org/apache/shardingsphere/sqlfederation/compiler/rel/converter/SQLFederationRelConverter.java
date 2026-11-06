@@ -71,10 +71,10 @@ public final class SQLFederationRelConverter {
     
     private final SqlToRelConverter sqlToRelConverter;
     
-    public SQLFederationRelConverter(final CompilerContext compilerContext, final List<String> schemaPath, final DatabaseType databaseType, final Convention convention) {
+    public SQLFederationRelConverter(final CompilerContext compilerContext, final List<List<String>> schemaPaths, final DatabaseType databaseType, final Convention convention) {
         RelDataTypeFactory typeFactory = SQLFederationDataTypeFactory.getInstance();
         CalciteConnectionConfig connectionConfig = compilerContext.getConnectionConfig();
-        CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPath, typeFactory, connectionConfig);
+        CalciteCatalogReader catalogReader = new SQLFederationCatalogReader(compilerContext.getCalciteSchema(), schemaPaths, typeFactory, connectionConfig);
         SqlValidator validator = createSqlValidator(catalogReader, typeFactory, connectionConfig, compilerContext.getOperatorTables());
         RelOptCluster relOptCluster = createRelOptCluster(typeFactory, convention);
         sqlToRelConverter = createSqlToRelConverter(catalogReader, validator, relOptCluster, compilerContext.getSqlParserRule(), databaseType, true);
