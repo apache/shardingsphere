@@ -70,9 +70,10 @@ class ProjectionsContextEngineTest {
         explicit.setAlias(new AliasSegment(0, 0, new IdentifierValue(alias)));
         AggregationDistinctProjectionSegment generated = new AggregationDistinctProjectionSegment(0, 0, AggregationType.SUM, "SUM(DISTINCT order_id)", "order_id");
         Collection<ProjectionSegment> segments = explicitFirst ? Arrays.asList(explicit, generated) : Arrays.asList(generated, explicit);
-        Iterator<Projection> actual =
-                new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(segments), new GroupByContext(Collections.emptyList()),
-                        new OrderByContext(Collections.emptyList(), false)).getProjections().iterator();
+        ProjectionsContext actualContext = new ProjectionsContextEngine(databaseType).createProjectionsContext(createProjectionsSegment(segments), new GroupByContext(Collections.emptyList()),
+                new OrderByContext(Collections.emptyList(), false));
+        assertThat(actualContext.getColumnLabelAndIndexMap().get(alias), is(explicitFirst ? 1 : 2));
+        Iterator<Projection> actual = actualContext.getProjections().iterator();
         assertThat(actual.next().getAlias().get().getValue(), is(explicitFirst ? alias : "AGGREGATION_DISTINCT_DERIVED_1"));
         assertThat(actual.next().getAlias().get().getValue(), is(explicitFirst ? "AGGREGATION_DISTINCT_DERIVED_1" : alias));
     }

@@ -165,6 +165,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Dr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FetchContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FirstContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForeignKeyColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForwardAllContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForwardContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ForwardCountContext;
@@ -186,6 +187,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Na
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NextContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.NotifyStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.OpenContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PartElemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PrepareContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.PriorContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
@@ -225,6 +227,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.SetSchemaDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -426,7 +429,40 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
             visit(ctx.executeParamClause().exprList());
             result.addParameterMarkers(getParameterMarkerSegments());
         }
+        appendExpressionColumns(ctx, result.getColumnReferences());
         return result;
+    }
+    
+    private void appendExpressionColumns(final ParseTree expression, final Collection<ColumnSegment> columns) {
+        if (isReferencedForeignKeyColumns(expression)) {
+            return;
+        }
+        if (expression instanceof ColumnNameContext) {
+            columns.add((ColumnSegment) visit(expression));
+            return;
+        }
+        if (expression instanceof IndexElemContext && null != ((IndexElemContext) expression).colId()) {
+            IndexElemContext indexElement = (IndexElemContext) expression;
+            columns.add(new ColumnSegment(indexElement.colId().start.getStartIndex(), indexElement.colId().stop.getStopIndex(), createIdentifierValue(indexElement.colId().getText())));
+            return;
+        }
+        if (expression instanceof PartElemContext && null != ((PartElemContext) expression).colId()) {
+            PartElemContext partitionElement = (PartElemContext) expression;
+            columns.add(new ColumnSegment(partitionElement.colId().start.getStartIndex(), partitionElement.colId().stop.getStopIndex(), createIdentifierValue(partitionElement.colId().getText())));
+            return;
+        }
+        if (expression instanceof ColumnrefContext) {
+            columns.addAll(ColumnExtractor.extract((ExpressionSegment) visit(expression)));
+            return;
+        }
+        for (int index = 0; index < expression.getChildCount(); index++) {
+            appendExpressionColumns(expression.getChild(index), columns);
+        }
+    }
+    
+    private boolean isReferencedForeignKeyColumns(final ParseTree expression) {
+        return expression instanceof ForeignKeyColumnNamesContext && (!(expression.getParent() instanceof TableConstraintOptionContext)
+                || ((TableConstraintOptionContext) expression.getParent()).foreignKeyColumnNames().indexOf(expression) > 0);
     }
     
     @Override
@@ -467,6 +503,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                     result.renameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof RenameColumnSegment) {
                     result.renameColumnDefinition((RenameColumnSegment) each);
+                } else if (each instanceof SetSchemaDefinitionSegment) {
+                    result.setSchemaDefinition((SetSchemaDefinitionSegment) each);
                 }
             }
         }
@@ -504,6 +542,11 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         }
         if (null != ctx.renameTableSpecification()) {
             result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
+        }
+        if (null != ctx.SCHEMA()) {
+            SetSchemaDefinitionSegment setSchemaDefinition = new SetSchemaDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            setSchemaDefinition.setSchemaName((IdentifierValue) visit(ctx.name()));
+            result.getValue().add(setSchemaDefinition);
         }
         return result;
     }
@@ -684,7 +727,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         }
         if (null != option.FOREIGN()) {
             result.setReferencedTable((SimpleTableSegment) visit(option.tableName()));
+            if (option.foreignKeyColumnNames().size() > 1) {
+                for (ColumnNameContext each : option.foreignKeyColumnNames(1).columnName()) {
+                    result.getReferencedColumns().add((ColumnSegment) visit(each));
+                }
+            }
         }
+        appendExpressionColumns(option, result.getColumnReferences());
         return result;
     }
     
@@ -758,24 +807,16 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
-        Collection<ColumnSegment> columns = ((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue();
-        if (null == ctx.indexName()) {
-            return CreateIndexStatement.builder()
-                    .databaseType(getDatabaseType())
-                    .ifNotExists(null != ctx.ifNotExists())
-                    .table(table)
-                    .columns(columns)
-                    .anonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1)
-                    .build();
-        }
-        return CreateIndexStatement.builder()
+        CreateIndexStatement result = CreateIndexStatement.builder()
                 .databaseType(getDatabaseType())
                 .ifNotExists(null != ctx.ifNotExists())
-                .table(table)
-                .columns(columns)
-                .index((IndexSegment) visit(ctx.indexName()))
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .columns(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue())
+                .index(null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()))
+                .anonymousIndexStartIndex(null == ctx.indexName() ? ctx.ON().getSymbol().getStartIndex() - 1 : null)
                 .build();
+        appendExpressionColumns(ctx, result.getColumnReferences());
+        return result;
     }
     
     @Override
@@ -786,24 +827,17 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), createIdentifierValue(each.colId().getText())));
             }
             if (null != each.functionExprWindowless()) {
-                appendIndexExpressionColumns(each.functionExprWindowless(), result.getValue());
+                appendExpressionColumns(each.functionExprWindowless(), result.getValue());
             }
         }
         return result;
     }
     
-    private void appendIndexExpressionColumns(final ParseTree expression, final Collection<ColumnSegment> columns) {
-        if (expression instanceof ColumnrefContext) {
-            columns.addAll(ColumnExtractor.extract((ExpressionSegment) visit(expression)));
-            return;
-        }
-        for (int index = 0; index < expression.getChildCount(); index++) {
-            appendIndexExpressionColumns(expression.getChild(index), columns);
-        }
-    }
-    
     @Override
     public ASTNode visitFunctionExprWindowless(final FunctionExprWindowlessContext ctx) {
+        if (null != ctx.jsonAggregateFunction()) {
+            return visit(ctx.jsonAggregateFunction());
+        }
         if (null == ctx.funcApplication()) {
             return visit(ctx.functionExprCommonSubexpr());
         }

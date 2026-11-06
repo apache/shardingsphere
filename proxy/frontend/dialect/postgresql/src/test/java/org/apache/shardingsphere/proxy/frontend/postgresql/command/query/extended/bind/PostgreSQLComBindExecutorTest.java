@@ -22,10 +22,12 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -75,6 +77,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -139,6 +142,41 @@ class PostgreSQLComBindExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
+        verify(portalContext).add(any(Portal.class));
+    }
+    
+    @Test
+    void assertExecuteBindWithStaleMetadata() throws SQLException {
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn(DATABASE_NAME);
+        when(connectionSession.getUsedDatabaseName()).thenReturn(DATABASE_NAME);
+        ConnectionContext connectionContext = mockConnectionContext();
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(parserEngine.parse(SQL, false));
+        TablesContext tablesContext = new TablesContext(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED), Collections.singletonList(0));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement("S_1", preparedStatement);
+        when(bindPacket.getStatementId()).thenReturn("S_1");
+        when(bindPacket.getPortal()).thenReturn("C_1");
+        when(bindPacket.readParameters(anyList())).thenReturn(Collections.singletonList(1));
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        prepareJDBCBackendConnectionWithParamTypes(databaseConnectionManager);
+        ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        tablesContext.getBoundTables().add(table);
+        ShardingSphereSchema schema = new ShardingSphereSchema("public", databaseType, Collections.singleton(table), Collections.emptyList());
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
+        assertThat(preparedStatement.getParameterTypes(), is(Collections.singletonList(PostgreSQLBinaryColumnType.INT4)));
+        schema.removeTable("t_order");
+        assertThrows(StaleStatementMetadataException.class, executor::execute);
+        verify(bindPacket).readParameters(anyList());
         verify(portalContext).add(any(Portal.class));
     }
     

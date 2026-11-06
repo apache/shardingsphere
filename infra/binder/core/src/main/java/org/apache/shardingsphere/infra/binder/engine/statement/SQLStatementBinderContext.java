@@ -22,15 +22,19 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -40,6 +44,8 @@ import java.util.LinkedList;
 public final class SQLStatementBinderContext {
     
     private final ShardingSphereMetaData metaData;
+    
+    private final Collection<ShardingSphereTable> boundTables = new LinkedHashSet<>();
     
     private final String currentDatabaseName;
     
@@ -56,6 +62,10 @@ public final class SQLStatementBinderContext {
     private final Collection<ProjectionSegment> joinTableProjectionSegments = new LinkedList<>();
     
     private final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts = LinkedHashMultimap.create();
+    
+    @Setter
+    @Nullable
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> orderByFromTableBinderContexts;
     
     private final Collection<String> pivotColumnNames = new CaseInsensitiveSet<>();
     

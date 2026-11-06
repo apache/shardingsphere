@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.changed;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
@@ -25,8 +24,8 @@ import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProce
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,17 +37,12 @@ public final class ReadwriteSplittingDataSourceChangedProcessor
         implements
             RuleItemConfigurationChangedProcessor<ReadwriteSplittingRuleConfiguration, ReadwriteSplittingDataSourceGroupRuleConfiguration> {
     
+    private final YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
+    
     @Override
     public ReadwriteSplittingDataSourceGroupRuleConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig = YamlEngine.unmarshal(yamlContent, YamlReadwriteSplittingDataSourceGroupRuleConfiguration.class);
-        return new ReadwriteSplittingDataSourceGroupRuleConfiguration(itemName, yamlDataSourceGroupRuleConfig.getWriteDataSourceName(),
-                yamlDataSourceGroupRuleConfig.getReadDataSourceNames(), getTransactionalReadQueryStrategy(yamlDataSourceGroupRuleConfig), yamlDataSourceGroupRuleConfig.getLoadBalancerName());
-    }
-    
-    private TransactionalReadQueryStrategy getTransactionalReadQueryStrategy(final YamlReadwriteSplittingDataSourceGroupRuleConfiguration yamlDataSourceGroupRuleConfig) {
-        return Strings.isNullOrEmpty(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy())
-                ? TransactionalReadQueryStrategy.PRIMARY
-                : TransactionalReadQueryStrategy.valueOf(yamlDataSourceGroupRuleConfig.getTransactionalReadQueryStrategy());
+        return swapper.swapToObject(itemName, yamlDataSourceGroupRuleConfig);
     }
     
     @Override

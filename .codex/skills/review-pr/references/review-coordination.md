@@ -41,6 +41,9 @@ Preserve every original assessment and ledger without rewriting them to agree wi
 
 The coordinator must substantively review every assessment and its supporting evidence even when the verdicts and issue lists already match.
 Recheck each claim's full path, strongest counter-evidence, necessity, scope and decision classification, and check the cumulative reports for duplicated issues, omitted historical candidates and unsupported acceptance conclusions.
+For an actual-value naming finding, determine the operation under test and each variable's role from the complete test method before comparing that assessment with the proposed rename.
+Record the coordinator's own assessment in the disposition's `applicability`, using the format defined in the main Skill with indices into the disposition's `evidence` entries instead of the original finding's `anchors`.
+A confirmed disposition inherits the applicability check when any original member uses `java-testing.actual-value-naming`; a naming finding discovered during result review uses that rule identifier itself.
 Normalize issues by root cause, trigger and independent fix boundary; compare the complete issue sets, evidence gaps, discussion conditions, verdicts and feedback modes rather than counts, order or wording.
 Record an evidence-based disposition for every candidate raised in any assessment, including retained, withdrawn or merged candidates, with its supporting evidence, strongest counter-evidence and explanation.
 A later reviewer failing to rediscover a candidate does not withdraw it, and neither majority voting nor repeated matching subsets can discard a historical candidate.
@@ -86,7 +89,7 @@ Use `Mergeable`, `Not Mergeable` or `Review Incomplete` for `result`, and an emp
 The coordinator's private session JSON keeps `reviews` in assessment order and one cumulative `rounds` entry per stage, with two reports in the first stage of each basis and one in every subsequent stage, using the following record shape:
 
 ```json
-{"reviews": [{"path": "<original-result JSON>", "sha256": "<original-result SHA256>"}], "rounds": [{"result": "<this round's adjudicated result>", "feedback_mode": "<this round's adjudicated feedback mode>", "report_reviews": [{"reviewer": "<identity>", "reason": "<result and evidence recheck>", "counter_evidence": "<strongest contrary evidence checked>", "evidence": [{"reviewer": "<identity>", "anchor": {}}]}], "findings": [{"id": "<stable canonical issue ID>", "members": [{"reviewer": "<identity>", "finding": "<ledger finding ID>"}], "status": "<finding status>", "classification": "<issue type, discussion condition or evidence-gap classification>", "reason": "<disposition and supporting evidence>", "counter_evidence": "<strongest contrary evidence checked>", "evidence": [{"reviewer": "<identity>", "anchor": {}}]}]}], "result": "<confirmed final result>", "feedback_mode": "<confirmed final feedback mode>"}
+{"reviews": [{"path": "<original-result JSON>", "sha256": "<original-result SHA256>"}], "rounds": [{"result": "<this round's adjudicated result>", "feedback_mode": "<this round's adjudicated feedback mode>", "report_reviews": [{"reviewer": "<identity>", "reason": "<result and evidence recheck>", "counter_evidence": "<strongest contrary evidence checked>", "evidence": [{"reviewer": "<identity>", "anchor": {}}]}], "findings": [{"id": "<stable canonical issue ID>", "members": [{"reviewer": "<identity>", "finding": "<ledger finding ID>"}], "status": "<finding status>", "classification": "<issue type, discussion condition or evidence-gap classification>", "rule": "<rule identifier or empty string>", "applicability": [], "reason": "<disposition and supporting evidence>", "counter_evidence": "<strongest contrary evidence checked>", "evidence": [{"reviewer": "<identity>", "anchor": {}}]}]}], "result": "<confirmed final result>", "feedback_mode": "<confirmed final feedback mode>"}
 ```
 
 Include a `report_reviews` entry for every new report in its stage, even for an empty issue list, and substantiate the result classification and acceptance premises as well as individual findings.
@@ -101,7 +104,7 @@ Do not treat an earlier basis's frozen evidence as current or require it to pass
 The final cumulative adjudication must satisfy the completion conditions, contain no unresolved candidate and match the proposed session result and feedback mode.
 Individual reports may differ from that final adjudication only with recorded evidence-based dispositions that explain each difference.
 
-Before publishing a completed Formal Review result or an overall readiness conclusion in a discussion reply, run `scripts/review_ledger.py validate-session --session <JSON>` after the coordinator's substantive result review.
+Before publishing a completed Formal Review result or an overall readiness conclusion in a discussion reply, run `scripts/manage_review_ledger.py validate-session --session <JSON>` after the coordinator's substantive result review.
 The command is read-only and validates records, references and evidence freshness; it neither launches reviewers nor proves their isolation or semantic correctness.
 If session validation fails, inspect the exact failure and correct only an unsupported record or missing evidence; never rewrite an original assessment or change issue mappings merely to obtain a pass.
 Only the coordinator emits the final report under the Output Contract.
@@ -113,7 +116,7 @@ Keep ledger data private and let the coordinator retain the owned ledgers, origi
 Independent reviewers return their recorded materials without cleaning them.
 For a read-only review, form a self-contained report and clean the owned materials after result review and session validation finish.
 For an enclosing coding task, retain them across `Not Mergeable` findings and candidate changes until that task completes or its failure or cancellation is handled.
-At cleanup, automatically run `scripts/review_ledger.py cleanup --ledger <recorded-ledger>` for each exact recorded review instance, including Mergeable, Not Mergeable, Review Incomplete and unconverged sessions.
+At cleanup, automatically run `scripts/manage_review_ledger.py cleanup --ledger <recorded-ledger>` for each exact recorded review instance, including Mergeable, Not Mergeable, Review Incomplete and unconverged sessions.
 Before cleaning a ledger, remove only temporary input materials created and explicitly recorded for this review, preserving declared sources owned by the repository, the user or another review.
 Apply the same exact-path ownership rule to the recorded original-result and session files.
 On a handled failure or cancellation, attempt the same cleanup for resources whose ownership is established, preserve the original failure and report any cleanup failure or remaining resources.

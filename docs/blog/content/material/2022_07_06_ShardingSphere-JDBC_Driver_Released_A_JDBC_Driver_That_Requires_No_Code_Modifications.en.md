@@ -92,7 +92,7 @@ try (
 
 **Reference**
 
-- [JDBC driver](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/jdbc-driver/)
+- [JDBC driver](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/jdbc-driver/)
 
 ## Conclusion
 

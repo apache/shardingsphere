@@ -81,7 +81,7 @@ public final class MCPRegistryMetadataCommand {
      */
     public static void execute(final String... args) throws IOException {
         CommandOptions options = parseOptions(args);
-        Map<String, Object> server = JsonEngine.unmarshal(Files.readString(options.path()), new JsonTypeReference<Map<String, Object>>() {
+        Map<String, Object> server = JsonEngine.unmarshal(Files.readString(options.path()), new JsonTypeReference<>() {
         });
         if (!options.validateOnly()) {
             ShardingSpherePreconditions.checkState(!options.version().isBlank() && !options.identifier().isBlank(),

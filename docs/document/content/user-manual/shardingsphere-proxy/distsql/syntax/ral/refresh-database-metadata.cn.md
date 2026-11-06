@@ -28,7 +28,13 @@ databaseName ::=
 
 - 未指定 `databaseName` 时，默认刷新所有逻辑库的元数据
 
-- 刷新元数据使用 `FORCE` 时，将会从本地获取最新元数据，并写入到治理中心，未开启 `FORCE` 则会从治理中心拉取最新配置
+- 刷新会加载最新的物理表元数据，并在发布前校验所有相关物理表，不受 `check-table-metadata-enabled` 配置影响。
+  结构不一致或部分物理表缺失时，刷新会在发布前失败。
+  可选的 `FORCE` 关键字不改变这一行为。
+
+- 各节点应用表结构变更或删除后，基于该表旧结构 prepare 的语句需要重新 prepare，否则新执行会报错并提示 `Table metadata changed; prepare the statement again.`。
+  ShardingSphere-JDBC 和 MySQL 协议暴露错误码 `10025`、SQLState `HY000`；PostgreSQL 和 openGauss 通过既有协议映射返回 SQLState `58000`。
+  结构未变或不相关表的旧绑定仍可使用，已经创建的结果集仍可读取。
 
 ### 示例
 

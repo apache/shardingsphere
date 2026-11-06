@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.judger.DatabaseInstanceJudgeEngine;
@@ -59,7 +60,7 @@ public final class ResourceMetaData {
                                                         final Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap, final Map<String, DataSource> dataSources) {
         return storageUnitNodeMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
                 entry -> new StorageUnit(entry.getValue(), dataSourcePoolPropsMap.get(entry.getKey()), dataSources.get(entry.getValue().getName())),
-                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+                (oldValue, currentValue) -> oldValue, CaseInsensitiveMap::new));
     }
     
     /**

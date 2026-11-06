@@ -19,9 +19,7 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
@@ -32,8 +30,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -63,12 +59,6 @@ public final class ProjectionsContext {
     private final boolean containsLastInsertIdProjection;
     
     private final Map<String, Integer> columnLabelAndIndexMap;
-    
-    @Setter
-    private boolean derivedColumnsAppended;
-    
-    @Setter
-    private boolean aggregationDistinctColumnsRewritten;
     
     public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
         this.startIndex = startIndex;
@@ -101,6 +91,23 @@ public final class ProjectionsContext {
             }
         }
         return result;
+    }
+    
+    /**
+     * Judge whether projections contain an unexpanded shorthand projection.
+     *
+     * <p>A shorthand projection is unexpanded when SQL binding was skipped (e.g. data-source hint)
+     * and its {@code actualColumns} remain empty.</p>
+     *
+     * @return contains unexpanded shorthand projection or not
+     */
+    public boolean containsUnexpandedShorthandProjection() {
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection && ((ShorthandProjection) each).getActualColumns().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -171,41 +178,6 @@ public final class ProjectionsContext {
                 AggregationProjection aggregationProjection = (AggregationProjection) each;
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Get aggregation distinct projections by actual column index for a single shorthand projection.
-     *
-     * @param columnCount backend column count excluding appended derived columns
-     * @return projections by column index, or an empty map when the shorthand width cannot be resolved
-     */
-    @HighFrequencyInvocation
-    public Map<Integer, AggregationDistinctProjection> getAggregationDistinctProjectionsByColumnIndex(final int columnCount) {
-        int shorthandCount = 0;
-        int explicitProjectionCount = 0;
-        for (Projection each : projections) {
-            if (each instanceof ShorthandProjection) {
-                shorthandCount++;
-            } else if (!(each instanceof DerivedProjection)) {
-                explicitProjectionCount++;
-            }
-        }
-        if (1 != shorthandCount) {
-            return Collections.emptyMap();
-        }
-        Map<Integer, AggregationDistinctProjection> result = new HashMap<>(aggregationDistinctProjections.size(), 1F);
-        int columnIndex = 1;
-        for (Projection each : projections) {
-            if (each instanceof ShorthandProjection) {
-                columnIndex += columnCount - explicitProjectionCount;
-            } else if (!(each instanceof DerivedProjection)) {
-                if (each instanceof AggregationDistinctProjection) {
-                    result.put(columnIndex, (AggregationDistinctProjection) each);
-                }
-                columnIndex++;
             }
         }
         return result;

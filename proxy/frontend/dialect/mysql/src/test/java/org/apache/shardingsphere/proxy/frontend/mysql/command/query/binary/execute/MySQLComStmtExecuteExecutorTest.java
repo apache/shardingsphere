@@ -35,15 +35,19 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEof
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -186,6 +190,25 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getParamId()).thenReturn(paramIndex);
         when(packet.getData()).thenReturn(data);
         new MySQLComStmtSendLongDataExecutor(packet, connectionSession).execute();
+    }
+    
+    @Test
+    void assertRejectExecutionAfterMetadataRefresh() throws SQLException {
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
+        TablesContext tablesContext = new TablesContext(Collections.emptyList());
+        tablesContext.getBoundTables().add(table);
+        SelectStatementContext statementContext = mock(SelectStatementContext.class);
+        when(statementContext.getSqlStatement()).thenReturn(prepareSelectStatement());
+        when(statementContext.getTablesContext()).thenReturn(tablesContext);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(4))
+                .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl", statementContext, new HintValueContext()));
+        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
+        when(packet.getStatementId()).thenReturn(4);
+        schema.removeTable("tbl");
+        assertThrows(StaleStatementMetadataException.class, () -> new MySQLComStmtExecuteExecutor(packet, connectionSession).execute());
+        verify(statementContext, never()).bindParameters(anyList());
+        verify(proxyBackendHandler, never()).execute();
     }
     
     @Test

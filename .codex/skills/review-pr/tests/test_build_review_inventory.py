@@ -27,7 +27,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import build_review_inventory as inventory
-import review_common as common
+import resolve_review_scope as common
 
 
 class BuildReviewInventoryTest(unittest.TestCase):

@@ -21,25 +21,33 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.cluster.exception.ReloadMetaDataContextFailedException;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerCoordinatorType;
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.config.database.DataSourceUnitPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.retry.RetryExecutor;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -50,20 +58,30 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.function.Predicate;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -151,6 +169,102 @@ class ClusterMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.dropSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())),
                 Collections.singleton("foo_schema"));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema()).drop("foo_db", "foo_schema");
+    }
+    
+    @Test
+    void assertRegisterStorageUnits() {
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds", storageUnit);
+        Map<String, DataSourcePoolProperties> propsMap = Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class));
+        MetaDataContexts metaDataContexts = createRegistrationMetaDataContexts(Collections.emptyMap());
+        when(metaDataContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        DataSourceUnitPersistService dataSourceUnitPersistService = metaDataPersistFacade.getDataSourceUnitService();
+        doAnswer(invocation -> {
+            metaDataContexts.update(createRegistrationMetaDataContexts(storageUnits));
+            return null;
+        }).when(dataSourceUnitPersistService).persist("foo_db", propsMap);
+        try (
+                MockedConstruction<RetryExecutor> ignored = mockConstruction(RetryExecutor.class, (mock, context) -> when(mock.execute(any(), any())).thenAnswer(invocation -> {
+                    Predicate<Object> predicate = invocation.getArgument(0);
+                    return predicate.test(invocation.getArgument(1));
+                }));
+                MockedStatic<GenericSchemaBuilder> schemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
+            metaDataManagerPersistService.registerStorageUnits("foo_db", propsMap);
+            schemaBuilder.verify(() -> GenericSchemaBuilder.build(any(DatabaseType.class), argThat(material -> storageUnits.equals(material.getStorageUnits()))));
+            verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabase(eq("foo_db"), argThat(each -> storageUnits.equals(each.getResourceMetaData().getStorageUnits())), any());
+        }
+    }
+    
+    @Test
+    void assertRegisterStorageUnitsWithPartialNotification() {
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        Map<String, StorageUnit> partialStorageUnits = Collections.singletonMap("foo_ds_0", storageUnit);
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(partialStorageUnits);
+        storageUnits.put("foo_ds_1", storageUnit);
+        Map<String, DataSourcePoolProperties> propsMap = new LinkedHashMap<>(2, 1F);
+        propsMap.put("foo_ds_0", mock(DataSourcePoolProperties.class));
+        propsMap.put("foo_ds_1", mock(DataSourcePoolProperties.class));
+        MetaDataContexts metaDataContexts = createRegistrationMetaDataContexts(Collections.emptyMap());
+        when(metaDataContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        DataSourceUnitPersistService dataSourceUnitPersistService = metaDataPersistFacade.getDataSourceUnitService();
+        doAnswer(invocation -> {
+            metaDataContexts.update(createRegistrationMetaDataContexts(partialStorageUnits));
+            return null;
+        }).when(dataSourceUnitPersistService).persist("foo_db", propsMap);
+        try (
+                MockedStatic<GenericSchemaBuilder> schemaBuilder = mockStatic(GenericSchemaBuilder.class);
+                MockedConstruction<RetryExecutor> ignored = mockConstruction(RetryExecutor.class, (mock, context) -> when(mock.execute(any(), any())).thenAnswer(invocation -> {
+                    Predicate<Object> predicate = invocation.getArgument(0);
+                    Object arg = invocation.getArgument(1);
+                    if (!(arg instanceof Collection<?>)) {
+                        return predicate.test(arg);
+                    }
+                    assertFalse(predicate.test(arg));
+                    schemaBuilder.verifyNoInteractions();
+                    verify(metaDataPersistFacade.getDatabaseMetaDataFacade(), never()).persistReloadDatabase(any(), any(), any());
+                    metaDataContexts.update(createRegistrationMetaDataContexts(storageUnits));
+                    assertTrue(predicate.test(arg));
+                    return true;
+                }))) {
+            metaDataManagerPersistService.registerStorageUnits("foo_db", propsMap);
+            schemaBuilder.verify(() -> GenericSchemaBuilder.build(any(DatabaseType.class), argThat(material -> storageUnits.equals(material.getStorageUnits()))));
+            verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabase(eq("foo_db"), argThat(each -> storageUnits.equals(each.getResourceMetaData().getStorageUnits())), any());
+        }
+    }
+    
+    @Test
+    void assertRegisterStorageUnitsWithNotificationTimeout() {
+        Map<String, DataSourcePoolProperties> propsMap = Collections.singletonMap("foo_ds", mock(DataSourcePoolProperties.class));
+        MetaDataContexts metaDataContexts = createRegistrationMetaDataContexts(Collections.emptyMap());
+        when(metaDataContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        try (
+                MockedStatic<GenericSchemaBuilder> schemaBuilder = mockStatic(GenericSchemaBuilder.class);
+                MockedConstruction<RetryExecutor> ignored = mockConstruction(RetryExecutor.class, (mock, context) -> when(mock.execute(any(), any())).thenAnswer(invocation -> {
+                    Predicate<Object> predicate = invocation.getArgument(0);
+                    Object arg = invocation.getArgument(1);
+                    if (!(arg instanceof Collection<?>)) {
+                        return predicate.test(arg);
+                    }
+                    assertFalse(predicate.test(arg));
+                    return false;
+                }))) {
+            assertThrows(ReloadMetaDataContextFailedException.class, () -> metaDataManagerPersistService.registerStorageUnits("foo_db", propsMap));
+            verify(metaDataPersistFacade.getDataSourceUnitService()).persist("foo_db", propsMap);
+            schemaBuilder.verifyNoInteractions();
+            verify(metaDataPersistFacade.getDatabaseMetaDataFacade(), never()).persistReloadDatabase(any(), any(), any());
+        }
+    }
+    
+    private MetaDataContexts createRegistrationMetaDataContexts(final Map<String, StorageUnit> storageUnits) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), storageUnits);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, ruleMetaData, Collections.emptyList(), props);
+        return new MetaDataContexts(new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), ruleMetaData, props, databaseType),
+                new ShardingSphereStatistics());
     }
     
     @Test

@@ -102,7 +102,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         SelectStatement result = SelectStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).from(boundFrom.orElse(null)).projections(boundProjections)
                 .where(boundWhere).hierarchicalQuery(boundHierarchicalQuery).combine(boundCombine).lock(boundLock).groupBy(boundGroupBy).orderBy(boundOrderBy).having(boundHaving)
                 .limit(sqlStatement.getLimit().orElse(null)).window(boundWindow).model(boundModel)
-                .subqueryType(sqlStatement.getSubqueryType().orElse(null)).build();
+                .subqueryType(sqlStatement.getSubqueryType().orElse(null)).intoVariables(sqlStatement.isIntoVariables()).build();
         result.getTransformSegments().addAll(boundTransformSegments);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;

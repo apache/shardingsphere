@@ -76,6 +76,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         try {
             FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
             ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(packet.getStatementId()));
+            preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
             validateTransactionHandle();
             ResponseHeader responseHeader = executePreparedStatement(preparedStatement, packet.getParameterValues());
             if (responseHeader instanceof QueryResponseHeader) {

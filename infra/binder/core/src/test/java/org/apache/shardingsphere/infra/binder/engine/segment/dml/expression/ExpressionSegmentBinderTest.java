@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
@@ -39,11 +40,15 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -61,6 +66,30 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ExistsSubqueryExpressionBinder.class, SubquerySegmentBinder.class, ColumnSegmentBinder.class})
 class ExpressionSegmentBinderTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("typeCastArguments")
+    void assertBindTypeCast(final String dataType, final SegmentType parentType) {
+        ColumnSegment column = new ColumnSegment(0, 9, new IdentifierValue("foo_column"));
+        ColumnSegment boundColumn = new ColumnSegment(0, 9, new IdentifierValue("foo_column"));
+        String text = "foo_column::" + dataType;
+        TypeCastExpression segment = new TypeCastExpression(0, text.length() - 1, text, column, dataType);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerContexts = LinkedHashMultimap.create();
+        when(ColumnSegmentBinder.bind(same(column), eq(parentType), same(binderContext), same(tableContexts), same(outerContexts))).thenReturn(boundColumn);
+        TypeCastExpression actual = (TypeCastExpression) ExpressionSegmentBinder.bind(segment, parentType, binderContext, tableContexts, outerContexts);
+        assertThat(actual.getExpression(), sameInstance(boundColumn));
+        assertThat(actual.getDataType(), is(dataType));
+        assertThat(actual.getText(), is(text));
+        assertThat(actual.getStartIndex(), is(0));
+        assertThat(actual.getStopIndex(), is(text.length() - 1));
+        assertThat(segment.getExpression(), sameInstance(column));
+    }
+    
+    private static Stream<Arguments> typeCastArguments() {
+        return Stream.of(Arguments.of("text", SegmentType.PROJECTION), Arguments.of("NUMERIC(10,2)", SegmentType.PREDICATE), Arguments.of("timestamp with time zone", SegmentType.PROJECTION));
+    }
     
     @Test
     void assertBindExistsSubqueryWithShadowedOuterTableContext() {

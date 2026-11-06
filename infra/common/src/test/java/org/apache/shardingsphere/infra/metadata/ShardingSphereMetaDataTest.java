@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
@@ -50,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -255,4 +258,68 @@ class ShardingSphereMetaDataTest {
         when(result.getProtocolType()).thenReturn(storageUnit.getStorageType());
         return result;
     }
+    
+    @Test
+    void assertPutDatabaseWithUnchangedTable() {
+        ShardingSphereTable previousTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType, createBindingDatabase("foo_db", previousTable));
+        ShardingSphereTable equivalentTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        metaData.putDatabase(createBindingDatabase("foo_db", equivalentTable));
+        assertFalse(previousTable.isBindingInvalidated());
+        metaData.getDatabase("foo_db").dropSchema("foo_schema");
+        assertTrue(previousTable.isBindingInvalidated());
+    }
+    
+    private ShardingSphereDatabase createBindingDatabase(final String databaseName, final ShardingSphereTable table) {
+        return new ShardingSphereDatabase(databaseName, postgreSQLDatabaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                Collections.singleton(new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList())),
+                new ConfigurationProperties(new Properties()));
+    }
+    
+    @Test
+    void assertDropDatabaseWithBindings() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable unrelatedTable = new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Arrays.asList(createBindingDatabase("foo_db", table), createBindingDatabase("bar_db", unrelatedTable)),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        metaData.dropDatabase("FOO_DB");
+        assertTrue(table.isBindingInvalidated());
+        assertFalse(unrelatedTable.isBindingInvalidated());
+    }
+    
+    @Test
+    void assertInheritBindingsWithRemovedDatabase() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData previousMetaData = createMetaData(postgreSQLDatabaseType, createBindingDatabase("foo_db", table));
+        ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType);
+        metaData.inheritBindings(previousMetaData);
+        assertTrue(table.isBindingInvalidated());
+    }
+    
+    @Test
+    void assertInheritBindingsWithSameMetaData() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType, createBindingDatabase("foo_db", table));
+        metaData.inheritBindings(metaData);
+        assertFalse(table.isBindingInvalidated());
+    }
+    
+    @Test
+    void assertCopyIfBindingsInvalidatedPreservesUnchangedDatabases() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase database = createBindingDatabase("foo_db", table);
+        ShardingSphereTable unrelatedTable = new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase unrelatedDatabase = createBindingDatabase("bar_db", unrelatedTable);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Arrays.asList(database, unrelatedDatabase),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()), postgreSQLDatabaseType);
+        assertThat(metaData.copyIfBindingsInvalidated(), sameInstance(metaData));
+        database.invalidateBindings();
+        ShardingSphereMetaData actual = metaData.copyIfBindingsInvalidated();
+        assertThat(actual.getDatabase("bar_db"), sameInstance(unrelatedDatabase));
+        assertThat(database.getSchema("foo_schema").getTable("foo_tbl"), sameInstance(table));
+        assertTrue(table.isBindingInvalidated());
+        assertFalse(actual.getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl").isBindingInvalidated());
+        assertFalse(unrelatedTable.isBindingInvalidated());
+    }
+    
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 
 /**
@@ -34,6 +36,7 @@ import java.util.Optional;
 public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     @Override
+    @HighFrequencyInvocation
     public QueryHeader build(final ShardingSphereResultSetMetaData resultSetMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
                              final int columnIndex) throws SQLException {
         String schemaName = null == database ? "" : database.getName();
@@ -42,7 +45,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         int columnType = resultSetMetaData.getColumnType(columnIndex);
         String columnTypeName = resultSetMetaData.getColumnTypeName(columnIndex);
         int columnLength = resultSetMetaData.getColumnDisplaySize(columnIndex);
-        int decimals = resultSetMetaData.getScale(columnIndex);
+        int decimals = getDecimals(resultSetMetaData.getScale(columnIndex), columnType, columnLength);
         boolean signed = resultSetMetaData.isSigned(columnIndex);
         boolean notNull = ResultSetMetaData.columnNoNulls == resultSetMetaData.isNullable(columnIndex);
         boolean autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
@@ -61,6 +64,14 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     private boolean isPrimaryKey(final ShardingSphereSchema schema, final String tableName, final String columnName) {
         return null != schema && null != columnName
                 && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumn(columnName)).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
+    }
+    
+    private int getDecimals(final int decimals, final int columnType, final int columnLength) {
+        if (Types.TIME != columnType || 0 != decimals) {
+            return decimals;
+        }
+        int result = columnLength - 11;
+        return result >= 1 && result <= 6 ? result : decimals;
     }
     
     @Override

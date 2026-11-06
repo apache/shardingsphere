@@ -519,6 +519,71 @@ class ShardingSphereDatabaseTest {
         return new ResourceMetaData(Collections.emptyMap(), storageUnits);
     }
     
+    @Test
+    void assertAddSchemaWithUnchangedTable() {
+        ShardingSphereTable previousTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema previousSchema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(previousTable), Collections.emptyList());
+        ShardingSphereDatabase database = createBindingDatabase(previousSchema);
+        ShardingSphereTable equivalentTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(equivalentTable), Collections.emptyList()));
+        assertFalse(previousTable.isBindingInvalidated());
+        database.getSchema("foo_schema").removeTable("foo_tbl");
+        assertTrue(previousTable.isBindingInvalidated());
+    }
+    
+    private ShardingSphereDatabase createBindingDatabase(final ShardingSphereSchema... schemas) {
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), Arrays.asList(schemas), new ConfigurationProperties(new Properties()));
+    }
+    
+    @Test
+    void assertDropSchemaWithBindings() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable unrelatedTable = new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase database = createBindingDatabase(
+                new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList()),
+                new ShardingSphereSchema("bar_schema", databaseType, Collections.singleton(unrelatedTable), Collections.emptyList()));
+        database.dropSchema("FOO_SCHEMA");
+        assertTrue(table.isBindingInvalidated());
+        assertFalse(unrelatedTable.isBindingInvalidated());
+    }
+    
+    @Test
+    void assertInheritBindingsWithRemovedSchema() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase previousDatabase = createBindingDatabase(new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList()));
+        ShardingSphereDatabase database = createBindingDatabase();
+        database.inheritBindings(previousDatabase);
+        assertTrue(table.isBindingInvalidated());
+    }
+    
+    @Test
+    void assertInheritBindingsWithSameDatabase() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase database = createBindingDatabase(new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList()));
+        database.inheritBindings(database);
+        assertFalse(table.isBindingInvalidated());
+    }
+    
+    @Test
+    void assertCopyIfBindingsInvalidatedWithoutLoadingIdentifierPolicies() throws SQLException {
+        DataSource dataSource = mock(DataSource.class);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(mySQLDatabaseType);
+        when(storageUnit.getDataSource()).thenReturn(dataSource);
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), Collections.singletonMap("foo_ds", storageUnit));
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mySQLDatabaseType, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mySQLDatabaseType, resourceMetaData,
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        database.invalidateBindings();
+        ShardingSphereDatabase actual = database.copyIfBindingsInvalidated();
+        assertTrue(table.isBindingInvalidated());
+        assertThat(schema.getTable("foo_tbl"), sameInstance(table));
+        assertFalse(actual.getSchema("foo_schema").getTable("foo_tbl").isBindingInvalidated());
+        verify(dataSource).getConnection();
+    }
+    
     private static final class FixtureDataSource implements DataSource {
         
         @Override
@@ -564,4 +629,5 @@ class ShardingSphereDatabaseTest {
             return false;
         }
     }
+    
 }

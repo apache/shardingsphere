@@ -54,12 +54,18 @@ public final class SQLBindEngine {
      * @return SQL statement context
      */
     public SQLStatementContext bind(final SQLStatement sqlStatement) {
-        SQLStatement boundSQLStatement = isNeedBind() ? bindSQLStatement(sqlStatement) : sqlStatement;
-        return SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, currentDatabaseName);
+        if (!isNeedBind()) {
+            return SQLStatementContextFactory.newInstance(metaData, sqlStatement, currentDatabaseName);
+        }
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, sqlStatement);
+        SQLStatement boundSQLStatement = bindSQLStatement(sqlStatement, binderContext);
+        SQLStatementContext result = SQLStatementContextFactory.newInstance(metaData, boundSQLStatement, currentDatabaseName);
+        result.getTablesContext().getBoundTables().addAll(binderContext.getBoundTables());
+        result.getTablesContext().checkMetadata();
+        return result;
     }
     
-    private SQLStatement bindSQLStatement(final SQLStatement sqlStatement) {
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, currentDatabaseName, hintValueContext, sqlStatement);
+    private SQLStatement bindSQLStatement(final SQLStatement sqlStatement, final SQLStatementBinderContext binderContext) {
         Optional<DialectSQLBindEngine> dialectSQLBindEngine = DatabaseTypedSPILoader.findService(DialectSQLBindEngine.class, sqlStatement.getDatabaseType());
         if (dialectSQLBindEngine.isPresent()) {
             Optional<SQLStatement> boundSQLStatement = dialectSQLBindEngine.get().bind(sqlStatement, binderContext);

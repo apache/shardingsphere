@@ -502,12 +502,12 @@ copyOptionList
     ;
 
 copyOption
-    : FORMAT (identifier | BINARY)
+    : FORMAT (identifier | BINARY | STRING_)
     | FREEZE booleanValue?
     | DELIMITER STRING_
     | NULL STRING_
     | DEFAULT STRING_
-    | HEADER (booleanValue | MATCH | STRING_)?
+    | HEADER (booleanValue | MATCH | STRING_ | numericOnly)?
     | QUOTE STRING_
     | ESCAPE STRING_
     | FORCE_QUOTE (columnNames | ASTERISK_)
@@ -517,6 +517,15 @@ copyOption
     | REJECT_LIMIT NUMBER_
     | ENCODING STRING_
     | LOG_VERBOSITY (DEFAULT | VERBOSE | SILENT)
+    | {FORMAT != _input.LA(1) && HEADER != _input.LA(1)}? colLabel copyOptionArgument?
+    ;
+
+copyOptionArgument
+    : booleanOrString
+    | numericOnly
+    | ASTERISK_
+    | DEFAULT
+    | LP_ booleanOrString (COMMA_ booleanOrString)* RP_
     ;
 
 
@@ -530,6 +539,7 @@ copyLegacyOption
     | DELIMITER AS? STRING_
     | NULL AS? STRING_
     | CSV
+    | JSON
     | HEADER
     | QUOTE AS? STRING_
     | ESCAPE AS? STRING_

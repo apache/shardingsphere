@@ -45,8 +45,14 @@ public final class ExpectedCommonTableExpressionClause extends AbstractExpectedS
     @XmlElement(name = "column")
     private final List<ExpectedColumn> columns = new LinkedList<>();
     
+    @XmlAttribute(name = "search-column-count")
+    private Integer searchColumnCount;
+    
     @XmlElement(name = "search-column")
     private final List<ExpectedColumn> searchColumns = new LinkedList<>();
+    
+    @XmlAttribute(name = "cycle-column-count")
+    private Integer cycleColumnCount;
     
     @XmlElement(name = "cycle-column")
     private final List<ExpectedColumn> cycleColumns = new LinkedList<>();

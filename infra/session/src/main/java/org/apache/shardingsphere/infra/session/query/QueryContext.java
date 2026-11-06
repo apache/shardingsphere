@@ -68,6 +68,7 @@ public final class QueryContext {
     
     public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final ConnectionContext connectionContext,
                         final ShardingSphereMetaData metaData, final boolean useCache) {
+        sqlStatementContext.getTablesContext().checkMetadata();
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;

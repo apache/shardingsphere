@@ -22,6 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResult
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.executor.checker.PushDownSQLExecutionCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
@@ -85,6 +86,7 @@ public final class DriverRawPushDownExecuteQueryExecutor {
     
     private List<QueryResult> getQueryResults(final ShardingSphereDatabase database, final QueryContext queryContext) throws SQLException {
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), props);
+        new PushDownSQLExecutionCheckEngine().check(database, executionContext);
         return rawExecutor.execute(
                 createRawExecutionGroupContext(database, executionContext), queryContext, new RawSQLExecutorCallback()).stream().map(QueryResult.class::cast).collect(Collectors.toList());
     }

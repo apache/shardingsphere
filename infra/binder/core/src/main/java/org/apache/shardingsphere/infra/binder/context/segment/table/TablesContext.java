@@ -21,6 +21,10 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -28,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -37,6 +42,9 @@ import java.util.Optional;
 @Getter
 @ToString
 public final class TablesContext {
+    
+    @ToString.Exclude
+    private final Collection<ShardingSphereTable> boundTables = new LinkedHashSet<>();
     
     private final Collection<SimpleTableSegment> simpleTables = new LinkedList<>();
     
@@ -104,5 +112,15 @@ public final class TablesContext {
      */
     public Optional<IdentifierValue> getIdentifierSchemaName() {
         return identifierSchemaNames.isEmpty() ? Optional.empty() : Optional.of(identifierSchemaNames.iterator().next());
+    }
+    
+    /**
+     * Reject reuse of bindings invalidated by a published metadata change.
+     */
+    @HighFrequencyInvocation
+    public void checkMetadata() {
+        for (ShardingSphereTable each : boundTables) {
+            ShardingSpherePreconditions.checkState(!each.isBindingInvalidated(), StaleStatementMetadataException::new);
+        }
     }
 }

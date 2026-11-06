@@ -31,7 +31,6 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.bi
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -50,8 +49,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -91,6 +88,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         Collection<DatabasePacket> result = createPackets(sqlStatementContext, statementId, serverPreparedStatement);
+        sqlStatementContext.getTablesContext().checkMetadata();
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return result;
     }
@@ -108,23 +106,77 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         ShardingSpherePreconditions.checkState(parameterCount <= MAX_PARAMETER_COUNT, TooManyPlaceholdersException::new);
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        Collection<MySQLPacket> parameterColumnDefinitions = parameterCount > 0
-                ? createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement)
-                : Collections.emptyList();
-        Collection<MySQLPacket> projectionColumnDefinitions = sqlStatementContext instanceof SelectStatementContext
-                && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty()
-                        ? createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet, serverPreparedStatement)
-                        : Collections.emptyList();
-        Collection<DatabasePacket> result = new ArrayList<>(parameterColumnDefinitions.size() + projectionColumnDefinitions.size() + 3);
-        result.add(new MySQLComStmtPrepareOKPacket(statementId, projectionColumnDefinitions.size(), parameterCount, 0));
         int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession, true);
+        Collection<MySQLPacket> projectionPackets = sqlStatementContext instanceof SelectStatementContext
+                ? createProjectionColumnDefinition41Packets((SelectStatementContext) sqlStatementContext, characterSet, serverPreparedStatement)
+                : Collections.emptyList();
+        Collection<DatabasePacket> result = new ArrayList<>(parameterCount + projectionPackets.size() + 3);
+        result.add(new MySQLComStmtPrepareOKPacket(statementId, projectionPackets.size(), parameterCount, 0));
         if (parameterCount > 0) {
-            result.addAll(parameterColumnDefinitions);
+            result.addAll(createParameterColumnDefinition41Packets(sqlStatementContext, characterSet, serverPreparedStatement));
             result.add(new MySQLEofPacket(statusFlags));
         }
-        if (!projectionColumnDefinitions.isEmpty()) {
-            result.addAll(projectionColumnDefinitions);
+        if (!projectionPackets.isEmpty()) {
+            result.addAll(projectionPackets);
             result.add(new MySQLEofPacket(statusFlags));
+        }
+        return result;
+    }
+    
+    private Collection<MySQLPacket> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet,
+                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
+        if (isProjectionMetadataDerivableLocally(selectStatementContext)) {
+            return createProjectionColumnDefinition41PacketsByLocalMetadata(selectStatementContext, characterSet);
+        }
+        return loadProjectionColumnDefinition41Packets(selectStatementContext, characterSet, serverPreparedStatement);
+    }
+    
+    private boolean isProjectionMetadataDerivableLocally(final SelectStatementContext selectStatementContext) {
+        if (selectStatementContext.getProjectionsContext().containsUnexpandedShorthandProjection()) {
+            return false;
+        }
+        ShardingSphereSchema schema = getSchema(selectStatementContext);
+        for (Projection each : selectStatementContext.getProjectionsContext().getExpandProjections()) {
+            if (!(each instanceof ColumnProjection)) {
+                return false;
+            }
+            ColumnProjection columnProjection = (ColumnProjection) each;
+            if (null == Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
+                    .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue())).orElse(null)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private Collection<MySQLPacket> createProjectionColumnDefinition41PacketsByLocalMetadata(final SelectStatementContext selectStatementContext, final int characterSet) {
+        Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
+        ShardingSphereSchema schema = getSchema(selectStatementContext);
+        Collection<MySQLPacket> result = new ArrayList<>(projections.size());
+        for (Projection each : projections) {
+            ColumnProjection columnProjection = (ColumnProjection) each;
+            result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
+                    .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
+                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(column),
+                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
+                    .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
+        }
+        return result;
+    }
+    
+    private Collection<MySQLPacket> loadProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet,
+                                                                            final MySQLServerPreparedStatement serverPreparedStatement) {
+        try {
+            return MySQLProjectionMetadataResolver.resolveProjectionPackets(connectionSession, serverPreparedStatement, selectStatementContext, characterSet);
+        } catch (final SQLException ignored) {
+            return createDefaultProjectionColumnDefinition41Packets(selectStatementContext, characterSet);
+        }
+    }
+    
+    private Collection<MySQLPacket> createDefaultProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet) {
+        Collection<MySQLPacket> result = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
+        for (int index = 0; index < selectStatementContext.getProjectionsContext().getExpandProjections().size(); index++) {
+            result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING));
         }
         return result;
     }
@@ -171,74 +223,6 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
         MySQLColumnDefinition41Packet result = createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, columnType);
         columnPacketCache.put(column, result);
-        return result;
-    }
-    
-    private Collection<MySQLPacket> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet,
-                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
-        if (isProjectionMetadataDerivableLocally(selectStatementContext)) {
-            return createProjectionColumnDefinition41PacketsByLocalMetadata(selectStatementContext, characterSet);
-        }
-        return loadProjectionColumnDefinition41Packets(selectStatementContext, characterSet, serverPreparedStatement);
-    }
-    
-    private boolean isProjectionMetadataDerivableLocally(final SelectStatementContext selectStatementContext) {
-        if (containsShorthandProjection(selectStatementContext)) {
-            return false;
-        }
-        ShardingSphereSchema schema = getSchema(selectStatementContext);
-        for (Projection each : selectStatementContext.getProjectionsContext().getExpandProjections()) {
-            if (!(each instanceof ColumnProjection)) {
-                return false;
-            }
-            ColumnProjection columnProjection = (ColumnProjection) each;
-            if (null == Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
-                    .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue())).orElse(null)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    @HighFrequencyInvocation
-    private boolean containsShorthandProjection(final SelectStatementContext selectStatementContext) {
-        for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
-            if (each instanceof ShorthandProjectionSegment) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    private Collection<MySQLPacket> createProjectionColumnDefinition41PacketsByLocalMetadata(final SelectStatementContext selectStatementContext, final int characterSet) {
-        Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
-        ShardingSphereSchema schema = getSchema(selectStatementContext);
-        Collection<MySQLPacket> result = new ArrayList<>(projections.size());
-        for (Projection each : projections) {
-            ColumnProjection columnProjection = (ColumnProjection) each;
-            result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
-                    .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
-                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(column),
-                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
-                    .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
-        }
-        return result;
-    }
-    
-    private Collection<MySQLPacket> loadProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet,
-                                                                            final MySQLServerPreparedStatement serverPreparedStatement) {
-        try {
-            return MySQLProjectionMetadataResolver.resolveProjectionPackets(connectionSession, serverPreparedStatement, selectStatementContext, characterSet);
-        } catch (final SQLException ignored) {
-            return createDefaultProjectionColumnDefinition41Packets(selectStatementContext, characterSet);
-        }
-    }
-    
-    private Collection<MySQLPacket> createDefaultProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet) {
-        Collection<MySQLPacket> result = new ArrayList<>(selectStatementContext.getProjectionsContext().getExpandProjections().size());
-        for (int index = 0; index < selectStatementContext.getProjectionsContext().getExpandProjections().size(); index++) {
-            result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING));
-        }
         return result;
     }
     

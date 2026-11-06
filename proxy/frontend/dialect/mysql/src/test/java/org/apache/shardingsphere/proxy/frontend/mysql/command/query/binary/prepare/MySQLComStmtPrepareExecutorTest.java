@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -88,11 +87,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
@@ -114,6 +112,43 @@ class MySQLComStmtPrepareExecutorTest {
     void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSets.UTF8MB4_UNICODE_CI);
+    }
+    
+    @Test
+    void assertPrepareWildcardLocally() throws SQLException {
+        when(packet.getSQL()).thenReturn("SELECT * FROM foo_db.user FOR UPDATE");
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        when(connectionSession.getConnectionId()).thenReturn(16);
+        MySQLStatementIdGenerator.getInstance().registerConnection(16);
+        try {
+            ContextManager contextManager = mockContextManager();
+            when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class)))
+                    .thenThrow(new AssertionError("Ordinary prepare must not probe the backend"));
+            Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(getPrepareOKColumnCount((MySQLComStmtPrepareOKPacket) actualIterator.next()), is(5));
+            for (int columnIndex = 0; columnIndex < 5; columnIndex++) {
+                assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+            }
+            assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            assertThat(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1).getSql(), is("SELECT * FROM foo_db.user FOR UPDATE"));
+        } finally {
+            MySQLStatementIdGenerator.getInstance().unregisterConnection(16);
+        }
+    }
+    
+    private int getPrepareOKColumnCount(final MySQLComStmtPrepareOKPacket packet) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        try {
+            MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+            packet.write(payload);
+            payload.readInt1();
+            payload.readInt4();
+            return payload.readInt2();
+        } finally {
+            byteBuf.release();
+        }
     }
     
     @Test
@@ -148,36 +183,6 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(SelectStatement.class));
         assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.LONGLONG, MySQLBinaryColumnType.VAR_STRING)));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
-    }
-    
-    private ContextManager mockContextManager() {
-        ContextManager result = createContextManager();
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        return result;
-    }
-    
-    private ContextManager createContextManager() {
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
-        CacheOption cacheOption = new CacheOption(1024, 1024L);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
-                .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(cacheOption, cacheOption)));
-        ShardingSphereDatabase database = createDatabase();
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
-        return result;
-    }
-    
-    private ShardingSphereDatabase createDatabase() {
-        ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, true, true, false),
-                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false),
-                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, true, true, false),
-                new ShardingSphereColumn("content", Types.CLOB, false, false, false, true, false, true),
-                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
-                new ConfigurationProperties(new Properties()));
     }
     
     @Test
@@ -253,111 +258,6 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
         assertFalse(actualIterator.hasNext());
         MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
-    }
-    
-    @Test
-    void assertPrepareWildcardSelectWithMetadataDrift() throws Exception {
-        String sql = "SELECT * FROM foo_db.user";
-        when(packet.getSQL()).thenReturn(sql);
-        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
-        int connectionId = 6;
-        when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
-        try {
-            ContextManager contextManager = createContextManager();
-            when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
-            ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-            when(actualPreparedStatement.getMetaData()).thenReturn(resultSetMetaData);
-            String[] actualColumns = {"id", "name", "age", "content", "national_content", "add_test"};
-            when(resultSetMetaData.getColumnCount()).thenReturn(actualColumns.length);
-            for (int columnIndex = 1; columnIndex <= actualColumns.length; columnIndex++) {
-                stubColumnMetaData(resultSetMetaData, columnIndex, actualColumns[columnIndex - 1]);
-            }
-            when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
-            Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-            MySQLComStmtPrepareOKPacket actualPrepareOKPacket = (MySQLComStmtPrepareOKPacket) actualIterator.next();
-            assertThat(getPrepareOKColumnCount(actualPrepareOKPacket), is(actualColumns.length));
-            for (int columnIndex = 0; columnIndex < actualColumns.length; columnIndex++) {
-                assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
-            }
-            assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
-            assertFalse(actualIterator.hasNext());
-        } finally {
-            MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
-        }
-    }
-    
-    private void stubColumnMetaData(final ResultSetMetaData resultSetMetaData, final int columnIndex, final String columnName) throws SQLException {
-        when(resultSetMetaData.getColumnName(columnIndex)).thenReturn(columnName);
-        when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn(columnName);
-        when(resultSetMetaData.getColumnType(columnIndex)).thenReturn(Types.VARCHAR);
-        when(resultSetMetaData.getColumnTypeName(columnIndex)).thenReturn("VARCHAR");
-        when(resultSetMetaData.getColumnDisplaySize(columnIndex)).thenReturn(50);
-        when(resultSetMetaData.isSigned(columnIndex)).thenReturn(true);
-        when(resultSetMetaData.isNullable(columnIndex)).thenReturn(ResultSetMetaData.columnNullable);
-    }
-    
-    private int getPrepareOKColumnCount(final MySQLComStmtPrepareOKPacket packet) {
-        ByteBuf byteBuf = Unpooled.buffer();
-        packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
-        MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        payload.readInt1();
-        payload.readInt4();
-        return payload.readInt2();
-    }
-    
-    @Test
-    void assertPrepareWildcardSelectWithoutMetadataDrift() throws Exception {
-        String sql = "SELECT * FROM foo_db.user";
-        when(packet.getSQL()).thenReturn(sql);
-        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
-        int connectionId = 7;
-        when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
-        try {
-            ContextManager contextManager = createContextManager();
-            when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
-            ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-            when(actualPreparedStatement.getMetaData()).thenReturn(resultSetMetaData);
-            String[] actualColumns = {"id", "name", "age", "content", "national_content"};
-            when(resultSetMetaData.getColumnCount()).thenReturn(actualColumns.length);
-            for (int columnIndex = 1; columnIndex <= actualColumns.length; columnIndex++) {
-                stubColumnMetaData(resultSetMetaData, columnIndex, actualColumns[columnIndex - 1]);
-            }
-            when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
-            Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
-            MySQLComStmtPrepareOKPacket actualPrepareOKPacket = (MySQLComStmtPrepareOKPacket) actualIterator.next();
-            assertThat(getPrepareOKColumnCount(actualPrepareOKPacket), is(actualColumns.length));
-            for (int columnIndex = 0; columnIndex < actualColumns.length; columnIndex++) {
-                assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
-            }
-            assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
-            assertFalse(actualIterator.hasNext());
-        } finally {
-            MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
-        }
-    }
-    
-    @Test
-    void assertPrepareWildcardSelectFailureLeavesNoRegistryEntry() throws SQLException {
-        String sql = "SELECT * FROM foo_db.user";
-        when(packet.getSQL()).thenReturn(sql);
-        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
-        int connectionId = 8;
-        when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
-        try {
-            ContextManager contextManager = createContextManager();
-            when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-            when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class)))
-                    .thenThrow(new PreparedStatementMetadataResolutionException("no backend connection was acquired"));
-            assertThrows(PreparedStatementMetadataResolutionException.class, () -> new MySQLComStmtPrepareExecutor(packet, connectionSession).execute());
-            assertNull(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1));
-        } finally {
-            MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
-        }
     }
     
     @Test
@@ -548,6 +448,53 @@ class MySQLComStmtPrepareExecutorTest {
     }
     
     @Test
+    void assertPrepareHintedWildcardOKPacketColumnCountMatchesDefinitions() throws Exception {
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setDataSourceName("foo_ds");
+        when(packet.getSQL()).thenReturn("SELECT * FROM foo_db.user");
+        when(packet.getHintValueContext()).thenReturn(hintValueContext);
+        int connectionId = 6;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        int physicalColumnCount = 3;
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(actualPreparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(physicalColumnCount);
+        for (int i = 1; i <= physicalColumnCount; i++) {
+            when(resultSetMetaData.getColumnName(i)).thenReturn("col_" + i);
+            when(resultSetMetaData.getColumnLabel(i)).thenReturn("col_" + i);
+            when(resultSetMetaData.getColumnType(i)).thenReturn(Types.VARCHAR);
+            when(resultSetMetaData.getColumnTypeName(i)).thenReturn("VARCHAR");
+            when(resultSetMetaData.getColumnDisplaySize(i)).thenReturn(255);
+            when(resultSetMetaData.isNullable(i)).thenReturn(ResultSetMetaData.columnNullable);
+            when(resultSetMetaData.getTableName(i)).thenReturn("user");
+        }
+        when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        MySQLComStmtPrepareOKPacket okPacket = (MySQLComStmtPrepareOKPacket) actualIterator.next();
+        ByteBuf okBuf = Unpooled.buffer();
+        okPacket.write(new MySQLPacketPayload(okBuf, StandardCharsets.UTF_8));
+        okBuf.skipBytes(1 + 4);
+        int okColumnCount = okBuf.readShortLE();
+        okBuf.release();
+        int columnDefinitionCount = 0;
+        while (actualIterator.hasNext()) {
+            DatabasePacket next = actualIterator.next();
+            if (next instanceof MySQLColumnDefinition41Packet) {
+                columnDefinitionCount++;
+            }
+        }
+        assertThat("OK packet column count must match emitted definitions", okColumnCount, is(columnDefinitionCount));
+        assertThat("visible column count must match physical columns", columnDefinitionCount, is(physicalColumnCount));
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+    }
+    
+    @Test
     void assertPrepareNotAllowedStatement() {
         when(packet.getSQL()).thenReturn("begin");
         ContextManager contextManager = mockContextManager();
@@ -555,4 +502,27 @@ class MySQLComStmtPrepareExecutorTest {
         assertThrows(UnsupportedPreparedStatementException.class, () -> new MySQLComStmtPrepareExecutor(packet, connectionSession).execute());
     }
     
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
+        CacheOption cacheOption = new CacheOption(1024, 1024L);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
+                .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(cacheOption, cacheOption)));
+        ShardingSphereDatabase database = createDatabase();
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
+        ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, true, true, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, true, true, false),
+                new ShardingSphereColumn("content", Types.CLOB, false, false, false, true, false, true),
+                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
+    }
 }

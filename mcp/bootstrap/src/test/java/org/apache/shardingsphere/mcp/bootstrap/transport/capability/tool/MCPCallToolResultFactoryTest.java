@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator;
 import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationResponse;
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
+import io.modelcontextprotocol.spec.McpError;
+import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
@@ -57,7 +61,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactMaskUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 
 import java.time.OffsetDateTime;
@@ -67,11 +75,17 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(value = "org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory", suppressOutput = true)
 class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTest {
     
     @Test
@@ -103,6 +117,29 @@ class MCPCallToolResultFactoryTest extends AbstractMCPToolSpecificationFactoryTe
     void assertCreateToolSpecificationsHandlePlainPayload() {
         CallToolResult actual = createCallToolResult("fixture_ping", new MCPMapPayload(Map.of("message", "invalid_request")));
         assertFalse(actual.isError());
+    }
+    
+    @Test
+    void assertCreateSanitizesSerializationFailure(final LogCaptureAssertion logCaptureAssertion) {
+        Map<String, Object> payload = Map.of("foo_field", "foo_value");
+        IllegalStateException expectedCause = new IllegalStateException("foo_sensitive_detail");
+        JsonException expectedException = mock(JsonException.class);
+        when(expectedException.getMessage()).thenReturn("foo_sensitive_detail");
+        when(expectedException.getCause()).thenReturn(expectedCause);
+        MCPToolDescriptor descriptor = createToolDescriptorWithoutOutputSchema("fixture_ping");
+        try (MockedStatic<JsonEngine> mockedJsonEngine = mockStatic(JsonEngine.class)) {
+            mockedJsonEngine.when(() -> JsonEngine.marshal(payload)).thenThrow(expectedException);
+            McpError actual = assertThrows(McpError.class, () -> new MCPCallToolResultFactory().create(descriptor, new MCPMapPayload(payload)));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+            assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
+            Map<?, ?> actualData = (Map<?, ?>) actual.getJsonRpcError().data();
+            assertThat(actualData.get("error_id"), isA(String.class));
+            assertThat(actualData, is(Map.of("response_mode", "recovery", "summary", "Service is temporarily unavailable.", "error_id", actualData.get("error_id"))));
+            logCaptureAssertion.assertErrorLog(actualException -> {
+                assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException));
+                assertThat(((ThrowableProxy) actualException).getThrowable().getCause(), sameInstance(expectedCause));
+            });
+        }
     }
     
     @Test

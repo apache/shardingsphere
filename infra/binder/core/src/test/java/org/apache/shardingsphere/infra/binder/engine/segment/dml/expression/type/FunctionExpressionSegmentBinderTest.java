@@ -50,6 +50,22 @@ import static org.mockito.Mockito.when;
 class FunctionExpressionSegmentBinderTest {
     
     @Test
+    void assertBindWithFilter() {
+        FunctionSegment segment = new FunctionSegment(0, 50, "STRING_AGG", "STRING_AGG(col, comma) FILTER (WHERE condition)");
+        ExpressionSegment filter = mock(ExpressionSegment.class);
+        ExpressionSegment expectedFilter = mock(ExpressionSegment.class);
+        segment.setFilter(filter);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        when(ExpressionSegmentBinder.bind(filter, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)).thenReturn(expectedFilter);
+        FunctionSegment actual = FunctionExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
+        assertThat(actual.getFilter().get(), is(expectedFilter));
+        assertThat(actual.getStartIndex(), is(segment.getStartIndex()));
+        assertThat(actual.getStopIndex(), is(segment.getStopIndex()));
+    }
+    
+    @Test
     void assertBindSkipsParameterForXmlElement() {
         FunctionSegment functionSegment = new FunctionSegment(0, 5, "XMLELEMENT", "XMLELEMENT()");
         OwnerSegment ownerSegment = new OwnerSegment(0, 0, new IdentifierValue("schema"));

@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
@@ -117,7 +116,7 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((AggregationDistinctProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationProjectionSegment) {
-            return Optional.of(createAggregationProjection((AggregationProjectionSegment) projectionSegment));
+            return Optional.of(createProjection((AggregationProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
             return Optional.of(createProjection((SubqueryProjectionSegment) projectionSegment));
@@ -140,7 +139,7 @@ public final class ProjectionEngine {
     
     private ShorthandProjection createProjection(final ShorthandProjectionSegment projectionSegment) {
         IdentifierValue owner = projectionSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null);
-        Collection<Projection> projections = new LinkedHashSet<>(projectionSegment.getActualProjectionSegments().size(), 1F);
+        Collection<Projection> projections = new ArrayList<>(projectionSegment.getActualProjectionSegments().size());
         projectionSegment.getActualProjectionSegments().forEach(each -> createProjection(each).ifPresent(projections::add));
         return new ShorthandProjection(owner, projections);
     }
@@ -170,7 +169,7 @@ public final class ProjectionEngine {
         return result;
     }
     
-    private Projection createAggregationProjection(final AggregationProjectionSegment projectionSegment) {
+    private Projection createProjection(final AggregationProjectionSegment projectionSegment) {
         if (projectionSegment.getWindow().isPresent()) {
             return createExpressionProjection(projectionSegment);
         }

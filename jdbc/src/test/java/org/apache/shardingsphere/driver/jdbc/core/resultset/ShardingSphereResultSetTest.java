@@ -18,31 +18,25 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
@@ -51,36 +45,38 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
+import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShardingSphereResultSetTest {
@@ -88,6 +84,8 @@ class ShardingSphereResultSetTest {
     private MergedResult mergeResultSet;
     
     private ShardingSphereResultSet shardingSphereResultSet;
+    
+    private ResultSetMetaData resultSetMetaData;
     
     private DatabaseType protocolType;
     
@@ -97,497 +95,8 @@ class ShardingSphereResultSetTest {
     
     private ShardingSphereStatement statement;
     
-    @Test
-    void assertFindColumn() throws SQLException {
-        assertThat(shardingSphereResultSet.findColumn("LABEL"), is(1));
-    }
-    
-    @Test
-    void assertFindColumnAfterBackendCloseWhenTypeRemainsAvailable() throws SQLException {
-        List<ResultSet> resultSets = getResultSets();
-        ResultSet backend = resultSets.get(0);
-        ShardingSphereResultSet actual = new ShardingSphereResultSet(resultSets, mergeResultSet, statement, createSQLStatementContext());
-        when(backend.isClosed()).thenReturn(true);
-        assertThrows(SQLException.class, () -> actual.findColumn("label"));
-    }
-    
-    @Test
-    void assertFindColumnWithCachedColumnsAfterBackendClose() throws SQLException {
-        List<ResultSet> resultSets = getResultSets();
-        ResultSet backend = resultSets.get(0);
-        ShardingSphereResultSet actual = new ShardingSphereResultSet(resultSets, mergeResultSet, statement, createSQLStatementContext(), Collections.singletonMap("label", 1));
-        when(backend.isClosed()).thenReturn(true);
-        assertThrows(SQLException.class, () -> actual.findColumn("label"));
-    }
-    
-    @Test
-    @Tag("h2")
-    void assertFindColumnAfterClose() throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_find_column_closed;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
-                    Connection connection = dataSource.getConnection();
-                    Statement statement = connection.createStatement();
-                    ResultSet actual = statement.executeQuery("SELECT * FROM t_order")) {
-                assertFalse(actual.isClosed());
-                assertThat(actual.findColumn("user_id"), is(2));
-                actual.close();
-                assertTrue(actual.isClosed());
-                assertThrows(SQLException.class, () -> actual.findColumn("user_id"));
-            }
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("implicitCloseOperations")
-    @Tag("h2")
-    void assertFindColumnAfterImplicitClose(final String name, final boolean prepared, final String operation) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_find_column_implicit_close;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
-                    Connection connection = dataSource.getConnection();
-                    Statement statement = prepared ? connection.prepareStatement("SELECT * FROM t_order") : connection.createStatement();
-                    ResultSet actual = prepared ? ((PreparedStatement) statement).executeQuery() : statement.executeQuery("SELECT * FROM t_order")) {
-                assertThat(actual.findColumn("user_id"), is(2));
-                closeResultSetOwner(connection, statement, operation);
-                assertThrows(SQLException.class, () -> actual.findColumn("user_id"));
-            }
-        }
-    }
-    
-    private void closeResultSetOwner(final Connection connection, final Statement statement, final String operation) throws SQLException {
-        if ("statement".equals(operation)) {
-            statement.close();
-            return;
-        }
-        if ("connection".equals(operation)) {
-            connection.close();
-            return;
-        }
-        if ("autoCommit".equals(operation)) {
-            connection.setAutoCommit(false);
-            connection.setAutoCommit(true);
-            return;
-        }
-        if ("reexecution".equals(operation)) {
-            if (statement instanceof PreparedStatement) {
-                ((PreparedStatement) statement).executeQuery();
-            } else {
-                statement.executeQuery("SELECT * FROM t_order");
-            }
-            return;
-        }
-        statement.getMoreResults();
-    }
-    
-    private static Collection<Arguments> implicitCloseOperations() {
-        return Arrays.asList(
-                Arguments.of("statement close", false, "statement"),
-                Arguments.of("connection close", false, "connection"),
-                Arguments.of("statement reexecution", false, "reexecution"),
-                Arguments.of("statement more results", false, "moreResults"),
-                Arguments.of("prepared statement close", true, "statement"),
-                Arguments.of("prepared connection close", true, "connection"),
-                Arguments.of("prepared statement reexecution", true, "reexecution"),
-                Arguments.of("prepared statement more results", true, "moreResults"),
-                Arguments.of("statement physical connection close", false, "autoCommit"),
-                Arguments.of("prepared statement physical connection close", true, "autoCommit"));
-    }
-    
-    @Test
-    void assertFindColumnWithUnknownLabel() {
-        assertThrows(SQLException.class, () -> shardingSphereResultSet.findColumn("absent_label"));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("aggregationDistinctQueries")
-    @Tag("h2")
-    void assertAggregationDistinctWithSchemaDrift(final String name, final int routeCount, final boolean schemaDrift, final String sql, final String expectedLabel) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_distinct_drift;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            for (int index = 0; index < routeCount; index++) {
-                backendStatement.execute("CREATE TABLE t_order_" + index + " (order_id INT PRIMARY KEY, user_id INT)");
-                backendStatement.execute("INSERT INTO t_order_" + index + " VALUES (" + index + ", " + (index + 8) + ")");
-            }
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0.." + (routeCount - 1) + "}"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
-                if (schemaDrift) {
-                    for (int index = 0; index < routeCount; index++) {
-                        backendStatement.execute("ALTER TABLE t_order_" + index + " ADD add_test INT DEFAULT 99 BEFORE user_id");
-                    }
-                }
-                assertAggregationDistinctResult(dataSource, routeCount, schemaDrift, sql, expectedLabel);
-            }
-        }
-    }
-    
-    private void assertAggregationDistinctResult(final ShardingSphereDataSource dataSource, final int expectedRowCount, final boolean schemaDrift,
-                                                 final String sql, final String expectedLabel) throws SQLException {
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
-            String[] expected = schemaDrift ? new String[]{expectedLabel, "order_id", "add_test", "user_id"} : new String[]{expectedLabel, "order_id", "user_id"};
-            ResultSetMetaData actualMetadata = actual.getMetaData();
-            assertThat(actualMetadata.getColumnCount(), is(expected.length));
-            for (int columnIndex = 1; columnIndex <= expected.length; columnIndex++) {
-                assertThat(actualMetadata.getColumnLabel(columnIndex), is(expected[columnIndex - 1]));
-                assertThat(actualMetadata.getColumnName(columnIndex), is(expected[columnIndex - 1]));
-                assertThat(actual.findColumn(expected[columnIndex - 1]), is(columnIndex));
-            }
-            int actualRowCount = 0;
-            while (actual.next()) {
-                assertThat(actual.getInt(expectedLabel), is(1));
-                assertThat(actual.getInt("user_id"), is(actual.getInt("order_id") + 8));
-                if (schemaDrift) {
-                    assertThat(actual.getInt("add_test"), is(99));
-                }
-                actualRowCount++;
-            }
-            assertThat(actualRowCount, is(expectedRowCount));
-        }
-    }
-    
-    private static Collection<Arguments> aggregationDistinctQueries() {
-        return Arrays.asList(
-                Arguments.of("multiple routes without drift", 2, false, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id", "COUNT(DISTINCT user_id)"),
-                Arguments.of("multiple routes with drift", 2, true, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id + 0", "COUNT(DISTINCT user_id)"),
-                Arguments.of("explicit alias with drift", 2, true, "SELECT COUNT(DISTINCT user_id) AS foo_count, t_order.* FROM t_order GROUP BY order_id", "foo_count"),
-                Arguments.of("explicit derived alias with drift", 2, true, "SELECT COUNT(DISTINCT user_id) AS AGGREGATION_DISTINCT_DERIVED_0, t_order.* FROM t_order GROUP BY order_id",
-                        "AGGREGATION_DISTINCT_DERIVED_0"),
-                Arguments.of("single route with drift", 1, true, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id", "COUNT(DISTINCT user_id)"));
-    }
-    
-    @Test
-    @Tag("h2")
-    void assertFindColumnAfterPreparedStatementReuseWithSchemaDrift() throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_statement_reuse;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
-            backendStatement.execute("CREATE TABLE t_order_1 (order_id INT PRIMARY KEY, user_id INT)");
-            backendStatement.execute("INSERT INTO t_order_0 VALUES (0, 8)");
-            backendStatement.execute("INSERT INTO t_order_1 VALUES (1, 9)");
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
-                assertReusedPreparedStatementResult(dataSource, backendStatement);
-            }
-        }
-    }
-    
-    private void assertReusedPreparedStatementResult(final ShardingSphereDataSource dataSource, final Statement backendStatement) throws SQLException {
-        try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT * FROM t_order")) {
-            try (ResultSet actual = statement.executeQuery()) {
-                assertThat(actual.findColumn("user_id"), is(2));
-            }
-            backendStatement.execute("ALTER TABLE t_order_0 ADD add_test INT DEFAULT 99 BEFORE user_id");
-            backendStatement.execute("ALTER TABLE t_order_1 ADD add_test INT DEFAULT 99 BEFORE user_id");
-            try (ResultSet actual = statement.executeQuery()) {
-                assertThat(actual.getMetaData().getColumnLabel(3), is("user_id"));
-                assertThat(actual.findColumn("user_id"), is(3));
-                assertThat(actual.findColumn("add_test"), is(2));
-                assertTrue(actual.next());
-                assertThat(actual.getInt(actual.findColumn("user_id")), is(actual.getInt("order_id") + 8));
-                assertThat(actual.getInt("user_id"), is(actual.getInt("order_id") + 8));
-                assertThat(actual.getInt("add_test"), is(99));
-            }
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("derivedAliasQueries")
-    @Tag("h2")
-    void assertFindColumnWithGenuineDerivedAlias(final String name, final boolean schemaDrift, final String sql, final String expectedLabel,
-                                                 final int expectedColumnCount, final int expectedValue) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
-            backendStatement.execute("INSERT INTO t_order_0 VALUES (0, 8)");
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
-                if (schemaDrift) {
-                    backendStatement.execute("ALTER TABLE t_order_0 ADD ORDER_BY_DERIVED_0 INT DEFAULT 99");
-                }
-                assertGenuineDerivedAliasResult(dataSource, sql, expectedLabel, expectedColumnCount, expectedValue);
-            }
-        }
-    }
-    
-    private void assertGenuineDerivedAliasResult(final ShardingSphereDataSource dataSource, final String sql, final String expectedLabel,
-                                                 final int expectedColumnCount, final int expectedValue) throws SQLException {
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
-            ResultSetMetaData actualMetadata = actual.getMetaData();
-            assertThat(actualMetadata.getColumnCount(), is(expectedColumnCount));
-            assertThat(actualMetadata.getColumnLabel(expectedColumnCount), is(expectedLabel));
-            assertThat(actualMetadata.getColumnName(expectedColumnCount), is(expectedLabel));
-            assertThat(actual.findColumn(expectedLabel), is(expectedColumnCount));
-            assertTrue(actual.next());
-            assertThat(actual.getInt(expectedLabel), is(expectedValue));
-        }
-    }
-    
-    private static Collection<Arguments> derivedAliasQueries() {
-        return Arrays.asList(
-                Arguments.of("genuine explicit alias", false, "SELECT order_id AS ORDER_BY_DERIVED_9 FROM t_order", "ORDER_BY_DERIVED_9", 1, 0),
-                Arguments.of("genuine aggregate alias", false, "SELECT COUNT(user_id) AS ORDER_BY_DERIVED_9 FROM t_order", "ORDER_BY_DERIVED_9", 1, 1),
-                Arguments.of("genuine distinct aggregate alias", false, "SELECT COUNT(DISTINCT user_id) AS AGGREGATION_DISTINCT_DERIVED_0 FROM t_order",
-                        "AGGREGATION_DISTINCT_DERIVED_0", 1, 1),
-                Arguments.of("single route exact alias collision", true, "SELECT * FROM t_order ORDER BY user_id + 0", "ORDER_BY_DERIVED_0", 3, 99));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("aggregationAliasCollisionQueries")
-    @Tag("h2")
-    void assertFindColumnWithAggregationAliasCollision(final String name, final int routeCount, final String sql, final int expectedColumnIndex) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_aggregation_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            for (int index = 0; index < routeCount; index++) {
-                backendStatement.execute("CREATE TABLE t_order_" + index + " (order_id INT PRIMARY KEY, user_id INT)");
-                backendStatement.execute("INSERT INTO t_order_" + index + " VALUES (" + index + ", 8)");
-            }
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0.." + (routeCount - 1) + "}"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
-                addAggregationAliasCollisionColumn(backendStatement, routeCount);
-                assertAggregationAliasCollisionResult(dataSource, sql, expectedColumnIndex);
-            }
-        }
-    }
-    
-    private void addAggregationAliasCollisionColumn(final Statement backendStatement, final int routeCount) throws SQLException {
-        for (int index = 0; index < routeCount; index++) {
-            backendStatement.execute("ALTER TABLE t_order_" + index + " ADD AGGREGATION_DISTINCT_DERIVED_0 INT DEFAULT 99");
-        }
-    }
-    
-    private void assertAggregationAliasCollisionResult(final ShardingSphereDataSource dataSource, final String sql, final int expectedColumnIndex) throws SQLException {
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
-            ResultSetMetaData actualMetadata = actual.getMetaData();
-            assertThat(actualMetadata.getColumnCount(), is(4));
-            assertThat(actualMetadata.getColumnLabel(expectedColumnIndex), is("AGGREGATION_DISTINCT_DERIVED_0"));
-            assertThat(actualMetadata.getColumnName(expectedColumnIndex), is("AGGREGATION_DISTINCT_DERIVED_0"));
-            assertThat(actual.findColumn("AGGREGATION_DISTINCT_DERIVED_0"), is(expectedColumnIndex));
-            assertTrue(actual.next());
-            assertThat(actual.getInt("AGGREGATION_DISTINCT_DERIVED_0"), is(99));
-            assertThat(actual.getInt("COUNT(DISTINCT user_id)"), is(1));
-        }
-    }
-    
-    private static Collection<Arguments> aggregationAliasCollisionQueries() {
-        return Arrays.asList(
-                Arguments.of("single route count first", 1, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id", 4),
-                Arguments.of("single route wildcard first", 1, "SELECT t_order.*, COUNT(DISTINCT user_id) FROM t_order GROUP BY order_id", 3),
-                Arguments.of("multiple routes count first", 2, "SELECT COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id", 4));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("mixedAggregationAliasQueries")
-    @Tag("h2")
-    void assertMixedAggregationsWithGenuineAliases(final String name, final String sql, final String[] expectedLabels, final int[] expectedValues) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_mixed_aggregation_aliases;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
-            backendStatement.execute("CREATE TABLE t_order_1 (order_id INT PRIMARY KEY, user_id INT)");
-            backendStatement.execute("INSERT INTO t_order_0 VALUES (2, 8)");
-            backendStatement.execute("INSERT INTO t_order_1 VALUES (5, 8)");
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
-                assertMixedAggregationResult(dataSource, sql, expectedLabels, expectedValues);
-            }
-        }
-    }
-    
-    private void assertMixedAggregationResult(final ShardingSphereDataSource dataSource, final String sql, final String[] expectedLabels, final int[] expectedValues) throws SQLException {
-        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
-            ResultSetMetaData actualMetadata = actual.getMetaData();
-            assertThat(actualMetadata.getColumnCount(), is(expectedLabels.length));
-            assertTrue(actual.next());
-            for (int index = 0; index < expectedLabels.length; index++) {
-                assertThat(actualMetadata.getColumnLabel(index + 1), is(expectedLabels[index]));
-                assertThat(actualMetadata.getColumnName(index + 1), is(expectedLabels[index]));
-                assertThat(actual.findColumn(expectedLabels[index]), is(Arrays.asList(expectedLabels).indexOf(expectedLabels[index]) + 1));
-                assertThat(actual.getInt(index + 1), is(expectedValues[index]));
-                assertThat(actual.getInt(expectedLabels[index]), is(expectedValues[index]));
-            }
-            assertFalse(actual.next());
-        }
-    }
-    
-    private static Collection<Arguments> mixedAggregationAliasQueries() {
-        return Arrays.asList(
-                Arguments.of("explicit distinct alias first", "SELECT COUNT(DISTINCT user_id) AS AGGREGATION_DISTINCT_DERIVED_0, SUM(DISTINCT order_id) FROM t_order",
-                        new String[]{"AGGREGATION_DISTINCT_DERIVED_0", "SUM(DISTINCT order_id)"}, new int[]{1, 7}),
-                Arguments.of("folded distinct alias last", "SELECT COUNT(DISTINCT user_id), SUM(DISTINCT order_id) AS aggregation_distinct_derived_0 FROM t_order",
-                        new String[]{"COUNT(DISTINCT user_id)", "aggregation_distinct_derived_0"}, new int[]{1, 7}),
-                Arguments.of("mixed average alias collision", "SELECT COUNT(DISTINCT user_id) AS AVG_DERIVED_SUM_0, SUM(DISTINCT order_id), AVG(DISTINCT user_id) FROM t_order",
-                        new String[]{"AVG_DERIVED_SUM_0", "SUM(DISTINCT order_id)", "AVG(DISTINCT user_id)"}, new int[]{1, 7, 8}),
-                Arguments.of("ordinary average alias collision", "SELECT COUNT(user_id) AS AVG_DERIVED_SUM_0, AVG(user_id) FROM t_order",
-                        new String[]{"AVG_DERIVED_SUM_0", "AVG(user_id)"}, new int[]{2, 8}),
-                Arguments.of("repeated distinct expressions", "SELECT COUNT(DISTINCT user_id), COUNT(DISTINCT user_id), SUM(DISTINCT order_id), AVG(DISTINCT user_id) FROM t_order",
-                        new String[]{"COUNT(DISTINCT user_id)", "COUNT(DISTINCT user_id)", "SUM(DISTINCT order_id)", "AVG(DISTINCT user_id)"}, new int[]{1, 1, 7, 8}));
-    }
-    
-    @Test
-    @Tag("h2")
-    void assertFindColumnWithKnownAggregationAliasCollisionWithoutDrift() throws SQLException {
-        assertFindColumnWithKnownAggregationAliasCollision(false);
-    }
-    
-    private void assertFindColumnWithKnownAggregationAliasCollision(final boolean schemaDrift) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_known_aggregation_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (Connection backendConnection = backend.getConnection(); Statement backendStatement = backendConnection.createStatement()) {
-            backendStatement.execute("CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT, AGGREGATION_DISTINCT_DERIVED_0 INT DEFAULT 99)");
-            backendStatement.execute("CREATE TABLE t_order_1 (order_id INT PRIMARY KEY, user_id INT, AGGREGATION_DISTINCT_DERIVED_0 INT DEFAULT 99)");
-            backendStatement.execute("INSERT INTO t_order_0(order_id, user_id) VALUES (0, 8)");
-            backendStatement.execute("INSERT INTO t_order_1(order_id, user_id) VALUES (1, 8)");
-            ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
-            rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
-            try (
-                    ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                            Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties())) {
-                if (schemaDrift) {
-                    backendStatement.execute("ALTER TABLE t_order_0 ADD add_test INT DEFAULT 42");
-                    backendStatement.execute("ALTER TABLE t_order_1 ADD add_test INT DEFAULT 42");
-                }
-                assertKnownAggregationAliasCollisionResult(dataSource, schemaDrift);
-            }
-        }
-    }
-    
-    private void assertKnownAggregationAliasCollisionResult(final ShardingSphereDataSource dataSource, final boolean schemaDrift) throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement();
-                ResultSet actual = statement.executeQuery("SELECT AGGREGATION_DISTINCT_DERIVED_0, COUNT(DISTINCT user_id), t_order.* FROM t_order GROUP BY order_id")) {
-            ResultSetMetaData actualMetadata = actual.getMetaData();
-            assertThat(actualMetadata.getColumnCount(), is(schemaDrift ? 6 : 5));
-            assertThat(actualMetadata.getColumnLabel(1), is("AGGREGATION_DISTINCT_DERIVED_0"));
-            assertThat(actualMetadata.getColumnName(1), is("AGGREGATION_DISTINCT_DERIVED_0"));
-            assertThat(actualMetadata.getColumnLabel(2), is("COUNT(DISTINCT user_id)"));
-            assertThat(actualMetadata.getColumnName(2), is("COUNT(DISTINCT user_id)"));
-            assertThat(actual.findColumn("AGGREGATION_DISTINCT_DERIVED_0"), is(1));
-            assertThat(actual.findColumn("COUNT(DISTINCT user_id)"), is(2));
-            assertTrue(actual.next());
-            assertThat(actual.getInt("AGGREGATION_DISTINCT_DERIVED_0"), is(99));
-            assertThat(actual.getInt("COUNT(DISTINCT user_id)"), is(1));
-            if (schemaDrift) {
-                assertThat(actual.getInt("add_test"), is(42));
-            }
-        }
-    }
-    
-    @Test
-    @Tag("h2")
-    void assertFindColumnWithKnownAggregationAliasCollisionWithDrift() throws SQLException {
-        assertFindColumnWithKnownAggregationAliasCollision(true);
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("aggregationAliasCollisionAfterBindingQueries")
-    @Tag("h2")
-    void assertAggregationAliasCollision(final String name, final String aggregate, final boolean afterShorthand, final boolean appendedGroupBy,
-                                         final String orderBy, final int expectedFirstOrderId) throws SQLException {
-        JdbcDataSource backend = new JdbcDataSource();
-        backend.setURL("jdbc:h2:mem:foo_distinct_alias_collision;MODE=MySQL;DATABASE_TO_UPPER=false");
-        try (
-                Connection backendConnection = backend.getConnection();
-                Statement backendStatement = backendConnection.createStatement();
-                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
-                        Collections.singletonMap("ds", backend), Collections.singleton(createAggregationAliasCollisionRule(backendStatement)), new Properties())) {
-            for (int index = 0; index < 2; index++) {
-                backendStatement.execute("ALTER TABLE t_order_" + index + " ADD AGGREGATION_DISTINCT_DERIVED_0 INT DEFAULT 99");
-                backendStatement.execute("UPDATE t_order_" + index + " SET AGGREGATION_DISTINCT_DERIVED_0 = " + (99 - index));
-            }
-            String label = aggregate + "(DISTINCT user_id)";
-            String projections = afterShorthand ? "COUNT(DISTINCT user_id) AS foo_count, t_order.*, " + label : label + ", t_order.*";
-            String sql = "SELECT " + projections + " FROM t_order GROUP BY " + (appendedGroupBy ? "order_id + 0" : "order_id") + (orderBy.isEmpty() ? "" : " ORDER BY " + orderBy);
-            try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement(); ResultSet actual = statement.executeQuery(sql)) {
-                String[] expectedLabels = afterShorthand
-                        ? new String[]{"foo_count", "order_id", "user_id", "AGGREGATION_DISTINCT_DERIVED_0", label}
-                        : new String[]{label, "order_id", "user_id", "AGGREGATION_DISTINCT_DERIVED_0"};
-                ResultSetMetaData actualMetadata = actual.getMetaData();
-                assertThat(actualMetadata.getColumnCount(), is(expectedLabels.length));
-                for (int columnIndex = 1; columnIndex <= expectedLabels.length; columnIndex++) {
-                    assertThat(actualMetadata.getColumnLabel(columnIndex), is(expectedLabels[columnIndex - 1]));
-                    assertThat(actualMetadata.getColumnName(columnIndex), is(expectedLabels[columnIndex - 1]));
-                    assertThat(actual.findColumn(expectedLabels[columnIndex - 1]), is(columnIndex));
-                }
-                int actualRowCount = 0;
-                while (actual.next()) {
-                    int expectedAggregate = label.startsWith("COUNT") ? 1 : actual.getInt("order_id") + 8;
-                    assertThat(actual.getInt(label), is(expectedAggregate));
-                    assertThat(actual.getInt(afterShorthand ? 5 : 1), is(expectedAggregate));
-                    assertThat(actual.getInt("AGGREGATION_DISTINCT_DERIVED_0"), is(99 - actual.getInt("order_id")));
-                    assertThat(actual.getInt(4), is(99 - actual.getInt("order_id")));
-                    assertThat(actual.getInt("user_id"), is(actual.getInt("order_id") + 8));
-                    if (!orderBy.isEmpty()) {
-                        assertThat(actual.getInt("order_id"), is(0 == actualRowCount ? expectedFirstOrderId : 1 - expectedFirstOrderId));
-                    }
-                    actualRowCount++;
-                }
-                assertThat(actualRowCount, is(2));
-            }
-        }
-    }
-    
-    private ShardingRuleConfiguration createAggregationAliasCollisionRule(final Statement backendStatement) throws SQLException {
-        for (int index = 0; index < 2; index++) {
-            backendStatement.execute("CREATE TABLE t_order_" + index + " (order_id INT PRIMARY KEY, user_id INT)");
-            backendStatement.execute("INSERT INTO t_order_" + index + " VALUES (" + index + ", " + (index + 8) + ")");
-        }
-        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
-        return result;
-    }
-    
-    private static Collection<Arguments> aggregationAliasCollisionAfterBindingQueries() {
-        return Arrays.asList(
-                Arguments.of("COUNT after shorthand", "COUNT", true, false, "", 0),
-                Arguments.of("SUM after shorthand", "SUM", true, false, "", 0),
-                Arguments.of("COUNT before shorthand", "COUNT", false, false, "", 0),
-                Arguments.of("SUM before shorthand", "SUM", false, false, "", 0),
-                Arguments.of("SUM with appended group by", "SUM", true, true, "", 0),
-                Arguments.of("AVG with appended aggregation columns", "AVG", true, false, "", 0),
-                Arguments.of("aggregate order after shorthand", "SUM", true, false, "SUM(DISTINCT user_id) DESC", 1),
-                Arguments.of("aggregate order before shorthand", "SUM", false, false, "SUM(DISTINCT user_id) DESC", 1),
-                Arguments.of("numeric aggregate order", "SUM", true, false, "5 DESC", 1),
-                Arguments.of("numeric genuine column order", "SUM", true, false, "4 DESC", 0),
-                Arguments.of("genuine column order", "SUM", true, false, "user_id DESC", 1),
-                Arguments.of("quoted aggregate order", "SUM", true, false, "SUM( DISTINCT `user_id` ) DESC", 1));
-    }
-    
     @BeforeEach
-    void setUp(final TestInfo testInfo) throws SQLException {
-        if (testInfo.getTags().contains("h2")) {
-            return;
-        }
+    void setUp() throws SQLException {
         mergeResultSet = mock(MergedResult.class);
         shardingSphereResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, getShardingSphereStatement(), createSQLStatementContext());
     }
@@ -602,7 +111,7 @@ class ShardingSphereResultSetTest {
     
     private List<ResultSet> getResultSets() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        resultSetMetaData = mock(ResultSetMetaData.class);
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("label");
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
@@ -640,6 +149,39 @@ class ShardingSphereResultSetTest {
     void assertGetBooleanWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, boolean.class)).thenReturn(true);
         assertTrue(shardingSphereResultSet.getBoolean(1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("memoryTimeArguments")
+    void assertGetBooleanWithMemoryTimeValue(final String name, final LocalTime value) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(value);
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> shardingSphereResultSet.getBoolean(1));
+    }
+    
+    private static Stream<Arguments> memoryTimeArguments() {
+        return Stream.of(
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56)),
+                Arguments.of("early-hour-microseconds", LocalTime.of(2, 34, 56, 123456000)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000)));
+    }
+    
+    @Test
+    void assertGetBooleanWithNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(LocalTime.NOON);
+        assertTrue(shardingSphereResultSet.getBoolean(1));
+    }
+    
+    @Test
+    void assertGetBooleanWithNullValue() throws SQLException {
+        assertFalse(shardingSphereResultSet.getBoolean(1));
+    }
+    
+    @Test
+    void assertGetBooleanWithStringValue() throws SQLException {
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn("2");
+        assertFalse(shardingSphereResultSet.getBoolean(1));
     }
     
     @Test
@@ -743,6 +285,24 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getString("label"), is("value"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeStringArguments")
+    void assertGetStringWithTimeValue(final String name, final int columnType, final LocalTime value, final String expected) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(columnType);
+        when(mergeResultSet.getValue(1, String.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getString(1), is(expected));
+    }
+    
+    private static Stream<Arguments> timeStringArguments() {
+        return Stream.of(
+                Arguments.of("time-minutes", Types.TIME, LocalTime.of(12, 34), "12:34:00"),
+                Arguments.of("time-midnight", Types.TIME, LocalTime.MIDNIGHT, "00:00:00"),
+                Arguments.of("time-trailing-zero", Types.TIME, LocalTime.of(12, 34, 56, 123450000), "12:34:56.12345"),
+                Arguments.of("object-minutes", Types.JAVA_OBJECT, LocalTime.of(12, 34), "12:34"),
+                Arguments.of("object-midnight", Types.JAVA_OBJECT, LocalTime.MIDNIGHT, "00:00"),
+                Arguments.of("object-trailing-zero", Types.JAVA_OBJECT, LocalTime.of(12, 34, 56, 123450000), "12:34:56.123450"));
+    }
+    
     @Test
     void assertGetNStringWithColumnIndex() throws SQLException {
         when(mergeResultSet.getValue(1, String.class)).thenReturn("value");
@@ -830,10 +390,23 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getDate("label", calendar), is(new Date(0L)));
     }
     
-    @Test
-    void assertGetTimeWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, Time.class)).thenReturn(new Time(0L));
-        assertThat(shardingSphereResultSet.getTime(1), is(new Time(0L)));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeJdbcArguments")
+    void assertGetTimeWithColumnIndex(final String name, final Object value, final Time expected) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, Time.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getTime(1), is(expected));
+    }
+    
+    private static Stream<Arguments> localTimeJdbcArguments() {
+        return Stream.of(
+                Arguments.of("legacy-zero", new Time(0L), new Time(0L)),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56), Time.valueOf("12:34:56")),
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000), new Time(Time.valueOf("12:34:56").getTime() + 123)),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000), Time.valueOf("00:00:00")),
+                Arguments.of("legacy-time", new Time(Time.valueOf("12:34:56").getTime() + 123), new Time(Time.valueOf("12:34:56").getTime() + 123)));
     }
     
     @Test
@@ -856,17 +429,21 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getTime("label", calendar), is(new Time(0L)));
     }
     
-    @Test
-    void assertGetTimestampWithColumnIndex() throws SQLException {
-        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(new Timestamp(0L));
-        assertThat(shardingSphereResultSet.getTimestamp(1), is(new Timestamp(0L)));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timestampArguments")
+    void assertGetTimestampWithColumnIndex(final String name, final Object value, final Timestamp expected) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getTimestamp(1), is(expected));
     }
     
-    @Test
-    void assertGetTimestampConvertedByLocalDateWithColumnIndex() throws SQLException {
-        LocalDate localDate = LocalDate.now();
-        when(mergeResultSet.getValue(1, Timestamp.class)).thenReturn(localDate);
-        assertThat(shardingSphereResultSet.getTimestamp(1), is(Timestamp.valueOf(localDate.atStartOfDay())));
+    private static Stream<Arguments> timestampArguments() {
+        return Stream.of(
+                Arguments.of("timestamp", new Timestamp(0L), new Timestamp(0L)),
+                Arguments.of("local-date", LocalDate.of(2026, 10, 13), Timestamp.valueOf("2026-10-13 00:00:00")),
+                Arguments.of("sql-time-microseconds", LocalTime.of(12, 34, 56, 123456000), Timestamp.valueOf("1970-01-01 12:34:56.123456")));
     }
     
     @Test
@@ -1019,6 +596,62 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getObject(1), is("object_value"));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeJdbcArguments")
+    void assertGetObjectWithLocalTimeValue(final String name, final Object value, final Time expected) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(value);
+        Object actual = shardingSphereResultSet.getObject(1);
+        assertThat(actual, isA(Time.class));
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertGetObjectWithObjectTypeAndNonTime() throws SQLException {
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn("foo_object");
+        assertThat(shardingSphereResultSet.getObject(1, Object.class), is("foo_object"));
+    }
+    
+    @Test
+    void assertGetObjectWithNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(expected);
+        assertThat(shardingSphereResultSet.getObject(1), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetObjectWithObjectTypeAndNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(expected);
+        assertThat(shardingSphereResultSet.getObject(1, Object.class), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetObjectWithNullTime() throws SQLException {
+        assertNull(shardingSphereResultSet.getObject(1));
+        verify(mergeResultSet).getValue(1, Object.class);
+    }
+    
+    @Test
+    void assertGetObjectWithReusedColumnMetadata() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        Time expected = Time.valueOf("12:34:56");
+        when(mergeResultSet.getValue(1, Object.class)).thenReturn(LocalTime.of(12, 34, 56));
+        ShardingSphereResultSet actual =
+                new ShardingSphereResultSet(Collections.singletonList(resultSet), mergeResultSet, statement, createSQLStatementContext(), Collections.singletonMap("label", 1));
+        verify(resultSet).getMetaData();
+        assertThat(actual.getObject(1), is(expected));
+        assertThat(actual.getObject(1), is(expected));
+        verify(resultSet).getMetaData();
+    }
+    
     @Test
     void assertGetObjectWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, Object.class)).thenReturn("object_value");
@@ -1032,6 +665,26 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getObject(1, String.class), is(result));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeStringArguments")
+    void assertGetObjectWithStringTypeAndTimeValue(final String name, final int columnType, final LocalTime value, final String expected) throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(columnType);
+        when(mergeResultSet.getValue(1, String.class)).thenReturn(value);
+        assertThat(shardingSphereResultSet.getObject(1, String.class), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assignableLocalTimeArguments")
+    void assertGetObjectWithAssignableLocalTimeType(final String name, final Class<?> type) throws SQLException {
+        LocalTime expected = LocalTime.of(12, 34);
+        when(mergeResultSet.getValue(1, type)).thenReturn(expected);
+        assertThat(shardingSphereResultSet.getObject(1, type), sameInstance(expected));
+    }
+    
+    private static Stream<Arguments> assignableLocalTimeArguments() {
+        return Stream.of(Arguments.of("serializable", Serializable.class), Arguments.of("temporal-accessor", TemporalAccessor.class), Arguments.of("comparable", Comparable.class));
+    }
+    
     @Test
     void assertGetObjectWithBoolean() throws SQLException {
         boolean result = true;
@@ -1039,6 +692,43 @@ class ShardingSphereResultSetTest {
         assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
         when(mergeResultSet.getValue(1, Boolean.class)).thenReturn(result);
         assertTrue(shardingSphereResultSet.getObject(1, Boolean.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedTimeArguments")
+    void assertGetObjectWithUnsupportedTimeType(final String name, final Object value, final Class<?> type) throws SQLException {
+        if (value instanceof LocalTime) {
+            when(resultSetMetaData.getColumnType(1)).thenReturn(Types.TIME);
+        }
+        when(mergeResultSet.getValue(1, type)).thenReturn(value);
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> shardingSphereResultSet.getObject(1, type));
+    }
+    
+    private static Stream<Arguments> unsupportedTimeArguments() {
+        return Stream.of(
+                Arguments.of("boolean-whole-second", LocalTime.of(12, 34, 56), boolean.class),
+                Arguments.of("boolean-early-hour", LocalTime.of(2, 34, 56, 123456000), boolean.class),
+                Arguments.of("boolean-midnight-microsecond", LocalTime.of(0, 0, 0, 1000), boolean.class),
+                Arguments.of("object-internal-time", LocalTime.of(12, 34, 56, 123456000), Object.class),
+                Arguments.of("object-legacy-time", Time.valueOf("12:34:56"), Object.class));
+    }
+    
+    @Test
+    void assertGetObjectWithBooleanTypeAndNonTimeLocalTime() throws SQLException {
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn(LocalTime.NOON);
+        assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
+    }
+    
+    @Test
+    void assertGetObjectWithBooleanTypeAndNullValue() throws SQLException {
+        assertFalse(shardingSphereResultSet.getObject(1, boolean.class));
+    }
+    
+    @Test
+    void assertGetObjectWithBooleanTypeAndStringValue() throws SQLException {
+        when(mergeResultSet.getValue(1, boolean.class)).thenReturn("2");
+        assertTrue(shardingSphereResultSet.getObject(1, boolean.class));
     }
     
     @Test

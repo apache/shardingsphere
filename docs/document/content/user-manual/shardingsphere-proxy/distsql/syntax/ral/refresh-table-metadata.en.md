@@ -42,10 +42,22 @@ quotedIdentifier ::=
 
 - refresh table metadata need to use `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
 
-- If there are no tables in the schema, the schema will be deleted.
+- If there are no tables or views in the schema, the schema will be deleted.
 
 - `tableName`, `storageUnitName`, and `schemaName` can be unquoted identifiers, backtick-quoted identifiers, or double-quoted identifiers.
 
+
+- Explicit refresh validates all physical tables associated with each selected logical table, including tables in other storage units or schemas, regardless of `check-table-metadata-enabled`.
+  Inconsistent structures or partially missing physical tables cause the refresh to fail before new metadata is published.
+  `FROM STORAGE UNIT` selects the refresh targets; it does not limit consistency validation to that storage unit.
+
+- After a node applies a table structure change or removal, statements prepared against the previous structure fail with `Table metadata changed; prepare the statement again.` and must be prepared again.
+  ShardingSphere-JDBC and the MySQL protocol expose error `10025` (`HY000`); PostgreSQL and openGauss use SQLState `58000` through the existing protocol mapping.
+  Unchanged or unrelated tables keep their existing bindings, and result sets already created remain readable.
+  In cluster mode, this takes effect on each node when it applies the metadata change.
+
+- After changing tables directly in the backend, make all related physical tables consistent, run the explicit refresh, and prepare affected statements again.
+  Preparing a statement does not automatically refresh the shared metadata.
 
 ### Example
 

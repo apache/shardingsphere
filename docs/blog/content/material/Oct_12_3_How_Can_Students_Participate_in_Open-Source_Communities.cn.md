@@ -1,5 +1,6 @@
 +++
 title = "趣说开源｜学生如何参与开源社区？"
+translationKey = "Oct_12_3_How_Can_Students_Participate_in_Open_Source_Communities"
 weight = 19
 chapter = true
 +++

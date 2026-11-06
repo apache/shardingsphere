@@ -48,7 +48,6 @@ public final class ShardingAggregationDistinctTokenGenerator implements Collecti
         for (AggregationDistinctProjection each : sqlStatementContext.getProjectionsContext().getAggregationDistinctProjections()) {
             result.add(generateSQLToken(each));
         }
-        sqlStatementContext.getProjectionsContext().setAggregationDistinctColumnsRewritten(!result.isEmpty());
         return result;
     }
     

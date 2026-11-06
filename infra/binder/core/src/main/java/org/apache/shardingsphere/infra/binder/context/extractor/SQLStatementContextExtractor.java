@@ -87,11 +87,16 @@ public final class SQLStatementContextExtractor {
             ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
             return result;
         }
-        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+        if (sqlStatementContext instanceof InsertStatementContext) {
             InsertSelectContext insertSelectContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
-            result.add(insertSelectContext.getSelectStatementContext());
-            result.addAll(insertSelectContext.getSelectStatementContext().getSubqueryContexts().values());
-            insertSelectContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            if (null != insertSelectContext) {
+                result.add(insertSelectContext.getSelectStatementContext());
+                result.addAll(insertSelectContext.getSelectStatementContext().getSubqueryContexts().values());
+                insertSelectContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            }
+            Collection<SelectStatementContext> baseSubqueries = ((InsertStatementContext) sqlStatementContext).getBaseContext().getSubqueryContexts().values();
+            result.addAll(baseSubqueries);
+            baseSubqueries.forEach(each -> result.addAll(getAllSubqueryContexts(each)));
             return result;
         }
         if (sqlStatementContext instanceof CreateViewStatementContext) {

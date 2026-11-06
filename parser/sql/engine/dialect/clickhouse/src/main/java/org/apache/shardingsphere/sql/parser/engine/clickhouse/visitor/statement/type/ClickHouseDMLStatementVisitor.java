@@ -19,13 +19,14 @@ package org.apache.shardingsphere.sql.parser.engine.clickhouse.visitor.statement
 
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.AssignmentValuesContext;
-import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.ColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.ExprContext;
+import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertColumnNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.InsertValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.ClickHouseStatementParser.SelectClauseContext;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.In
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -59,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -70,10 +73,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.BooleanLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -86,39 +92,57 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     }
     
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement insertClauseStatement = (InsertStatement) visit(null == ctx.insertValuesClause() ? ctx.insertSelectClause() : ctx.insertValuesClause());
         InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
-                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
-                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
-                .valueReference(insertValuesStatement.getValueReference().orElse(null)).returning(insertValuesStatement.getReturning().orElse(null))
-                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
-                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
-                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
-                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
-                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
-                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
-                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
-        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
-        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
-        result.getComments().addAll(insertValuesStatement.getComments());
+                .insertColumns(insertClauseStatement.getInsertColumns().orElse(null)).insertSelect(insertClauseStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertClauseStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertClauseStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertClauseStatement.getValueReference().orElse(null)).returning(insertClauseStatement.getReturning().orElse(null))
+                .output(insertClauseStatement.getOutput().orElse(null)).with(insertClauseStatement.getWith().orElse(null))
+                .multiTableInsertType(insertClauseStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertClauseStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertClauseStatement.getMultiTableConditionalInto().orElse(null)).where(insertClauseStatement.getWhere().orElse(null))
+                .exec(insertClauseStatement.getExec().orElse(null)).withTableHint(insertClauseStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertClauseStatement.getRowSetFunction().orElse(null)).ignore(insertClauseStatement.isIgnore()).replace(insertClauseStatement.isReplace())
+                .values(new LinkedList<>(insertClauseStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertClauseStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertClauseStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertClauseStatement.getVariableNames());
+        result.getComments().addAll(insertClauseStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertColumnsSegment insertColumns;
-        if (null != ctx.columnNames()) {
-            ColumnNamesContext columnNames = ctx.columnNames();
-            CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            insertColumns = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
-        } else {
-            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
+        InsertColumnsSegment insertColumns = null == ctx.insertColumnNames()
+                ? new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList())
+                : createInsertColumns(ctx.insertColumnNames());
+        List<InsertValuesSegment> values = new ArrayList<>(ctx.assignmentValues().size());
+        for (AssignmentValuesContext each : ctx.assignmentValues()) {
+            values.add((InsertValuesSegment) visit(each));
         }
-        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns)
-                .values(ctx.assignmentValues().stream().map(each -> (InsertValuesSegment) visit(each)).collect(Collectors.toList())).build();
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(values).build();
+    }
+    
+    private InsertColumnsSegment createInsertColumns(final InsertColumnNamesContext ctx) {
+        Collection<ColumnSegment> columns = new ArrayList<>(ctx.columnName().size());
+        for (ClickHouseStatementParser.ColumnNameContext each : ctx.columnName()) {
+            columns.add((ColumnSegment) visit(each));
+        }
+        return new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columns);
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public ASTNode visitInsertSelectClause(final ClickHouseStatementParser.InsertSelectClauseContext ctx) {
+        InsertColumnsSegment insertColumns = null == ctx.insertColumnNames()
+                ? new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList())
+                : createInsertColumns(ctx.insertColumnNames());
+        SelectStatement select = (SelectStatement) visit(ctx.select());
+        SubquerySegment subquery = new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), select, getOriginalText(ctx.select()));
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).insertSelect(subquery).build();
     }
     
     @Override
@@ -183,10 +207,27 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     }
     
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitSelect(final ClickHouseStatementParser.SelectContext ctx) {
-        // TODO :Unsupported for withClause.
+        Collection<String> variables = null == ctx.withClause() ? Collections.emptyList() : ((CollectionValue<String>) visit(ctx.withClause())).getValue();
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
+        result.getVariableNames().addAll(variables);
         result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public ASTNode visitWithClause(final ClickHouseStatementParser.WithClauseContext ctx) {
+        CollectionValue<String> result = new CollectionValue<>();
+        for (ClickHouseStatementParser.WithConstantContext each : ctx.withConstant()) {
+            if (null != each.parameterMarker()) {
+                ParameterMarkerValue marker = (ParameterMarkerValue) visit(each.parameterMarker());
+                getParameterMarkerSegments().add(new ParameterMarkerExpressionSegment(each.parameterMarker().getStart().getStartIndex(), each.parameterMarker().getStop().getStopIndex(),
+                        marker.getValue(), marker.getType()));
+            }
+            result.getValue().add(((IdentifierValue) visit(each.identifier())).getValue());
+        }
         return result;
     }
     
@@ -298,6 +339,12 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
             result.setAlias(alias);
             return result;
         }
+        if (projection instanceof ListExpression) {
+            ListExpression segment = (ListExpression) projection;
+            ExpressionProjectionSegment result = new ExpressionProjectionSegment(segment.getStartIndex(), segment.getStopIndex(), getOriginalText(ctx.expr()), segment);
+            result.setAlias(alias);
+            return result;
+        }
         // FIXME :For DISTINCT()
         if (projection instanceof ColumnSegment) {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), (ColumnSegment) projection);
@@ -383,6 +430,13 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitTableFactor(final ClickHouseStatementParser.TableFactorContext ctx) {
+        if (null != ctx.regularFunction()) {
+            FunctionTableSegment result = new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (FunctionSegment) visit(ctx.regularFunction()));
+            if (null != ctx.alias()) {
+                result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            return result;
+        }
         if (null != ctx.subquery()) {
             SelectStatement subquery = (SelectStatement) visit(ctx.subquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), subquery, getOriginalText(ctx.subquery()));

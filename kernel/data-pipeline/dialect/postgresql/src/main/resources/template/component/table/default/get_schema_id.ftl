@@ -15,4 +15,4 @@
   ~ limitations under the License.
   -->
 
-SELECT oid AS scid FROM pg_catalog.pg_namespace WHERE nspname = '${schemaName}';
+SELECT oid AS scid FROM pg_catalog.pg_namespace WHERE nspname = '${schemaName?replace("'", "''")}';

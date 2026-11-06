@@ -33,11 +33,13 @@ import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOID
 import org.apache.shardingsphere.database.protocol.postgresql.type.ColumnTypeOIDResolver;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.ProjectionsContext;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -109,6 +111,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -161,6 +164,7 @@ class PostgreSQLComDescribeExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expected));
+        verify(connectionSession, never()).getServerPreparedStatementRegistry();
     }
     
     @Test
@@ -171,6 +175,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "SELECT 1";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(serverPreparedStatementRegistry);
@@ -188,6 +193,48 @@ class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
+    void assertDescribePreparedStatementWithStaleCachedRowDescription() {
+        when(packet.getType()).thenReturn('S');
+        when(packet.getName()).thenReturn("S_stale");
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT * FROM t_order", sqlStatementContext, new HintValueContext(), Collections.emptyList(),
+                Collections.emptyList());
+        preparedStatement.setRowDescription(mock(PostgreSQLRowDescriptionPacket.class));
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        registry.addPreparedStatement("S_stale", preparedStatement);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
+        schema.removeTable("t_order");
+        assertThrows(StaleStatementMetadataException.class, executor::execute);
+    }
+    
+    private ShardingSphereSchema createSchema(final SQLStatementContext sqlStatementContext) {
+        TablesContext tablesContext = new TablesContext(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        tablesContext.getBoundTables().add(table);
+        return new ShardingSphereSchema("public", DATABASE_TYPE, Collections.singleton(table), Collections.emptyList());
+    }
+    
+    @Test
+    void assertDescribeInsertPreparedStatementWithStaleMetadata() {
+        when(packet.getType()).thenReturn('S');
+        when(packet.getName()).thenReturn("S_stale_insert");
+        String sql = "INSERT INTO t_order VALUES (?, 0, 'char', ?), (2, ?, ?, '')";
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.UNSPECIFIED,
+                PostgreSQLBinaryColumnType.UNSPECIFIED);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, Arrays.asList(0, 1, 2, 3));
+        ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
+        registry.addPreparedStatement("S_stale_insert", preparedStatement);
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
+        schema.removeTable("t_order");
+        assertThrows(StaleStatementMetadataException.class, executor::execute);
+        assertThat(preparedStatement.getParameterTypes(), is(Collections.nCopies(4, PostgreSQLBinaryColumnType.UNSPECIFIED)));
+    }
+    
+    @Test
     void assertDescribePreparedStatementWithExistingRowDescriptionAndUnspecifiedParameterType() throws SQLException {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_existing_row_description";
@@ -195,6 +242,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "SELECT id FROM t_order WHERE id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -228,6 +276,7 @@ class PostgreSQLComDescribeExecutorTest {
             parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -253,6 +302,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "INSERT INTO t_order VALUES (1)";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(serverPreparedStatementRegistry);
@@ -275,6 +325,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "INSERT INTO public.t_small (col1, col2) VALUES (?, ?) RETURNING *, col1 + col2 expr_sum";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingSphereTable table = new ShardingSphereTable("t_small",
                 Arrays.asList(
@@ -320,6 +371,7 @@ class PostgreSQLComDescribeExecutorTest {
             parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -350,6 +402,7 @@ class PostgreSQLComDescribeExecutorTest {
             parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -367,6 +420,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "INSERT INTO t_order VALUES (1)";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -395,6 +449,7 @@ class PostgreSQLComDescribeExecutorTest {
             parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -438,6 +493,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "SELECT id, k, c, pad FROM t_order WHERE id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
         ContextManager contextManager = mockContextManager();
@@ -482,6 +538,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         when(packet.getName()).thenReturn("foo_describe");
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn((SelectStatement) SQL_PARSER_ENGINE.parse(sql, false));
         when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
         ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
@@ -531,6 +588,47 @@ class PostgreSQLComDescribeExecutorTest {
     }
     
     @Test
+    void assertDescribeWithUnexpandedShorthandUsesPhysicalColumnCount() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        when(packet.getName()).thenReturn("foo_shorthand");
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
+        when(sqlStatementContext.getSqlStatement()).thenReturn((SelectStatement) SQL_PARSER_ENGINE.parse("SELECT * FROM t_order", false));
+        when(sqlStatementContext.containsDerivedProjections()).thenReturn(true);
+        ProjectionsContext projectionsContext = mock(ProjectionsContext.class);
+        when(projectionsContext.getExpandProjections()).thenReturn(Collections.nCopies(1, mock(Projection.class)));
+        when(projectionsContext.containsUnexpandedShorthandProjection()).thenReturn(true);
+        when(sqlStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
+        int physicalColumnCount = 4;
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.getColumnCount()).thenReturn(physicalColumnCount);
+        when(resultSetMetaData.getColumnName(anyInt())).thenAnswer(invocation -> "col_" + invocation.getArgument(0));
+        when(resultSetMetaData.getColumnType(anyInt())).thenReturn(Types.INTEGER);
+        when(resultSetMetaData.getColumnDisplaySize(anyInt())).thenReturn(11);
+        when(resultSetMetaData.getColumnTypeName(anyInt())).thenReturn("int4");
+        when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT * FROM t_order")).thenReturn(preparedStatement);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement("foo_shorthand",
+                new PostgreSQLServerPreparedStatement("SELECT * FROM t_order", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList()));
+        columnTypeOIDs = Collections.emptyMap();
+        Iterator<DatabasePacket> actual = executor.execute().iterator();
+        actual.next();
+        List<PostgreSQLColumnDescription> actualColumns = getColumnDescriptions((PostgreSQLRowDescriptionPacket) actual.next());
+        assertThat(actualColumns.size(), is(physicalColumnCount));
+    }
+    
+    @Test
     void assertDescribeSelectPreparedStatementWithNullMetaData() throws SQLException {
         when(packet.getType()).thenReturn('S');
         String statementId = "S_null_metadata";
@@ -538,6 +636,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "SELECT id, k FROM t_order";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnectionWithNullMetaData(sql);
         ContextManager contextManager = mockContextManager();
@@ -567,6 +666,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "SELECT id FROM t_order WHERE id = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         List<PostgreSQLBinaryColumnType> parameterTypes = Collections.singletonList(PostgreSQLBinaryColumnType.INT4);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
@@ -603,6 +703,7 @@ class PostgreSQLComDescribeExecutorTest {
         String sql = "SELECT id FROM t_order WHERE id = ? AND k = ?";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnectionWithParamTypes(sql, new int[]{Types.INTEGER, Types.SMALLINT}, new String[]{"int4", "int2"});
         List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);

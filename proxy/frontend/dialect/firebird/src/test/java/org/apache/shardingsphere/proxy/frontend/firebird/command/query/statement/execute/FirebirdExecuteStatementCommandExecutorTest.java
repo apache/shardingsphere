@@ -30,14 +30,18 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -87,9 +91,11 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -206,6 +212,29 @@ class FirebirdExecuteStatementCommandExecutorTest {
         assertThat(preparedStatement.getAffectedRows(), is(7L));
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
         verify(connectionSession).beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(2));
+        verify(connectionSession).finishPreparedStatementCache();
+    }
+    
+    @Test
+    void assertRejectStaleMetadataBeforeConsumingBlobParameter() {
+        TablesContext tablesContext = new TablesContext(Collections.emptyList());
+        when(updateContext.getTablesContext()).thenReturn(tablesContext);
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        tablesContext.getBoundTables().add(table);
+        ShardingSphereSchema schema = new ShardingSphereSchema("DB", DATABASE_TYPE, Collections.singleton(table), Collections.emptyList());
+        int blobHandle = 13;
+        long blobId = 17L;
+        byte[] expectedBytes = new byte[]{3, 4};
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, expectedBytes);
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
+        mockParameter(FirebirdBinaryColumnType.BLOB, blobId);
+        schema.removeTable("tbl");
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        assertThrows(StaleStatementMetadataException.class, executor::execute);
+        assertTrue(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).isPresent());
+        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).get(), is(expectedBytes));
+        verifyNoInteractions(proxyBackendHandler);
         verify(connectionSession).finishPreparedStatementCache();
     }
     

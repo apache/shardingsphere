@@ -86,6 +86,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext;
     
     public PostgreSQLBatchedStatementsExecutor(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets) {
+        preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
         jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         this.connectionSession = connectionSession;
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -144,6 +145,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
      * @throws SQLException SQL exception
      */
     public int executeBatch() throws SQLException {
+        preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         addBatchedParametersToPreparedStatements();
         return executeBatchedPreparedStatements();

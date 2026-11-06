@@ -24,16 +24,19 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
+import org.apache.shardingsphere.infra.executor.checker.PushDownSQLExecutionCheckEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -112,6 +115,8 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     
     private final ShardingSphereDatabase database;
     
+    private final boolean containsDerivedProjections;
+    
     private final ProxySQLExecutor proxySQLExecutor;
     
     private final Collection<Statement> cachedStatements = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -130,6 +135,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         database = queryContext.getUsedDatabase();
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         checkBackendReady(sqlStatementContext);
+        containsDerivedProjections = sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections();
         if (sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
             prepareCursorStatementContext(sqlStatementContext);
         }
@@ -229,6 +235,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement());
         }
+        new PushDownSQLExecutionCheckEngine().check(database, executionContext);
         proxySQLExecutor.checkExecutePrerequisites(executionContext.getSqlStatementContext());
         Collection<AdvancedProxySQLExecutor> advancedExecutors = ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class);
         List<ExecuteResult> executeResults = advancedExecutors.isEmpty()
@@ -294,10 +301,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     private List<QueryHeader> createQueryHeaders(final SQLStatementContext sqlStatementContext, final QueryResult queryResultSample) throws SQLException {
+        int columnCount = getColumnCount(sqlStatementContext, queryResultSample);
+        List<QueryHeader> result = new ArrayList<>(columnCount);
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
         ShardingSphereResultSetMetaData resultSetMetaData = new ShardingSphereResultSetMetaData(queryResultSample.getMetaData().getResultSetMetaData(), database, sqlStatementContext);
-        int columnCount = resultSetMetaData.getColumnCount();
-        List<QueryHeader> result = new ArrayList<>(columnCount);
         Optional<ResultSet> resultSetSample = cachedResultSets.stream().findFirst();
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(resultSetSample.isPresent()
@@ -305,6 +312,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                     : queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
         return result;
+    }
+    
+    private int getColumnCount(final SQLStatementContext sqlStatementContext, final QueryResult queryResultSample) throws SQLException {
+        return containsDerivedProjections
+                ? ShardingSphereResultSetUtils.getVisibleColumnCount((SelectStatementContext) sqlStatementContext, queryResultSample.getMetaData().getResultSetMetaData())
+                : queryResultSample.getMetaData().getColumnCount();
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

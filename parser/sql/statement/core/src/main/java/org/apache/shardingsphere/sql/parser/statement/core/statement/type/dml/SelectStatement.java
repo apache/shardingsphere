@@ -83,6 +83,8 @@ public final class SelectStatement extends DMLStatement {
     
     private final OutfileSegment outfile;
     
+    private final boolean intoVariables;
+    
     private final WithTableHintSegment withTableHint;
     
     private final Collection<FunctionSegment> transformSegments = new LinkedList<>();
@@ -94,7 +96,7 @@ public final class SelectStatement extends DMLStatement {
                             final HierarchicalQuerySegment hierarchicalQuery, final GroupBySegment groupBy, final HavingSegment having, final OrderBySegment orderBy,
                             final CombineSegment combine, final WithSegment with, final SubqueryType subqueryType, final LimitSegment limit, final LockSegment lock,
                             final WindowSegment window, final TableSegment into, final ModelSegment model, final OutfileSegment outfile,
-                            final WithTableHintSegment withTableHint) {
+                            final boolean intoVariables, final WithTableHintSegment withTableHint) {
         super(databaseType);
         this.projections = projections;
         this.from = from;
@@ -112,6 +114,7 @@ public final class SelectStatement extends DMLStatement {
         this.into = into;
         this.model = model;
         this.outfile = outfile;
+        this.intoVariables = intoVariables;
         this.withTableHint = withTableHint;
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
     }
@@ -206,7 +209,7 @@ public final class SelectStatement extends DMLStatement {
     public SelectStatement withSubqueryType(final SubqueryType subqueryType) {
         SelectStatement result = builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
                 .groupBy(groupBy).having(having).orderBy(orderBy).combine(combine).with(with).subqueryType(subqueryType).limit(limit).lock(lock).window(window)
-                .into(into).model(model).outfile(outfile).withTableHint(withTableHint).build();
+                .into(into).model(model).outfile(outfile).intoVariables(intoVariables).withTableHint(withTableHint).build();
         result.getTransformSegments().addAll(transformSegments);
         return result;
     }
