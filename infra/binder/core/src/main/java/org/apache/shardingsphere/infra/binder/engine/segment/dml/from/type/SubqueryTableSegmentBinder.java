@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
@@ -74,8 +75,7 @@ public final class SubqueryTableSegmentBinder {
                 binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSubquery().getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> subqueryOuterTableBinderContexts = LinkedHashMultimap.create(outerTableBinderContexts);
-        subqueryOuterTableBinderContexts.putAll(tableBinderContexts);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> subqueryOuterTableBinderContexts = new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts);
         SelectStatement boundSubSelect = new SelectStatementBinder(subqueryOuterTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
         binderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSubSelect, segment.getSubquery().getText());

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -40,6 +39,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.UnaryOperationExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.XmlFunctionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -91,16 +91,11 @@ public final class ExpressionSegmentBinder {
             return BinaryOperationExpressionBinder.bind((BinaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof ExistsSubqueryExpression) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
-            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, binderContext, newOuterTableBinderContexts);
+            return ExistsSubqueryExpressionBinder.bind((ExistsSubqueryExpression) segment, binderContext, new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts));
         }
         if (segment instanceof SubqueryExpressionSegment) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
-            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(((SubqueryExpressionSegment) segment).getSubquery(), binderContext, newOuterTableBinderContexts));
+            return new SubqueryExpressionSegment(SubquerySegmentBinder.bind(((SubqueryExpressionSegment) segment).getSubquery(), binderContext,
+                    new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts)));
         }
         if (segment instanceof InExpression) {
             return InExpressionBinder.bind((InExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
@@ -139,7 +134,7 @@ public final class ExpressionSegmentBinder {
             return OuterJoinExpressionBinder.bind((OuterJoinExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (segment instanceof QuantifySubqueryExpression) {
-            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, tableBinderContexts);
+            return QuantifySubqueryExpressionBinder.bind((QuantifySubqueryExpression) segment, binderContext, new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts));
         }
         if (segment instanceof RowExpression) {
             return RowExpressionBinder.bind((RowExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
