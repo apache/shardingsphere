@@ -128,6 +128,7 @@
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
 1. Encrypt: Fix stale encryptors leaking when altering an encrypt rule - [#39209](https://github.com/apache/shardingsphere/pull/39209)
+1. Encrypt: Fix INSERT column and value misalignment when using derived columns with generated primary keys - [#36841](https://github.com/apache/shardingsphere/issues/36841)
 1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
 1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
 1. Sharding: Fix logic table lookup for MySQL SHOW CREATE TABLE and SHOW INDEX - [#39856](https://github.com/apache/shardingsphere/pull/39856)
