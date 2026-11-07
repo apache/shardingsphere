@@ -26,7 +26,7 @@ columns:
     visible: true
   MON$PAGE_SIZE:
     caseSensitive: false
-    dataType: 5
+    dataType: 4
     generated: false
     name: MON$PAGE_SIZE
     primaryKey: false
