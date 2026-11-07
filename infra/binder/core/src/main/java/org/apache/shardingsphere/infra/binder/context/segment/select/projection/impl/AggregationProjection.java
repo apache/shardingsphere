@@ -83,7 +83,7 @@ public class AggregationProjection implements Projection {
     @Override
     public String getColumnLabel() {
         ProjectionIdentifierExtractEngine extractEngine = new ProjectionIdentifierExtractEngine(databaseType);
-        return getAlias().isPresent() && !DerivedColumn.isDerivedColumnName(getAlias().get().getValueWithQuoteCharacters())
+        return getAlias().isPresent() && (aggregationSegment.getAlias().isPresent() || !DerivedColumn.isDerivedColumnName(getAlias().get().getValueWithQuoteCharacters()))
                 ? extractEngine.getIdentifierValue(getAlias().get())
                 : extractEngine.getColumnNameFromFunction(type.name(), aggregationSegment.getExpression());
     }

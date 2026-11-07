@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -120,6 +121,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         ConnectionSession result = mock(ConnectionSession.class);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(parserEngine.parse(SQL, false));
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(result.getCurrentDatabaseName()).thenReturn("foo_db");
         when(result.getUsedDatabaseName()).thenReturn("foo_db");
         ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);

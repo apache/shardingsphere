@@ -165,6 +165,10 @@ public final class ShardingSphereSchema {
      */
     public void putTable(final ShardingSphereTable table) {
         refreshTableIdentifierContext(table);
+        ShardingSphereTable previousTable = getTable(table.getName());
+        if (null != previousTable) {
+            table.inheritBindings(previousTable);
+        }
         tableIndex.put(table.getName(), table);
         if (null != logicalTableIndex) {
             logicalTableIndex.put(table.getName(), table);
@@ -177,6 +181,10 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
+        ShardingSphereTable previousTable = getTable(tableName);
+        if (null != previousTable) {
+            previousTable.invalidateBindings();
+        }
         if (null != tableIndex.remove(tableName)) {
             if (null != logicalTableIndex) {
                 logicalTableIndex.remove(tableName);
@@ -377,4 +385,32 @@ public final class ShardingSphereSchema {
         }
         return new IdentifierIndex<>(context, IdentifierScope.LOGICAL_TABLE);
     }
+    
+    /**
+     * Preserve bindings for unchanged tables and invalidate replaced or removed tables.
+     *
+     * @param previous previous schema
+     */
+    public void inheritBindings(final ShardingSphereSchema previous) {
+        if (this == previous) {
+            return;
+        }
+        Map<String, ShardingSphereTable> tables = createTableMap(getAllTables());
+        previous.getAllTables().forEach(each -> {
+            ShardingSphereTable table = tables.get(each.getName());
+            if (null == table) {
+                each.invalidateBindings();
+            } else {
+                table.inheritBindings(each);
+            }
+        });
+    }
+    
+    /**
+     * Invalidate bindings when this schema is removed.
+     */
+    public void invalidateBindings() {
+        getAllTables().forEach(ShardingSphereTable::invalidateBindings);
+    }
+    
 }

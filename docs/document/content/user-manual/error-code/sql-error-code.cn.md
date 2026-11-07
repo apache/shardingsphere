@@ -12,6 +12,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 元数据
 
+错误 `10025` 的内部 SQLState 为 `HY000`，ShardingSphere-JDBC 和 MySQL 协议暴露该诊断；PostgreSQL 和 openGauss 通过既有映射返回 SQLState `58000`，并保留重新 prepare 的提示。
+
 | Vendor Code | SQL State | 错误信息                                                                                |
 |-------------|-----------|-------------------------------------------------------------------------------------|
 | 10000       | 42S02     | Database is required.                                                               |
@@ -30,6 +32,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 10016       | HY000     | Cluster repository persist error.                                                   |
 | 10023       | HY000     | Identifier '%s' is ambiguous, matched actual identifiers: %s.                       |
 | 10024       | HY000     | Can not resolve prepared statement metadata because %s.                             |
+| 10025       | HY000     | Table metadata changed; prepare the statement again.                                |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |

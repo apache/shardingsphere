@@ -46,7 +46,7 @@ rules:
     t_order:
       actualDataNodes: ds_0.t_order
     t_order_item:
-      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      actualDataNodes: ds_0.t_order_item_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id

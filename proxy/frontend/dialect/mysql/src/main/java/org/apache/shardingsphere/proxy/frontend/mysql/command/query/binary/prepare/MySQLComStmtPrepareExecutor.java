@@ -87,8 +87,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
                 connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
+        Collection<DatabasePacket> result = createPackets(sqlStatementContext, statementId, serverPreparedStatement);
+        sqlStatementContext.getTablesContext().checkMetadata();
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
-        return createPackets(sqlStatementContext, statementId, serverPreparedStatement);
+        return result;
     }
     
     private void failedIfContainsMultiStatements() {

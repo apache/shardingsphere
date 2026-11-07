@@ -78,6 +78,8 @@ public final class Portal {
     @Getter
     private final SQLStatement sqlStatement;
     
+    private final SQLStatementContext sqlStatementContext;
+    
     private final List<PostgreSQLValueFormat> resultFormats;
     
     private final ProxyBackendHandler proxyBackendHandler;
@@ -93,7 +95,8 @@ public final class Portal {
         this.resultFormats = resultFormats;
         this.databaseConnectionManager = databaseConnectionManager;
         String databaseName = databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
-        SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
+        sqlStatementContext = preparedStatement.getSqlStatementContext();
+        sqlStatementContext.getTablesContext().checkMetadata();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
         }
@@ -109,6 +112,7 @@ public final class Portal {
      * @throws SQLException SQL exception
      */
     public void bind() throws SQLException {
+        sqlStatementContext.getTablesContext().checkMetadata();
         responseHeader = proxyBackendHandler.execute();
     }
     

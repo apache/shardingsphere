@@ -2,6 +2,8 @@
 
 ### API Changes
 
+1. Metadata: Validate all related physical tables during explicit refresh and require re-preparation of statements bound to changed tables - [#39613](https://github.com/apache/shardingsphere/pull/39613)
+
 1. DistSQL: Add DistSQL to manage sharding key generate strategies - [#38572](https://github.com/apache/shardingsphere/pull/38572)
 1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
 1. SHARDING: Adjustment sharding api to support column-level auto-increment and global auto-increment for key generate strategy -[#38294](https://github.com/apache/shardingsphere/pull/38294)

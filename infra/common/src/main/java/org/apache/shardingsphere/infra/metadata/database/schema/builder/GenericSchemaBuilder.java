@@ -20,23 +20,34 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.revise.SchemaTableMetaDataAggregator;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicySet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodes;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtils;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierCasePolicyResolver;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -46,7 +57,9 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -93,6 +106,162 @@ public final class GenericSchemaBuilder {
             result = translate(result, material, loaderMaterials);
         }
         return revise(result, material, protocolType);
+    }
+    
+    /**
+     * Build schemas for an explicit refresh, validating all related physical tables.
+     *
+     * @param protocolType database type
+     * @param material generic schema builder material
+     * @return generic schema map
+     * @throws SQLException SQL exception
+     */
+    public static Map<String, ShardingSphereSchema> buildForRefresh(final DatabaseType protocolType, final GenericSchemaBuilderMaterial material) throws SQLException {
+        return buildForRefresh(getAllTableNames(material.getRules()), protocolType, material);
+    }
+    
+    /**
+     * Build tables for an explicit refresh, validating all related physical tables.
+     *
+     * @param tableNames table names
+     * @param protocolType database type
+     * @param material generic schema builder material
+     * @return generic schema map
+     * @throws SQLException SQL exception
+     */
+    public static Map<String, ShardingSphereSchema> buildForRefresh(final Collection<String> tableNames, final DatabaseType protocolType,
+                                                                    final GenericSchemaBuilderMaterial material) throws SQLException {
+        Properties props = new Properties();
+        props.putAll(material.getProps().getProps());
+        props.setProperty(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString());
+        GenericSchemaBuilderMaterial refreshMaterial = new GenericSchemaBuilderMaterial(material.getStorageUnits(), material.getRules(), new ConfigurationProperties(props),
+                material.getDefaultSchemaName(), material.getIdentifierContext(), material.getRevisionCandidateSchemas());
+        Collection<MetaDataLoaderMaterial> loaderMaterials = SchemaMetaDataUtils.getMetaDataLoaderMaterials(tableNames, protocolType, refreshMaterial);
+        Map<String, SchemaMetaData> schemas = loadSchemas(loaderMaterials);
+        checkRefreshInventory(tableNames, refreshMaterial, loaderMaterials, schemas);
+        checkDistributedTablesAcrossSchemas(schemas, refreshMaterial);
+        return revise(isSchemaCompatible(protocolType, refreshMaterial.getStorageUnits()) ? schemas : translate(schemas, refreshMaterial, loaderMaterials), refreshMaterial, protocolType);
+    }
+    
+    private static void checkRefreshInventory(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material,
+                                              final Collection<MetaDataLoaderMaterial> loaderMaterials, final Map<String, SchemaMetaData> schemas) {
+        Map<String, String> defaultSchemaNames = new LinkedHashMap<>(loaderMaterials.size(), 1F);
+        loaderMaterials.forEach(each -> defaultSchemaNames.putIfAbsent(each.getStorageUnitName(), each.getDefaultSchemaName()));
+        Set<DataNode> loadedTables = schemas.values().stream()
+                .flatMap(each -> each.getTables().stream().map(table -> new DataNode(table.getStorageUnitName(), each.getName(), table.getName()))).collect(Collectors.toSet());
+        DataNodes dataNodes = new DataNodes(material.getRules());
+        Map<String, IdentifierCasePolicySet> storagePolicies = tableNames.stream().allMatch(dataNodes::isDataNodeTableNameLoadedFromStorage)
+                ? Collections.emptyMap()
+                : material.getStorageUnits().entrySet().stream().filter(entry -> defaultSchemaNames.containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey,
+                        entry -> IdentifierCasePolicyResolver.resolveStorage(entry.getValue().getStorageType(), entry.getValue().getDataSource())));
+        for (String each : tableNames) {
+            if (isIndependentTable(each, material, dataNodes)) {
+                continue;
+            }
+            Map<String, IdentifierCasePolicySet> policies = dataNodes.isDataNodeTableNameLoadedFromStorage(each) ? Collections.emptyMap() : storagePolicies;
+            Collection<DataNode> requiredTables = getRequiredTables(each, material, defaultSchemaNames, schemas, dataNodes, policies);
+            Map<DataNode, Collection<DataNode>> matchingTables = getMatchingTables(requiredTables, loadedTables, policies);
+            Map<DataNode, Long> matchCounts = matchingTables.values().stream().flatMap(Collection::stream).collect(Collectors.groupingBy(table -> table, Collectors.counting()));
+            Collection<DataNode> missingTables = matchingTables.entrySet().stream()
+                    .filter(entry -> 1 != entry.getValue().size() || 1L != matchCounts.get(entry.getValue().iterator().next()))
+                    .map(Entry::getKey).collect(Collectors.toList());
+            boolean relatedTablesLoaded = requiredTables.stream().anyMatch(loadedTables::contains) || matchingTables.values().stream().anyMatch(tables -> !tables.isEmpty());
+            ShardingSpherePreconditions.checkState(missingTables.isEmpty() || !relatedTablesLoaded,
+                    () -> new RuleAndStorageMetaDataMismatchedException(String.format("Missing physical table metadata for '%s': %s", each,
+                            missingTables.stream().map(DataNode::format).collect(Collectors.joining(", ")))));
+        }
+    }
+    
+    private static boolean isIndependentTable(final String tableName, final GenericSchemaBuilderMaterial material, final DataNodes dataNodes) {
+        return dataNodes.isDataNodeTableNameLoadedFromStorage(tableName) && material.getRules().stream()
+                .noneMatch(each -> each.getAttributes().findAttribute(TableMapperRuleAttribute.class).map(optional -> optional.getDistributedTableNames().contains(tableName)).orElse(false));
+    }
+    
+    private static Collection<DataNode> getRequiredTables(final String tableName, final GenericSchemaBuilderMaterial material, final Map<String, String> defaultSchemaNames,
+                                                          final Map<String, SchemaMetaData> schemas, final DataNodes dataNodes, final Map<String, IdentifierCasePolicySet> policies) {
+        Set<DataNode> result = new LinkedHashSet<>();
+        Collection<DataNode> tableDataNodes = dataNodes.getDataNodes(tableName);
+        for (DataNode each : tableDataNodes) {
+            DatabaseType storageType = material.getStorageUnits().get(each.getDataSourceName()).getStorageType();
+            Collection<String> schemaNames = getRequiredSchemaNames(tableName, each, storageType, material, defaultSchemaNames, schemas, tableDataNodes, policies);
+            schemaNames.forEach(schemaName -> result.add(new DataNode(each.getDataSourceName(), schemaName, each.getTableName())));
+        }
+        return result;
+    }
+    
+    private static Collection<String> getRequiredSchemaNames(final String tableName, final DataNode dataNode, final DatabaseType storageType, final GenericSchemaBuilderMaterial material,
+                                                             final Map<String, String> defaultSchemaNames, final Map<String, SchemaMetaData> schemas, final Collection<DataNode> tableDataNodes,
+                                                             final Map<String, IdentifierCasePolicySet> policies) {
+        if (!new DatabaseTypeRegistry(storageType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
+            return Collections.singleton(defaultSchemaNames.get(dataNode.getDataSourceName()));
+        }
+        if (null != dataNode.getSchemaName() && !"*".equals(dataNode.getSchemaName())) {
+            return Collections.singleton(dataNode.getSchemaName());
+        }
+        Set<String> result = schemas.values().stream().filter(each -> containsPhysicalTable(each, tableDataNodes, policies)).map(SchemaMetaData::getName).collect(Collectors.toSet());
+        material.getRevisionCandidateSchemas().stream().filter(each -> each.containsTable(tableName)).map(ShardingSphereSchema::getName).forEach(result::add);
+        if (result.isEmpty()) {
+            result.add(defaultSchemaNames.get(dataNode.getDataSourceName()));
+        }
+        return result;
+    }
+    
+    private static boolean containsPhysicalTable(final SchemaMetaData schema, final Collection<DataNode> dataNodes, final Map<String, IdentifierCasePolicySet> policies) {
+        return schema.getTables().stream().anyMatch(table -> dataNodes.stream()
+                .anyMatch(dataNode -> dataNode.getDataSourceName().equals(table.getStorageUnitName())
+                        && matchesIdentifier(dataNode, IdentifierScope.TABLE, dataNode.getTableName(), table.getName(), policies)));
+    }
+    
+    private static boolean matchesIdentifier(final DataNode dataNode, final IdentifierScope scope, final String expectedName, final String actualName,
+                                             final Map<String, IdentifierCasePolicySet> policies) {
+        if (expectedName.equals(actualName)) {
+            return true;
+        }
+        IdentifierCasePolicySet policySet = policies.get(dataNode.getDataSourceName());
+        if (null == policySet) {
+            return false;
+        }
+        IdentifierCasePolicy policy = policySet.getPolicy(scope);
+        IdentifierValue identifier = new IdentifierValue(expectedName);
+        return policy.matches(actualName, identifier.getValue(), identifier.getQuoteCharacter());
+    }
+    
+    private static Map<DataNode, Collection<DataNode>> getMatchingTables(final Collection<DataNode> requiredTables, final Set<DataNode> loadedTables,
+                                                                         final Map<String, IdentifierCasePolicySet> policies) {
+        Map<DataNode, Collection<DataNode>> availableTables = loadedTables.stream().filter(each -> !requiredTables.contains(each))
+                .collect(Collectors.groupingBy(each -> getTableLookupKey(each, policies), LinkedHashMap::new, Collectors.toCollection(LinkedList::new)));
+        return requiredTables.stream().filter(each -> !loadedTables.contains(each)).collect(Collectors.toMap(each -> each,
+                each -> availableTables.getOrDefault(getTableLookupKey(each, policies), Collections.emptyList()).stream()
+                        .filter(actual -> matchesIdentifier(each, IdentifierScope.SCHEMA, each.getSchemaName(), actual.getSchemaName(), policies)
+                                && matchesIdentifier(each, IdentifierScope.TABLE, each.getTableName(), actual.getTableName(), policies))
+                        .collect(Collectors.toList()),
+                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    }
+    
+    private static DataNode getTableLookupKey(final DataNode dataNode, final Map<String, IdentifierCasePolicySet> policies) {
+        IdentifierCasePolicySet policySet = policies.get(dataNode.getDataSourceName());
+        if (null == policySet) {
+            return dataNode;
+        }
+        String schemaName = policySet.getPolicy(IdentifierScope.SCHEMA).normalizeForLookup(dataNode.getSchemaName());
+        return new DataNode(dataNode.getDataSourceName(), schemaName, policySet.getPolicy(IdentifierScope.TABLE).normalizeForLookup(dataNode.getTableName()));
+    }
+    
+    private static void checkDistributedTablesAcrossSchemas(final Map<String, SchemaMetaData> schemas, final GenericSchemaBuilderMaterial material) {
+        if (schemas.size() < 2) {
+            return;
+        }
+        Collection<ShardingSphereRule> rules = material.getRules().stream().filter(each -> each.getAttributes().findAttribute(TableMapperRuleAttribute.class).isPresent()).collect(Collectors.toList());
+        Set<String> distributedTableNames = rules.stream()
+                .flatMap(each -> each.getAttributes().getAttribute(TableMapperRuleAttribute.class).getDistributedTableNames().stream()).collect(Collectors.toSet());
+        if (distributedTableNames.isEmpty()) {
+            return;
+        }
+        SchemaMetaDataReviseEngine reviseEngine = new SchemaMetaDataReviseEngine(rules, material.getProps(), material.getRevisionCandidateSchemas());
+        Map<String, Collection<TableMetaData>> tables = schemas.values().stream().map(reviseEngine::revise).flatMap(each -> each.getTables().stream())
+                .filter(each -> distributedTableNames.contains(each.getName()))
+                .collect(Collectors.groupingBy(TableMetaData::getName, LinkedHashMap::new, Collectors.toCollection(LinkedList::new)));
+        new SchemaTableMetaDataAggregator(true).aggregate(tables);
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {

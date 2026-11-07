@@ -109,6 +109,7 @@ public final class StorageUnitManager {
         MetaDataContexts reloadMetaDataContexts;
         try {
             reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createBySwitchResource(databaseName, switchingResource, metaDataContexts);
+            reloadMetaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName), reloadMetaDataContexts.getMetaData().getProps()));
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -116,7 +117,6 @@ public final class StorageUnitManager {
             throw ex;
         }
         metaDataContexts.update(reloadMetaDataContexts);
-        metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName), reloadMetaDataContexts.getMetaData().getProps()));
         switchingResource.closeStaleDataSources();
     }
     

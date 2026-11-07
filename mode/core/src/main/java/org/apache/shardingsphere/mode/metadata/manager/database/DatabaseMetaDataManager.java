@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 
 import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Database meta data manager.
@@ -49,13 +50,15 @@ public final class DatabaseMetaDataManager {
      *
      * @param databaseName to be added database name
      */
-    public synchronized void addDatabase(final String databaseName) {
-        if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
-            return;
+    public void addDatabase(final String databaseName) {
+        synchronized (metaDataContexts) {
+            if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
+                return;
+            }
+            DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
+            metaDataContexts.getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.getMetaData().getProps());
+            metaDataContexts.update(metaDataContexts.getMetaData(), metaDataPersistFacade);
         }
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
-        metaDataContexts.getMetaData().addDatabase(databaseName, protocolType, metaDataContexts.getMetaData().getProps());
-        metaDataContexts.update(metaDataContexts.getMetaData(), metaDataPersistFacade);
     }
     
     /**
@@ -63,11 +66,13 @@ public final class DatabaseMetaDataManager {
      *
      * @param databaseName to be dropped database name
      */
-    public synchronized void dropDatabase(final String databaseName) {
-        if (!metaDataContexts.getMetaData().containsDatabase(databaseName)) {
-            return;
+    public void dropDatabase(final String databaseName) {
+        synchronized (metaDataContexts) {
+            if (!metaDataContexts.getMetaData().containsDatabase(databaseName)) {
+                return;
+            }
+            metaDataContexts.getMetaData().dropDatabase(metaDataContexts.getMetaData().getDatabase(databaseName).getName());
         }
-        metaDataContexts.getMetaData().dropDatabase(metaDataContexts.getMetaData().getDatabase(databaseName).getName());
     }
     
     /**
@@ -76,14 +81,16 @@ public final class DatabaseMetaDataManager {
      * @param databaseName to be added database name
      * @param schemaName to be added schema name
      */
-    public synchronized void addSchema(final String databaseName, final String schemaName) {
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        if (database.containsSchema(schemaName)) {
-            return;
+    public void addSchema(final String databaseName, final String schemaName) {
+        synchronized (metaDataContexts) {
+            ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+            ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+            if (database.containsSchema(schemaName)) {
+                return;
+            }
+            database.addSchema(new ShardingSphereSchema(schemaName, database.getProtocolType()));
+            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         }
-        database.addSchema(new ShardingSphereSchema(schemaName, database.getProtocolType()));
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     /**
@@ -92,18 +99,20 @@ public final class DatabaseMetaDataManager {
      * @param databaseName to be dropped database name
      * @param schemaName to be dropped schema name
      */
-    public synchronized void dropSchema(final String databaseName, final String schemaName) {
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        if (null == database || !database.containsSchema(schemaName)) {
-            return;
+    public void dropSchema(final String databaseName, final String schemaName) {
+        synchronized (metaDataContexts) {
+            ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+            ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+            if (null == database || !database.containsSchema(schemaName)) {
+                return;
+            }
+            ShardingSphereSchema schema = database.getSchema(schemaName);
+            database.dropSchema(schemaName);
+            if (schema.getAllTables().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each.getName(), database))) {
+                database.reloadRules();
+            }
+            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
         }
-        ShardingSphereSchema schema = database.getSchema(schemaName);
-        database.dropSchema(schemaName);
-        if (schema.getAllTables().stream().anyMatch(each -> TableRefreshUtils.isSingleTable(each.getName(), database))) {
-            database.reloadRules();
-        }
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
     /**
@@ -113,16 +122,20 @@ public final class DatabaseMetaDataManager {
      * @param schemaName schema name
      * @param renamedSchemaName renamed schema name
      */
-    public synchronized void renameSchema(final String databaseName, final String schemaName, final String renamedSchemaName) {
-        ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        ShardingSphereSchema schema = database.getSchema(schemaName);
-        // TODO @haoran
-        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, database.getProtocolType(), schema.getAllTables(), schema.getAllViews());
-        database.addSchema(renamedSchema);
-        database.dropSchema(schemaName);
-        database.reloadRules();
-        metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+    public void renameSchema(final String databaseName, final String schemaName, final String renamedSchemaName) {
+        synchronized (metaDataContexts) {
+            ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+            ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+            ShardingSphereSchema schema = database.getSchema(schemaName);
+            ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, database.getProtocolType(),
+                    schema.getAllTables().stream().map(each -> new ShardingSphereTable(each.getName(), each.getAllColumns(), each.getAllIndexes(), each.getAllConstraints(), each.getType()))
+                            .collect(Collectors.toList()),
+                    schema.getAllViews());
+            database.addSchema(renamedSchema);
+            database.dropSchema(schemaName);
+            database.reloadRules();
+            metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
+        }
     }
     
     /**
@@ -132,8 +145,10 @@ public final class DatabaseMetaDataManager {
      * @param schemaName schema name
      * @param toBeAlteredTable to be altered table
      */
-    public synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable toBeAlteredTable) {
-        alterTableOrView(databaseName, schemaName, toBeAlteredTable.getName(), schema -> schema.putTable(toBeAlteredTable));
+    public void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable toBeAlteredTable) {
+        synchronized (metaDataContexts) {
+            alterTableOrView(databaseName, schemaName, toBeAlteredTable.getName(), schema -> schema.putTable(toBeAlteredTable));
+        }
     }
     
     /**
@@ -143,8 +158,10 @@ public final class DatabaseMetaDataManager {
      * @param schemaName schema name
      * @param toBeAlteredView to be altered view
      */
-    public synchronized void alterView(final String databaseName, final String schemaName, final ShardingSphereView toBeAlteredView) {
-        alterTableOrView(databaseName, schemaName, toBeAlteredView.getName(), schema -> schema.putView(toBeAlteredView));
+    public void alterView(final String databaseName, final String schemaName, final ShardingSphereView toBeAlteredView) {
+        synchronized (metaDataContexts) {
+            alterTableOrView(databaseName, schemaName, toBeAlteredView.getName(), schema -> schema.putView(toBeAlteredView));
+        }
     }
     
     private void alterTableOrView(final String databaseName, final String schemaName, final String tableOrViewName, final Consumer<ShardingSphereSchema> alterAction) {
@@ -167,8 +184,10 @@ public final class DatabaseMetaDataManager {
      * @param schemaName schema name
      * @param toBeDroppedTableName to be dropped table name
      */
-    public synchronized void dropTable(final String databaseName, final String schemaName, final String toBeDroppedTableName) {
-        dropTableOrView(databaseName, schemaName, toBeDroppedTableName, true);
+    public void dropTable(final String databaseName, final String schemaName, final String toBeDroppedTableName) {
+        synchronized (metaDataContexts) {
+            dropTableOrView(databaseName, schemaName, toBeDroppedTableName, true);
+        }
     }
     
     /**
@@ -178,8 +197,10 @@ public final class DatabaseMetaDataManager {
      * @param schemaName schema name
      * @param toBeDroppedViewName to be dropped view name
      */
-    public synchronized void dropView(final String databaseName, final String schemaName, final String toBeDroppedViewName) {
-        dropTableOrView(databaseName, schemaName, toBeDroppedViewName, false);
+    public void dropView(final String databaseName, final String schemaName, final String toBeDroppedViewName) {
+        synchronized (metaDataContexts) {
+            dropTableOrView(databaseName, schemaName, toBeDroppedViewName, false);
+        }
     }
     
     private void dropTableOrView(final String databaseName, final String schemaName, final String toBeDroppedTableOrViewName, final boolean isTable) {

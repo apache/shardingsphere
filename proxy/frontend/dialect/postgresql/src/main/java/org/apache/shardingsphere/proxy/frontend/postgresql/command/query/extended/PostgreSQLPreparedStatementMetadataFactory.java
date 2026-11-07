@@ -60,6 +60,7 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
      * @throws SQLException SQL exception
      */
     public static PreparedStatement load(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> parameters) throws SQLException {
+        preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
         ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), preparedStatement.getHintValueContext())
                 .bind(preparedStatement.getSqlStatementContext().getSqlStatement());
