@@ -19,11 +19,8 @@ package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.arjuna.objectstore.StoreManager;
 import com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule;
-import com.arjuna.ats.internal.jbossatx.jta.XAResourceRecordWrappingPluginImpl;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
-import com.arjuna.ats.internal.jta.resources.arjunacore.XAResourceRecord;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
-import com.arjuna.ats.jta.common.JTAEnvironmentBean;
 import com.arjuna.ats.jta.common.jtaPropertyManager;
 import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
 import com.arjuna.common.util.propertyservice.PropertiesFactory;
@@ -38,7 +35,6 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import javax.transaction.xa.XAResource;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -55,11 +51,7 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     
     @Override
     public void init() {
-        JTAEnvironmentBean env = jtaPropertyManager.getJTAEnvironmentBean();
-        if (null == env.getXAResourceRecordWrappingPlugin()) {
-            env.setXAResourceRecordWrappingPlugin(new NarayanaXAResourceRecordWrappingPlugin());
-        }
-        transactionManager = env.getTransactionManager();
+        transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
         xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
         recoveryManagerService = new RecoveryManagerService();
         recoveryManagerService.create();
@@ -69,7 +61,7 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
         if (null != xaRecoveryModule) {
-            xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(dataSourceName, xaDataSource));
+            xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
         }
     }
     
@@ -128,18 +120,5 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     @Override
     public String getType() {
         return "Narayana";
-    }
-    
-    private static final class NarayanaXAResourceRecordWrappingPlugin extends XAResourceRecordWrappingPluginImpl {
-        
-        @Override
-        public void transcribeWrapperData(final XAResourceRecord record) {
-            XAResource xaResource = (XAResource) record.value();
-            if (xaResource instanceof SingleXAResource) {
-                record.setJndiName(((SingleXAResource) xaResource).getResourceName());
-            } else {
-                super.transcribeWrapperData(record);
-            }
-        }
     }
 }

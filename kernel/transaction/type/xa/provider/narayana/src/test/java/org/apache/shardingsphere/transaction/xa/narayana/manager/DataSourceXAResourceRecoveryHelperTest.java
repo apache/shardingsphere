@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
-import org.jboss.tm.XAResourceWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,27 +69,6 @@ class DataSourceXAResourceRecoveryHelperTest {
         assertThat(xaResources[0], sameInstance(recoveryHelper));
         verify(xaConnection).getXAResource();
         verify(xaDataSource).getXAConnection();
-    }
-    
-    @Test
-    void assertGetXAResourcesWithResourceName() {
-        recoveryHelper = new DataSourceXAResourceRecoveryHelper("foo_db.ds_0", xaDataSource);
-        XAResource[] actual = recoveryHelper.getXAResources();
-        assertThat(actual.length, is(1));
-        XAResourceWrapper actualResource = (XAResourceWrapper) actual[0];
-        assertThat(actualResource.getJndiName(), is("foo_db.ds_0"));
-        assertThat(actualResource.getResource(), sameInstance(xaResource));
-    }
-    
-    @Test
-    void assertGetXAResourcesWithCredentials() throws SQLException {
-        when(xaDataSource.getXAConnection("foo_user", "foo_password")).thenReturn(xaConnection);
-        recoveryHelper = new DataSourceXAResourceRecoveryHelper(xaDataSource, "foo_user", "foo_password");
-        XAResource[] actual = recoveryHelper.getXAResources();
-        assertThat(actual.length, is(1));
-        assertThat(actual[0], sameInstance(recoveryHelper));
-        verify(xaDataSource).getXAConnection("foo_user", "foo_password");
-        verify(xaDataSource, never()).getXAConnection();
     }
     
     @Test

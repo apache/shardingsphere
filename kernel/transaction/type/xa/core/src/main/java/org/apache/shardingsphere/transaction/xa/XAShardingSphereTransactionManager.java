@@ -77,7 +77,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
     }
     
     private XATransactionDataSource newXATransactionDataSource(final DatabaseType databaseType, final ResourceDataSource resourceDataSource) {
-        String resourceName = "Narayana".equals(xaTransactionManagerProvider.getType()) ? resourceDataSource.getOriginalName() : resourceDataSource.getUniqueResourceName();
+        String resourceName = resourceDataSource.getUniqueResourceName();
         DataSource dataSource = resourceDataSource.getDataSource();
         return new XATransactionDataSource(databaseType, resourceName, dataSource, xaTransactionManagerProvider);
     }

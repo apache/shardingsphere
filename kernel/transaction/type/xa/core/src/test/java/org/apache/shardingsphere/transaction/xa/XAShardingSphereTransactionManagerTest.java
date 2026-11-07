@@ -25,40 +25,26 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
-import javax.sql.XADataSource;
 import javax.transaction.Transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.matchesPattern;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class XAShardingSphereTransactionManagerTest {
     
@@ -85,46 +71,6 @@ class XAShardingSphereTransactionManagerTest {
     void assertRegisterXADataSource() {
         Map<String, XATransactionDataSource> cachedXADataSourceMap = getCachedDataSources();
         assertThat(cachedXADataSourceMap.size(), is(3));
-    }
-    
-    @Test
-    void assertInitWithNarayanaResourceNames() {
-        assertThat(getRegisteredResourceNames("Narayana"), contains("foo_db.ds_0", "bar_db.ds_0"));
-    }
-    
-    @Test
-    void assertInitWithAtomikosResourceNames() {
-        List<String> actual = getRegisteredResourceNames("Atomikos");
-        assertThat(actual.get(0), matchesPattern("[0-9]+-ds_0"));
-        assertThat(actual.get(1), matchesPattern("[0-9]+-ds_0"));
-        assertThat(actual.get(0), not(actual.get(1)));
-    }
-    
-    private List<String> getRegisteredResourceNames(final String providerType) {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        XATransactionManagerProvider provider = mock(XATransactionManagerProvider.class);
-        when(provider.getType()).thenReturn(providerType);
-        try (
-                HikariDataSource firstDataSource = (HikariDataSource) DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-                HikariDataSource secondDataSource = (HikariDataSource) DataSourceUtils.build(HikariDataSource.class, databaseType, "bar_ds");
-                MockedStatic<TypedSPILoader> mockedLoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS)) {
-            mockedLoader.when(() -> TypedSPILoader.getService(XATransactionManagerProvider.class, providerType)).thenReturn(provider);
-            Map<String, DataSource> dataSources = new LinkedHashMap<>(2, 1F);
-            dataSources.put("foo_db.ds_0", firstDataSource);
-            dataSources.put("bar_db.ds_0", secondDataSource);
-            Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
-            databaseTypes.put("foo_db.ds_0", databaseType);
-            databaseTypes.put("bar_db.ds_0", databaseType);
-            XAShardingSphereTransactionManager actual = new XAShardingSphereTransactionManager();
-            try {
-                actual.init(databaseTypes, dataSources, providerType);
-                ArgumentCaptor<String> actualNames = ArgumentCaptor.forClass(String.class);
-                verify(provider, times(2)).registerRecoveryResource(actualNames.capture(), any(XADataSource.class));
-                return actualNames.getAllValues();
-            } finally {
-                actual.close();
-            }
-        }
     }
     
     @Test
