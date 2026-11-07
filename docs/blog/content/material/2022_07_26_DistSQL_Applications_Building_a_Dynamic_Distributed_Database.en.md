@@ -497,7 +497,7 @@ If you have any questions or suggestions about [Apache ShardingSphere](https://s
 5. [Built-in Sharding Algorithm
 ](https://shardingsphere.apache.org/document/current/en/user-manual/common-config/builtin-algorithm/sharding/)
 6. [User Manual: DistSQL
-](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/)
+](https://shardingsphere.apache.org/document/current/en/user-manual/distsql/syntax/)
 
 ## Author
 **Jiang Longtao**

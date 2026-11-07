@@ -35,7 +35,7 @@ Apache ShardingSphere provides a wealth of system configuration properties, whic
 | metadata-identifier-case-sensitivity (?)               | String      | Metadata identifier case sensitivity. Available values are `DATABASE` and `INSENSITIVE`. `DATABASE` uses the database-specific identifier rule.                                                                                        | DATABASE        | False            |
 | groovy-inline-expression-parsing-cache-max-size (?)    | long        | Maximum size of the Groovy inline expression parsing cache.                                                                                                                                                                           | 1000            | True             |
 
-Properties can be modified online through [DistSQL#RAL](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/).
+Properties can be modified online through [DistSQL#RAL](/en/user-manual/distsql/syntax/ral/).
 Properties that support dynamic change can take effect immediately. For the ones that do not support dynamic change, the effect will be implemented after a restart.
 
 ## Sample

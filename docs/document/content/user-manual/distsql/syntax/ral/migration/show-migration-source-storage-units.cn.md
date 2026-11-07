@@ -1,0 +1,66 @@
++++
+title = "SHOW MIGRATION SOURCE STORAGE UNITS"
+weight = 5
+aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/migration/show-migration-source-storage-units/"]
++++
+
+### 描述
+
+`SHOW MIGRATION SOURCE STORAGE UNITS` 语法用于查询已经注册的数据迁移源存储单元。
+
+### 语法
+
+{{< tabs >}}
+{{% tab name="语法" %}}
+```sql
+ShowMigrationSourceStorageUnits ::=
+  'SHOW' 'MIGRATION' 'SOURCE' 'STORAGE' 'UNITS'
+```
+{{% /tab %}}
+{{% tab name="铁路图" %}}
+<iframe frameborder="0" name="diagram" id="diagram" width="100%" height="100%"></iframe>
+{{% /tab %}}
+{{< /tabs >}}
+
+### 返回值说明
+
+| 列                               | 说明             |
+|---------------------------------|----------------|
+| name                            | 存储单元名称         |
+| type                            | 存储单元类型         |
+| host                            | 存储单元地址         |
+| port                            | 存储单元端口         |
+| db                              | 数据库名称          |
+| connection_timeout_milliseconds | 连接超时时间，单位毫秒    |
+| idle_timeout_milliseconds       | 空闲超时时间，单位毫秒    |
+| max_lifetime_milliseconds       | 最大生命周期，单位毫秒    |
+| max_pool_size                   | 最大连接池大小        |
+| min_pool_size                   | 最小连接池大小        |
+| read_only                       | 存储单元是否只读       |
+| other_attributes                | 其他存储单元属性       |
+
+### 示例
+
+- 查询已注册的数据迁移源存储单元
+
+```sql
+SHOW MIGRATION SOURCE STORAGE UNITS;
+```
+
+```sql
+mysql> SHOW MIGRATION SOURCE STORAGE UNITS;
++------+-------+-----------+------+----------------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+------------------+
+| name | type  | host      | port | db             | connection_timeout_milliseconds | idle_timeout_milliseconds | max_lifetime_milliseconds | max_pool_size | min_pool_size | read_only | other_attributes |
++------+-------+-----------+------+----------------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+------------------+
+| ds_1 | MySQL | 127.0.0.1 | 3306 | migration_ds_0 |                                 |                           |                           |               |               |           |                  |
++------+-------+-----------+------+----------------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+------------------+
+1 row in set (0.01 sec)
+```
+
+### 保留字
+
+`SHOW`、`MIGRATION`、`SOURCE`、`STORAGE`、`UNITS`
+
+### 相关链接
+
+- [保留字](/cn/user-manual/distsql/syntax/reserved-word/)

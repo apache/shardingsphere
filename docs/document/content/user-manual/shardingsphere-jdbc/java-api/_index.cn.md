@@ -98,4 +98,4 @@ try (Connection connection = dataSource.getConnection(); Statement statement = c
 非查询 DistSQL 不能在事务中执行，应使用自动提交的连接执行此类语句。
 具体语句的可用性取决于类路径中的 DistSQL 执行器和运行模式。
 ShardingSphere-JDBC 的默认依赖不包含数据迁移和 CDC 所需的数据管道执行器。
-详细语法请参见 [DistSQL 参考](/cn/user-manual/shardingsphere-proxy/distsql/)。
+详细语法请参见 [DistSQL 参考](/cn/user-manual/distsql/)。
