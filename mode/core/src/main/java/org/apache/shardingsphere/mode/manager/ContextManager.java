@@ -39,8 +39,11 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorEngine;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
@@ -48,7 +51,11 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.TableMetaDataRefresherLoader;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
+import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.mode.state.StateContext;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -278,6 +285,45 @@ public final class ContextManager implements AutoCloseable {
             persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
         } else {
             persistServiceFacade.getModeFacade().getMetaDataManagerService().dropTables(database, schemaName, Collections.singleton(tableName.getValue()));
+        }
+    }
+    
+    /**
+     * Reconcile table meta data against the committed state of the table.
+     *
+     * <p>The table is created, altered or dropped in meta data according to whether it exists in the database and in meta data, so a
+     * sequence of DDL statements can be applied by its final effect instead of by replaying each statement.</p>
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param logicDataSourceName logic data source name the table is routed to
+     * @param tableName to be reconciled table name
+     * @param revisionCandidateIndexes index-name candidates from the statement that created this table, empty when it was not just created
+     */
+    public void reconcileTable(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName,
+                               final Collection<ShardingSphereIndex> revisionCandidateIndexes) {
+        MetaDataManagerPersistService metaDataManagerPersistService = persistServiceFacade.getModeFacade().getMetaDataManagerService();
+        try {
+            String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableName);
+            boolean wasAlreadyRouted = database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class)
+                    .stream().anyMatch(each -> each.findTableDataNode(schemaName, candidateTableName).isPresent());
+            Collection<ShardingSphereSchema> revisionCandidateSchemas = CreateTablePushDownMetaDataRefresher.createRevisionCandidateSchemas(database, schemaName, tableName, revisionCandidateIndexes);
+            ShardingSphereTable loadedTable = new TableMetaDataRefresherLoader().loadCreatedTable(database, logicDataSourceName, schemaName, tableName, metaDataContexts.getMetaData().getProps(),
+                    revisionCandidateSchemas);
+            if (null == loadedTable) {
+                if (!wasAlreadyRouted) {
+                    database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, candidateTableName));
+                }
+                metaDataManagerPersistService.dropTables(database, schemaName, Collections.singleton(candidateTableName));
+            } else if (database.containsSchema(schemaName) && database.getSchema(schemaName).containsTable(tableName)) {
+                metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(loadedTable));
+            } else {
+                metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
+            }
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.error("Reconcile table: {} meta data of database: {} schema: {} failed", tableName.getValue(), database.getName(), schemaName, ex);
         }
     }
     

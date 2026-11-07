@@ -95,6 +95,7 @@ class PostgreSQLDatabaseMetaDataTest {
         assertFalse(actual.isSupportMetaDataRefreshInTransaction());
         assertTrue(actual.isReturnRollbackStatementWhenCommitFailed());
         assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
+        assertTrue(actual.isSupportTransactionalDDL());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.postgresql.xa.PGXADataSource"));
     }
