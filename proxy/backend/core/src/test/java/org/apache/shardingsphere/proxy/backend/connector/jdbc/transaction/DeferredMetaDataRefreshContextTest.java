@@ -84,6 +84,19 @@ class DeferredMetaDataRefreshContextTest {
     }
     
     @Test
+    void assertReAddingTableReplacesItsStaleRevisionCandidateIndexes() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        Collection<ShardingSphereIndex> staleIndexes = Collections.singleton(new ShardingSphereIndex("stale_idx", Collections.singletonList("foo_col"), false));
+        Collection<ShardingSphereIndex> latestIndexes = Collections.singleton(new ShardingSphereIndex("latest_idx", Collections.singletonList("foo_col"), false));
+        DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"), staleIndexes);
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"), latestIndexes);
+        deferredContext.reconcile(contextManager);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"), latestIndexes);
+        verify(contextManager, never()).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"), staleIndexes);
+    }
+    
+    @Test
     void assertReconcileSkipsTableWhoseDatabaseNoLongerExists() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(null);
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();

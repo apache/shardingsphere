@@ -86,6 +86,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.SetSchemaDefinitionSegment;
@@ -694,6 +696,46 @@ class StandardDatabaseProxyConnectorTest {
             engine.execute();
             verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "schema_a", "ds_0", sourceTable);
             verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "schema_a", "ds_0", destinationTable);
+        }
+    }
+    
+    @Test
+    void assertExecuteDoesNotDeferMetaDataRefreshForForeignKeyReferencedTable() throws SQLException {
+        IdentifierValue alteredTable = new IdentifierValue("orders");
+        IdentifierValue referencedTable = new IdentifierValue("customers");
+        ConstraintDefinitionSegment constraintDefinition = new ConstraintDefinitionSegment(0, 0);
+        constraintDefinition.setReferencedTable(new SimpleTableSegment(new TableNameSegment(0, 0, referencedTable)));
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(AlterTableStatement.builder()
+                .databaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"))
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, alteredTable))).addConstraintDefinition(new AddConstraintDefinitionSegment(0, 0, constraintDefinition)).build());
+        when(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()).thenReturn(true);
+        when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("LOCAL"));
+        ShardingSphereDatabase database = mockDatabase();
+        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
+        when(database.getIdentifierContext().normalizeProtocol(any(), any())).thenReturn("foo_schema");
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, database));
+        setField(engine, "proxySQLExecutor", mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS));
+        ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
+        when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext().getRouteUnits())
+                .thenReturn(Collections.singletonList(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("orders", "orders")))));
+        AdvancedProxySQLExecutor advancedProxySQLExecutor = mock(AdvancedProxySQLExecutor.class);
+        when(advancedProxySQLExecutor.execute(any(ExecutionContext.class), any(ContextManager.class), any(ShardingSphereDatabase.class), any(DatabaseProxyConnector.class)))
+                .thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getTransactionOption())
+                .thenReturn(new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, false, false, false, true, Collections.emptyList()));
+        try (
+                MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
+                MockedConstruction<DatabaseTypeRegistry> ignoredDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.singleton(advancedProxySQLExecutor));
+            engine.execute();
+            verify(databaseConnectionManager.getDeferredMetaDataRefreshContext()).add("foo_db", "foo_schema", "ds_0", alteredTable);
+            verify(databaseConnectionManager.getDeferredMetaDataRefreshContext(), never()).add(any(), any(), any(), eq(referencedTable));
         }
     }
     

@@ -65,7 +65,9 @@ public final class DeferredMetaDataRefreshContext {
      */
     public void add(final String databaseName, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName,
                     final Collection<ShardingSphereIndex> revisionCandidateIndexes) {
-        deferredTables.add(new DeferredTable(databaseName, schemaName, logicDataSourceName, tableName, revisionCandidateIndexes));
+        DeferredTable deferredTable = new DeferredTable(databaseName, schemaName, logicDataSourceName, tableName, revisionCandidateIndexes);
+        deferredTables.remove(deferredTable);
+        deferredTables.add(deferredTable);
     }
     
     /**

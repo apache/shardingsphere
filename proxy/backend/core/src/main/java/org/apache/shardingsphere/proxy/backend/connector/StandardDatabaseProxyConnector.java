@@ -361,13 +361,29 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
      *
      * <p>{@code TablesContext} drops every table named {@code DUAL}, case-insensitively, to exclude the SQL pseudo-table
      * convention from ordinary query processing. That filter also drops a real table legitimately named {@code dual},
-     * including a DDL statement's own target, so this reads the statement's table attribute directly instead.</p>
+     * including a DDL statement's own target, so this reads the statement's own target table(s) directly instead of
+     * {@code TablesContext}.</p>
+     *
+     * <p>{@code CreateTableStatement} and {@code AlterTableStatement} additionally expose their foreign-key referenced
+     * tables through the shared {@code TableSQLStatementAttribute}, for binding purposes. Those referenced tables are
+     * never actually created, altered or dropped by this statement, so they are deliberately excluded here: deferring
+     * one would reconcile it against a route unit it was never routed to, risking an incorrect drop of its meta data.</p>
      *
      * @return tables this statement targets
      */
     private Collection<SimpleTableSegment> getDeferrableTables() {
-        return queryContext.getSqlStatementContext().getSqlStatement().getAttributes().findAttribute(TableSQLStatementAttribute.class)
-                .map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList());
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement instanceof CreateTableStatement) {
+            return Collections.singletonList(((CreateTableStatement) sqlStatement).getTable());
+        }
+        if (sqlStatement instanceof AlterTableStatement) {
+            AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
+            Collection<SimpleTableSegment> result = new LinkedList<>();
+            result.add(alterTableStatement.getTable());
+            alterTableStatement.getRenameTable().ifPresent(result::add);
+            return result;
+        }
+        return sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList());
     }
     
     private SimpleTableSegment getCreatedTable() {
