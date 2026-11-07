@@ -23,6 +23,9 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
@@ -30,16 +33,56 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeCon
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * OpenTelemetry JDBC executor callback advice executor.
  */
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
+    /**
+     * Spans started for an invocation whose completion hooks have not run yet, keyed by the execution unit of that invocation.
+     * The per-invocation key keeps concurrent and nested callbacks isolated and leaves nothing to consume for a completion hook
+     * whose {@code beforeMethod} failed before registering a span. An entry is released by the completion hooks of its own invocation,
+     * or by {@link #endAllPendingSpans()} when the plugin stops.
+     */
+    private static final Map<JDBCExecutionUnit, PendingSpan> PENDING_SPANS = new ConcurrentHashMap<>();
+    
+    /**
+     * Number of spans the current thread registered and has not completed yet. Keeping the count on the thread makes the enablement check
+     * independent of the size of {@link #PENDING_SPANS}, so spans left pending by other threads never turn a later SQL execution into a scan
+     * of the registry. The count is raised by {@code beforeMethod} and lowered by the single completion exit, {@code afterMethod}.
+     */
+    private static final ThreadLocal<Integer> PENDING_SPAN_COUNT = new ThreadLocal<>();
+    
+    /**
+     * Keep a pending invocation observable after the plugin is disabled. The executor skips every advice hook of a disabled plugin, so without this
+     * the completion hooks of an invocation whose span is still pending would never run and the span, execution unit and statement would be retained.
+     *
+     * @return true when the plugin is enabled or the current thread owns a pending span
+     */
+    @Override
+    @HighFrequencyInvocation
+    public boolean isPluginEnabled() {
+        return super.isPluginEnabled() || 0 < getPendingSpanCount();
+    }
+    
+    private static int getPendingSpanCount() {
+        Integer result = PENDING_SPAN_COUNT.get();
+        return null == result ? 0 : result;
+    }
+    
     @Override
     protected void recordExecuteInfo(final Span parentSpan, final TargetAdviceObject target, final JDBCExecutionUnit executionUnit, final boolean isTrunkThread,
                                      final ConnectionProperties connectionProps, final DatabaseType databaseType) {
+        if (!super.isPluginEnabled()) {
+            return;
+        }
         Tracer tracer = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME);
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
         if (null != parentSpan) {
@@ -53,24 +96,72 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                 .setAttribute(AttributeConstants.DB_STATEMENT, executionUnit.getExecutionUnit().getSqlUnit().getSql())
                 .setAttribute(AttributeConstants.DB_BIND_VARIABLES, executionUnit.getExecutionUnit().getSqlUnit().getParameters().toString())
                 .setAttribute(AttributeConstants.SPAN_KIND, AttributeConstants.SPAN_KIND_CLIENT);
-        target.setAttachment(spanBuilder.startSpan());
+        PENDING_SPANS.put(executionUnit, new PendingSpan(spanBuilder.startSpan()));
+        PENDING_SPAN_COUNT.set(getPendingSpanCount() + 1);
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
-        Span span = (Span) target.getAttachment();
-        if (null != span) {
-            span.setStatus(StatusCode.OK);
-            span.end();
+        PendingSpan pending = PENDING_SPANS.remove((JDBCExecutionUnit) args[0]);
+        if (null != pending) {
+            decreasePendingSpanCount();
+            endSpan(pending);
         }
+    }
+    
+    private static void decreasePendingSpanCount() {
+        int count = getPendingSpanCount() - 1;
+        if (0 < count) {
+            PENDING_SPAN_COUNT.set(count);
+        } else {
+            PENDING_SPAN_COUNT.remove();
+        }
+    }
+    
+    private static void endSpan(final PendingSpan pending) {
+        Span span = pending.getSpan();
+        if (null != pending.getThrowable()) {
+            span.setStatus(StatusCode.ERROR).recordException(pending.getThrowable());
+        } else {
+            span.setStatus(StatusCode.OK);
+        }
+        span.end();
     }
     
     @Override
     public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
-        Span span = (Span) target.getAttachment();
-        if (null != span) {
-            span.setStatus(StatusCode.ERROR).recordException(throwable);
-            span.end();
+        PendingSpan pending = PENDING_SPANS.get((JDBCExecutionUnit) args[0]);
+        if (null != pending) {
+            pending.setThrowable(throwable);
         }
+    }
+    
+    /**
+     * End and release every span that is still pending when the plugin stops, so that no span outlives the tracing it was started for.
+     * The caller thread has no pending span afterwards, so its count is cleared as well.
+     */
+    public static void endAllPendingSpans() {
+        for (Entry<JDBCExecutionUnit, PendingSpan> entry : PENDING_SPANS.entrySet()) {
+            PendingSpan pending = PENDING_SPANS.remove(entry.getKey());
+            if (null != pending) {
+                endSpan(pending);
+            }
+        }
+        PENDING_SPAN_COUNT.remove();
+    }
+    
+    /**
+     * A span started for one invocation, together with the throwable recorded by a preceding {@code onThrowing} call. The advice executor
+     * invokes {@code onThrowing} before the {@code finally} block invokes {@code afterMethod}, so {@code afterMethod} is the single exit that
+     * ends the span and applies its final status.
+     */
+    @RequiredArgsConstructor
+    @Getter
+    private static final class PendingSpan {
+        
+        private final Span span;
+        
+        @Setter
+        private Throwable throwable;
     }
 }
