@@ -39,6 +39,21 @@
         <output sql="INSERT INTO t_account_1(status, `cipher_password`, `assisted_query_password`, account_id) VALUES (?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, 1" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="insert_values_with_multiple_encrypt_columns_without_id_for_parameters" db-types="MySQL">
+        <input sql="INSERT INTO t_account(amount, status, password) VALUES (?, ?, ?)" parameters="1000, 1, aaa" />
+        <output sql="INSERT INTO t_account_1(`cipher_amount`, status, `cipher_password`, `assisted_query_password`, account_id) VALUES (?, ?, ?, ?, ?)" parameters="encrypt_1000, 1, encrypt_aaa, assisted_query_aaa, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_last_encrypt_column_with_trailing_space" db-types="MySQL">
+        <input sql="INSERT INTO t_account(status, password ) VALUES (?, ?)" parameters="1, aaa" />
+        <output sql="INSERT INTO t_account_1(status, `cipher_password`, `assisted_query_password` , account_id) VALUES (?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, 1" />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="insert_values_with_last_encrypt_column_with_trailing_comment" db-types="MySQL">
+        <input sql="INSERT INTO t_account(status, password/* column boundary */) VALUES (?, ?)" parameters="1, aaa" />
+        <output sql="INSERT INTO t_account_1(status, `cipher_password`, `assisted_query_password`/* column boundary */, account_id) VALUES (?, ?, ?, ?)" parameters="1, encrypt_aaa, assisted_query_aaa, 1" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="insert_values_with_last_encrypt_column_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account(status, password) VALUES (1, 'aaa')" />
         <output sql="INSERT INTO t_account_1(status, `cipher_password`, `assisted_query_password`, account_id) VALUES (1, 'encrypt_aaa', 'assisted_query_aaa', 1)" />
