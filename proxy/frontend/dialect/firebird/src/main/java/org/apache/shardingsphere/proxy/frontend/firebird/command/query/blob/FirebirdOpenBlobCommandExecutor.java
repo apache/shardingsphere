@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
@@ -59,6 +60,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
         long blobId = packet.getBlobId();
         byte[] blobContent = getBlobContent(blobId);
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
+        FirebirdLastObjectRegistry.getInstance().setLastNonStatementObject(connectionSession.getConnectionId());
         FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobContent, isStreamBlob(blobId));
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
     }

@@ -37,11 +37,13 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidRequestHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnpreparedStatementException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -103,6 +105,8 @@ class FirebirdDialectExceptionMapperTest {
                 Arguments.of("invalid_batch_message_format", new InvalidBatchMessageFormatException("invalid message length"), FirebirdVendorError.SQLDA_ERROR, new Object[0]),
                 Arguments.of("invalid_statement_handle", new InvalidStatementHandleException(42), FirebirdVendorError.INVALID_STATEMENT_HANDLE, new Object[0]),
                 Arguments.of("invalid_transaction_handle", new InvalidTransactionHandleException(42), FirebirdVendorError.INVALID_TRANSACTION_HANDLE, new Object[0]),
+                Arguments.of("invalid_request_handle", new InvalidRequestHandleException(42), FirebirdVendorError.INVALID_REQUEST_HANDLE, new Object[0]),
+                Arguments.of("unprepared_statement", new UnpreparedStatementException(42), FirebirdVendorError.UNPREPARED_STATEMENT, new Object[0]),
                 Arguments.of("excess_transactions", new ExcessTransactionsException(1), FirebirdVendorError.EXCESS_TRANSACTIONS, new Object[]{1}),
                 Arguments.of("invalid_parameter_value", new InvalidParameterValueException("names", "foo_charset"), FirebirdVendorError.CHARSET_NOT_FOUND, new Object[]{"foo_charset"}),
                 Arguments.of("invalid_segstr_handle", new InvalidSegstrHandleException(42), FirebirdVendorError.INVALID_SEGSTR_HANDLE, new Object[0]),

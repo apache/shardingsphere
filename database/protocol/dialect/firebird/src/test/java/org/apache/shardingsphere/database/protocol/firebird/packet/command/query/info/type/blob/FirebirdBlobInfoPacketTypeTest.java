@@ -51,7 +51,7 @@ class FirebirdBlobInfoPacketTypeTest {
     
     @Test
     void assertCreatePacket() {
-        when(payload.readInt4()).thenReturn(1, 2, 100);
+        when(payload.readInt4()).thenReturn(2, 100);
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true, false);
         when(byteBuf.readByte()).thenReturn((byte) FirebirdBlobInfoPacketType.TYPE.getCode());
