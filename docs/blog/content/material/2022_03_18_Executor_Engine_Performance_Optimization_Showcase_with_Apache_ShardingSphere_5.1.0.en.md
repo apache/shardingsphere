@@ -26,7 +26,7 @@ The updates effectively reduce the consumed database connection resources in the
 
 First, it’s better to review Apache ShardingSphere’s microkernel and the principle that explains how the Executor Engine works in the processes. As shown in the figure below, the Apache ShardingSphere microkernel includes core processes: SQL Parser, SQL Router, SQL Rewriter, SQL Executor, and Result Merger.
 
-![Processes in Apache ShardingSphere Microkernel](...)
+![Processes in Apache ShardingSphere Microkernel](https://shardingsphere.apache.org/blog/img/2022_03_18_Executor_Engine_Performance_Optimization_Showcase_with_Apache_ShardingSphere_5.1.01.png)
 
 SQL Parser Engine can parse the SQL statements entered by the user and generate SQL Statements containing contextual information.
 

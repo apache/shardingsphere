@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -140,6 +141,9 @@ class PostgreSQLDataRowPacketTest {
         return Stream.of(
                 Arguments.of("boolean_true", true, "t".getBytes(StandardCharsets.UTF_8)),
                 Arguments.of("boolean_false", false, "f".getBytes(StandardCharsets.UTF_8)),
-                Arguments.of("string_value", "value", "value".getBytes(StandardCharsets.UTF_8)));
+                Arguments.of("string_value", "value", "value".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("time_minute", LocalTime.of(12, 34), "12:34:00".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("time_midnight", LocalTime.MIDNIGHT, "00:00:00".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("time_microseconds", LocalTime.of(12, 34, 56, 123456000), "12:34:56.123456".getBytes(StandardCharsets.UTF_8)));
     }
 }

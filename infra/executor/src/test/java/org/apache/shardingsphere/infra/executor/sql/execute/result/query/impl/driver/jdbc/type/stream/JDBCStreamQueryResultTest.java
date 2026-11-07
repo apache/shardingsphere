@@ -17,7 +17,15 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream;
 
+import org.apache.shardingsphere.database.connector.core.resultset.DialectResultSetMapper;
+import org.apache.shardingsphere.database.connector.core.resultset.ResultSetTimeValueReader;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -25,31 +33,43 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class JDBCStreamQueryResultTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertNext() throws SQLException {
-        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         assertTrue(queryResult.next());
         assertFalse(queryResult.next());
     }
@@ -202,7 +222,7 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetCalendarValueWithDate() throws SQLException {
-        ResultSet result = getResultSet();
+        ResultSet result = mock(ResultSet.class);
         Calendar calendar = Calendar.getInstance();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(result);
         queryResult.next();
@@ -212,7 +232,7 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetCalendarValueWithTime() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         Calendar calendar = Calendar.getInstance();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
@@ -222,7 +242,7 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetCalendarValueWithTimestamp() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         Calendar calendar = Calendar.getInstance();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
@@ -232,14 +252,14 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetCalendarValueWithUnsupportedType() throws SQLException {
-        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(mock(ResultSet.class));
         queryResult.next();
         assertThrows(SQLException.class, () -> queryResult.getCalendarValue(1, Object.class, Calendar.getInstance()));
     }
     
     @Test
     void assertGetInputStreamWithAscii() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
         queryResult.getInputStream(1, "Ascii");
@@ -249,7 +269,7 @@ class JDBCStreamQueryResultTest {
     @SuppressWarnings("deprecation")
     @Test
     void assertGetInputStreamWithUnicode() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
         queryResult.getInputStream(1, "Unicode");
@@ -258,7 +278,7 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetInputStreamWithBinary() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
         queryResult.getInputStream(1, "Binary");
@@ -267,14 +287,14 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetInputStreamWithUnsupportedType() throws SQLException {
-        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(mock(ResultSet.class));
         queryResult.next();
         assertThrows(SQLException.class, () -> queryResult.getInputStream(1, "Unsupported Type"));
     }
     
     @Test
     void assertGetCharacterStream() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
         queryResult.getCharacterStream(1);
@@ -283,7 +303,9 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertWasNull() throws SQLException {
-        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.wasNull()).thenReturn(false, true);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
         assertFalse(queryResult.wasNull());
         queryResult.next();
@@ -292,7 +314,9 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetResultSet() throws SQLException {
-        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.wasNull()).thenReturn(false, true);
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         ResultSet actual = queryResult.getResultSet();
         assertNotNull(actual);
         actual.next();
@@ -303,28 +327,98 @@ class JDBCStreamQueryResultTest {
     
     @Test
     void assertGetJDBCResultSetWhenContained() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         assertThat(new JDBCStreamQueryResult(resultSet, true).getJDBCResultSet().orElseThrow(IllegalStateException::new), is(resultSet));
     }
     
     @Test
     void assertGetJDBCResultSetWhenNotContained() throws SQLException {
-        assertFalse(new JDBCStreamQueryResult(getResultSet()).getJDBCResultSet().isPresent());
+        assertFalse(new JDBCStreamQueryResult(mock(ResultSet.class)).getJDBCResultSet().isPresent());
     }
     
     @Test
     void assertClose() throws SQLException {
-        ResultSet resultSet = getResultSet();
+        ResultSet resultSet = mock(ResultSet.class);
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.close();
         verify(resultSet).close();
     }
     
-    private ResultSet getResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true).thenReturn(false);
-        when(result.getInt(1)).thenReturn(1);
-        when(result.wasNull()).thenReturn(false).thenReturn(true);
-        return result;
+    @Test
+    void assertGetValueWithDialectTimeReader() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        ResultSetTimeValueReader timeReader = mock(ResultSetTimeValueReader.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(timeReader));
+        LocalTime expected = LocalTime.of(12, 34, 56, 123456000);
+        when(timeReader.read(resultSet, 1)).thenReturn(expected);
+        assertThat(new JDBCStreamQueryResult(resultSet, databaseType).getValue(1, Object.class), is(expected));
+    }
+    
+    @Test
+    void assertGetNullValueFromDialectTimeReader() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.TIME);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(mock(ResultSetTimeValueReader.class)));
+        assertNull(new JDBCStreamQueryResult(resultSet, databaseType).getValue(1, Object.class));
+        verify(resultSet, never()).getObject(1);
+    }
+    
+    @Test
+    void assertGetValueWithoutDialectTimeReader() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        Time expected = new Time(Timestamp.valueOf("1970-01-02 00:00:00").getTime());
+        when(resultSet.getObject(1)).thenReturn(expected);
+        assertThat(new JDBCStreamQueryResult(resultSet, databaseType).getValue(1, Object.class), sameInstance(expected));
+    }
+    
+    @Test
+    void assertGetValueWithNativeGetter() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getTime(1)).thenReturn(Time.valueOf("12:34:56"));
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(mock(ResultSetTimeValueReader.class)));
+        assertThat(new JDBCStreamQueryResult(resultSet, databaseType).getValue(1, Time.class), is(Time.valueOf("12:34:56")));
+    }
+    
+    @Test
+    void assertGetValueWithNonTimeColumn() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ResultSetMetaData metaData = mock(ResultSetMetaData.class);
+        when(resultSet.getMetaData()).thenReturn(metaData);
+        when(metaData.getColumnType(1)).thenReturn(Types.VARCHAR);
+        when(resultSet.getObject(1)).thenReturn("foo_value");
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(mock(ResultSetTimeValueReader.class)));
+        assertThat(new JDBCStreamQueryResult(resultSet, databaseType).getValue(1, Object.class), is("foo_value"));
+    }
+    
+    @Test
+    void assertGetValueWithAssignableHint() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1)).thenReturn("foo_value");
+        DialectResultSetMapper dialectMapper = mock(DialectResultSetMapper.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectMapper));
+        when(dialectMapper.createTimeValueReader()).thenReturn(Optional.of(mock(ResultSetTimeValueReader.class)));
+        assertThat(new JDBCStreamQueryResult(resultSet, databaseType).getValue(1, Comparable.class), is("foo_value"));
+    }
+    
+    @Test
+    void assertGetJDBCResultSetWithStorageType() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.empty());
+        assertThat(new JDBCStreamQueryResult(resultSet, databaseType, true).getJDBCResultSet().get(), sameInstance(resultSet));
     }
 }

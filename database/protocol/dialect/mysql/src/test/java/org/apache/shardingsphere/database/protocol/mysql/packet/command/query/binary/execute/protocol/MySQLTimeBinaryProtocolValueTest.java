@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -100,6 +101,41 @@ class MySQLTimeBinaryProtocolValueTest {
             assertThat(actualInt4Values, is(expectedInt4Values));
         }
         verifyNoMoreInteractions(payload);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeArguments")
+    void assertWriteLocalTime(final String name, final LocalTime value, final int expectedLength, final int expectedHour, final int expectedMinute,
+                              final int expectedSecond, final long expectedMicroseconds) {
+        ByteBuf buffer = Unpooled.buffer();
+        try {
+            binaryProtocolValue.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8), value);
+            assertThat(buffer.readUnsignedByte(), is((short) expectedLength));
+            if (0 != expectedLength) {
+                assertThat(buffer.readUnsignedByte(), is((short) 0));
+                assertThat(buffer.readUnsignedIntLE(), is(0L));
+                assertThat(buffer.readUnsignedByte(), is((short) expectedHour));
+                assertThat(buffer.readUnsignedByte(), is((short) expectedMinute));
+                assertThat(buffer.readUnsignedByte(), is((short) expectedSecond));
+            }
+            if (12 == expectedLength) {
+                assertThat(buffer.readUnsignedIntLE(), is(expectedMicroseconds));
+            }
+            assertThat(buffer.readableBytes(), is(0));
+        } finally {
+            buffer.release();
+        }
+    }
+    
+    private static Stream<Arguments> localTimeArguments() {
+        return Stream.of(
+                Arguments.of("midnight", LocalTime.MIDNIGHT, 0, 0, 0, 0, 0L),
+                Arguments.of("whole-second", LocalTime.of(12, 34, 56), 8, 12, 34, 56, 0L),
+                Arguments.of("microseconds", LocalTime.of(12, 34, 56, 123456000), 12, 12, 34, 56, 123456L),
+                Arguments.of("single-microsecond", LocalTime.of(12, 34, 56, 1000), 12, 12, 34, 56, 1L),
+                Arguments.of("fractional-trailing-zero", LocalTime.of(12, 34, 56, 123450000), 12, 12, 34, 56, 123450L),
+                Arguments.of("midnight-microsecond", LocalTime.of(0, 0, 0, 1000), 12, 0, 0, 0, 1L),
+                Arguments.of("end-of-day", LocalTime.of(23, 59, 59, 999999000), 12, 23, 59, 59, 999999L));
     }
     
     private static Stream<Arguments> readArguments() {

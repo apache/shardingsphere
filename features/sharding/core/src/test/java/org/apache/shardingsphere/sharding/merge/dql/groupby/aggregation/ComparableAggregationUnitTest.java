@@ -18,8 +18,13 @@
 package org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.time.LocalTime;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,5 +51,25 @@ class ComparableAggregationUnitTest {
         comparableAggregation.merge(Collections.singletonList(10));
         comparableAggregation.merge(Collections.singletonList(5));
         assertThat(comparableAggregation.getResult(), is(10));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timeArguments")
+    void assertMergeTimeValues(final String name, final boolean asc, final LocalTime firstValue, final LocalTime secondValue, final LocalTime expected) {
+        ComparableAggregationUnit unit = new ComparableAggregationUnit(asc);
+        unit.merge(Collections.singletonList(firstValue));
+        unit.merge(Collections.singletonList(secondValue));
+        unit.merge(Collections.singletonList(firstValue));
+        assertThat(unit.getResult(), is(expected));
+    }
+    
+    private static Stream<Arguments> timeArguments() {
+        LocalTime firstValue = LocalTime.of(12, 34, 56, 123456000);
+        LocalTime secondValue = LocalTime.of(12, 34, 56, 123457000);
+        return Stream.of(
+                Arguments.of("minimum-microseconds", true, firstValue, secondValue, firstValue),
+                Arguments.of("maximum-microseconds", false, firstValue, secondValue, secondValue),
+                Arguments.of("minimum-midnight", true, firstValue, LocalTime.MIDNIGHT, LocalTime.MIDNIGHT),
+                Arguments.of("maximum-midnight", false, LocalTime.MIDNIGHT, secondValue, secondValue));
     }
 }
