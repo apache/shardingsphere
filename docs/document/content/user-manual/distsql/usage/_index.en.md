@@ -7,6 +7,9 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/usage/"]
 
 This chapter will introduce how to use DistSQL to manage resources and rules in a distributed database.
 
+The examples in this chapter use ShardingSphere-Proxy.
+For execution with ShardingSphere-JDBC and its limitations, see [Java API: Execute DistSQL](/en/user-manual/shardingsphere-jdbc/java-api/).
+
 ## Pre-work
 
 Use MySQL as example, can replace to other databases.

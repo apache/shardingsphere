@@ -34,7 +34,7 @@ ignoreTables ::=
 
 ### Supplement
 
-- `UNREGISTER STORAGE UNIT` only unregisters storage units in Proxy. The real data sources corresponding to the storage units are not unregistered;
+- `UNREGISTER STORAGE UNIT` only removes storage unit registrations from ShardingSphere and does not drop the underlying databases;
 - Storage units already used by rules can not be unregistered. `Storage unit '%s' still used by '%s'.` will be prompted when unregistering storage units used by rules;
 - When the storage units to be unregistered are only used by single table rules or broadcast rules, and the user confirms that this restriction can be ignored,
   `IGNORE SINGLE TABLES`, `IGNORE BROADCAST TABLES`, `IGNORE SINGLE, BROADCAST TABLES`, or `IGNORE BROADCAST, SINGLE TABLES` can be added to unregister the storage units;

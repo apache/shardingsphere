@@ -30,13 +30,13 @@ variableValue ::=
 
 ### 补充说明
 
-- `variableName` 为 `PROXY` 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)，DistSQL 变量名使用下划线而非连字符
+- `variableName` 为 ShardingSphere 属性，可参考[通用属性配置](/cn/user-manual/common-config/props/)和 [Proxy 属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)，DistSQL 变量名使用下划线而非连字符。
 
 - `agent_plugins_enabled` 用于设置 `agent` 插件的启用状态，默认值为 `TRUE`
 
 ### 示例
 
-- 设置 `Proxy` 属性配置
+- 设置 ShardingSphere 属性配置
 
 ```sql
 SET DIST VARIABLE sql_show = true;

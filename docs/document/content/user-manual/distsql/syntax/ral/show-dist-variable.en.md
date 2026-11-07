@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-dist-varia
 
 ### Description
 
-The `SHOW DIST VARIABLE` syntax is used to query `PROXY` system variables configuration.
+The `SHOW DIST VARIABLE` syntax is used to query ShardingSphere system variables.
 
 ### Syntax
 
@@ -37,11 +37,11 @@ variableName ::=
 
 ### Supplement
 
-- When `variableName` is not specified, all persistent `PROXY` system variables and the cached connection count are queried by default.
+- When `variableName` is not specified, all persistent ShardingSphere system variables and the cached connection count are queried by default.
 
 ### Example
 
-- Query all system variables configuration of `PROXY`
+- Query all ShardingSphere system variables
 
 ```sql
 SHOW DIST VARIABLES;
@@ -79,7 +79,7 @@ mysql> SHOW DIST VARIABLES;
 23 rows in set (0.01 sec)
 ```
 
-- Query specified system variable configuration of `PROXY`
+- Query a specified ShardingSphere system variable
 
 ```sql
 SHOW DIST VARIABLE WHERE NAME = sql_show;

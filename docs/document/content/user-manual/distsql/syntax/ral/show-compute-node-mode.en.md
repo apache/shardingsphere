@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-compute-no
 
 ### Description
 
-The `SHOW COMPUTE NODE MODE` syntax is used to query current proxy instance mode configuration information.
+The `SHOW COMPUTE NODE MODE` syntax is used to query mode configuration information for the current compute node.
 ### Syntax
 
 {{< tabs >}}
@@ -25,13 +25,13 @@ ShowComputeNodeMode ::=
 
 | Columns      | Description                        |
 |--------------|------------------------------------|
-| type         | type of proxy mode configuration   |
+| type         | compute node operating mode   |
 | repository   | type of persist repository         |
 | props        | properties of persist repository   |
 
 ### Example
 
-- Query current proxy instance mode configuration information
+- Query mode configuration information for the current compute node
 
 ```sql
 SHOW COMPUTE NODE MODE;

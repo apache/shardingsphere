@@ -66,7 +66,7 @@ privilegeType ::=
 
 ### Supplement
 
-- Before altering the storage units, please confirm that a database exists in Proxy, and execute the `use` command to select a database;
+- Before altering storage units, ensure that the target logical database exists and is selected for the current connection;
 - `ALTER STORAGE UNIT` is not allowed to change the real data source associated with this storageUnit (determined by host, port and db);
 - `ALTER STORAGE UNIT` will switch the connection pool. This operation may affect the ongoing business, please use it with caution;
 - Please confirm that the storage unit to be altered can be connected successfully, otherwise the altering will fail;

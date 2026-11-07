@@ -7,6 +7,9 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/usage/"]
 
 本章节将结合 DistSQL 的语法，并以实战的形式分别介绍如何使用 DistSQL 管理分布式数据库下的资源和规则。
 
+本章示例使用 ShardingSphere-Proxy。
+ShardingSphere-JDBC 的执行方式和使用限制请参见 [Java API：执行 DistSQL](/cn/user-manual/shardingsphere-jdbc/java-api/)。
+
 ## 前置工作
 
 以 MySQL 为例，其他数据库可直接替换。

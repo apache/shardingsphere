@@ -30,13 +30,14 @@ variableValue ::=
 
 ### Supplement
 
-- `variableName` is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of `PROXY`. Use underscores instead of hyphens in DistSQL variable names.
+- `variableName` is a ShardingSphere property; see [common properties](/en/user-manual/common-config/props/) and [Proxy properties](/en/user-manual/shardingsphere-proxy/yaml-config/props/).
+  Use underscores instead of hyphens in DistSQL variable names.
 
 - `agent_plugins_enabled` is used to set the `agent` plugin status. Its default value is `TRUE`.
 
 ### Example
 
-- Set property configuration of `Proxy`
+- Set a ShardingSphere property
 
 ```sql
 SET DIST VARIABLE sql_show = true;

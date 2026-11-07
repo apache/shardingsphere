@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker
 
 ## 描述
 
-`ENABLE/DISABLE COMPUTE NODE` 语法用于启用/禁用指定 proxy 实例。
+`ENABLE/DISABLE COMPUTE NODE` 语法用于在集群模式下启用或禁用指定计算节点。
 
 ### 语法定义
 
@@ -29,17 +29,17 @@ instanceId ::=
 
 - `instanceId` 需要通过 [SHOW COMPUTE NODES](/cn/user-manual/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) 语法查询得到
 
-- 不可禁用当前正在使用的 proxy 实例
+- 不能禁用执行该语句的当前计算节点。
 
 ### 示例
 
-- 禁用指定 proxy 实例
+- 禁用指定计算节点
 
 ```sql
 DISABLE COMPUTE NODE '734bb086-b15d-4af0-be87-2372d8b6a0cd';
 ```
 
-- 启用指定 proxy 实例
+- 启用指定计算节点
 
 ```sql
 ENABLE COMPUTE NODE '734bb086-b15d-4af0-be87-2372d8b6a0cd';

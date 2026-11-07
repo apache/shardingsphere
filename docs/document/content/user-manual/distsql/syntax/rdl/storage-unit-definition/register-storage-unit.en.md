@@ -69,7 +69,7 @@ privilegeType ::=
 
 ### Supplement
 
-- Before register storage units, please confirm that a database has been created in Proxy, and execute the `use` command to successfully select a database;
+- Before registering storage units, ensure that the target logical database exists and is selected for the current connection;
 - Confirm that the registered storage unit can be connected normally, otherwise it will not be added successfully;
 - `storageUnitName` is case-sensitive;
 - `storageUnitName` needs to be unique within the current database;
