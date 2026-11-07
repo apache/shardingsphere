@@ -27,7 +27,7 @@ coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "stan
 runtime-diagnosis = ["agents", "runtime-triage", "code-verification"]
 command-execution = ["agents", "token-efficiency", "docker-resources", "code-verification"]
 cross-cutting = ["agents", "cross-cutting-skills"]
-documentation = ["agents", "documentation-wording"]
+documentation = ["agents", "documentation-wording", "change-completion", "review-pr", "review-pr-coordination"]
 analyze-issue = ["agents", "analyze-issue", "analyze-issue-output"]
 gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
 review-pr = ["agents", "code-of-conduct", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-coordination", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
@@ -134,6 +134,13 @@ references = [".codex/harness/agents/code_handoff_hook.py"]
 [[sources]]
 id = "code-handoff-hook"
 path = ".codex/harness/agents/code_handoff_hook.py"
+kind = "harness"
+semantic = false
+references = [".codex/skills/review-pr/scripts/resolve_review_scope.py"]
+
+[[sources]]
+id = "review-scope-resolver"
+path = ".codex/skills/review-pr/scripts/resolve_review_scope.py"
 kind = "harness"
 semantic = false
 references = []
@@ -353,7 +360,7 @@ id = "review-pr"
 path = ".codex/skills/review-pr/SKILL.md"
 kind = "skill"
 semantic = true
-references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/context/change-completion.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-coordination.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
+references = ["AGENTS.md", "CODE_OF_CONDUCT.md", ".codex/context/change-completion.md", ".codex/skills/coding-standards/SKILL.md", ".codex/skills/review-pr/references/evidence-access.md", ".codex/skills/review-pr/references/high-risk-review.md", ".codex/skills/review-pr/references/sql-parser-review.md", ".codex/skills/review-pr/references/review-coordination.md", ".codex/skills/review-pr/references/review-corrections.md", ".codex/harness/agents/code_handoff_hook.py", ".codex/skills/code-implementation/references/rules/implementation.md", ".codex/skills/code-implementation/references/rules/testing.md", ".codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md", ".codex/skills/code-implementation/references/rules/non-regression.md", ".codex/skills/code-implementation/references/verification.md"]
 
 [[sources]]
 id = "review-pr-coordination"

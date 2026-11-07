@@ -20,7 +20,15 @@
 
 from __future__ import annotations
 
+import argparse
+import base64
+import binascii
+import hashlib
+import json
+import os
+import stat
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
@@ -31,6 +39,118 @@ class ChangedFile:
     status: str
     path: str
     old_path: str | None = None
+
+
+def read_file_object(path: str | Path) -> tuple[dict[str, str | None], bytes | None]:
+    source_path = Path(path)
+    try:
+        metadata = source_path.lstat()
+    except (FileNotFoundError, NotADirectoryError):
+        return {"mode": None, "sha256": None}, None
+    if stat.S_ISLNK(metadata.st_mode):
+        mode, content = "120000", os.fsencode(os.readlink(source_path))
+    elif stat.S_ISREG(metadata.st_mode):
+        mode = "100755" if metadata.st_mode & stat.S_IXUSR else "100644"
+        content = source_path.read_bytes()
+    else:
+        raise RuntimeError(f"File snapshots require a regular file or symbolic link: {path}")
+    return {"mode": mode, "sha256": hashlib.sha256(content).hexdigest()}, content
+
+
+def validate_snapshot_path(value: Any) -> str:
+    if not isinstance(value, str) or not Path(value).is_absolute() or ".." in Path(value).parts:
+        raise RuntimeError("File snapshots require absolute literal file paths without parent traversal")
+    return str(Path(value))
+
+
+def capture_file_snapshots(paths: list[str], output: str | Path, extend: str | Path | None = None) -> None:
+    normalized_paths = [validate_snapshot_path(each) for each in paths]
+    if not normalized_paths or len(normalized_paths) != len(set(normalized_paths)):
+        raise RuntimeError("File snapshot scope must be nonempty and contain no duplicate paths")
+    parent = _load_snapshot_chain(extend, set()) if extend is not None else None
+    if parent is not None and any(path in parent["objects"] for path in normalized_paths):
+        raise RuntimeError("A snapshot extension cannot replace an existing target's original object")
+    if os.path.abspath(output) in normalized_paths or parent is not None and os.path.abspath(output) in parent["objects"]:
+        raise RuntimeError("The file snapshot manifest cannot be one of its delivery targets")
+    files = []
+    for path in normalized_paths:
+        metadata, content = read_file_object(path)
+        files.append({"path": path, "base": {**metadata, "bytes_base64": base64.b64encode(content).decode("ascii") if content is not None else None}})
+    configuration = {"version": 1, "files": files} if parent is None else {"version": 2, "parent": parent["descriptor"], "files": files}
+    with os.fdopen(os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600), "w", encoding="utf-8") as output_file:
+        json.dump(configuration, output_file, indent=2, sort_keys=True)
+        output_file.write("\n")
+
+
+def load_file_snapshots(snapshot_file: str | Path) -> dict[str, tuple[dict[str, str | None], bytes | None]]:
+    return _load_snapshot_chain(snapshot_file, set())["objects"]
+
+
+def load_snapshot_root(snapshot_file: str | Path) -> dict[str, tuple[dict[str, str | None], bytes | None]]:
+    return _load_snapshot_chain(snapshot_file, set())["root"]
+
+
+def file_snapshot_parent(snapshot_file: str | Path) -> dict[str, str] | None:
+    return _load_snapshot_chain(snapshot_file, set())["parent"]
+
+
+def _load_snapshot_chain(snapshot_file: str | Path, ancestors: set[str], expected_hash: str | None = None) -> dict[str, Any]:
+    snapshot_path = str(Path(snapshot_file).absolute())
+    if snapshot_path in ancestors:
+        raise RuntimeError("File snapshot parent chain contains a cycle")
+    raw = Path(snapshot_path).read_bytes()
+    descriptor = {"path": snapshot_path, "sha256": hashlib.sha256(raw).hexdigest()}
+    if expected_hash is not None and descriptor["sha256"] != expected_hash:
+        raise RuntimeError("File snapshot parent changed from its recorded original bytes")
+    configuration = json.loads(raw.decode("utf-8"))
+    if not isinstance(configuration, dict) or type(configuration.get("version")) is not int or configuration["version"] not in {1, 2}:
+        raise RuntimeError("Unsupported file snapshot manifest")
+    if not isinstance(configuration.get("files"), list) or not configuration["files"]:
+        raise RuntimeError("File snapshot scope must be nonempty")
+    result = {}
+    parent_descriptor = None
+    root = result
+    if configuration["version"] == 2:
+        parent_descriptor = configuration.get("parent")
+        if not isinstance(parent_descriptor, dict) or not isinstance(parent_descriptor.get("path"), str) or not Path(parent_descriptor["path"]).is_absolute():
+            raise RuntimeError("A snapshot extension requires an absolute parent manifest path")
+        if not isinstance(parent_descriptor.get("sha256"), str):
+            raise RuntimeError("A snapshot extension requires its parent's original byte hash")
+        parent = _load_snapshot_chain(parent_descriptor["path"], ancestors | {snapshot_path}, parent_descriptor["sha256"])
+        result = dict(parent["objects"])
+        root = parent["root"]
+    for entry in configuration["files"]:
+        if not isinstance(entry, dict) or "path" not in entry or not isinstance(entry.get("base"), dict):
+            raise RuntimeError("File snapshots require a path and original base object")
+        path = validate_snapshot_path(entry["path"])
+        if path in result:
+            raise RuntimeError(f"File snapshot scope contains a duplicate path: {path}")
+        base = entry["base"]
+        if any(key not in base for key in ("mode", "sha256", "bytes_base64")):
+            raise RuntimeError(f"File snapshots require original bytes, mode, and hash: {path}")
+        if base["mode"] is None and base["sha256"] is None and base["bytes_base64"] is None:
+            result[path] = ({"mode": None, "sha256": None}, None)
+            continue
+        if not isinstance(base["mode"], str) or base["mode"] not in {"100644", "100755", "120000"} or not isinstance(base["bytes_base64"], str):
+            raise RuntimeError(f"Invalid original file snapshot object: {path}")
+        try:
+            content = base64.b64decode(base["bytes_base64"], validate=True)
+        except (ValueError, binascii.Error) as ex:
+            raise RuntimeError(f"Invalid original file snapshot bytes: {path}") from ex
+        if hashlib.sha256(content).hexdigest() != base["sha256"]:
+            raise RuntimeError(f"Original file snapshot hash does not match its bytes: {path}")
+        result[path] = ({"mode": base["mode"], "sha256": base["sha256"]}, content)
+    return {"objects": result, "root": root, "parent": parent_descriptor, "descriptor": descriptor}
+
+
+def resolve_snapshot_changes(snapshots: dict[str, tuple[dict[str, str | None], bytes | None]]) -> list[ChangedFile]:
+    result = []
+    for path, (base, _) in snapshots.items():
+        candidate, _ = read_file_object(path)
+        if base != candidate:
+            status = "A" if base["mode"] is None else "D" if candidate["mode"] is None else "M"
+            result.append(ChangedFile(status=status, path=path))
+    return result
 
 
 def run_git(args: list[str], repo_root: Path, allow_empty: bool = False) -> str:
@@ -127,3 +247,25 @@ def compare_github_files(local_paths: Iterable[str], github_files_path: str | No
         "only_in_github": only_in_github,
         "only_in_local": only_in_local,
     }
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Capture original delivery files for review without Git.")
+    commands = parser.add_subparsers(dest="command", required=True)
+    capture = commands.add_parser("capture", help="Capture original bytes before changing delivery files")
+    capture.add_argument("--files", required=True, help="Absolute delivery paths, one per line")
+    capture.add_argument("--output", required=True, help="New private snapshot manifest path")
+    capture.add_argument("--extend", help="Immutable parent manifest; new targets require separate task authorization")
+    args = parser.parse_args()
+    try:
+        paths = [line for line in Path(args.files).read_text(encoding="utf-8").splitlines() if line]
+        capture_file_snapshots(paths, args.output, extend=args.extend)
+    except (OSError, RuntimeError, ValueError) as ex:
+        print(f"error: {ex}", file=sys.stderr)
+        return 1
+    print(f"snapshot={os.path.abspath(args.output)} files={len(paths)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
