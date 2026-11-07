@@ -113,6 +113,7 @@
         <jakarta.jms-api.version>2.0.3</jakarta.jms-api.version>
         <jakarta.persistence-api.version>2.2.3</jakarta.persistence-api.version>
         <jakarta.validation-api.version>2.0.2</jakarta.validation-api.version>
+        <javax.transaction-api.version>1.3</javax.transaction-api.version>
         <bval.version>2.0.6</bval.version>
         
         <httpcore.version>4.4.15</httpcore.version>
@@ -359,6 +360,11 @@
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
                 <version>${jakarta.validation-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.transaction</groupId>
+                <artifactId>javax.transaction-api</artifactId>
+                <version>${javax.transaction-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.bval</groupId>
