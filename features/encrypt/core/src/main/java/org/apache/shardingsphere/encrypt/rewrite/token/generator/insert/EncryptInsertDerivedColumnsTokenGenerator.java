@@ -99,12 +99,12 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
     }
     
     private InsertColumnsToken mergeGeneratedKeyColumn(final int startIndex, final List<String> derivedColumnNames, final QuoteCharacter quoteCharacter, final String generatedKeyColumnName) {
-        Iterator<SQLToken> previousSQLTokensIterator = previousSQLTokens.iterator();
-        SQLToken generatedKeyColumnToken;
-        do {
-            generatedKeyColumnToken = previousSQLTokensIterator.next();
-        } while (!(generatedKeyColumnToken instanceof GeneratedKeyInsertColumnToken));
-        previousSQLTokensIterator.remove();
+        Iterator<SQLToken> iterator = previousSQLTokens.iterator();
+        SQLToken currentToken = iterator.next();
+        while (!(currentToken instanceof GeneratedKeyInsertColumnToken)) {
+            currentToken = iterator.next();
+        }
+        iterator.remove();
         derivedColumnNames.replaceAll(quoteCharacter::wrap);
         derivedColumnNames.add(generatedKeyColumnName);
         return new InsertColumnsToken(startIndex, derivedColumnNames);
