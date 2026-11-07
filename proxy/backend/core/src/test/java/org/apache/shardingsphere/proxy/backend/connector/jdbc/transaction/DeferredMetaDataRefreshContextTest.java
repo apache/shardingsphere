@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -45,8 +49,8 @@ class DeferredMetaDataRefreshContextTest {
         deferredContext.add("foo_db", "foo_schema", "ds_0", originalTable);
         deferredContext.add("foo_db", "foo_schema", "ds_0", renamedTable);
         deferredContext.reconcile(contextManager);
-        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", originalTable);
-        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", renamedTable);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", originalTable, Collections.emptyList());
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", renamedTable, Collections.emptyList());
     }
     
     @Test
@@ -56,7 +60,7 @@ class DeferredMetaDataRefreshContextTest {
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
         deferredContext.add("foo_db", "foo_schema", "ds_0", quotedTable);
         deferredContext.reconcile(contextManager);
-        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", quotedTable);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", quotedTable, Collections.emptyList());
     }
     
     @Test
@@ -66,7 +70,17 @@ class DeferredMetaDataRefreshContextTest {
         deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
         deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
         deferredContext.reconcile(contextManager);
-        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"));
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"), Collections.emptyList());
+    }
+    
+    @Test
+    void assertReconcilePassesRevisionCandidateIndexesForCreatedTable() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        Collection<ShardingSphereIndex> revisionCandidateIndexes = Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.singletonList("foo_col"), false));
+        DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
+        deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"), revisionCandidateIndexes);
+        deferredContext.reconcile(contextManager);
+        verify(contextManager).reconcileTable(database, "foo_schema", "ds_0", new IdentifierValue("t_order"), revisionCandidateIndexes);
     }
     
     @Test
@@ -75,7 +89,7 @@ class DeferredMetaDataRefreshContextTest {
         DeferredMetaDataRefreshContext deferredContext = new DeferredMetaDataRefreshContext();
         deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
         deferredContext.reconcile(contextManager);
-        verify(contextManager, never()).reconcileTable(any(), anyString(), anyString(), any());
+        verify(contextManager, never()).reconcileTable(any(), anyString(), anyString(), any(), any());
     }
     
     @Test
@@ -84,6 +98,6 @@ class DeferredMetaDataRefreshContextTest {
         deferredContext.add("foo_db", "foo_schema", "ds_0", new IdentifierValue("t_order"));
         deferredContext.clear();
         deferredContext.reconcile(contextManager);
-        verify(contextManager, never()).reconcileTable(any(ShardingSphereDatabase.class), anyString(), anyString(), any(IdentifierValue.class));
+        verify(contextManager, never()).reconcileTable(any(ShardingSphereDatabase.class), anyString(), anyString(), any(IdentifierValue.class), any());
     }
 }

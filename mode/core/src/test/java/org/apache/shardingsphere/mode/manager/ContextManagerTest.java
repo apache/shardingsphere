@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
@@ -391,7 +392,26 @@ class ContextManagerTest {
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
-            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"));
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"), Collections.emptyList());
+        }
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).alterTables(database, "foo_schema", Collections.singleton(table));
+    }
+    
+    @Test
+    void assertReconcileTablePassesRevisionCandidateIndexesForCreatedTable() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
+        when(database.getSchema("foo_schema").containsTable(any(IdentifierValue.class))).thenReturn(true);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("foo_tbl");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereIndex revisionCandidateIndex = new ShardingSphereIndex("foo_idx_with_a_long_logical_name", Collections.singletonList("foo_col"), false);
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), argThat((GenericSchemaBuilderMaterial material) -> material
+                    .getRevisionCandidateSchemas().stream().flatMap(each -> each.getAllTables().stream()).flatMap(each -> each.getAllIndexes().stream())
+                    .anyMatch(each -> "foo_idx_with_a_long_logical_name".equals(each.getName()))))).thenReturn(Collections.singletonMap("foo_schema", schema));
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"), Collections.singletonList(revisionCandidateIndex));
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).alterTables(database, "foo_schema", Collections.singleton(table));
     }
@@ -405,7 +425,7 @@ class ContextManagerTest {
         when(ruleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.empty());
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenReturn(Collections.emptyMap());
-            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"));
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"), Collections.emptyList());
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
         verify(ruleAttribute).remove("foo_schema", "foo_tbl");
@@ -420,7 +440,7 @@ class ContextManagerTest {
         when(ruleAttribute.findTableDataNode("foo_schema", "foo_tbl")).thenReturn(Optional.of(mock(DataNode.class)));
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenReturn(Collections.emptyMap());
-            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"));
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("FOO_TBL"), Collections.emptyList());
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).dropTables(database, "foo_schema", Collections.singleton("foo_tbl"));
         verify(ruleAttribute, never()).remove(anyString(), anyString());
@@ -433,7 +453,7 @@ class ContextManagerTest {
         when(database.getIdentifierContext()).thenReturn(DatabaseIdentifierContextFactory.createDefault());
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anyCollection(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class))).thenThrow(SQLException.class);
-            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"));
+            contextManager.reconcileTable(database, "foo_schema", "foo_ds", new IdentifierValue("foo_tbl"), Collections.emptyList());
         }
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).dropTables(any(), any(), any());
         verify(persistServiceFacade.getModeFacade().getMetaDataManagerService(), never()).alterTables(any(), any(), any());

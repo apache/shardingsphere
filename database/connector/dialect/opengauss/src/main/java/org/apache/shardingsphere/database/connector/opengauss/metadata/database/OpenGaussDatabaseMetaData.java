@@ -88,8 +88,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(true, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, false, true, true, false,
-                Collections.singleton("org.opengauss.xa.PGXADataSource"));
+        return new DialectTransactionOption(true, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, true, false, true, true, false, Collections.singleton("org.opengauss.xa.PGXADataSource"));
     }
     
     @Override

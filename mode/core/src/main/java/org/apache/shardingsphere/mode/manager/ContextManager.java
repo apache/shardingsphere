@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericSchemaManager;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
@@ -50,6 +51,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResource;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.TableMetaDataRefresherLoader;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
@@ -296,15 +298,18 @@ public final class ContextManager implements AutoCloseable {
      * @param schemaName schema name
      * @param logicDataSourceName logic data source name the table is routed to
      * @param tableName to be reconciled table name
+     * @param revisionCandidateIndexes index-name candidates from the statement that created this table, empty when it was not just created
      */
-    public void reconcileTable(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName) {
+    public void reconcileTable(final ShardingSphereDatabase database, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName,
+                               final Collection<ShardingSphereIndex> revisionCandidateIndexes) {
         MetaDataManagerPersistService metaDataManagerPersistService = persistServiceFacade.getModeFacade().getMetaDataManagerService();
         try {
             String candidateTableName = TableRefreshUtils.getTableLoadCandidateName(database, tableName);
             boolean wasAlreadyRouted = database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class)
                     .stream().anyMatch(each -> each.findTableDataNode(schemaName, candidateTableName).isPresent());
+            Collection<ShardingSphereSchema> revisionCandidateSchemas = CreateTablePushDownMetaDataRefresher.createRevisionCandidateSchemas(database, schemaName, tableName, revisionCandidateIndexes);
             ShardingSphereTable loadedTable = new TableMetaDataRefresherLoader().loadCreatedTable(database, logicDataSourceName, schemaName, tableName, metaDataContexts.getMetaData().getProps(),
-                    database.getAllSchemas());
+                    revisionCandidateSchemas);
             if (null == loadedTable) {
                 if (!wasAlreadyRouted) {
                     database.getRuleMetaData().getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.remove(schemaName, candidateTableName));

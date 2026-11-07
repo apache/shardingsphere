@@ -65,6 +65,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -355,7 +356,7 @@ class ProxyBackendTransactionManagerTest {
         ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager(transactionManager);
         SQLException actual = assertThrows(SQLException.class, transactionManager::commit);
-        assertThat(actual, is(closeException));
+        assertThat(actual, sameInstance(closeException));
         verify(deferredMetaDataRefreshContext).reconcile(ProxyContext.getInstance().getContextManager());
         verify(deferredMetaDataRefreshContext).clear();
     }
@@ -372,7 +373,7 @@ class ProxyBackendTransactionManagerTest {
         SQLException commitFailure = new SQLException("commit failed on one of several connections");
         doThrow(commitFailure).when(localTransactionManager).commit();
         SQLException actual = assertThrows(SQLException.class, transactionManager::commit);
-        assertThat(actual, is(commitFailure));
+        assertThat(actual, sameInstance(commitFailure));
         verify(deferredMetaDataRefreshContext).clear();
     }
     
