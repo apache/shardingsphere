@@ -35,7 +35,7 @@ Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `gl
 | metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `DATABASE` 和 `INSENSITIVE`。`DATABASE` 表示使用数据库特定的标识符规则。                                            | DATABASE        | 否      |
 | groovy-inline-expression-parsing-cache-max-size (?) | long    | Groovy 行表达式解析缓存的最大容量。                                                                                                      | 1000            | 是      |
 
-属性配置可以通过 [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/) 在线修改。
+属性配置可以通过 [DistSQL#RAL](/cn/user-manual/distsql/syntax/ral/) 在线修改。
 其中支持动态修改的属性立即生效，不支持动态修改的属性在重启后生效。
 
 ## 配置示例

@@ -81,8 +81,8 @@ sh bin/start.sh
 
 6. 按需配置 CDC 任务同步配置
 
-完整 DistSQL 语法请参考 [SHOW STREAMING RULE](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/show-streaming-rule/)
-和 [ALTER STREAMING RULE](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/streaming/alter-streaming-rule/)。
+完整 DistSQL 语法请参考 [SHOW STREAMING RULE](/cn/user-manual/distsql/syntax/ral/streaming/show-streaming-rule/)
+和 [ALTER STREAMING RULE](/cn/user-manual/distsql/syntax/ral/streaming/alter-streaming-rule/)。
 
 6.1. 查询配置。
 

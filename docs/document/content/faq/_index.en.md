@@ -105,7 +105,7 @@ Answer:
 
 1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `Database` or does not register a `Storage Unit`, ShardingSphere-Proxy cannot execute SQL.
 2. It is recommended to create `database` and register `storage unit` first, and then use third-party database tools to connect.
-3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) the details about `storage unit`.
+3. Please refer to [Related introduction](/en/user-manual/distsql/syntax/rdl/storage-unit-definition/) the details about `storage unit`.
 
 ## Sharding
 
@@ -127,7 +127,7 @@ To obtain integer division result, A/B needs to be modified as A.intdiv(B).
 
 Answer:
 
-A table that does not use sharding is called single table in ShardingSphere, and you can use [LOAD statements](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/) or [SINGLE rule](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/rules/single/) to configure the single table that needs to be loaded.
+A table that does not use sharding is called single table in ShardingSphere, and you can use [LOAD statements](https://shardingsphere.apache.org/document/current/en/user-manual/distsql/syntax/rdl/rule-definition/single-table/load-single-table/) or [SINGLE rule](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-jdbc/yaml-config/rules/single/) to configure the single table that needs to be loaded.
 
 ### Why are binding tables rejected when my table names already end with digits?
 
@@ -223,7 +223,7 @@ For more YAML configuration of loading single table, please refer to [Single](/e
 LOAD SINGLE TABLE *.*;
 ```
 
-For more LOAD single table DistSQL, please refer to [Load Single Table](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/).
+For more LOAD single table DistSQL, please refer to [Load Single Table](/en/user-manual/distsql/syntax/rdl/rule-definition/single-table/load-single-table/).
 
 ## DistSQL
 
@@ -233,7 +233,7 @@ Answer:
 
 1. If you need to customize JDBC connection properties, please take the `urlSource` way to define `dataSource`.
 2. ShardingSphere presets necessary connection pool properties, such as `maxPoolSize`, `idleTimeout`, etc. If you need to add or overwrite the properties, please specify it with `PROPERTIES` in the `dataSource`.
-3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/) for above rules.
+3. Please refer to [Related introduction](/en/user-manual/distsql/syntax/rdl/storage-unit-definition/) for above rules.
 
 ### How to solve ` Storage unit [xxx] is still used by [SingleRule].` exception when dropping a data source using DistSQL?
 

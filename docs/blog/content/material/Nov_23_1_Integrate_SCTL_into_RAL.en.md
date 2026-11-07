@@ -371,7 +371,7 @@ b. Get readwrite_splitting hint default and sharding hint default; use `show rea
 RAL not only contains all the SCTL functions, but also provides other useful administrational features including elastic scaling, instance ciruit-breaker, disabling read database for read-write splitting, etc. 
 
 For more details about RAL, please consult the relevant documentation: 
-[https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/]()
+[https://shardingsphere.apache.org/document/current/cn/user-manual/distsql/syntax/ral/]()
 
 ### Conclusion
 

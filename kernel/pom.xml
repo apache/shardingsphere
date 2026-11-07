@@ -37,6 +37,5 @@
         <module>time-service</module>
         <module>global-clock</module>
         <module>schedule</module>
-        <module>data-pipeline</module>
     </modules>
 </project>
