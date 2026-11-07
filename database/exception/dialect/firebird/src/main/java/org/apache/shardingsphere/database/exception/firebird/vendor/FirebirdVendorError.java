@@ -68,6 +68,8 @@ public enum FirebirdVendorError implements VendorError {
     
     BATCH_PARAMETERS_REQUIRED(FirebirdState.BATCH_PARAMETERS_REQUIRED, ISCConstants.isc_batch_param, "Statement used in batch must have parameters"),
     
+    INVALID_BATCH_STATEMENT_TYPE(FirebirdState.INVALID_BATCH_STATEMENT_TYPE, ISCConstants.isc_batch_type, "Invalid type of statement used in batch"),
+    
     SQLDA_ERROR(FirebirdState.SQLDA_ERROR, ISCConstants.isc_dsql_sqlda_err, ""),
     
     INVALID_SEGSTR_HANDLE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_handle, "invalid BLOB handle"),
