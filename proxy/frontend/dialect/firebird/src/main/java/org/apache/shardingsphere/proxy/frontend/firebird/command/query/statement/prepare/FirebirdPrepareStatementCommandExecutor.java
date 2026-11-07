@@ -66,12 +66,15 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdS
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -365,11 +368,26 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
         int columnCount = 0;
         for (ColumnSegment columnSegment : affectedColumns) {
-            ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
-            ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
+            String tableName = null != columnSegment.getColumnBoundInfo() && null != columnSegment.getColumnBoundInfo().getOriginalTable()
+                    ? columnSegment.getColumnBoundInfo().getOriginalTable().getValue()
+                    : "";
+            if (tableName.isEmpty()) {
+                Collection<String> tableNames = getTableNames(sqlStatementContext);
+                tableName = tableNames.isEmpty() ? "" : tableNames.iterator().next();
+            }
+            ShardingSphereTable table = tableName.isEmpty() ? null : getTable(tableName, database, schema);
+            String columnName = null != columnSegment.getColumnBoundInfo() && null != columnSegment.getColumnBoundInfo().getOriginalColumn()
+                    ? columnSegment.getColumnBoundInfo().getOriginalColumn().getValue()
+                    : columnSegment.getIdentifier().getValue();
+            ShardingSphereColumn column = null == table ? null : table.getColumn(columnName);
+            if (null != table && null != column) {
+                processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
+            } else {
+                processCustomColumn(null, null, null, 12, describeColumns, requestedItems, ++columnCount);
+            }
         }
-        for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
+        int unassociatedCount = Math.max(0, parametersCount - affectedColumns.size());
+        for (int i = 0; i < unassociatedCount; i++) {
             processCustomColumn(null, null, null, 12, describeColumns, requestedItems, ++columnCount);
         }
     }
@@ -411,7 +429,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         Collection<ColumnSegment> result = new LinkedList<>();
         if (sqlStatementContext instanceof UpdateStatementContext) {
             for (ColumnAssignmentSegment segment : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
-                if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
+                int paramCount = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(segment.getValue())).size();
+                for (int i = 0; i < paramCount; i++) {
                     result.add(segment.getColumns().get(0));
                 }
             }
@@ -447,17 +466,76 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         appendCombineWhereSegments(branch, whereSegments);
     }
     
-    private boolean processExpr(final ExpressionSegment expr, final Collection<ColumnSegment> affectedColumns) {
-        if (!(expr instanceof BinaryOperationExpression)) {
-            return expr instanceof ParameterMarkerExpressionSegment;
+    private void processExpr(final ExpressionSegment expr, final Collection<ColumnSegment> affectedColumns) {
+        if (expr instanceof BinaryOperationExpression) {
+            BinaryOperationExpression binary = (BinaryOperationExpression) expr;
+            String operator = binary.getOperator();
+            if ("AND".equalsIgnoreCase(operator) || "OR".equalsIgnoreCase(operator)) {
+                processExpr(binary.getLeft(), affectedColumns);
+                processExpr(binary.getRight(), affectedColumns);
+                return;
+            }
+            Collection<ColumnSegment> leftColumns = ExpressionExtractor.extractColumns(binary.getLeft(), false);
+            Collection<ColumnSegment> rightColumns = ExpressionExtractor.extractColumns(binary.getRight(), false);
+            List<ParameterMarkerExpressionSegment> leftParams = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(binary.getLeft()));
+            List<ParameterMarkerExpressionSegment> rightParams = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(binary.getRight()));
+            if (!leftColumns.isEmpty() && rightColumns.isEmpty()) {
+                ColumnSegment column = leftColumns.iterator().next();
+                for (int i = 0; i < leftParams.size(); i++) {
+                    affectedColumns.add(column);
+                }
+                for (int i = 0; i < rightParams.size(); i++) {
+                    affectedColumns.add(column);
+                }
+                return;
+            }
+            if (leftColumns.isEmpty() && !rightColumns.isEmpty()) {
+                ColumnSegment column = rightColumns.iterator().next();
+                for (int i = 0; i < leftParams.size(); i++) {
+                    affectedColumns.add(column);
+                }
+                for (int i = 0; i < rightParams.size(); i++) {
+                    affectedColumns.add(column);
+                }
+                return;
+            }
+            if (!leftColumns.isEmpty() && !rightColumns.isEmpty()) {
+                ColumnSegment leftColumn = leftColumns.iterator().next();
+                for (int i = 0; i < leftParams.size(); i++) {
+                    affectedColumns.add(leftColumn);
+                }
+                ColumnSegment rightColumn = rightColumns.iterator().next();
+                for (int i = 0; i < rightParams.size(); i++) {
+                    affectedColumns.add(rightColumn);
+                }
+                return;
+            }
         }
-        BinaryOperationExpression binary = (BinaryOperationExpression) expr;
-        processExpr(binary.getLeft(), affectedColumns);
-        boolean rightIsParam = processExpr(binary.getRight(), affectedColumns);
-        if (rightIsParam && binary.getLeft() instanceof ColumnSegment) {
-            affectedColumns.add((ColumnSegment) binary.getLeft());
+        if (expr instanceof InExpression) {
+            InExpression inExpr = (InExpression) expr;
+            Collection<ColumnSegment> leftColumns = ExpressionExtractor.extractColumns(inExpr.getLeft(), false);
+            if (!leftColumns.isEmpty()) {
+                ColumnSegment column = leftColumns.iterator().next();
+                List<ParameterMarkerExpressionSegment> params = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(inExpr.getRight()));
+                for (int i = 0; i < params.size(); i++) {
+                    affectedColumns.add(column);
+                }
+            }
+            return;
         }
-        return false;
+        if (expr instanceof BetweenExpression) {
+            BetweenExpression betweenExpr = (BetweenExpression) expr;
+            Collection<ColumnSegment> leftColumns = ExpressionExtractor.extractColumns(betweenExpr.getLeft(), false);
+            if (!leftColumns.isEmpty()) {
+                ColumnSegment column = leftColumns.iterator().next();
+                List<ParameterMarkerExpressionSegment> params = new ArrayList<>();
+                params.addAll(ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(betweenExpr.getBetweenExpr())));
+                params.addAll(ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(betweenExpr.getAndExpr())));
+                for (int i = 0; i < params.size(); i++) {
+                    affectedColumns.add(column);
+                }
+            }
+        }
     }
     
     private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
