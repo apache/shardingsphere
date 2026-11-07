@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.BlrConstants;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +35,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -90,6 +94,48 @@ class FirebirdExecuteStatementPacketTest {
         FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(actual.getParameterTypes(), is(Collections.singletonList(FirebirdBinaryColumnType.TIMESTAMP_TZ)));
         assertThat(actual.getParameterValues(), is(Collections.singletonList(OffsetDateTime.parse("2024-01-02T00:15:30.123400+02:00"))));
+    }
+    
+    @Test
+    void assertExecuteStatementPacketWithOctetsParameters() {
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(4).writeByte(0)
+                .writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
+                .writeByte(BlrConstants.blr_end);
+        FirebirdPacketPayload packetPayload = createExecutePayload(blr);
+        packetPayload.writeBytes(new byte[]{(byte) 0xab, 0x00, 0x01, 0x02});
+        packetPayload.writeBuffer(new byte[]{0x00, (byte) 0xff, (byte) 0x80});
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getParameterTypes(), is(Arrays.asList(FirebirdBinaryColumnType.TEXT, FirebirdBinaryColumnType.VARYING)));
+        assertThat((byte[]) actual.getParameterValues().get(0), is(new byte[]{(byte) 0xab, 0x00, 0x01, 0x02}));
+        assertThat((byte[]) actual.getParameterValues().get(1), is(new byte[]{0x00, (byte) 0xff, (byte) 0x80}));
+    }
+    
+    private FirebirdPacketPayload createExecutePayload(final ByteBuf blr) {
+        FirebirdPacketPayload result = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        result.writeInt4(FirebirdCommandPacketType.EXECUTE.getValue());
+        result.writeInt4(1);
+        result.writeInt4(2);
+        result.writeBuffer(blr);
+        result.writeInt4(0);
+        result.writeInt4(1);
+        result.writeInt1(0);
+        result.writePadding(1);
+        return result;
+    }
+    
+    @Test
+    void assertExecuteStatementPacketWithTextParameter() {
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(2).writeByte(0)
+                .writeByte(BlrConstants.blr_text2).writeShortLE(4).writeShortLE(3).writeZero(2)
+                .writeByte(BlrConstants.blr_end);
+        FirebirdPacketPayload packetPayload = createExecutePayload(blr);
+        packetPayload.writeBytes("foo".getBytes(StandardCharsets.UTF_8));
+        packetPayload.writePadding(3);
+        packetPayload.writeInt4(123);
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getParameterValues(), is(Collections.singletonList("foo")));
+        assertThat(packetPayload.readInt4(), is(123));
     }
     
     @Test
