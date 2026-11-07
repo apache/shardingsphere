@@ -75,8 +75,8 @@ class ShardingSchemaTableAggregationReviserTest {
     
     @Test
     void assertAggregateFailedWithCheckTableMetaDataEnabled() {
-        TableMetaData tableMetaData1 = new TableMetaData("foo_tbl", null, null, null);
-        TableMetaData tableMetaData2 = new TableMetaData("foo_tbl", Collections.singletonList(mock(ColumnMetaData.class)), null, null);
+        TableMetaData tableMetaData1 = new TableMetaData("foo_tbl", null, Collections.emptyList(), Collections.emptyList());
+        TableMetaData tableMetaData2 = new TableMetaData("foo_tbl", Collections.singletonList(mock(ColumnMetaData.class)), Collections.emptyList(), Collections.emptyList());
         ShardingSchemaTableAggregationReviser reviser = new ShardingSchemaTableAggregationReviser(true);
         reviser.add(tableMetaData1);
         reviser.add(tableMetaData2);
