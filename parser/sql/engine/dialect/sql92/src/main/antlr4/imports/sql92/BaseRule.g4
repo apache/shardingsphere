@@ -131,9 +131,9 @@ characterSetName
     ;
 
 expr
-    : expr andOperator expr
+    : notOperator expr
+    | expr andOperator expr
     | expr orOperator expr
-    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     ;
