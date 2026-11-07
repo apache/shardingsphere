@@ -29,7 +29,10 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.ddl.ShardingDDLResultMerger;
+import org.apache.shardingsphere.sharding.merge.dml.ShardingDMLResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
@@ -85,6 +88,18 @@ class ShardingResultMergerEngineTest {
         InsertStatementContext sqlStatementContext = createInsertStatementContext(insertStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), isA(TransparentResultMerger.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithShardingInsertReturningStatement() {
+        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))))
+                .insertColumns(insertColumnsSegment).returning(new ReturningSegment(0, 0, new ProjectionsSegment(0, 0))).build();
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(insertStatement);
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.isShardingTable("tbl")).thenReturn(true);
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, shardingRule, props, sqlStatementContext), isA(ShardingDMLResultMerger.class));
     }
     
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
