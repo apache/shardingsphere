@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.8. </b>"
+pre = "<b>4.4. </b>"
 title = "ShardingSphere-MCP"
-weight = 8
+weight = 4
 chapter = true
 +++
 
