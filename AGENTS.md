@@ -13,7 +13,7 @@ Follow this guide; paths are repository-relative.
 6. Before classifying an artifact as unused or removable, read and apply the complete removal and contract-impact rules.
 7. For runtime diagnosis, read `.codex/context/runtime-triage.md`; an authorized fix activates `code-implementation` before its first write.
 8. Select optional Skills from their catalog triggers. Read `.codex/context/cross-cutting-skills.md` only when a matching trigger may apply, and use the smallest matching Skill set.
-9. Before running or assessing a repository verification command, read the verification rules. For an authorized change, read `.codex/context/change-completion.md` before completion review or handoff.
+9. Before running or assessing a repository verification command, read the verification rules. For an authorized change, read `.codex/context/change-completion.md` before the first write, then follow it through review and handoff.
 10. Before revising documentation, Skills, prompts, comments, or configuration prose, read `.codex/context/documentation-wording.md`.
 11. Keep task-specific notes outside repository Skills.
 
@@ -94,7 +94,7 @@ Optional Skills never waive gates or expand authority or scope.
 
 ## Change Completion Gate
 
-Every authorized code-writing task follows `.codex/context/change-completion.md`, including a restoration or rollback that changes production, test, script, build, generated, or behavior-affecting configuration artifacts.
+Every authorized task that changes deliverable file content inside or outside Git follows `.codex/context/change-completion.md`, including prose, policy, restoration, and rollback.
 
 ## Functional and Performance Non-Regression Gate
 
