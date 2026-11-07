@@ -18,12 +18,21 @@
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import com.arjuna.ats.internal.jta.resources.arjunacore.XAResourceRecord;
+import com.arjuna.ats.internal.jta.resources.arjunacore.XAResourceRecordWrappingPlugin;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
+import com.arjuna.ats.jta.common.JTAEnvironmentBean;
+import com.arjuna.ats.jta.common.jtaPropertyManager;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
+import org.jboss.tm.XAResourceWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,11 +41,16 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
+import javax.transaction.xa.XAResource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -65,9 +79,79 @@ class NarayanaXATransactionManagerProviderTest {
     }
     
     @Test
+    void assertInit() {
+        try (
+                MockedStatic<jtaPropertyManager> mockedPropertyManager = mockStatic(jtaPropertyManager.class);
+                MockedStatic<XARecoveryModule> ignoredRecoveryModule = mockStatic(XARecoveryModule.class);
+                MockedConstruction<RecoveryManagerService> ignoredRecoveryService = mockConstruction(RecoveryManagerService.class)) {
+            JTAEnvironmentBean environmentBean = mock(JTAEnvironmentBean.class);
+            mockedPropertyManager.when(jtaPropertyManager::getJTAEnvironmentBean).thenReturn(environmentBean);
+            transactionManagerProvider.init();
+            InOrder inOrder = inOrder(environmentBean);
+            inOrder.verify(environmentBean).getXAResourceRecordWrappingPlugin();
+            inOrder.verify(environmentBean).setXAResourceRecordWrappingPlugin(any(XAResourceRecordWrappingPlugin.class));
+            inOrder.verify(environmentBean).getTransactionManager();
+        }
+    }
+    
+    @Test
+    void assertInitWithExistingWrappingPlugin() {
+        try (
+                MockedStatic<jtaPropertyManager> mockedPropertyManager = mockStatic(jtaPropertyManager.class);
+                MockedStatic<XARecoveryModule> ignoredRecoveryModule = mockStatic(XARecoveryModule.class);
+                MockedConstruction<RecoveryManagerService> ignoredRecoveryService = mockConstruction(RecoveryManagerService.class)) {
+            JTAEnvironmentBean environmentBean = mock(JTAEnvironmentBean.class);
+            mockedPropertyManager.when(jtaPropertyManager::getJTAEnvironmentBean).thenReturn(environmentBean);
+            when(environmentBean.getXAResourceRecordWrappingPlugin()).thenReturn(mock(XAResourceRecordWrappingPlugin.class));
+            transactionManagerProvider.init();
+            verify(environmentBean, never()).setXAResourceRecordWrappingPlugin(any(XAResourceRecordWrappingPlugin.class));
+        }
+    }
+    
+    @Test
+    void assertWrappingPluginWithSingleXAResource() {
+        XAResourceRecordWrappingPlugin wrappingPlugin = getInstalledWrappingPlugin();
+        XAResourceRecord record = mock(XAResourceRecord.class);
+        when(record.value()).thenReturn(new SingleXAResource("foo_db.ds_0", mock(XAResource.class)));
+        wrappingPlugin.transcribeWrapperData(record);
+        verify(record).setJndiName("foo_db.ds_0");
+    }
+    
+    @Test
+    void assertWrappingPluginWithExistingXAResourceWrapper() {
+        XAResourceRecordWrappingPlugin wrappingPlugin = getInstalledWrappingPlugin();
+        XAResourceRecord record = mock(XAResourceRecord.class);
+        XAResourceWrapper xaResource = mock(XAResourceWrapper.class);
+        when(record.value()).thenReturn(xaResource);
+        when(xaResource.getProductName()).thenReturn("foo_product");
+        when(xaResource.getProductVersion()).thenReturn("foo_version");
+        when(xaResource.getJndiName()).thenReturn("foo_resource");
+        wrappingPlugin.transcribeWrapperData(record);
+        verify(record).setProductName("foo_product");
+        verify(record).setProductVersion("foo_version");
+        verify(record).setJndiName("foo_resource");
+    }
+    
+    private XAResourceRecordWrappingPlugin getInstalledWrappingPlugin() {
+        try (
+                MockedStatic<jtaPropertyManager> mockedPropertyManager = mockStatic(jtaPropertyManager.class);
+                MockedStatic<XARecoveryModule> ignoredRecoveryModule = mockStatic(XARecoveryModule.class);
+                MockedConstruction<RecoveryManagerService> ignoredRecoveryService = mockConstruction(RecoveryManagerService.class)) {
+            JTAEnvironmentBean environmentBean = mock(JTAEnvironmentBean.class);
+            mockedPropertyManager.when(jtaPropertyManager::getJTAEnvironmentBean).thenReturn(environmentBean);
+            transactionManagerProvider.init();
+            ArgumentCaptor<XAResourceRecordWrappingPlugin> actual = ArgumentCaptor.forClass(XAResourceRecordWrappingPlugin.class);
+            verify(environmentBean).setXAResourceRecordWrappingPlugin(actual.capture());
+            return actual.getValue();
+        }
+    }
+    
+    @Test
     void assertRegisterRecoveryResource() {
-        transactionManagerProvider.registerRecoveryResource("ds1", xaDataSource);
-        verify(xaRecoveryModule).addXAResourceRecoveryHelper(any(DataSourceXAResourceRecoveryHelper.class));
+        transactionManagerProvider.registerRecoveryResource("foo_db.ds_0", xaDataSource);
+        ArgumentCaptor<DataSourceXAResourceRecoveryHelper> actual = ArgumentCaptor.forClass(DataSourceXAResourceRecoveryHelper.class);
+        verify(xaRecoveryModule).addXAResourceRecoveryHelper(actual.capture());
+        assertThat(actual.getValue().getJndiName(), is("foo_db.ds_0"));
     }
     
     @Test

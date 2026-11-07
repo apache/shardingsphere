@@ -19,9 +19,12 @@ package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.jta.recovery.XAResourceRecoveryHelper;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jboss.tm.XAResourceWrapper;
 
+import javax.annotation.Nullable;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -34,7 +37,7 @@ import java.sql.SQLException;
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecoveryHelper, XAResource {
+public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecoveryHelper, XAResourceWrapper {
     
     private static final XAResource[] NO_XA_RESOURCES = {};
     
@@ -44,12 +47,41 @@ public final class DataSourceXAResourceRecoveryHelper implements XAResourceRecov
     
     private final String password;
     
+    @Getter
+    @Nullable
+    private final String jndiName;
+    
     private XAConnection xaConnection;
     
     private XAResource delegate;
     
     public DataSourceXAResourceRecoveryHelper(final XADataSource xaDataSource) {
         this(xaDataSource, null, null);
+    }
+    
+    public DataSourceXAResourceRecoveryHelper(final XADataSource xaDataSource, final String user, final String password) {
+        this(xaDataSource, user, password, null);
+    }
+    
+    public DataSourceXAResourceRecoveryHelper(final String dataSourceName, final XADataSource xaDataSource) {
+        this(xaDataSource, null, null, dataSourceName);
+    }
+    
+    @Override
+    public XAResource getResource() {
+        return getDelegate();
+    }
+    
+    @Nullable
+    @Override
+    public String getProductName() {
+        return null;
+    }
+    
+    @Nullable
+    @Override
+    public String getProductVersion() {
+        return null;
     }
     
     @Override
