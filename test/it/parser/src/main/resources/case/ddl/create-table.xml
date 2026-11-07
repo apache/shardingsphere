@@ -5637,6 +5637,13 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_blob_subtype_negative">
+        <table name="t_blob_subtype_negative" start-index="13" stop-index="35" />
+        <column-definition type="BLOB SUB_TYPE -1" start-index="38" stop-index="61">
+            <column name="payload" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_blob_subtype_text">
         <table name="t_blob_subtype_text" start-index="13" stop-index="31" />
         <column-definition type="BLOB SUB_TYPE TEXT CHARACTER SET UTF8" start-index="34" stop-index="78">
