@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/circuit-breaker
 
 ## Description
 
-The `ENABLE/DISABLE COMPUTE NODE` syntax is used to enable/disable a specified proxy instance
+The `ENABLE/DISABLE COMPUTE NODE` syntax is used to enable or disable a specified compute node in cluster mode.
 
 ### Syntax
 
@@ -29,16 +29,16 @@ instanceId ::=
 
 - `instanceId` needs to be obtained through [SHOW COMPUTE NODES](/en/user-manual/distsql/syntax/ral/circuit-breaker/show-compute-nodes/) syntax query
 
-- The currently in-use proxy instance cannot be disabled
+- The compute node executing this statement cannot be disabled.
 
 ### Example
 
-- Disable a specified proxy instance
+- Disable a specified compute node
 ```sql
 DISABLE COMPUTE NODE '734bb086-b15d-4af0-be87-2372d8b6a0cd';
 ```
 
-- Enable a specified proxy instance
+- Enable a specified compute node
 
 ```sql
 ENABLE COMPUTE NODE '734bb086-b15d-4af0-be87-2372d8b6a0cd';

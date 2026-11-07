@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-compute-no
 
 ### 描述
 
-`SHOW COMPUTE NODE MODE` 语法用于查询当前 proxy 的模式配置信息。
+`SHOW COMPUTE NODE MODE` 语法用于查询当前计算节点的运行模式配置信息。
 
 ### 语法
 
@@ -26,13 +26,13 @@ ShowComputeNodeMode ::=
 
 | 列          | 说明              |
 |------------|-----------------|
-| type       | proxy 模式类型      |
-| repository | proxy 持久化仓库类型   |
-| props      | proxy 持久化仓库属性参数 |
+| type       | 运行模式类型      |
+| repository | 持久化仓库类型   |
+| props      | 持久化仓库属性参数 |
 
 ### 示例
 
-- 查询当前 proxy 实例模式配置信息
+- 查询当前计算节点的运行模式配置信息
 
 ```sql
 SHOW COMPUTE NODE MODE;

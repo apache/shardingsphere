@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-compute-no
 
 ### Description
 
-The `SHOW COMPUTE NODE INFO` syntax is used to query current proxy instance information.
+The `SHOW COMPUTE NODE INFO` syntax is used to query information about the current compute node.
 ### Syntax
 
 {{< tabs >}}
@@ -25,17 +25,17 @@ ShowComputeNodeInfo ::=
 
 | Columns        | Description           |
 |----------------|-----------------------|
-| instance_id    | proxy instance id     |
+| instance_id    | compute node ID     |
 | host           | host address          |
-| port           | port number           |
-| status         | proxy instance status |
-| mode_type      | proxy instance mode   |
+| port           | Proxy port number; `-1` for JDBC |
+| status         | compute node status |
+| mode_type      | compute node operating mode   |
 | worker_id      | worker id             |
 | version        | version               |
 
 ### Example
 
-- Query current proxy instance information
+- Query information about the current compute node
 
 ```sql
 SHOW COMPUTE NODE INFO;

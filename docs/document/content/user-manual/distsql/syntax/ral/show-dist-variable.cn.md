@@ -6,7 +6,7 @@ aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/show-dist-varia
 
 ### 描述
 
-`SHOW DIST VARIABLE` 语法用于查询 `PROXY` 系统变量配置。
+`SHOW DIST VARIABLE` 语法用于查询 ShardingSphere 系统变量配置。
 
 ### 语法
 
@@ -37,11 +37,11 @@ variableName ::=
 
 ### 补充说明
 
-- 未指定 `variableName` 时，默认查询所有持久化 `PROXY` 系统变量配置和缓存连接数
+- 未指定 `variableName` 时，默认查询所有持久化 ShardingSphere 系统变量配置和缓存连接数
 
 ### 示例
 
-- 查询所有 `PROXY` 系统变量配置
+- 查询所有 ShardingSphere 系统变量配置
 
 ```sql
 SHOW DIST VARIABLES;
@@ -79,7 +79,7 @@ mysql> SHOW DIST VARIABLES;
 23 rows in set (0.01 sec)
 ```
 
-- 查询指定 `PROXY` 系统变量配置
+- 查询指定 ShardingSphere 系统变量配置
 
 ```sql
 SHOW DIST VARIABLE WHERE NAME = sql_show;
