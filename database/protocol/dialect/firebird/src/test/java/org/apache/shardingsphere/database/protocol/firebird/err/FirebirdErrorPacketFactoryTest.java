@@ -17,15 +17,23 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBpbTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnknownBatchBlobIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.stream.Stream;
 
@@ -51,5 +59,23 @@ class FirebirdErrorPacketFactoryTest {
                 Arguments.of("batch_too_big_exception", new BatchTooBigException(42, 1L, 8L, 8L), 335545198, ""),
                 Arguments.of("invalid_batch_handle_exception", new InvalidBatchHandleException(42), 335545159, ""),
                 Arguments.of("non_firebird_error_code", new SQLException("Invalid error", "HY000", 123), 335544382, "Invalid error"));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnknownBatchBlobIdException() {
+        assertThat(writeStatusVector(new UnknownBatchBlobIdException(99L)),
+                is("00000001140000f9" + "0000000114000074" + "00000004ffffff98" + "000000011400036d" + "0000000200000004303a3633" + "00000000"));
+    }
+    
+    @Test
+    void assertNewInstanceWithBatchBpbTooBigException() {
+        assertThat(writeStatusVector(new BatchBpbTooBigException(8L, 4L)),
+                is("00000001140000f9" + "0000000114000074" + "00000004ffffff98" + "0000000114000367" + "000000011400036a" + "0000000400000008" + "0000000400000004" + "00000000"));
+    }
+    
+    private String writeStatusVector(final Exception cause) {
+        ByteBuf result = Unpooled.buffer();
+        ((FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(cause)).getStatusVector().write(new FirebirdPacketPayload(result, StandardCharsets.UTF_8));
+        return ByteBufUtil.hexDump(result);
     }
 }

@@ -47,12 +47,13 @@ class FirebirdErrorSegmentResolverTest {
     }
     
     @Test
+    @SuppressWarnings("unchecked")
     void assertResolveRendersDuplicateKeyTableNameWithoutNull() {
         List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
         StringBuilder rendered = new StringBuilder();
         for (Segment each : segments) {
             GDSExceptionHelper.GDSMessage segmentMessage = GDSExceptionHelper.getMessage(each.getGdsCode());
-            segmentMessage.setParameters(each.getArguments());
+            segmentMessage.setParameters((List<String>) each.getArguments());
             if (rendered.length() > 0) {
                 rendered.append("; ");
             }

@@ -20,6 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.firebird;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobContinuationBpbException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBpbTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentExceedsBlobException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ParameterConversionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.StringTruncationException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.TransliterationFailedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnknownBatchBlobIdException;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -43,8 +54,9 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,10 +100,10 @@ class FirebirdFrontendEngineTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideHandleExceptionParameters")
-    void assertHandleException(final String testName, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
-        ConnectionContext connectionContext = mockConnectionSession(inTransaction, exceptionOccur);
+    void assertHandleException(final String testName, final boolean exceptionOccur, final Exception exception) {
+        ConnectionContext connectionContext = mockConnectionSession(true, exceptionOccur);
         engine.handleException(connectionSession, exception);
-        assertThat(connectionContext.getTransactionContext().isExceptionOccur(), is(expectedExceptionOccur));
+        assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
     }
     
     private ConnectionContext mockConnectionSession(final boolean inTransaction, final boolean exceptionOccur) {
@@ -107,10 +119,30 @@ class FirebirdFrontendEngineTest {
     }
     
     private static Stream<Arguments> provideHandleExceptionParameters() {
+        return Stream.of(Arguments.of("mark when in transaction", false, new Exception("error")), Arguments.of("keep marked when already occurred", true, new Exception("error")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideIgnoredExceptionParameters")
+    void assertHandleIgnoredException(final String testName, final boolean inTransaction, final Exception exception) {
+        ConnectionContext connectionContext = mockConnectionSession(inTransaction, false);
+        engine.handleException(connectionSession, exception);
+        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
+    }
+    
+    private static Stream<Arguments> provideIgnoredExceptionParameters() {
         return Stream.of(
-                Arguments.of("mark when in transaction", true, false, new Exception("error"), true),
-                Arguments.of("skip when in transaction exception", true, false, new InTransactionException(), false),
-                Arguments.of("skip when not in transaction", false, false, new Exception("error"), false),
-                Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true));
+                Arguments.of("skip when in transaction exception", true, new InTransactionException()),
+                Arguments.of("skip when batch blob continuation bpb exception", true, new BatchBlobContinuationBpbException(4L)),
+                Arguments.of("skip when batch bpb too big exception", true, new BatchBpbTooBigException(8L, 4L)),
+                Arguments.of("skip when batch segment exceeds blob exception", true, new BatchSegmentExceedsBlobException(50, 10)),
+                Arguments.of("skip when batch segment too big exception", true, new BatchSegmentTooBigException(50, 10)),
+                Arguments.of("skip when batch small data exception", true, new BatchSmallDataException("BLOB")),
+                Arguments.of("skip when blob filter not found exception", true, new BlobFilterNotFoundException(0, 2)),
+                Arguments.of("skip when invalid bpb version exception", true, new InvalidBpbVersionException(2, 1)),
+                Arguments.of("skip when parameter conversion exception", true, new ParameterConversionException(new StringTruncationException(20, 32))),
+                Arguments.of("skip when transliteration failed exception", true, new TransliterationFailedException()),
+                Arguments.of("skip when unknown batch blob id exception", true, new UnknownBatchBlobIdException(1L)),
+                Arguments.of("skip when not in transaction", false, new Exception("error")));
     }
 }

@@ -134,7 +134,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
         FirebirdServerPreparedStatement serverPreparedStatement = new FirebirdServerPreparedStatement(packet.getSQL(), sqlStatementContext, packet.getHintValueContext());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
-        return createResponse(sqlStatementContext);
+        return createResponse(sqlStatementContext, serverPreparedStatement);
     }
     
     private SQLStatement resolveCurrentDatabase(final SQLStatement sqlStatement) {
@@ -150,7 +150,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return packet.isValidStatementHandle() ? packet.getStatementId() : FirebirdStatementIdGenerator.getInstance().getStatementId(connectionSession.getConnectionId());
     }
     
-    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext) {
+    private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext, final FirebirdServerPreparedStatement serverPreparedStatement) {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
         ShardingSpherePreconditions.checkNotNull(statementType, () -> new UnsupportedSQLOperationException(
                 String.format("unsupported SQL statement `%s`", sqlStatementContext.getSqlStatement().getClass().getSimpleName())));
@@ -170,6 +170,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 case BIND:
                     if (statementType.isBindDescribable()) {
                         processDescribe(sqlStatementContext, returnPacket.getDescribeBind(), false);
+                        serverPreparedStatement.getParameterColumns().addAll(returnPacket.getDescribeBind());
                     } else {
                         skipDescribe();
                     }
