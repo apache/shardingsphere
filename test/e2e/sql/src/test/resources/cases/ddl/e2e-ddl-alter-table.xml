@@ -45,7 +45,7 @@
         </assertion>
     </test-case>
 	
-    <test-case sql="ALTER TABLE t_broadcast_table_for_ddl ADD name varchar(10)" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="ALTER TABLE t_broadcast_table_for_ddl ADD name varchar(10)" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="alter_broadcast_add.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
@@ -174,6 +174,34 @@
         <assertion expected-data-file="alter_change.xml">
             <initial-sql sql="CREATE TABLE t_user_details_hive (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45), description varchar(10))" affected-table="t_user_details_hive" />
             <destroy-sql sql="DROP TABLE t_user_details_hive" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_order_details DROP description" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-file="alter_drop.xml">
+            <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_broadcast_table_for_ddl DROP description" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-file="alter_broadcast_drop.xml">
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
+            <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_order_details ALTER description TO description_new" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-file="alter_change.xml">
+            <initial-sql sql="CREATE TABLE t_order_details(id int, description varchar(10))" affected-table="t_order_details" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="ALTER TABLE t_broadcast_table_for_ddl ALTER description TO description_new" db-types="Firebird" scenario-types="db">
+        <assertion expected-data-file="alter_broadcast_change.xml">
+            <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
+            <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
         </assertion>
     </test-case>
 </e2e-test-cases>

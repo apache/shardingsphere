@@ -100,4 +100,14 @@
     <test-case sql="SELECT * FROM t_order WHERE user_id = ? MINUS ALL SELECT * FROM t_order WHERE user_id = ? ORDER BY user_id" db-types="openGauss" scenario-types="db">
         <assertion parameters="25:int,15:int" expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT order_id, user_id, status FROM t_order WHERE user_id = ? UNION ALL SELECT order_id, user_id, status FROM t_order WHERE user_id = ? AND status = ? ORDER BY 1" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird parameters in UNION ALL branches routed to one data source.">
+        <assertion parameters="15:int, 25:int, init:String" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT order_id FROM t_order WHERE user_id = ? UNION SELECT order_id FROM t_order WHERE user_id = ? UNION SELECT order_id FROM t_order WHERE user_id = ? ORDER BY 1" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird parameters in three UNION branches routed to one data source.">
+        <assertion parameters="15:int, 25:int, 15:int" expected-data-source-name="read_dataset" />
+    </test-case>
 </e2e-test-cases>

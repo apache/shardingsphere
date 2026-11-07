@@ -24,7 +24,7 @@
         </assertion>
     </test-case>
 
-    <test-case sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="create_broadcast_table.xml">
             <initial-sql affected-table="t_broadcast_table_for_ddl" />
             <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
