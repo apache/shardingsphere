@@ -33,9 +33,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class LargeExprListParserIT {
     
@@ -47,7 +46,7 @@ class LargeExprListParserIT {
     @ValueSource(strings = {"openGauss", "PostgreSQL"})
     void assertParseLargeInList(final String databaseType) {
         SQLStatement actual = parseWithSmallStack(databaseType, "SELECT COUNT(1) FROM t WHERE col IN (" + createPlaceholders() + ")");
-        assertThat(actual, instanceOf(SelectStatement.class));
+        assertThat(actual instanceof SelectStatement, is(true));
         InExpression inExpression = (InExpression) ((SelectStatement) actual).getWhere().orElseThrow(IllegalStateException::new).getExpr();
         assertThat(inExpression.getExpressionList().size(), is(LIST_SIZE));
     }
@@ -56,7 +55,7 @@ class LargeExprListParserIT {
     @ValueSource(strings = {"openGauss", "PostgreSQL"})
     void assertParseLargeInsertValues(final String databaseType) {
         SQLStatement actual = parseWithSmallStack(databaseType, "INSERT INTO t VALUES (" + createPlaceholders() + ")");
-        assertThat(actual, instanceOf(InsertStatement.class));
+        assertThat(actual instanceof InsertStatement, is(true));
         InsertValuesSegment insertValues = ((InsertStatement) actual).getValues().iterator().next();
         assertThat(insertValues.getValues().size(), is(LIST_SIZE));
     }
@@ -73,13 +72,10 @@ class LargeExprListParserIT {
         AtomicReference<SQLStatement> result = new AtomicReference<>();
         AtomicReference<Throwable> failure = new AtomicReference<>();
         Thread thread = new Thread(null, () -> {
-            try {
-                DatabaseType type = TypedSPILoader.getService(DatabaseType.class, databaseType);
-                result.set(new SQLStatementVisitorEngine(type).visit(new SQLParserEngine(type, new CacheOption(128, 1024L)).parse(sql, false)));
-            } catch (final Throwable ex) {
-                failure.set(ex);
-            }
+            DatabaseType type = TypedSPILoader.getService(DatabaseType.class, databaseType);
+            result.set(new SQLStatementVisitorEngine(type).visit(new SQLParserEngine(type, new CacheOption(128, 1024L)).parse(sql, false)));
         }, "large-expr-list-parser", SMALL_STACK_SIZE);
+        thread.setUncaughtExceptionHandler((currentThread, ex) -> failure.set(ex));
         thread.start();
         try {
             thread.join();
@@ -87,7 +83,7 @@ class LargeExprListParserIT {
             Thread.currentThread().interrupt();
             throw new IllegalStateException(ex);
         }
-        assertThat(failure.get(), nullValue());
+        assertNull(failure.get());
         return result.get();
     }
 }
