@@ -91,7 +91,13 @@ public class ShardingRuleChecker {
         }
     }
     
-    private boolean hasValidNumericSuffix(final ShardingTable shardingTable) {
+    /**
+     * Judge whether all actual tables of the sharding table end with a numeric suffix, which binding tables require.
+     *
+     * @param shardingTable sharding table
+     * @return is valid numeric suffix or not
+     */
+    public static boolean hasValidNumericSuffix(final ShardingTable shardingTable) {
         String logicTable = shardingTable.getLogicTable();
         int logicTableLength = logicTable.length();
         for (DataNode each : shardingTable.getActualDataNodes()) {
