@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update;
 
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
@@ -86,7 +87,7 @@ public final class MigrateTableExecutor implements DistSQLUpdateExecutor<Migrate
             return new DataNode(segment.getSourceDatabaseName(), segment.getSourceSchemaName(), segment.getSourceTableName());
         }
         Map<String, Object> sourceDataSourceProps = new YamlDataSourceConfigurationSwapper().swapToMap(sourceDataSourcePoolProps);
-        StandardPipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(sourceDataSourceProps);
+        StandardPipelineDataSourceConfiguration sourceDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(sourceDataSourceProps);
         if (!new DatabaseTypeRegistry(sourceDataSourceConfig.getDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
             return new DataNode(segment.getSourceDatabaseName(), segment.getSourceSchemaName(), segment.getSourceTableName());
         }

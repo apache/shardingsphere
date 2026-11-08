@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal.decode.OpenGaussLogSequenceNumber;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
@@ -76,7 +77,7 @@ class OpenGaussLogicalReplicationTest {
         poolProps.put("url", "jdbc:opengauss://127.0.0.1:5432/foo_db");
         poolProps.put("username", "root");
         poolProps.put("password", "root");
-        StandardPipelineDataSourceConfiguration sourceConfig = new StandardPipelineDataSourceConfiguration(poolProps);
+        StandardPipelineDataSourceConfiguration sourceConfig = PipelineDataSourceConfigurationFactory.newInstance(poolProps);
         Connection expectedConnection = mock(Connection.class);
         ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
         ConnectionProperties connectionProps = new ConnectionProperties("127.0.0.1", 5432, "foo_db", null, new Properties());
@@ -111,7 +112,7 @@ class OpenGaussLogicalReplicationTest {
         poolProps.put("url", "jdbc:opengauss://localhost:5432/test_db");
         poolProps.put("username", "root");
         poolProps.put("password", "root");
-        StandardPipelineDataSourceConfiguration config = new StandardPipelineDataSourceConfiguration(poolProps);
+        StandardPipelineDataSourceConfiguration config = PipelineDataSourceConfigurationFactory.newInstance(poolProps);
         SQLException expectedException = new SQLException("auth failed");
         try (MockedStatic<DriverManager> driverManagerMock = mockStatic(DriverManager.class)) {
             driverManagerMock.when(() -> DriverManager.getConnection(anyString(), any(Properties.class))).thenThrow(expectedException);

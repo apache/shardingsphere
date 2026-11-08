@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.rule.PipelineRuleConfigurationReviser;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -31,6 +31,9 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 
@@ -50,14 +53,43 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     @Override
     public DataSource create(final Object dataSourceConfig) throws SQLException {
         ShardingSpherePipelineDataSourceConfiguration config = (ShardingSpherePipelineDataSourceConfiguration) dataSourceConfig;
-        Collection<RuleConfiguration> ruleConfigs = config.getCreationRuleConfigurations();
+        Collection<RuleConfiguration> ruleConfigs = copyRuleConfigurations(config.getRuleConfigurations());
         removeAuthorityRuleConfiguration(ruleConfigs);
         reviseRuleConfiguration(ruleConfigs);
         return createShardingSphereDataSource(config, ruleConfigs);
     }
     
+    private Collection<RuleConfiguration> copyRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        YamlRuleConfigurationSwapperEngine swapper = new YamlRuleConfigurationSwapperEngine();
+        YamlRootConfiguration yamlConfig = new YamlRootConfiguration();
+        yamlConfig.setRules(swapper.swapToYamlRuleConfigurations(ruleConfigs));
+        return swapper.swapToRuleConfigurations(YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlRootConfiguration.class, true).getRules());
+    }
+    
     private void removeAuthorityRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
         ruleConfigs.removeIf(AuthorityRuleConfiguration.class::isInstance);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void reviseRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+        OrderedSPILoader.getServices(PipelineRuleConfigurationReviser.class, ruleConfigs).forEach((key, value) -> value.revise(key));
+    }
+    
+    private DataSource createShardingSphereDataSource(final ShardingSpherePipelineDataSourceConfiguration config, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = config.getDataSourcePoolPropertiesMap();
+        Map<String, DataSource> dataSourceMap = DataSourcePoolCreator.create(dataSourcePropsMap, false);
+        try {
+            return ShardingSphereDataSourceFactory.createDataSource(config.getDatabaseName(), createStandaloneModeConfiguration(), dataSourceMap, ruleConfigs, createConfigurationProperties());
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | RuntimeException ex) {
+            // CHECKSTYLE:ON
+            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+            throw ex;
+        }
+    }
+    
+    private ModeConfiguration createStandaloneModeConfiguration() {
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("Memory", new Properties()));
     }
     
     private Properties createConfigurationProperties() {
@@ -88,28 +120,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         result.add(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey());
         result.add(ConfigurationPropertyKey.SQL_SHOW.getKey());
         return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void reviseRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
-        OrderedSPILoader.getServices(PipelineRuleConfigurationReviser.class, ruleConfigs).forEach((key, value) -> value.revise(key));
-    }
-    
-    private ModeConfiguration createStandaloneModeConfiguration() {
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("Memory", new Properties()));
-    }
-    
-    private DataSource createShardingSphereDataSource(final ShardingSpherePipelineDataSourceConfiguration config, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        Map<String, DataSourcePoolProperties> dataSourcePropsMap = config.getDataSourcePoolPropertiesMap();
-        Map<String, DataSource> dataSourceMap = DataSourcePoolCreator.create(dataSourcePropsMap, false);
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(config.getDatabaseName(), createStandaloneModeConfiguration(), dataSourceMap, ruleConfigs, createConfigurationProperties());
-            // CHECKSTYLE:OFF
-        } catch (final SQLException | RuntimeException ex) {
-            // CHECKSTYLE:ON
-            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
-            throw ex;
-        }
     }
     
     @Override

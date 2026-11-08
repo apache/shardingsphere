@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +41,6 @@ public final class DataSourceTestUtils {
         poolProps.put("url", url);
         poolProps.put("username", username);
         poolProps.put("password", password);
-        return new PipelineDataSource(new StandardPipelineDataSourceConfiguration(poolProps));
+        return new PipelineDataSource(PipelineDataSourceConfigurationFactory.newInstance(poolProps));
     }
 }

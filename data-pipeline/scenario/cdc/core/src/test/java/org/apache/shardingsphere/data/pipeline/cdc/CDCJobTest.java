@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.api.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCJobItemContext;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineJobItemConte
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
@@ -54,6 +54,7 @@ import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgori
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
@@ -112,7 +113,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
 @LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings({
-        PipelineJobIdUtils.class, PipelineProcessConfigurationUtils.class, PipelineDataSourceConfigurationFactory.class,
+        PipelineJobIdUtils.class, PipelineProcessConfigurationUtils.class, PipelineDataSourceConfigurationFactory.class, PipelineDataSourceConfigurationUtils.class,
         OrderedSPILoader.class, PipelineAPIFactory.class, PipelineJobProgressPersistService.class,
         PipelineDistributedBarrier.class, ElasticJobServiceLoader.class
 })

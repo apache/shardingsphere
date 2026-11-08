@@ -19,10 +19,11 @@ package org.apache.shardingsphere.data.pipeline.core.preparer.incremental;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -117,7 +118,7 @@ class IncrementalTaskPositionManagerTest {
         dataSourceProps.put("dataSourceClassName", MockedDataSource.class.getName());
         dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         rootConfig.getDataSources().put("foo_ds", dataSourceProps);
-        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
+        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(rootConfig);
         incrementalTaskPositionManager.destroyPosition("foo_job", pipelineDataSourceConfig);
         verify(dialectPositionManager).destroy(any(), eq("foo_job"));
     }
@@ -127,7 +128,7 @@ class IncrementalTaskPositionManagerTest {
         Map<String, Object> dataSourceProps = new HashMap<>(2, 1F);
         dataSourceProps.put("dataSourceClassName", MockedDataSource.class.getName());
         dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(dataSourceProps);
+        StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(dataSourceProps);
         incrementalTaskPositionManager.destroyPosition("foo_job", pipelineDataSourceConfig);
         verify(dialectPositionManager).destroy(any(), eq("foo_job"));
     }

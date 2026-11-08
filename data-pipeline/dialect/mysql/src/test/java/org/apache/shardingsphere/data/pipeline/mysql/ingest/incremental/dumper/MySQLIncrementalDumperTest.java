@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.mapper.ActualAndLogicTableNameMapper;
@@ -104,8 +104,7 @@ class MySQLIncrementalDumperTest {
         poolProps.put("url", "jdbc:mock://127.0.0.1:3306/test");
         poolProps.put("username", "root");
         poolProps.put("password", "root");
-        DumperCommonContext commonContext = new DumperCommonContext(null,
-                new StandardPipelineDataSourceConfiguration(poolProps),
+        DumperCommonContext commonContext = new DumperCommonContext(null, PipelineDataSourceConfigurationFactory.newInstance(poolProps),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new ShardingSphereIdentifier("t_order"), new ShardingSphereIdentifier("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
         return new IncrementalDumperContext(commonContext, null, false);

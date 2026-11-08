@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration.distsql.handler.update;
 
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.api.TransmissionJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtils;
@@ -64,6 +65,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -114,11 +116,11 @@ class MigrateTableExecutorTest {
         try (
                 MockedConstruction<PipelineDataSourcePersistService> ignored = mockConstruction(PipelineDataSourcePersistService.class,
                         (mock, context) -> when(mock.load(any(PipelineContextKey.class), eq("MIGRATION"))).thenReturn(Collections.singletonMap(SOURCE_DATABASE_NAME, sourceProps)));
-                MockedConstruction<StandardPipelineDataSourceConfiguration> ignoredConfig = mockConstruction(StandardPipelineDataSourceConfiguration.class,
-                        (mock, context) -> when(mock.getDatabaseType()).thenReturn(schemaCapableDatabaseType));
+                MockedStatic<PipelineDataSourceConfigurationFactory> ignoredConfig = mockStatic(PipelineDataSourceConfigurationFactory.class, Answers.RETURNS_DEEP_STUBS);
                 MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockDatabaseTypeRegistries();
                 MockedStatic<TypedSPILoader> spiLoader = mockStatic(TypedSPILoader.class, Answers.CALLS_REAL_METHODS);
                 MockedStatic<PipelineSchemaUtils> schemaUtils = mockStatic(PipelineSchemaUtils.class)) {
+            when(PipelineDataSourceConfigurationFactory.newInstance(anyMap()).getDatabaseType()).thenReturn(schemaCapableDatabaseType);
             spiLoader.when(() -> TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION")).thenReturn(jobAPI);
             schemaUtils.when(() -> PipelineSchemaUtils.getDefaultSchema(any(StandardPipelineDataSourceConfiguration.class))).thenReturn("CaseSchema");
             executor.executeUpdate(createStatement(null), contextManager);
@@ -134,11 +136,11 @@ class MigrateTableExecutorTest {
         try (
                 MockedConstruction<PipelineDataSourcePersistService> ignored = mockConstruction(PipelineDataSourcePersistService.class,
                         (mock, context) -> when(mock.load(any(PipelineContextKey.class), eq("MIGRATION"))).thenReturn(Collections.singletonMap(SOURCE_DATABASE_NAME, sourceProps)));
-                MockedConstruction<StandardPipelineDataSourceConfiguration> ignoredConfig = mockConstruction(StandardPipelineDataSourceConfiguration.class,
-                        (mock, context) -> when(mock.getDatabaseType()).thenReturn(schemaLessDatabaseType));
+                MockedStatic<PipelineDataSourceConfigurationFactory> ignoredConfig = mockStatic(PipelineDataSourceConfigurationFactory.class, Answers.RETURNS_DEEP_STUBS);
                 MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockDatabaseTypeRegistries();
                 MockedStatic<TypedSPILoader> spiLoader = mockStatic(TypedSPILoader.class, Answers.CALLS_REAL_METHODS);
                 MockedStatic<PipelineSchemaUtils> schemaUtils = mockStatic(PipelineSchemaUtils.class)) {
+            when(PipelineDataSourceConfigurationFactory.newInstance(anyMap()).getDatabaseType()).thenReturn(schemaLessDatabaseType);
             spiLoader.when(() -> TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION")).thenReturn(jobAPI);
             schemaUtils.when(() -> PipelineSchemaUtils.getDefaultSchema(any(StandardPipelineDataSourceConfiguration.class))).thenReturn("public");
             executor.executeUpdate(createStatement(null), contextManager);
@@ -162,12 +164,12 @@ class MigrateTableExecutorTest {
                         (mock, context) -> when(mock.load(any(PipelineContextKey.class), eq("MIGRATION"))).thenReturn(Collections.singletonMap(SOURCE_DATABASE_NAME, sourceProps)));
                 MockedConstruction<YamlDataSourceConfigurationSwapper> ignoredSwapper = mockConstruction(YamlDataSourceConfigurationSwapper.class,
                         (mock, context) -> when(mock.swapToMap(sourceProps)).thenReturn(Collections.emptyMap()));
-                MockedConstruction<StandardPipelineDataSourceConfiguration> ignoredConfig = mockConstruction(StandardPipelineDataSourceConfiguration.class,
-                        (mock, context) -> when(mock.getDatabaseType()).thenReturn(schemaCapableDatabaseType));
+                MockedStatic<PipelineDataSourceConfigurationFactory> ignoredConfig = mockStatic(PipelineDataSourceConfigurationFactory.class, Answers.RETURNS_DEEP_STUBS);
                 MockedConstruction<DatabaseTypeRegistry> ignoredRegistry = mockDatabaseTypeRegistries();
                 MockedStatic<TypedSPILoader> spiLoader = mockStatic(TypedSPILoader.class, Answers.CALLS_REAL_METHODS);
                 MockedStatic<PipelineSchemaUtils> schemaUtils = mockStatic(PipelineSchemaUtils.class);
                 MockedStatic<IdentifierNormalizeEngine> normalizeEngine = mockStatic(IdentifierNormalizeEngine.class, Answers.CALLS_REAL_METHODS)) {
+            when(PipelineDataSourceConfigurationFactory.newInstance(anyMap()).getDatabaseType()).thenReturn(schemaCapableDatabaseType);
             spiLoader.when(() -> TypedSPILoader.getService(TransmissionJobAPI.class, "MIGRATION")).thenReturn(jobAPI);
             normalizeEngine.when(() -> IdentifierNormalizeEngine.resolvePolicy(schemaCapableDatabaseType, null, IdentifierScope.SCHEMA)).thenReturn(schemaIdentifierCasePolicy);
             normalizeEngine.when(() -> IdentifierNormalizeEngine.resolvePolicy(schemaCapableDatabaseType, null, IdentifierScope.TABLE)).thenReturn(tableIdentifierCasePolicy);

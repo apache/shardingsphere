@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.cdc.api;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobId;
 import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.yaml.swapper.YamlCDCJobConfigurationSwapper;
@@ -29,8 +31,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.ShardingSpherePipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -353,7 +354,7 @@ class CDCJobAPITest {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("foo_ds", createStandardDataSourceProperties());
         dataSources.put("bar_ds", createStandardDataSourceProperties());
-        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(buildYamlRootConfiguration(dataSources));
+        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(buildYamlRootConfiguration(dataSources));
         CDCJobConfiguration jobConfig = new CDCJobConfiguration("foo_job", "foo_db", Collections.singletonList("foo_schema.foo_tbl"), false,
                 mock(DatabaseType.class), dataSourceConfig, new JobDataNodeLine(Collections.singletonList(
                         new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode("foo_ds" + ".foo_tbl"))))),
@@ -576,7 +577,7 @@ class CDCJobAPITest {
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(2, 1F);
         dataSources.put("foo_ds", createStandardDataSourceProperties());
         dataSources.put("bar_ds", createStandardDataSourceProperties());
-        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(buildYamlRootConfiguration(dataSources));
+        ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(buildYamlRootConfiguration(dataSources));
         List<JobDataNodeLine> jobDataNodeLines = dataSourceNames.stream().map(
                 each -> new JobDataNodeLine(Collections.singletonList(new JobDataNodeEntry("foo_tbl", Collections.singletonList(new DataNode(each + ".foo_tbl"))))))
                 .collect(Collectors.toList());

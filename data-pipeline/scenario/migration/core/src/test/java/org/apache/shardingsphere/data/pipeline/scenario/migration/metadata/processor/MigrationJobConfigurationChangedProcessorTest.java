@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.metadata.proc
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.JobConfigurationChangedProcessor;
 import org.apache.shardingsphere.data.pipeline.core.preparer.incremental.IncrementalTaskPositionManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
@@ -101,6 +101,6 @@ class MigrationJobConfigurationChangedProcessorTest {
         props.put("username", "root");
         props.put("password", "pwd");
         props.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        return new StandardPipelineDataSourceConfiguration(props);
+        return PipelineDataSourceConfigurationFactory.newInstance(props);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.CreateIncrementalDumperParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
@@ -44,7 +44,7 @@ class PostgreSQLIncrementalDumperCreatorTest {
     @Test
     void assertCreate() {
         IncrementalDumperContext dumperContext = mock(IncrementalDumperContext.class, RETURNS_DEEP_STUBS);
-        when(dumperContext.getCommonContext().getDataSourceConfig()).thenReturn(new StandardPipelineDataSourceConfiguration(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_ds")));
+        when(dumperContext.getCommonContext().getDataSourceConfig()).thenReturn(PipelineDataSourceConfigurationFactory.newInstance(Collections.singletonMap("url", "jdbc:mock://127.0.0.1/foo_ds")));
         WALPosition position = mock(WALPosition.class, RETURNS_DEEP_STUBS);
         CreateIncrementalDumperParameter param = new CreateIncrementalDumperParameter(dumperContext, position, null, null, null);
         assertThat(creator.create(param), isA(PostgreSQLIncrementalDumper.class));

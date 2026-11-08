@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.dumper;
 
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
@@ -117,8 +118,7 @@ class PostgreSQLIncrementalDumperTest {
         poolProps.put("url", jdbcUrl);
         poolProps.put("username", username);
         poolProps.put("password", password);
-        DumperCommonContext commonContext = new DumperCommonContext(null,
-                new StandardPipelineDataSourceConfiguration(poolProps),
+        DumperCommonContext commonContext = new DumperCommonContext(null, PipelineDataSourceConfigurationFactory.newInstance(poolProps),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new ShardingSphereIdentifier("t_order_0"), new ShardingSphereIdentifier("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
         return new IncrementalDumperContext(commonContext, "0101123456", false);
