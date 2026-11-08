@@ -76,7 +76,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     }
     
     @Test
-    void assertCreateDataSourceWithBytesAndInvalidRules() throws IOException {
+    void assertCreateDataSourceWithBytesAndInvalidRules() {
         byte[] yamlBytes = SystemResourceFileUtils.readFile(YAML_FILE).getBytes();
         IllegalArgumentException expected = new IllegalArgumentException("Invalid rules");
         try (

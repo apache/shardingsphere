@@ -115,8 +115,8 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            C record = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
-            result.add(record);
+            C dataRecord = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
+            result.add(dataRecord);
         }
         return result;
     }
@@ -185,23 +185,23 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
         String firstUniqueKey = param.getFirstUniqueKey().getName();
         while (resultSet.next()) {
             ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineJobCancelingException("Calculate chunk canceled, qualified table: %s", param.getTable()));
-            C record = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
+            C dataRecord = readRecord(resultSet, resultSetMetaData, columnValueReaderEngine);
             if (null == previousRecord || DataConsistencyCheckUtils.isMatched(equalsBuilder,
-                    getFirstUniqueKeyValue(previousRecord, firstUniqueKey), getFirstUniqueKeyValue(record, firstUniqueKey))) {
-                duplicateRecords.add(record);
-                previousRecord = record;
+                    getFirstUniqueKeyValue(previousRecord, firstUniqueKey), getFirstUniqueKeyValue(dataRecord, firstUniqueKey))) {
+                duplicateRecords.add(dataRecord);
+                previousRecord = dataRecord;
                 continue;
             }
-            previousRecord = record;
+            previousRecord = dataRecord;
             if (!duplicateRecords.isEmpty()) {
                 calculationContext.getRecordDeque().addAll(duplicateRecords);
                 duplicateRecords.clear();
             }
             if (calculationContext.getRecordDeque().size() >= chunkSize) {
-                calculationContext.getRecordDeque().add(record);
+                calculationContext.getRecordDeque().add(dataRecord);
                 return;
             }
-            duplicateRecords.add(record);
+            duplicateRecords.add(dataRecord);
         }
         calculationContext.getDatabaseResources().reset();
         if (!duplicateRecords.isEmpty()) {
@@ -223,11 +223,11 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     private List<C> queryFromBuffer(final Deque<C> recordDeque) {
         List<C> result = new LinkedList<>();
         while (true) {
-            C record = recordDeque.pollFirst();
-            if (null == record) {
+            C dataRecord = recordDeque.pollFirst();
+            if (null == dataRecord) {
                 break;
             }
-            result.add(record);
+            result.add(dataRecord);
             if (result.size() == chunkSize) {
                 break;
             }
@@ -337,7 +337,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
     
     protected abstract C readRecord(ResultSet resultSet, ResultSetMetaData resultSetMetaData, InventoryColumnValueReaderEngine columnValueReaderEngine) throws SQLException;
     
-    protected abstract Object getFirstUniqueKeyValue(C record, String firstUniqueKey);
+    protected abstract Object getFirstUniqueKeyValue(C dataRecord, String firstUniqueKey);
     
     protected abstract S convertRecordsToResult(List<C> records, Object maxUniqueKeyValue);
 }

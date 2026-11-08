@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.P
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
 import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementLexer;
 import org.apache.shardingsphere.sql.parser.engine.postgresql.parser.PostgreSQLLexer;
 
 import javax.sql.DataSource;
@@ -127,7 +128,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
         Token token;
         do {
             token = lexer.nextToken();
-            if (PostgreSQLLexer.SEMI_ == token.getType() || Token.EOF == token.getType()) {
+            if (PostgreSQLStatementLexer.SEMI_ == token.getType() || Token.EOF == token.getType()) {
                 String statement = lexer.getInputStream().getText(Interval.of(start, token.getStartIndex() - 1)).trim();
                 if (!statement.isEmpty()) {
                     result.add(statement);

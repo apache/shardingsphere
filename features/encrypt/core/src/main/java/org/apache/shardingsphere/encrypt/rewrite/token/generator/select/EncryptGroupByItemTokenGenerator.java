@@ -97,12 +97,12 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
     }
     
     private Optional<SQLToken> generateSQLToken(final ColumnSegment columnSegment, final SelectStatementContext selectStatementContext) {
-        DatabaseType databaseType = selectStatementContext.getSqlStatement().getDatabaseType();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
         String columnName = columnSegment.getColumnBoundInfo().getOriginalColumn().getValue();
         if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {
             return Optional.empty();
         }
+        DatabaseType databaseType = selectStatementContext.getSqlStatement().getDatabaseType();
         EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnName);
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();

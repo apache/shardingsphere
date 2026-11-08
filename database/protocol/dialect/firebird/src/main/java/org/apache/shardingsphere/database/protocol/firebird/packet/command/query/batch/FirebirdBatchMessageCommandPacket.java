@@ -65,10 +65,10 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
      * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload, final int connectionId) {
-        int startReaderIndex = payload.getByteBuf().readerIndex();
         if (payload.getByteBuf().readableBytes() < FIXED_BATCH_MSG_HEADER_LENGTH) {
             return -1;
         }
+        int startReaderIndex = payload.getByteBuf().readerIndex();
         payload.skipReserved(4);
         int statementHandle = payload.readInt4();
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementHandle);

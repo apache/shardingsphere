@@ -243,8 +243,8 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
         }
         
         @Override
-        protected Object getFirstUniqueKeyValue(final DataRecord record, final String firstUniqueKey) {
-            return record.getColumn(firstUniqueKey).getValue();
+        protected Object getFirstUniqueKeyValue(final DataRecord dataRecord, final String firstUniqueKey) {
+            return dataRecord.getColumn(firstUniqueKey).getValue();
         }
         
         @Override
