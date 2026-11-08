@@ -34,7 +34,6 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import manage_review_ledger as ledger
-from resolve_review_scope import capture_file_snapshots
 
 
 class ManageReviewLedgerTest(unittest.TestCase):
@@ -80,266 +79,6 @@ class ManageReviewLedgerTest(unittest.TestCase):
 
     def test_complete_ledger_is_valid(self):
         self.assertEqual([], ledger.validate_ledger(self.create_valid_ledger()))
-
-    def test_snapshot_default_cli_environment(self):
-        tools = self.repo / ".codex/skills/review-pr/scripts"
-        tools.mkdir(parents=True)
-        for name in ("manage_review_ledger.py", "resolve_review_scope.py"):
-            (tools / name).write_bytes((SCRIPTS_DIR / name).read_bytes())
-        source = self.repo / self.source_path
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"candidate\n")
-        environment = {**os.environ, "TMPDIR": str(self.private_root)}
-        environment.pop("PYTHONDONTWRITEBYTECODE", None)
-        environment.pop("PYTHONPYCACHEPREFIX", None)
-        result = subprocess.run([sys.executable, str(tools / "manage_review_ledger.py"), "init", "--repo-root", str(self.repo),
-                                 "--pr", "synthetic-review", "--file-snapshots", str(snapshots), "--review-basis", str(self.basis_file)],
-                                cwd=self.repo, env=environment, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        ledger_file = Path(next(line.removeprefix("ledger=") for line in result.stdout.splitlines() if line.startswith("ledger=")))
-        try:
-            actual = ledger.read_ledger(ledger_file)
-            self.assertEqual([], ledger.validate_current_basis(actual))
-            self.assertEqual([str(source)], [entry["path"] for entry in actual["files"]])
-            self.assertEqual([], [*self.repo.rglob("__pycache__"), *self.repo.rglob("*.pyc")])
-        finally:
-            with redirect_stdout(StringIO()):
-                ledger.cmd_cleanup(ledger.build_parser().parse_args(["cleanup", "--ledger", str(ledger_file)]))
-
-    def test_snapshot_scope_covers_repository_and_external_files_without_git(self):
-        source = self.repo / self.source_path
-        external = self.private_root / "Global Policy.md"
-        external.write_bytes(b"original\r\n")
-        snapshots = self.capture_snapshots([source, external, self.repo / self.owner_path])
-        source.write_bytes(b"repository candidate\n")
-        external.write_bytes(b"global candidate\r\n")
-        with patch.object(ledger, "run_git", side_effect=AssertionError("Snapshot review must not use Git")), \
-                patch.object(ledger, "get_repo_root", side_effect=AssertionError("Snapshot review must not require a Git repository")):
-            actual = self.create_valid_ledger(snapshot_file=snapshots)
-            self.assertEqual([], ledger.validate_ledger(actual))
-        self.assertEqual({str(source), str(external)}, {each["path"] for each in actual["files"]})
-        self.assertEqual({"kind", "snapshot_id"}, set(actual["basis"]["baseline"]))
-        self.assertEqual("file-snapshots", actual["basis"]["baseline"]["kind"])
-        self.assertFalse({"base_sha", "head_sha", "merge_base", "head_ref", "candidate_files"} & actual["scope"].keys())
-        anchor = ledger.capture_anchor({"side": "base", "path": str(external), "start_line": 1, "end_line": 1}, actual)
-        self.assertEqual(hashlib.sha256(b"original\r\n").hexdigest(), anchor["range_sha256"])
-
-    def test_snapshot_anchors_preserve_binary_empty_missing_mode_and_symlink_objects(self):
-        binary = self.private_root / "binary.dat"
-        empty = self.private_root / "empty.txt"
-        added = self.private_root / "added.txt"
-        executable = self.private_root / "script.sh"
-        link = self.private_root / "link"
-        binary.write_bytes(b"\xff\x00original")
-        empty.write_bytes(b"")
-        executable.write_bytes(b"echo synthetic\n")
-        link.symlink_to("original-target")
-        snapshots = self.capture_snapshots([binary, empty, added, executable, link])
-        binary.write_bytes(b"\xfe\x00candidate")
-        empty.unlink()
-        added.write_bytes(b"")
-        executable.chmod(0o755)
-        link.unlink()
-        link.symlink_to("candidate-target")
-        actual = self.create_valid_ledger(snapshot_file=snapshots)
-        self.assertEqual([], ledger.validate_ledger(actual))
-        entries = {each["path"]: each for each in actual["files"]}
-        self.assertEqual({"binary"}, {each["kind"] for each in entries[str(binary)]["blocks"]})
-        self.assertEqual({"mode"}, {each["kind"] for each in entries[str(executable)]["blocks"]})
-        self.assertEqual({"mode": None, "sha256": None}, entries[str(added)]["base"])
-        self.assertEqual(hashlib.sha256(b"").hexdigest(), entries[str(empty)]["base"]["sha256"])
-        anchor = ledger.capture_anchor({"side": "base", "path": str(link)}, actual)
-        self.assertEqual("120000", anchor["mode"])
-        self.assertEqual(hashlib.sha256(b"original-target").hexdigest(), anchor["range_sha256"])
-
-    def test_snapshot_scope_requires_original_bytes_and_rejects_git_inputs(self):
-        source = self.repo / self.source_path
-        snapshots = self.capture_snapshots([source])
-        for option in ("--base-ref", "--head-ref", "--candidate-files", "--github-files"):
-            with self.subTest(option=option), self.assertRaisesRegex(RuntimeError, "cannot be combined"):
-                arguments = self.snapshot_arguments(snapshots)
-                setattr(arguments, option.removeprefix("--").replace("-", "_"), "unexpected")
-                ledger.cmd_init(arguments)
-        material = json.loads(snapshots.read_text())
-        del material["files"][0]["base"]["bytes_base64"]
-        snapshots.write_text(json.dumps(material))
-        with self.assertRaises(RuntimeError):
-            ledger.cmd_init(self.snapshot_arguments(snapshots))
-        self.assertEqual([], list(ledger.ledger_root().iterdir()))
-
-    def test_snapshot_scope_preserves_original_anchors_and_rejects_undeclared_base(self):
-        source = self.repo / self.source_path
-        original = source.read_bytes()
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"candidate\n")
-        actual = self.create_valid_ledger(snapshot_file=snapshots)
-        anchor = ledger.capture_anchor({"side": "base", "path": str(source)}, actual)
-        self.assertEqual(hashlib.sha256(original).hexdigest(), anchor["sha256"])
-        with self.assertRaisesRegex(RuntimeError, "snapshot is unavailable"):
-            ledger.capture_anchor({"side": "base", "path": str(self.repo / self.owner_path)}, actual)
-        with self.assertRaisesRegex(RuntimeError, "absolute paths"):
-            ledger.capture_anchor({"side": "candidate", "path": self.source_path}, actual)
-
-    def test_snapshot_changes_invalidate_passes_and_batch_without_persisting(self):
-        source = self.repo / self.source_path
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"candidate\n")
-        actual = self.create_valid_ledger(snapshot_file=snapshots)
-        original_ledger = self.ledger_file.read_bytes()
-        original_manifest = snapshots.read_bytes()
-        source.write_bytes(b"later candidate\n")
-        self.assertTrue(ledger.validate_current_basis(actual))
-        with self.assertRaises(RuntimeError):
-            ledger.cmd_batch(self.batch_arguments([["add-pass", "--focus", "convergence", "--new-findings", "0"]]))
-        self.assertEqual(original_ledger, self.ledger_file.read_bytes())
-        self.assertEqual(original_manifest, snapshots.read_bytes())
-
-    def test_snapshot_rule_and_manifest_changes_invalidate_review(self):
-        source = self.repo / self.source_path
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"candidate\n")
-        actual = self.create_valid_ledger(snapshot_file=snapshots)
-        (self.repo / "Rules.md").write_text("Updated rule.\n")
-        self.assertTrue(ledger.validate_current_basis(actual))
-        snapshots.write_bytes(snapshots.read_bytes() + b"\n")
-        with self.assertRaisesRegex(RuntimeError, "Original file snapshots changed"):
-            ledger.validate_current_basis(actual)
-        snapshots.unlink()
-        with self.assertRaises(FileNotFoundError):
-            ledger.validate_current_basis(actual)
-
-    def test_snapshot_session_keeps_original_baseline_after_candidate_changes(self):
-        source = self.repo / self.source_path
-        snapshots = self.capture_snapshots([source])
-        original_manifest = snapshots.read_bytes()
-        source.write_bytes(b"first candidate\n")
-        historical = self.create_session([[], []], snapshot_file=snapshots)
-        source.write_bytes(b"second candidate\n")
-        current = self.create_session([[], []], review_start=2, snapshot_file=snapshots)
-        actual = {**current, "reviews": historical["reviews"] + current["reviews"], "rounds": historical["rounds"] + current["rounds"]}
-        self.assertEqual([], ledger.validate_session(actual))
-        self.assertEqual(original_manifest, snapshots.read_bytes())
-
-    def test_snapshot_session_preserves_confirmed_finding_dispositions(self):
-        source = self.repo / self.source_path
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"candidate\n")
-        actual = self.create_session([[("F1", "confirmed")], []], snapshot_file=snapshots)
-        self.assertEqual("Not Mergeable", actual["result"])
-        self.assertEqual([], ledger.validate_session(actual))
-
-    def test_snapshot_session_rejects_replaced_baseline_and_missing_historical_snapshot(self):
-        source = self.repo / self.source_path
-        original_bytes = source.read_bytes()
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"first candidate\n")
-        historical = self.create_session([[], []], snapshot_file=snapshots)
-        replacement = self.capture_snapshots([source], "replacement.json")
-        source.write_bytes(b"second candidate\n")
-        current = self.create_session([[], []], review_start=2, snapshot_file=replacement)
-        actual = {**current, "reviews": historical["reviews"] + current["reviews"], "rounds": historical["rounds"] + current["rounds"]}
-        self.assertIn("The original task baseline changed across review rounds", ledger.validate_session(actual))
-        replacement.unlink()
-        source.write_bytes(original_bytes)
-        replacement = self.capture_snapshots([source], "replacement.json")
-        source.write_bytes(b"second candidate\n")
-        current = self.create_session([[], []], review_start=2, snapshot_file=replacement)
-        actual = {**current, "reviews": historical["reviews"] + current["reviews"], "rounds": historical["rounds"] + current["rounds"]}
-        self.assertEqual([], ledger.validate_session(actual))
-        snapshots.unlink()
-        with self.assertRaises(FileNotFoundError):
-            ledger.validate_session(actual)
-
-    def test_snapshot_extension_preserves_root_baseline_and_historical_findings(self):
-        source = self.repo / self.source_path
-        original = self.capture_snapshots([source])
-        original_bytes = original.read_bytes()
-        source.write_bytes(b"first candidate\n")
-        historical = self.create_session([[("F1", "confirmed")], []], snapshot_file=original)
-        historical_report = json.loads(Path(historical["reviews"][0]["path"]).read_text())
-        historical_ledger = ledger.read_ledger(historical_report["ledger"])
-        external = self.private_root / "Added Policy.md"
-        external.write_bytes(b"original external content\n")
-        extension = self.capture_snapshots([external], "extension.json", extend=original)
-        source.write_bytes(b"fixed candidate\n")
-        external.write_bytes(b"updated external content\n")
-        current = self.create_session([[], []], review_start=2, snapshot_file=extension)
-        for review_round in current["rounds"]:
-            review_round["findings"] = json.loads(json.dumps(historical["rounds"][-1]["findings"]))
-            for finding in review_round["findings"]:
-                finding.update({"status": "withdrawn", "reason": "The updated candidate fixes the original triggering path.",
-                                "evidence": review_round["report_reviews"][0]["evidence"]})
-        actual = {**current, "reviews": historical["reviews"] + current["reviews"], "rounds": historical["rounds"] + current["rounds"]}
-        self.assertEqual([], ledger.validate_session(actual))
-        current_report = json.loads(Path(current["reviews"][0]["path"]).read_text())
-        current_ledger = ledger.read_ledger(current_report["ledger"])
-        self.assertEqual(historical_ledger["basis"]["baseline"], current_ledger["basis"]["baseline"])
-        self.assertEqual({str(source), str(external)}, {each["path"] for each in current_ledger["files"]})
-        self.assertEqual(original_bytes, original.read_bytes())
-
-    def test_snapshot_extension_with_unchanged_targets_requires_new_review_basis(self):
-        source = self.repo / self.source_path
-        original = self.capture_snapshots([source])
-        source.write_bytes(b"candidate\n")
-        historical = self.create_session([[], []], snapshot_file=original)
-        historical_report = json.loads(Path(historical["reviews"][0]["path"]).read_text())
-        historical_ledger = ledger.read_ledger(historical_report["ledger"])
-        targets = [self.private_root / "Unchanged Policy.md", self.private_root / "Unchanged Config.toml"]
-        for target in targets:
-            target.write_bytes(b"unchanged declared target\n")
-        extension = self.capture_snapshots(targets, "extension.json", extend=original)
-        current = self.create_session([[], []], review_start=2, snapshot_file=extension)
-        current_report = json.loads(Path(current["reviews"][0]["path"]).read_text())
-        current_ledger = ledger.read_ledger(current_report["ledger"])
-        self.assertEqual(historical_ledger["basis"]["delta"], current_ledger["basis"]["delta"])
-        self.assertEqual(historical_ledger["basis"]["baseline"], current_ledger["basis"]["baseline"])
-        self.assertNotEqual(ledger.basis_fingerprint(historical_ledger), ledger.basis_fingerprint(current_ledger))
-        self.assertNotEqual(ledger.review_input_identity(historical_ledger), ledger.review_input_identity(current_ledger))
-        self.assertEqual(historical_ledger["passes"][-1]["basis_fingerprint"], ledger.basis_fingerprint(historical_ledger))
-        actual = {**current, "reviews": historical["reviews"] + current["reviews"], "rounds": historical["rounds"] + current["rounds"]}
-        self.assertEqual([], ledger.validate_session(actual))
-        pending = json.loads(json.dumps(actual))
-        pending["reviews"].pop()
-        pending["rounds"][-1]["report_reviews"].pop()
-        self.assertIn("Each review basis requires an initial pair of independent original assessments", ledger.validate_session(pending))
-        equivalent = self.private_root / "equivalent-extension.json"
-        material = json.loads(extension.read_text())
-        material["files"].reverse()
-        equivalent.write_text(json.dumps(material, indent=4))
-        equivalent_ledger = self.create_valid_ledger(snapshot_file=equivalent)
-        self.assertNotEqual(current_ledger["scope"]["file_snapshots"]["sha256"], equivalent_ledger["scope"]["file_snapshots"]["sha256"])
-        self.assertEqual(ledger.basis_fingerprint(current_ledger), ledger.basis_fingerprint(equivalent_ledger))
-        self.assertEqual(ledger.review_input_identity(current_ledger), ledger.review_input_identity(equivalent_ledger))
-
-    def test_snapshot_extension_session_rejects_changed_or_missing_original_parent(self):
-        source = self.repo / self.source_path
-        original = self.capture_snapshots([source])
-        original_bytes = original.read_bytes()
-        external = self.private_root / "Added Policy.md"
-        external.write_bytes(b"original external content\n")
-        extension = self.capture_snapshots([external], "extension.json", extend=original)
-        source.write_bytes(b"candidate\n")
-        actual = self.create_session([[], []], snapshot_file=extension)
-        self.assertEqual([], ledger.validate_session(actual))
-        original.write_bytes(original_bytes + b"\n")
-        with self.assertRaises(RuntimeError):
-            ledger.validate_session(actual)
-        original.write_bytes(original_bytes)
-        original.unlink()
-        with self.assertRaises((OSError, RuntimeError)):
-            ledger.validate_session(actual)
-
-    def test_snapshot_restored_candidate_has_reviewable_empty_delta(self):
-        source = self.repo / self.source_path
-        original_bytes = source.read_bytes()
-        snapshots = self.capture_snapshots([source])
-        source.write_bytes(b"temporary candidate\n")
-        source.write_bytes(original_bytes)
-        actual = self.create_valid_ledger(snapshot_file=snapshots)
-        self.assertEqual([], actual["files"])
-        self.assertEqual([], actual["basis"]["delta"])
-        self.assertEqual(0, actual["scope"]["changed_file_count"])
-        self.assertEqual([], ledger.validate_ledger(actual))
-        self.assertEqual([], ledger.validate_session(self.create_session([[], []], snapshot_file=snapshots)))
 
     def test_batch_matches_sequential_updates_with_less_io(self):
         actual = self.create_valid_ledger()
@@ -1705,8 +1444,8 @@ class ManageReviewLedgerTest(unittest.TestCase):
                         redirect_stdout(StringIO()), redirect_stderr(StringIO()):
                     self.assertEqual(1, ledger.main())
 
-    def create_session(self, review_findings, review_start=0, committed=False, snapshot_file=None):
-        original = self.create_valid_ledger(committed, snapshot_file)
+    def create_session(self, review_findings, review_start=0, committed=False):
+        original = self.create_valid_ledger(committed)
         actual = {"reviews": [], "rounds": [], "result": "Mergeable", "feedback_mode": ""}
         findings = {}
         report_reviews = []
@@ -1726,12 +1465,7 @@ class ManageReviewLedgerTest(unittest.TestCase):
                       "result": result, "feedback_mode": "Change Request" if "Not Mergeable" == result else ""}
             actual["reviews"].append({"path": str(self.private_root / (reviewer + ".json")), "sha256": ""})
             self.save_session_report(actual, index, report)
-            if actual_ledger["files"]:
-                anchor = actual_ledger["files"][0]["coverage"][0]["anchors"][0]
-            else:
-                source = actual_ledger["basis"]["sources"][0]
-                anchor = ledger.capture_anchor({"side": "source", "origin": source["origin"], "path": source["path"]}, actual_ledger)
-            evidence = [{"reviewer": reviewer, "anchor": anchor}]
+            evidence = [{"reviewer": reviewer, "anchor": actual_ledger["files"][0]["coverage"][0]["anchors"][0]}]
             report_reviews.append({"reviewer": reviewer, "reason": "Checked the report against its owning source contract.",
                                    "counter_evidence": "Checked the supported alternative behavior.", "evidence": evidence})
             for finding in actual_ledger["findings"]:
@@ -1781,32 +1515,19 @@ class ManageReviewLedgerTest(unittest.TestCase):
         operations_file.write_text(json.dumps(operations), encoding="utf-8")
         return ledger.build_parser().parse_args(["batch", "--ledger", str(self.ledger_file), "--operations", str(operations_file)])
 
-    def capture_snapshots(self, paths, name="original-files.json", extend=None):
-        result = self.private_root / name
-        capture_file_snapshots([str(each) for each in paths], result, extend=extend)
-        return result
-
-    def snapshot_arguments(self, snapshot_file):
-        return ledger.build_parser().parse_args(["init", "--repo-root", str(self.repo), "--pr", "synthetic-review",
-                                                 "--file-snapshots", str(snapshot_file), "--review-basis", str(self.basis_file)])
-
-    def initialize_ledger(self, committed=False, snapshot_file=None):
-        if snapshot_file is not None:
-            arguments = self.snapshot_arguments(snapshot_file)
-        else:
-            values = ["init", "--repo-root", str(self.repo), "--pr", "synthetic-review", "--base-ref", self.base_sha,
-                      "--head-ref", self.git("rev-parse", "HEAD").strip() if committed else "HEAD", "--review-basis", str(self.basis_file)]
-            if not committed:
-                values.extend(["--candidate-files", str(self.candidate_files)])
-            arguments = ledger.build_parser().parse_args(values)
+    def initialize_ledger(self, committed=False):
+        arguments = ["init", "--repo-root", str(self.repo), "--pr", "synthetic-review", "--base-ref", self.base_sha,
+                     "--head-ref", self.git("rev-parse", "HEAD").strip() if committed else "HEAD", "--review-basis", str(self.basis_file)]
+        if not committed:
+            arguments.extend(["--candidate-files", str(self.candidate_files)])
         output = StringIO()
         with redirect_stdout(output):
-            ledger.cmd_init(arguments)
+            ledger.cmd_init(ledger.build_parser().parse_args(arguments))
         self.ledger_file = Path(output.getvalue().splitlines()[0].removeprefix("ledger="))
         return ledger.read_ledger(self.ledger_file)
 
-    def create_valid_ledger(self, committed=False, snapshot_file=None):
-        actual = self.initialize_ledger(committed, snapshot_file)
+    def create_valid_ledger(self, committed=False):
+        actual = self.initialize_ledger(committed)
         for entry in actual["files"]:
             coverage = []
             for block in entry["blocks"]:
@@ -1816,10 +1537,9 @@ class ManageReviewLedgerTest(unittest.TestCase):
                 anchor = {"side": side, "path": block[f"{side}_path"]}
                 if "text" == block["kind"]:
                     anchor.update({"start_line": block[f"{side}_start"], "end_line": block[f"{side}_start"] + block[f"{side}_count"] - 1})
-                owner_path = str(self.repo / self.owner_path) if snapshot_file is not None else self.owner_path
                 coverage.append({"block": block["id"], "behavior": "Review the changed owning behavior.", "risk_axes": ["correctness"],
                                  "requirements": ["repository:Rules.md", "user:synthetic-task"], "counter_evidence": "Check the stable owner contract.",
-                                 "anchors": [anchor, {"side": "candidate", "path": owner_path, "start_line": 1, "end_line": 1}]})
+                                 "anchors": [anchor, {"side": "candidate", "path": self.owner_path, "start_line": 1, "end_line": 1}]})
             coverage_file = self.private_root / "coverage.json"
             coverage_file.write_text(json.dumps(coverage), encoding="utf-8")
             args = ledger.build_parser().parse_args(["mark-file", "--ledger", str(self.ledger_file), "--path", entry["path"], "--status", "reviewed",
@@ -1833,7 +1553,6 @@ class ManageReviewLedgerTest(unittest.TestCase):
         return actual
 
     def create_confirmed_finding(self, finding_id):
-        actual = ledger.read_ledger(self.ledger_file)
         return {
             "id": finding_id,
             "status": "confirmed",
@@ -1844,9 +1563,9 @@ class ManageReviewLedgerTest(unittest.TestCase):
             "counter_evidence": ["strongest counterexample"],
             "necessity": "required for correctness",
             "scope_proof": "introduced by reviewed change",
-            "files": [actual["files"][0]["path"]],
+            "files": ["src/main/java/Foo.java"],
             "reason": "",
-            "anchors": actual["files"][0]["coverage"][0]["anchors"],
+            "anchors": ledger.read_ledger(self.ledger_file)["files"][0]["coverage"][0]["anchors"],
             "rule": "",
             "applicability": [],
         }

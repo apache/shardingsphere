@@ -21,18 +21,15 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sys
 from collections import defaultdict
-from pathlib import Path
 from typing import Iterable
 
 sys.dont_write_bytecode = True
 
 from resolve_review_scope import (
-    ChangedFile, categorize, compare_github_files, final_paths, get_repo_root, load_file_snapshots, parse_name_status,
-    resolve_candidate_changes, resolve_snapshot_changes, run_git,
+    ChangedFile, categorize, compare_github_files, final_paths, get_repo_root, parse_name_status, resolve_candidate_changes, run_git,
 )
 
 
@@ -60,25 +57,6 @@ def group_by_category(changed_files: list[ChangedFile]) -> dict[str, list[dict[s
 
 
 def build_inventory(args: argparse.Namespace) -> dict[str, object]:
-    snapshot_file = args.file_snapshots
-    if snapshot_file:
-        if any(getattr(args, each) for each in ("base_ref", "head_ref", "previous_head", "github_files", "candidate_files")):
-            raise RuntimeError("File snapshots cannot be combined with Git refs or Git file scope")
-        changed_files = resolve_snapshot_changes(load_file_snapshots(snapshot_file))
-        return {
-            "version": 2,
-            "scope": {
-                "mode": "file-snapshots",
-                "file_snapshots": {"path": str(Path(snapshot_file).absolute()), "sha256": hashlib.sha256(Path(snapshot_file).read_bytes()).hexdigest()},
-                "changed_file_count": len(changed_files),
-                "github_files": {"provided": False},
-            },
-            "dirty_worktree": None,
-            "changed_files_by_category": group_by_category(changed_files),
-            "latest_delta": None,
-        }
-    if not args.base_ref or not args.head_ref:
-        raise RuntimeError("Git review inventory requires both --base-ref and --head-ref")
     repo_root = get_repo_root()
     base_sha = run_git(["rev-parse", args.base_ref], repo_root).strip()
     head_sha = run_git(["rev-parse", args.head_ref], repo_root).strip()
@@ -142,19 +120,11 @@ def render_markdown(inventory: dict[str, object]) -> str:
         "",
         "## Scope",
         "",
+        f"- Base: `{scope['base_ref']}` -> `{scope['base_sha']}`",
+        f"- Head: `{scope['head_ref']}` -> `{scope['head_sha']}`",
+        f"- Merge base: `{scope['merge_base']}`",
+        f"- Changed files: `{scope['changed_file_count']}`",
     ]
-    if scope.get("mode") == "file-snapshots":
-        lines.extend([
-            f"- Original file snapshots: `{scope['file_snapshots']['path']}`",
-            f"- Snapshot SHA256: `{scope['file_snapshots']['sha256']}`",
-        ])
-    else:
-        lines.extend([
-            f"- Base: `{scope['base_ref']}` -> `{scope['base_sha']}`",
-            f"- Head: `{scope['head_ref']}` -> `{scope['head_sha']}`",
-            f"- Merge base: `{scope['merge_base']}`",
-        ])
-    lines.append(f"- Changed files: `{scope['changed_file_count']}`")
     if github_files.get("provided"):
         lines.append(f"- GitHub file list matched local scope: `{github_files['matched']}`")
         if not github_files["matched"]:
@@ -163,11 +133,10 @@ def render_markdown(inventory: dict[str, object]) -> str:
     else:
         lines.append("- GitHub file list matched local scope: `not checked`")
     dirty_worktree = inventory["dirty_worktree"]
-    if dirty_worktree is not None:
-        lines.extend(["", "## Dirty Worktree", "", f"- Changed entries: `{dirty_worktree['count']}`"])
-        lines.extend(markdown_list(dirty_worktree["sample"]))
-        if dirty_worktree["truncated_count"]:
-            lines.append(f"- ... {dirty_worktree['truncated_count']} more")
+    lines.extend(["", "## Dirty Worktree", "", f"- Changed entries: `{dirty_worktree['count']}`"])
+    lines.extend(markdown_list(dirty_worktree["sample"]))
+    if dirty_worktree["truncated_count"]:
+        lines.append(f"- ... {dirty_worktree['truncated_count']} more")
     lines.extend(["", "## Changed Files By Category", ""])
     for category, changed_files in inventory["changed_files_by_category"].items():
         sample, truncated = limited(changed_files, 20)
@@ -189,12 +158,11 @@ def render_markdown(inventory: dict[str, object]) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build deterministic scope inventory for review-pr.")
-    parser.add_argument("--base-ref", help="Base ref or SHA used to compute merge-base; required for Git scope")
-    parser.add_argument("--head-ref", help="PR head ref or SHA; required for Git scope")
+    parser.add_argument("--base-ref", required=True, help="Base ref or SHA used to compute merge-base")
+    parser.add_argument("--head-ref", required=True, help="PR head ref or SHA")
     parser.add_argument("--previous-head", help="Previous reviewed PR head ref or SHA")
     parser.add_argument("--github-files", help="File containing GitHub changed paths, one per line")
     parser.add_argument("--candidate-files", help="Exact repository-relative local candidate paths, one per line")
-    parser.add_argument("--file-snapshots", help="Original delivery file snapshots with current absolute candidate paths; no Git required")
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown", help="Output format")
     return parser.parse_args()
 
@@ -203,7 +171,7 @@ def main() -> int:
     args = parse_args()
     try:
         inventory = build_inventory(args)
-    except (OSError, RuntimeError, ValueError) as ex:
+    except (OSError, RuntimeError) as ex:
         print(f"error: {ex}", file=sys.stderr)
         return 1
     if "json" == args.format:

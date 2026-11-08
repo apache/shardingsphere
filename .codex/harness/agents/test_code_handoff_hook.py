@@ -20,10 +20,9 @@
 from __future__ import annotations
 
 import importlib.util
+from itertools import product
 import json
-import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -424,26 +423,6 @@ class CodeHandoffHookTest(unittest.TestCase):
             self.assertIn("nonempty Commit Message", actual["reason"])
             self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
 
-    def test_stop_derives_commit_requirement_from_registered_changed_paths(self) -> None:
-        for filename, requires_commit in (("AGENTS.md", False), ("hook.py", True)):
-            with self.subTest(filename=filename), tempfile.TemporaryDirectory() as directory:
-                parent = Path(directory)
-                target = parent / filename
-                target.write_text("Original content.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-                state_directory = parent / "state"
-                code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-                target.write_text("Changed content.\n", encoding="utf-8")
-                actual = code_handoff_hook.process_event(self._stop_event("Content updated."), state_directory)
-                self.assertEqual("block", actual["decision"])
-                actual = code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory)
-                if requires_commit:
-                    self.assertEqual("block", actual["decision"])
-                    self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
-                else:
-                    self.assertEqual({}, actual)
-
     def test_unchanged_patch_requires_no_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as state:
             repository_path = self._initialize_repository(Path(repository), "README.md")
@@ -457,500 +436,396 @@ class CodeHandoffHookTest(unittest.TestCase):
             self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No change was needed."), state_directory))
             self.assertEqual([], list(state_directory.iterdir()))
 
-    def test_registered_shell_change_outside_git_requires_handoff(self) -> None:
+    def test_ignored_untracked_patch_changes_require_no_handoff(self) -> None:
+        for operation, suffix, input_field in (("Add", ".md", "command"), ("Update", ".java", "patch"), ("Delete", ".md", "command")):
+            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                repository = self._initialize_repository(parent / "repository", "README.md")
+                (repository / ".gitignore").write_text("target/\n", encoding="utf-8")
+                workdir = repository / "work"
+                workdir.mkdir()
+                target = repository / "target" / ("generated report" + suffix)
+                target.parent.mkdir()
+                if operation != "Add":
+                    target.write_text("Original content.\n", encoding="utf-8")
+                body = {"Add": "+Changed content.\n", "Update": "@@\n-Original content.\n+Changed content.\n", "Delete": ""}[operation]
+                event = self._post_tool_event(f"*** {operation} File: ../target/{target.name}\n{body}")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(workdir)})
+                event["tool_input"] = {input_field: event["tool_input"]["command"]}
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                if operation == "Delete":
+                    target.unlink()
+                else:
+                    target.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Ignored file updated."), state_directory))
+                self.assertEqual([], list(state_directory.glob("*.pending")))
+
+    def test_bulk_patch_pre_tool_deadline(self) -> None:
+        worker = (
+            "import importlib.util,json,sys; from pathlib import Path; "
+            "spec=importlib.util.spec_from_file_location('measured_hook',sys.argv[1]); "
+            "module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); "
+            "print(json.dumps(module.process_event(json.load(sys.stdin),Path(sys.argv[2]))))"
+        )
+        for layout in ("same-parent", "distinct-parents"):
+            with self.subTest(layout=layout), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                repository = self._initialize_repository(parent / "repository", "README.md")
+                patches = []
+                for index in range(1500):
+                    relative = f"package-{index}/report.md" if layout == "distinct-parents" else f"report-{index}.md"
+                    target = repository / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("Original content.\n", encoding="utf-8")
+                    patches.append(f"*** Update File: {relative}\n@@\n-Original content.\n+Changed content.\n")
+                event = self._post_tool_event("".join(patches))
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(repository)})
+                process = subprocess.run([sys.executable, "-B", "-c", worker, str(Path(__file__).with_name("code_handoff_hook.py")), str(parent / "state")],
+                                         input=json.dumps(event), text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, timeout=5)
+                self.assertEqual("{}\n", process.stdout)
+
+    def test_tracked_patch_paths_matching_ignore_patterns(self) -> None:
+        for operation, suffix in product(("Update", "Delete"), (".java", ".md")):
+            with self.subTest(operation=operation, suffix=suffix), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                owner = self._initialize_repository(parent / "owner", "README.md")
+                repository = self._initialize_repository(parent / "target", "README.md")
+                (repository / ".gitignore").write_text("target/\n", encoding="utf-8")
+                target = repository / "target" / ("report" + suffix)
+                target.parent.mkdir()
+                target.write_text("Original content.\n", encoding="utf-8")
+                subprocess.run(["git", "-C", str(repository), "add", "--force", "--", str(target)], check=True)
+                body = "@@\n-Original content.\n+Changed content.\n" if operation == "Update" else ""
+                event = self._post_tool_event(f"*** {operation} File: {target}\n{body}")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(owner)})
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                if operation == "Delete":
+                    target.unlink()
+                else:
+                    target.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Tracked file updated."), state_directory)
+                self.assertEqual("block", actual["decision"])
+                handoff = self._mergeable_handoff(commit_message=None) if suffix == ".md" else self._mergeable_handoff()
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(handoff), state_directory))
+
+    def test_patch_move_into_repository_requires_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            repository = self._initialize_repository(parent / "repository", "README.md")
+            source = parent / "external.java"
+            source.write_text("Original content.\n", encoding="utf-8")
+            target = repository / "reports/report.md"
+            target.parent.mkdir()
+            event = self._post_tool_event(f"*** Update File: {source}\n*** Move to: reports/report.md\n@@\n-Original content.\n+Moved content.\n")
+            event.update({"hook_event_name": "PreToolUse", "cwd": str(repository)})
+            state_directory = parent / "state"
+            code_handoff_hook.process_event(event, state_directory)
+            source.replace(target)
+            target.write_text("Moved content.\n", encoding="utf-8")
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event("Repository file added."), state_directory)
+            self.assertEqual("block", actual["decision"])
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
+
+    def test_patch_external_paths_require_no_handoff(self) -> None:
+        for path_form, input_field in (("absolute", "command"), ("traversal", "patch"), ("symlink-parent", "command")):
+            with self.subTest(path_form=path_form), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                repository = self._initialize_repository(parent / "repository", "README.md")
+                target = parent / "outside/report.java"
+                target.parent.mkdir()
+                target.write_text("Original content.\n", encoding="utf-8")
+                if path_form == "symlink-parent":
+                    (repository / "external-link").symlink_to(target.parent, target_is_directory=True)
+                    declared_path = "external-link/report.java"
+                else:
+                    declared_path = str(target) if path_form == "absolute" else "../outside/report.java"
+                event = self._post_tool_event(f"*** Update File: {declared_path}\n@@\n-Original content.\n+Changed content.\n")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(repository)})
+                event["tool_input"] = {input_field: event["tool_input"]["command"]}
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                target.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("External file updated."), state_directory))
+                self.assertEqual([], list(state_directory.glob("*.pending")))
+
+    def test_patch_symlink_ownership(self) -> None:
+        for change in ("repository-entry", "external-target"):
+            with self.subTest(change=change), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                repository = self._initialize_repository(parent / "repository", "README.md")
+                original, replacement = parent / "original.java", parent / "replacement.java"
+                original.write_text("Original content.\n", encoding="utf-8")
+                replacement.write_text("Replacement content.\n", encoding="utf-8")
+                target = repository / "reports/report.java"
+                target.parent.mkdir()
+                target.symlink_to(original)
+                event = self._post_tool_event("*** Update File: reports/report.java\n@@\n-Original content.\n+Changed content.\n")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(repository)})
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                if change == "repository-entry":
+                    target.unlink()
+                    target.symlink_to(replacement)
+                else:
+                    original.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Patch complete."), state_directory)
+                if change == "repository-entry":
+                    self.assertEqual("block", actual["decision"])
+                else:
+                    self.assertEqual({}, actual)
+
+    def test_patch_targets_in_other_repositories(self) -> None:
+        for repository_cwd, suffix, operation in product((True, False), (".java", ".md"), ("Update", "Add")):
+            with self.subTest(repository_cwd=repository_cwd, suffix=suffix, operation=operation), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                owner = self._initialize_repository(parent / "owner", "README.md")
+                repository = self._initialize_repository(parent / "target", "README.md")
+                target = repository / ("new/deep/report" + suffix if operation == "Add" else "report" + suffix)
+                if operation == "Update":
+                    target.write_text("Original content.\n", encoding="utf-8")
+                body = "+Changed content.\n" if operation == "Add" else "@@\n-Original content.\n+Changed content.\n"
+                event = self._post_tool_event(f"*** {operation} File: {target}\n{body}")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(owner if repository_cwd else parent)})
+                if not repository_cwd:
+                    event["tool_input"] = {"patch": event["tool_input"]["command"]}
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Repository file updated."), state_directory)
+                self.assertEqual("block", actual["decision"])
+                handoff = self._mergeable_handoff(commit_message=None) if suffix == ".md" else self._mergeable_handoff()
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(handoff), state_directory))
+
+    def test_patch_no_op_in_other_repository(self) -> None:
+        for repository_cwd in (True, False):
+            with self.subTest(repository_cwd=repository_cwd), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                owner = self._initialize_repository(parent / "owner", "README.md")
+                repository = self._initialize_repository(parent / "target", "report.java")
+                target = repository / "report.java"
+                event = self._post_tool_event(f"*** Update File: {target}\n@@\n-Initial content.\n+Initial content.\n")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(owner if repository_cwd else parent)})
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                target.write_text("Initial content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No change was needed."), state_directory))
+
+    def test_patch_same_basename_in_different_repositories(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            owner = self._initialize_repository(parent / "owner", "report.java")
+            repository = self._initialize_repository(parent / "target", "report.java")
+            original, other = owner / "report.java", repository / "report.java"
+            event = self._post_tool_event(
+                f"*** Update File: {original}\n@@\n-Initial content.\n+Changed content.\n"
+                f"*** Update File: {other}\n@@\n-Initial content.\n+Initial content.\n",
+            )
+            event.update({"hook_event_name": "PreToolUse", "cwd": str(owner)})
+            state_directory = parent / "state"
+            code_handoff_hook.process_event(event, state_directory)
+            original.write_text("Changed content.\n", encoding="utf-8")
+            other.write_text("Initial content.\n", encoding="utf-8")
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event("Repository file updated."), state_directory)
+            self.assertEqual("block", actual["decision"])
+
+    def test_patch_symlink_write_target_ownership(self) -> None:
+        for repository_cwd, repository_target in product((True, False), (True, False)):
+            with self.subTest(repository_cwd=repository_cwd, repository_target=repository_target), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                owner = self._initialize_repository(parent / "owner", "README.md") if repository_cwd else parent
+                target_directory = self._initialize_repository(parent / "target", "README.md") if repository_target else parent
+                target = target_directory / "report.java"
+                target.write_text("Original content.\n", encoding="utf-8")
+                link = owner / "link.md"
+                link.symlink_to(target)
+                event = self._post_tool_event(f"*** Update File: {link}\n@@\n-Original content.\n+Changed content.\n")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(owner)})
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                link.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Patch complete."), state_directory)
+                if repository_target:
+                    self.assertEqual("block", actual["decision"])
+                    actual = code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory)
+                    self.assertEqual("block", actual["decision"])
+                    self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
+                else:
+                    self.assertEqual({}, actual)
+
+    def test_patch_symlink_deletion_preserves_target_identity(self) -> None:
+        for repository_cwd in (True, False):
+            with self.subTest(repository_cwd=repository_cwd), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                owner = self._initialize_repository(parent / "owner", "README.md") if repository_cwd else parent
+                repository = self._initialize_repository(parent / "target", "report.java")
+                link = owner / "link.md"
+                link.symlink_to(repository / "report.java")
+                event = self._post_tool_event(f"*** Delete File: {link}")
+                event.update({"hook_event_name": "PreToolUse", "cwd": str(owner)})
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                link.unlink()
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Link removed."), state_directory)
+                if repository_cwd:
+                    self.assertEqual("block", actual["decision"])
+                    self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
+                else:
+                    self.assertEqual({}, actual)
+
+    def test_status_change_without_content_requires_no_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as state:
+            repository_path = self._initialize_repository(Path(repository), "Foo.java")
+            state_directory = Path(state)
+            event = self._shell_event("PreToolUse", repository_path)
+            code_handoff_hook.process_event(event, state_directory)
+            subprocess.run(["git", "-C", str(repository_path), "add", "--", "Foo.java"], check=True)
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Content is unchanged."), state_directory))
+
+    def test_external_change_requires_no_handoff(self) -> None:
         for use_repository in (True, False):
             with self.subTest(use_repository=use_repository), tempfile.TemporaryDirectory() as directory:
                 parent = Path(directory)
                 repository = self._initialize_repository(parent / "repository", "README.md")
-                report = parent / "report.md"
-                report.write_text("Original report.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(report)], manifest)
+                target = parent / "external.py"
+                target.write_text("Original content.\n", encoding="utf-8")
                 state_directory = parent / "state"
-                code_handoff_hook.register_targets("foo_session", manifest, state_directory)
                 event = self._shell_event("PreToolUse", repository if use_repository else parent)
                 code_handoff_hook.process_event(event, state_directory)
-                report.write_text("Changed report.\n", encoding="utf-8")
+                target.write_text("Changed content.\n", encoding="utf-8")
                 event["hook_event_name"] = "PostToolUse"
                 code_handoff_hook.process_event(event, state_directory)
-                actual = code_handoff_hook.process_event(self._stop_event("Report updated."), state_directory)
-                self.assertEqual("block", actual["decision"])
-
-    def test_registered_non_git_unchanged_target_requires_no_handoff(self) -> None:
-        for rewrite in (False, True):
-            with self.subTest(rewrite=rewrite), tempfile.TemporaryDirectory() as directory:
-                parent = Path(directory)
-                target = parent / "report.md"
-                target.write_text("Original report.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-                state_directory = parent / "state"
-                code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-                event = self._shell_event("PreToolUse", parent)
-                code_handoff_hook.process_event(event, state_directory)
-                if rewrite:
-                    target.write_text("Original report.\n", encoding="utf-8")
-                event["hook_event_name"] = "PostToolUse"
-                code_handoff_hook.process_event(event, state_directory)
-                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No change was needed."), state_directory))
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("External file updated."), state_directory))
                 self.assertEqual([], list(state_directory.glob("*.pending")))
 
-    def test_stop_detects_registered_changes_from_other_tools(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "SKILL.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            target.write_text("Changed instructions.\n", encoding="utf-8")
-            code_handoff_hook.process_event({"hook_event_name": "PostToolUse", "tool_name": "another_writer"}, state_directory)
-            actual = code_handoff_hook.process_event(self._stop_event("Instructions updated."), state_directory)
-            self.assertEqual("block", actual["decision"])
-
-    def test_private_review_material_requires_no_handoff(self) -> None:
+    def test_mixed_change_requires_repository_review(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             parent = Path(directory)
             repository = self._initialize_repository(parent / "repository", "README.md")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(repository / "README.md")], manifest)
+            target = parent / "external.py"
+            target.write_text("Original content.\n", encoding="utf-8")
             state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
             event = self._shell_event("PreToolUse", repository)
             code_handoff_hook.process_event(event, state_directory)
-            (parent / "private-review.md").write_text("Internal review notes.\n", encoding="utf-8")
+            (repository / "README.md").write_text("Changed documentation.\n", encoding="utf-8")
+            target.write_text("Changed content.\n", encoding="utf-8")
             event["hook_event_name"] = "PostToolUse"
             code_handoff_hook.process_event(event, state_directory)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Read-only review complete."), state_directory))
-            self.assertEqual([], list(state_directory.glob("*.pending")))
+            actual = code_handoff_hook.process_event(self._stop_event("Files updated."), state_directory)
+            self.assertEqual("block", actual["decision"])
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
+
+    def test_declared_git_inspection_failure_requires_handoff(self) -> None:
+        for failure in ("index", "config", "selected-config"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                parent = Path(directory)
+                owner = self._initialize_repository(parent / "owner", "README.md")
+                repository = self._initialize_repository(parent / "target", "report.md")
+                target = repository / "report.md"
+                subprocess.run(["git", "-C", str(repository), "add", "--", "report.md"], check=True)
+                (repository / ".git" / ("index" if failure == "index" else "config")).write_bytes(b"broken-index" if failure == "index" else b"[broken\n")
+                arguments = ["ls-files", "--cached", "--others", "--exclude-standard", "--full-name", "-z"] if failure == "index" else ["rev-parse", "--show-toplevel"]
+                failed = subprocess.run(["git", "-C", str(repository), *arguments], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+                self.assertNotEqual(0, failed.returncode)
+                subprocess.run(["git", "-C", str(owner), "status", "--porcelain=v1"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+                if failure == "selected-config":
+                    event = self._shell_event("PreToolUse", owner)
+                    event["tool_input"] = {"cmd": "write report.md", "workdir": str(repository)}
+                else:
+                    event = self._post_tool_event(f"*** Update File: {target}\n@@\n-Initial content.\n+Changed content.\n")
+                    event.update({"hook_event_name": "PreToolUse", "cwd": str(owner)})
+                state_directory = parent / "state"
+                code_handoff_hook.process_event(event, state_directory)
+                target.write_text("Changed content.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Repository file updated."), state_directory)
+                self.assertEqual("block", actual["decision"])
+
+    def test_failed_git_status_requires_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as state:
+            repository_path = self._initialize_repository(Path(repository), "README.md")
+            state_directory = Path(state)
+            event = self._shell_event("PreToolUse", repository_path)
+            run_git = code_handoff_hook._run_git
+
+            def fail_status(directory: Path, *arguments: str):
+                return None if arguments[0] == "status" else run_git(directory, *arguments)
+
+            with patch.object(code_handoff_hook, "_run_git", side_effect=fail_status):
+                code_handoff_hook.process_event(event, state_directory)
+                (repository_path / "README.md").write_text("Changed documentation.\n", encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event("Documentation updated."), state_directory)
+            self.assertEqual("block", actual.get("decision"))
+
+    def test_invalid_pre_tool_snapshot_requires_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            parent = Path(directory)
+            state_directory = parent / "state"
+            event = self._shell_event("PreToolUse", parent)
+            code_handoff_hook.process_event(event, state_directory)
+            next(state_directory.glob("*.before.json")).write_text("{", encoding="utf-8")
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            actual = code_handoff_hook.process_event(self._stop_event("External work completed."), state_directory)
+            self.assertEqual("block", actual["decision"])
 
     def test_restore_keeps_an_existing_pending_review(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
+            repository = self._initialize_repository(parent / "repository", "AGENTS.md")
             state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            event = self._shell_event("PreToolUse", parent)
-            code_handoff_hook.process_event(event, state_directory)
-            target.write_text("Changed instructions.\n", encoding="utf-8")
-            event["hook_event_name"] = "PostToolUse"
-            code_handoff_hook.process_event(event, state_directory)
-            target.write_text("Original instructions.\n", encoding="utf-8")
+            for content in ("Changed instructions.\n", "Initial content.\n"):
+                event = self._shell_event("PreToolUse", repository)
+                code_handoff_hook.process_event(event, state_directory)
+                (repository / "AGENTS.md").write_text(content, encoding="utf-8")
+                event["hook_event_name"] = "PostToolUse"
+                code_handoff_hook.process_event(event, state_directory)
             actual = code_handoff_hook.process_event(self._stop_event("Task Status: Completed\nThe change was restored."), state_directory)
             self.assertEqual("block", actual["decision"])
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
             self.assertEqual([], list(state_directory.glob("*.pending")))
 
-    def test_registered_review_tracks_later_changes_without_rebasing(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "report.md"
-            target.write_text("Original report.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            original_manifest = manifest.read_bytes()
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            target.write_text("Reviewed report.\n", encoding="utf-8")
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No further changes."), state_directory))
-            target.write_text("Later report.\n", encoding="utf-8")
-            actual = code_handoff_hook.process_event(self._stop_event("Follow-up complete."), state_directory)
-            self.assertEqual("block", actual["decision"])
-            self.assertEqual(original_manifest, manifest.read_bytes())
-
-    def test_registration_preserves_the_original_baseline(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            target.write_text("Changed instructions.\n", encoding="utf-8")
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            actual = code_handoff_hook.process_event(self._stop_event("Instructions updated."), state_directory)
-            self.assertEqual("block", actual["decision"])
-
-    def test_registration_rejects_a_replacement_manifest(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            original = parent / "original.json"
-            replacement = parent / "replacement.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], original)
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], replacement)
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", original, state_directory)
-            with self.assertRaisesRegex(ValueError, "already has an original deliverable manifest"):
-                code_handoff_hook.register_targets("foo_session", replacement, state_directory)
-
-    def test_stop_rejects_a_changed_original_manifest(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            manifest.write_bytes(manifest.read_bytes() + b"\n")
-            with self.assertRaisesRegex(ValueError, "original deliverable manifest changed"):
-                code_handoff_hook.process_event(self._stop_event("Review complete."), state_directory)
-
-    def test_unchanged_registered_task_closes_only_with_completed_status(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            following_manifest = parent / "following.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], following_manifest)
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Task Status: Awaiting User"), state_directory))
-            with self.assertRaisesRegex(ValueError, "completed prior handoff with no pending review"):
-                code_handoff_hook.register_targets("foo_session", following_manifest, state_directory, new_task=True)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(
-                "Task Status: Completed\nEvidence: No deliverable content changed, so no review was required.",
-            ), state_directory))
-            code_handoff_hook.register_targets("foo_session", following_manifest, state_directory, new_task=True)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No changes."), state_directory))
-
-    def test_new_task_registration_requires_a_completed_handoff(self) -> None:
-        for register_first in (False, True):
-            with self.subTest(register_first=register_first), tempfile.TemporaryDirectory() as directory:
-                parent = Path(directory)
-                target = parent / "AGENTS.md"
-                target.write_text("Original instructions.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-                state_directory = parent / "state"
-                if register_first:
-                    code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-                with self.assertRaisesRegex(ValueError, "completed prior handoff with no pending review"):
-                    code_handoff_hook.register_targets("foo_session", manifest, state_directory, new_task=True)
-
-    def test_new_task_registration_preserves_a_pending_follow_up(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            target.write_text("Reviewed instructions.\n", encoding="utf-8")
-            code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory)
-            event = self._shell_event("PreToolUse", parent)
-            code_handoff_hook.process_event(event, state_directory)
-            target.write_text("Follow-up instructions.\n", encoding="utf-8")
-            event["hook_event_name"] = "PostToolUse"
-            code_handoff_hook.process_event(event, state_directory)
-            following_manifest = parent / "following.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], following_manifest)
-            with self.assertRaisesRegex(ValueError, "completed prior handoff with no pending review"):
-                code_handoff_hook.register_targets("foo_session", following_manifest, state_directory, new_task=True)
-
-    def test_new_task_registration_captures_later_user_state(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            original_manifest = parent / "original.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], original_manifest)
-            original_bytes = original_manifest.read_bytes()
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", original_manifest, state_directory)
-            target.write_text("Reviewed instructions.\n", encoding="utf-8")
-            code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory)
-            target.write_text("User's later instructions.\n", encoding="utf-8")
-            following_manifest = parent / "following.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], following_manifest)
-            with self.assertRaisesRegex(ValueError, "already has an original deliverable manifest"):
-                code_handoff_hook.register_targets("foo_session", following_manifest, state_directory)
-            code_handoff_hook.register_targets("foo_session", following_manifest, state_directory, new_task=True)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No further changes."), state_directory))
-            target.write_text("New task instructions.\n", encoding="utf-8")
-            actual = code_handoff_hook.process_event(self._stop_event("New task complete."), state_directory)
-            self.assertEqual("block", actual["decision"])
-            self.assertEqual(original_bytes, original_manifest.read_bytes())
-
-    def test_append_targets_preserves_pending_code_review_and_originals(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            source = parent / "hook.py"
-            source.write_text("Original source.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(source)], manifest)
-            original_manifest = manifest.read_bytes()
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            source.write_text("Changed source.\n", encoding="utf-8")
-            code_handoff_hook.process_event(self._stop_event("Source updated."), state_directory)
-            pending = next(state_directory.glob("*.pending")).read_bytes()
-            addition = parent / "AGENTS.md"
-            addition.write_text("Original instructions.\n", encoding="utf-8")
-            extension = parent / "extension.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(addition)], extension, extend=manifest)
-            code_handoff_hook.register_targets("foo_session", extension, state_directory, append_targets=True)
-            self.assertEqual(pending, next(state_directory.glob("*.pending")).read_bytes())
-            source.write_text("Original source.\n", encoding="utf-8")
-            addition.write_text("Changed instructions.\n", encoding="utf-8")
-            actual = code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory)
-            self.assertEqual("block", actual["decision"])
-            self.assertIn("nonempty Commit Message", actual["reason"])
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff()), state_directory))
-            self.assertEqual(original_manifest, manifest.read_bytes())
-
-    def test_append_targets_preserves_prior_reviewed_content(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            original = parent / "AGENTS.md"
-            original.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(original)], manifest)
-            original_manifest = manifest.read_bytes()
-            state_directory = parent / "state"
-            code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-            original.write_text("Reviewed instructions.\n", encoding="utf-8")
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
-            addition = parent / "report.md"
-            addition.write_text("Original report.\n", encoding="utf-8")
-            extension = parent / "extension.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(addition)], extension, extend=manifest)
-            code_handoff_hook.register_targets("foo_session", extension, state_directory, append_targets=True)
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("No new content changes."), state_directory))
-            addition.write_text("Changed report.\n", encoding="utf-8")
-            actual = code_handoff_hook.process_event(self._stop_event("Report updated."), state_directory)
-            self.assertEqual("block", actual["decision"])
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
-            self.assertEqual(original_manifest, manifest.read_bytes())
-
-    def test_append_targets_requires_the_current_direct_parent(self) -> None:
-        for use_extension in (False, True):
-            with self.subTest(use_extension=use_extension), tempfile.TemporaryDirectory() as directory:
-                parent = Path(directory)
-                original = parent / "AGENTS.md"
-                original.write_text("Original instructions.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                other_manifest = parent / "other.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(original)], manifest)
-                code_handoff_hook.review_scope.capture_file_snapshots([str(original)], other_manifest)
-                state_directory = parent / "state"
-                code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-                candidate = other_manifest
-                if use_extension:
-                    addition = parent / "report.md"
-                    addition.write_text("Original report.\n", encoding="utf-8")
-                    candidate = parent / "extension.json"
-                    code_handoff_hook.review_scope.capture_file_snapshots([str(addition)], candidate, extend=other_manifest)
-                with self.assertRaisesRegex(ValueError, "directly reference the current task manifest"):
-                    code_handoff_hook.register_targets("foo_session", candidate, state_directory, append_targets=True)
-
-    def test_append_targets_requires_existing_registration(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            with self.assertRaisesRegex(ValueError, "existing task registration"):
-                code_handoff_hook.register_targets("foo_session", manifest, parent / "state", append_targets=True)
-
-    def test_registration_cli_rejects_conflicting_modes_without_mutation(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            target = parent / "AGENTS.md"
-            target.write_text("Original instructions.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            actual = subprocess.run(
-                [sys.executable, str(Path(__file__).with_name("code_handoff_hook.py")), "--register-targets", str(manifest),
-                 "--session-id", "foo_session", "--new-task", "--append-targets"],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env={**os.environ, "TMPDIR": str(parent), "PYTHONDONTWRITEBYTECODE": "1"}, check=False,
-            )
-            self.assertEqual(2, actual.returncode)
-            self.assertEqual("", actual.stdout)
-            self.assertFalse((parent / "shardingsphere-codex-code-handoff").exists())
-
-    def test_event_wrapped_first_registration_requires_no_review(self) -> None:
+    def test_later_prose_write_requires_a_new_completed_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             parent = Path(directory)
             repository = self._initialize_repository(parent / "repository", "README.md")
-            target = parent / "report.md"
-            target.write_text("Original report.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            state_directory = parent / "shardingsphere-codex-code-handoff"
-            event = self._shell_event("PreToolUse", repository)
-            code_handoff_hook.process_event(event, state_directory)
-            actual = subprocess.run(
-                [sys.executable, str(Path(__file__).with_name("code_handoff_hook.py")),
-                 "--register-targets", str(manifest), "--session-id", "foo_session"],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env={**os.environ, "TMPDIR": str(parent), "PYTHONDONTWRITEBYTECODE": "1"}, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            event["hook_event_name"] = "PostToolUse"
-            code_handoff_hook.process_event(event, state_directory)
-            self.assertEqual([], list(state_directory.glob("*.pending")))
-            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Task Status: Completed"), state_directory))
-
-    def test_event_wrapped_registration_scope_changes_require_no_review(self) -> None:
-        for mode in ("--append-targets", "--new-task"):
-            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
-                parent = Path(directory)
-                repository = self._initialize_repository(parent / "repository", "README.md")
-                target = parent / "report.md"
-                target.write_text("Original report.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-                state_directory = parent / "shardingsphere-codex-code-handoff"
-                code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-                code_handoff_hook.process_event(self._stop_event("Task Status: Completed"), state_directory)
-                addition = parent / "other-report.md"
-                addition.write_text("Original additional report.\n", encoding="utf-8")
-                following = parent / "following.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(addition)], following, extend=manifest if mode == "--append-targets" else None)
+            state_directory = parent / "state"
+            for content in ("Reviewed documentation.\n", "Later documentation.\n"):
                 event = self._shell_event("PreToolUse", repository)
                 code_handoff_hook.process_event(event, state_directory)
-                if mode == "--new-task":
-                    before_path = next(state_directory.glob("*.before.json"))
-                    before = json.loads(before_path.read_text(encoding="utf-8"))
-                    before.pop("originals")
-                    before_path.write_text(json.dumps(before), encoding="utf-8")
-                actual = subprocess.run(
-                    [sys.executable, str(Path(__file__).with_name("code_handoff_hook.py")),
-                     "--register-targets", str(following), "--session-id", "foo_session", mode],
-                    text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                    env={**os.environ, "TMPDIR": str(parent), "PYTHONDONTWRITEBYTECODE": "1"}, check=False,
-                )
-                self.assertEqual(0, actual.returncode, actual.stderr)
+                (repository / "README.md").write_text(content, encoding="utf-8")
                 event["hook_event_name"] = "PostToolUse"
                 code_handoff_hook.process_event(event, state_directory)
-                self.assertEqual([], list(state_directory.glob("*.pending")))
-                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("Task Status: Completed"), state_directory))
-
-    def test_event_wrapped_registration_keeps_real_content_changes_pending(self) -> None:
-        for change in ("registered-addition", "registered-removal", "git-addition", "git-deletion"):
-            with self.subTest(change=change), tempfile.TemporaryDirectory() as directory:
-                parent = Path(directory)
-                repository = self._initialize_repository(parent / "repository", "original.py")
-                target = parent / "report.md"
-                target.write_text("Original report.\n", encoding="utf-8")
-                manifest = parent / "snapshots.json"
-                code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-                state_directory = parent / "state"
-                following = manifest
-                if change == "registered-removal":
-                    code_handoff_hook.register_targets("foo_session", manifest, state_directory)
-                    code_handoff_hook.process_event(self._stop_event("Task Status: Completed"), state_directory)
-                    addition = parent / "other-report.md"
-                    addition.write_text("Original additional report.\n", encoding="utf-8")
-                    following = parent / "following.json"
-                    code_handoff_hook.review_scope.capture_file_snapshots([str(addition)], following)
-                event = self._shell_event("PreToolUse", repository)
-                code_handoff_hook.process_event(event, state_directory)
-                code_handoff_hook.register_targets("foo_session", following, state_directory, new_task=change == "registered-removal")
-                if change in ("registered-addition", "registered-removal"):
-                    target.write_text("Changed report.\n", encoding="utf-8")
-                elif change == "git-addition":
-                    (repository / "addition.py").write_text("New source.\n", encoding="utf-8")
-                else:
-                    (repository / "original.py").unlink()
-                event["hook_event_name"] = "PostToolUse"
-                code_handoff_hook.process_event(event, state_directory)
-                self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
-                actual = code_handoff_hook.process_event(self._stop_event("Task Status: Completed"), state_directory)
+                actual = code_handoff_hook.process_event(self._stop_event("Documentation updated."), state_directory)
                 self.assertEqual("block", actual["decision"])
-
-    def test_registration_cli_does_not_write_bytecode(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            hook = parent / ".codex/harness/agents/code_handoff_hook.py"
-            helper = parent / ".codex/skills/review-pr/scripts/resolve_review_scope.py"
-            hook.parent.mkdir(parents=True)
-            helper.parent.mkdir(parents=True)
-            shutil.copyfile(Path(__file__).with_name("code_handoff_hook.py"), hook)
-            shutil.copyfile(code_handoff_hook.review_scope.__file__, helper)
-            environment = dict(os.environ)
-            environment.pop("PYTHONDONTWRITEBYTECODE", None)
-            environment["TMPDIR"] = str(parent)
-            target = parent / "report.md"
-            target.write_text("Original report.\n", encoding="utf-8")
-            manifest = parent / "snapshots.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], manifest)
-            actual = subprocess.run(
-                [sys.executable, str(hook), "--register-targets", str(manifest), "--session-id", "foo_session"],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            self.assertEqual({}, json.loads(actual.stdout))
-            actual = subprocess.run(
-                [sys.executable, str(hook)], input=json.dumps(self._stop_event("Read-only review complete.")),
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            self.assertEqual({}, json.loads(actual.stdout))
-            target.write_text("Changed report.\n", encoding="utf-8")
-            actual = subprocess.run(
-                [sys.executable, str(hook)], input=json.dumps(self._stop_event("Report updated.")),
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            self.assertEqual("block", json.loads(actual.stdout)["decision"])
-            actual = subprocess.run(
-                [sys.executable, str(hook)], input=json.dumps(self._stop_event(self._mergeable_handoff())),
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            self.assertEqual({}, json.loads(actual.stdout))
-            following_manifest = parent / "following.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(target)], following_manifest)
-            actual = subprocess.run(
-                [sys.executable, str(hook), "--register-targets", str(following_manifest), "--session-id", "foo_session", "--new-task"],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            self.assertEqual({}, json.loads(actual.stdout))
-            addition = parent / "additional-report.md"
-            addition.write_text("Original additional report.\n", encoding="utf-8")
-            extension = parent / "extension.json"
-            code_handoff_hook.review_scope.capture_file_snapshots([str(addition)], extension, extend=following_manifest)
-            actual = subprocess.run(
-                [sys.executable, str(hook), "--register-targets", str(extension), "--session-id", "foo_session", "--append-targets"],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=environment, check=False,
-            )
-            self.assertEqual(0, actual.returncode, actual.stderr)
-            self.assertEqual({}, json.loads(actual.stdout))
-            self.assertEqual([], list(parent.rglob("__pycache__")))
-
-    def test_registration_cli_reports_invalid_manifest(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            parent = Path(directory)
-            manifest = parent / "snapshots.json"
-            manifest.write_text('{"version": 2, "files": []}', encoding="utf-8")
-            actual = subprocess.run(
-                [sys.executable, str(Path(__file__).with_name("code_handoff_hook.py")),
-                 "--register-targets", str(manifest), "--session-id", "invalid_session"],
-                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                env={**os.environ, "TMPDIR": str(parent), "PYTHONDONTWRITEBYTECODE": "1"}, check=False,
-            )
-            self.assertEqual(1, actual.returncode)
-            self.assertEqual({
-                "decision": "block",
-                "reason": "The code handoff validator failed closed. Inspect the project hook before stopping.",
-            }, json.loads(actual.stdout))
+                self.assertEqual({}, code_handoff_hook.process_event(self._stop_event(self._mergeable_handoff(commit_message=None)), state_directory))
 
     def test_shell_workdir_selects_the_repository_that_changes(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1020,7 +895,22 @@ class CodeHandoffHookTest(unittest.TestCase):
                     actual = code_handoff_hook.process_event(self._stop_event("Implementation complete."), state_directory)
                     self.assertEqual("block", actual["decision"])
 
-    def test_invalid_declared_workdir_does_not_fall_back_to_another_repository(self) -> None:
+    def test_external_change_from_non_git_workdir_requires_no_handoff(self) -> None:
+        with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as outside, tempfile.TemporaryDirectory() as state:
+            original = self._initialize_repository(Path(repository), "Foo.java")
+            target = Path(outside) / "external.py"
+            target.write_text("Original content.\n", encoding="utf-8")
+            state_directory = Path(state)
+            event = self._shell_event("PreToolUse", original)
+            event["tool_input"] = {"cmd": "ignored", "workdir": outside}
+            code_handoff_hook.process_event(event, state_directory)
+            target.write_text("Changed content.\n", encoding="utf-8")
+            event["hook_event_name"] = "PostToolUse"
+            code_handoff_hook.process_event(event, state_directory)
+            self.assertEqual({}, code_handoff_hook.process_event(self._stop_event("External file updated."), state_directory))
+            self.assertEqual([], list(state_directory.glob("*.pending")))
+
+    def test_repository_change_from_non_git_workdir_requires_handoff(self) -> None:
         with tempfile.TemporaryDirectory() as repository, tempfile.TemporaryDirectory() as outside:
             original = self._initialize_repository(Path(repository), "Foo.java")
             for workdir in ("missing-directory", outside):
@@ -1029,9 +919,10 @@ class CodeHandoffHookTest(unittest.TestCase):
                     event = self._shell_event("PreToolUse", original)
                     event["tool_input"] = {"cmd": "ignored", "workdir": workdir}
                     code_handoff_hook.process_event(event, state_directory)
+                    (original / "Foo.java").write_text(f"Changed in {workdir}.\n", encoding="utf-8")
                     event["hook_event_name"] = "PostToolUse"
                     code_handoff_hook.process_event(event, state_directory)
-                    actual = code_handoff_hook.process_event(self._stop_event("Inspection complete."), state_directory)
+                    actual = code_handoff_hook.process_event(self._stop_event("Repository file updated."), state_directory)
                     self.assertEqual("block", actual["decision"])
                     self.assertEqual(1, len(list(state_directory.glob("*.pending"))))
 

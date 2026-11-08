@@ -15,13 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Require an explicit review handoff after Codex changes task deliverables."""
+"""Require an explicit review handoff after Codex changes repository deliverables."""
 
 from __future__ import annotations
 
-import argparse
 import hashlib
-import importlib.util
 import json
 import os
 from pathlib import Path
@@ -31,14 +29,7 @@ import sys
 import tempfile
 from typing import Any
 
-sys.dont_write_bytecode = True
-SCOPE_SPEC = importlib.util.spec_from_file_location(
-    "code_handoff_review_scope", Path(__file__).parents[2] / "skills/review-pr/scripts/resolve_review_scope.py",
-)
-review_scope = importlib.util.module_from_spec(SCOPE_SPEC)
-sys.modules[SCOPE_SPEC.name] = review_scope
-SCOPE_SPEC.loader.exec_module(review_scope)
-
+PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:(?:Add|Delete|Update) File|Move to): (.+)$", re.MULTILINE)
 FIELD_PATTERN = r"(?P<emphasis>\*\*)?{label}:(?(emphasis)(?:\*\*)?)[ \t]*(?P<value>.*?)"
 FIELD_PREFIX_PATTERN = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:#{1,6}[ \t]+)?")
 FENCE_PATTERN = re.compile(r"(?:`{3,}[^`]*|~{3,}.*)")
@@ -60,28 +51,13 @@ def process_event(event: dict[str, Any], state_directory: Path) -> dict[str, str
         return {}
     if "Stop" != event_name:
         return {}
-    registration = _load_registration(event, state_directory)
-    current_targets = _current_targets(registration[1]) if registration else {}
-    changed_targets = {
-        path for path, metadata in current_targets.items()
-        if metadata != registration[0]["reviewed"].get(path)
-    } if registration else set()
-    if changed_targets:
-        _mark_pending(event, state_directory, require_commit=_requires_commit_message(changed_targets))
     marker_path = _marker_path(event, state_directory)
     message = event.get("last_assistant_message")
     if not marker_path.exists():
-        if registration and isinstance(message, str) and _field_values(message, "Task Status") == ["Completed"]:
-            registration[0]["completed"] = True
-            _registration_path(event, state_directory).write_text(json.dumps(registration[0], sort_keys=True), encoding="utf-8")
         return {}
     require_commit = _pending_requires_commit(marker_path)
     passing_failures = validate_handoff(message, require_commit=require_commit)
     if not passing_failures:
-        if registration:
-            registration[0]["reviewed"] = current_targets
-            registration[0]["completed"] = True
-            _registration_path(event, state_directory).write_text(json.dumps(registration[0], sort_keys=True), encoding="utf-8")
         marker_path.unlink()
         return {}
     paused_failures = validate_paused_handoff(message)
@@ -95,7 +71,7 @@ def _record_pre_tool_state(event: dict[str, Any], state_directory: Path) -> None
         return
     snapshot_path = _snapshot_path(event, state_directory)
     snapshot_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    snapshot = _change_snapshot(event, state_directory)
+    snapshot = _repository_snapshot(event)
     snapshot_path.write_text(json.dumps(snapshot, sort_keys=True), encoding="utf-8")
 
 
@@ -110,7 +86,7 @@ def _record_tool_change(event: dict[str, Any], state_directory: Path) -> None:
         return
     finally:
         snapshot_path.unlink(missing_ok=True)
-    after = _change_snapshot(event, state_directory)
+    after = _repository_snapshot(event)
     if not isinstance(before, dict) or after is None or before.get("root") != after.get("root"):
         _mark_pending(event, state_directory)
         return
@@ -119,32 +95,14 @@ def _record_tool_change(event: dict[str, Any], state_directory: Path) -> None:
     if not isinstance(before_files, dict) or not isinstance(after_files, dict):
         _mark_pending(event, state_directory)
         return
-    originals = after["originals"]
-    for path in after_files.keys() - before_files.keys():
-        if path in originals:
-            before_files[path] = originals[path]
     for path in before_files.keys() - after_files.keys():
-        if Path(path).is_absolute():
-            after_files[path] = review_scope.read_file_object(Path(path))[0]
+        after_files[path] = _path_digest(Path(path))
     changed_paths = {
         each for each in before_files.keys() | after_files.keys()
         if before_files.get(each) != after_files.get(each)
     }
     if changed_paths:
         _mark_pending(event, state_directory, require_commit=_requires_commit_message(changed_paths))
-
-
-def _change_snapshot(event: dict[str, Any], state_directory: Path) -> dict[str, Any] | None:
-    repository = _repository_snapshot(event)
-    registration = _load_registration(event, state_directory)
-    if repository is None and registration is None:
-        return None
-    files = repository["files"] if repository else {}
-    originals = {}
-    if registration:
-        files.update(_current_targets(registration[1]))
-        originals = {path: value[0] for path, value in registration[1].items()}
-    return {"root": repository["root"] if repository else None, "files": files, "originals": originals}
 
 
 def _requires_commit_message(paths: set[str]) -> bool:
@@ -161,58 +119,6 @@ def _mark_pending(event: dict[str, Any], state_directory: Path, require_commit: 
 def _pending_requires_commit(marker_path: Path) -> bool:
     content = marker_path.read_text(encoding="utf-8")
     return not content or json.loads(content)["require_commit"]
-
-
-def register_targets(session_id: str, manifest_path: Path, state_directory: Path,
-                     new_task: bool = False, append_targets: bool = False) -> None:
-    """Bind a session to its original deliverable snapshots without replacing its baseline."""
-    event = {"session_id": session_id}
-    manifest_path = manifest_path.absolute()
-    snapshots = review_scope.load_file_snapshots(manifest_path)
-    manifest_hash = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-    existing = _load_registration(event, state_directory)
-    if append_targets:
-        if existing is None:
-            raise ValueError("Appending targets requires an existing task registration")
-        if review_scope.file_snapshot_parent(manifest_path) != {"path": existing[0]["manifest"], "sha256": existing[0]["sha256"]}:
-            raise ValueError("The extension must directly reference the current task manifest")
-        reviewed = existing[0]["reviewed"]
-        reviewed.update({path: value[0] for path, value in snapshots.items() if path not in reviewed})
-    elif new_task:
-        if existing is None or not existing[0]["completed"] or _marker_path(event, state_directory).exists():
-            raise ValueError("A new task requires a completed prior handoff with no pending review")
-    elif existing:
-        if existing[0]["manifest"] != str(manifest_path) or existing[0]["sha256"] != manifest_hash:
-            raise ValueError("The session already has an original deliverable manifest")
-        return
-    if not append_targets:
-        reviewed = {path: value[0] for path, value in snapshots.items()}
-    registration = {
-        "manifest": str(manifest_path), "sha256": manifest_hash,
-        "reviewed": reviewed,
-        "completed": False,
-    }
-    state_directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-    _registration_path(event, state_directory).write_text(json.dumps(registration, sort_keys=True), encoding="utf-8")
-
-
-def _load_registration(event: dict[str, Any], state_directory: Path) -> tuple[dict[str, Any], dict[str, Any]] | None:
-    registration_path = _registration_path(event, state_directory)
-    if not registration_path.exists():
-        return None
-    registration = json.loads(registration_path.read_text(encoding="utf-8"))
-    manifest = Path(registration["manifest"])
-    if registration["sha256"] != hashlib.sha256(manifest.read_bytes()).hexdigest():
-        raise ValueError("The original deliverable manifest changed after registration")
-    return registration, review_scope.load_file_snapshots(manifest)
-
-
-def _current_targets(snapshots: dict[str, Any]) -> dict[str, Any]:
-    return {path: review_scope.read_file_object(Path(path))[0] for path in snapshots}
-
-
-def _registration_path(event: dict[str, Any], state_directory: Path) -> Path:
-    return _marker_path(event, state_directory).with_suffix(".targets.json")
 
 
 def _marker_path(event: dict[str, Any], state_directory: Path) -> Path:
@@ -245,18 +151,75 @@ def _repository_snapshot(event: dict[str, Any]) -> dict[str, Any] | None:
         directory = base_directory or Path(os.getcwd())
     root_result = _run_git(directory, "rev-parse", "--show-toplevel")
     if root_result is None:
+        selected = directory.resolve()
+        if any((parent / ".git").exists() for parent in (selected, *selected.parents)):
+            return None
+    if root_result is None and base_directory is not None and directory != base_directory:
+        root_result = _run_git(base_directory, "rev-parse", "--show-toplevel")
+    root = None
+    files = {}
+    if root_result is not None:
+        line_ending = b"\r\n" if os.name == "nt" and root_result.endswith(b"\r\n") else b"\n"
+        root = Path(root_result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape")).resolve()
+        status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
+        if status is None:
+            return None
+        files = {str(root / path): _path_digest(root / path) for path in _status_entries(status)}
+    if "apply_patch" == event.get("tool_name") and isinstance(tool_input, dict):
+        patch = tool_input.get("command") or tool_input.get("patch")
+        if isinstance(patch, str):
+            targets = set()
+            for path in PATCH_FILE_PATTERN.findall(patch):
+                target = Path(path)
+                if not target.is_absolute():
+                    target = directory / target
+                target = target.parent.resolve() / target.name
+                targets.add(target)
+                if target.is_symlink():
+                    targets.add(target.resolve())
+            listed_paths = _git_listed_paths(targets, root)
+            if listed_paths is None:
+                return None
+            for target in listed_paths:
+                files[str(target)] = _path_digest(target)
+    return {"root": str(root) if root is not None else None, "files": files}
+
+
+def _git_listed_paths(paths: set[Path], root: Path | None) -> set[Path] | None:
+    roots = {root: root} if root is not None else {}
+    try:
+        repositories = {_path_git_root(path, roots) for path in paths}
+    except RuntimeError:
         return None
-    line_ending = b"\r\n" if os.name == "nt" and root_result.endswith(b"\r\n") else b"\n"
-    root = Path(root_result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape"))
-    status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
-    if status is None:
-        return None
-    entries = _status_entries(status)
-    files = {
-        path: f"{state}:{_path_digest(root / path)}"
-        for path, state in entries.items()
-    }
-    return {"root": str(root.resolve()), "files": files}
+    repositories.discard(None)
+    listed = set()
+    for repository in repositories:
+        result = _run_git(repository, "ls-files", "--cached", "--others", "--exclude-standard", "--full-name", "-z")
+        if result is None:
+            return None
+        listed_paths = (repository / os.fsdecode(path) for path in result.split(b"\0") if path)
+        listed.update(paths.intersection(listed_paths))
+    return listed
+
+
+def _path_git_root(path: Path, roots: dict[Path, Path | None]) -> Path | None:
+    pending = []
+    for directory in path.parents:
+        if directory in roots:
+            root = roots[directory]
+            break
+        pending.append(directory)
+        if (directory / ".git").exists():
+            result = _run_git(directory, "rev-parse", "--show-toplevel")
+            if result is None:
+                raise RuntimeError("Unable to inspect declared Git repository")
+            line_ending = b"\r\n" if os.name == "nt" and result.endswith(b"\r\n") else b"\n"
+            root = Path(result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape")).resolve()
+            break
+    else:
+        root = None
+    roots.update(dict.fromkeys(pending, root))
+    return root
 
 
 def _run_git(cwd: Path, *arguments: str) -> bytes | None:
@@ -430,35 +393,19 @@ def _continuation_reason(passing_failures: list[str], paused_failures: list[str]
 
 def main() -> int:
     """Read a Codex hook event and write its JSON result."""
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--register-targets", type=Path, help="Original file-snapshots manifest for the current task.")
-    parser.add_argument("--session-id", help="Session to bind to the original file-snapshots manifest.")
-    registration_mode = parser.add_mutually_exclusive_group()
-    registration_mode.add_argument("--new-task", action="store_true", help="Register an independent user-requested task after the prior completed handoff.")
-    registration_mode.add_argument("--append-targets", action="store_true", help="Append authorized new targets through an immutable direct-parent manifest.")
-    arguments = parser.parse_args()
     try:
-        state_directory = Path(tempfile.gettempdir()) / "shardingsphere-codex-code-handoff"
-        if arguments.register_targets:
-            if not arguments.session_id:
-                parser.error("--register-targets requires --session-id")
-            register_targets(arguments.session_id, arguments.register_targets, state_directory,
-                             new_task=arguments.new_task, append_targets=arguments.append_targets)
-            json.dump({}, sys.stdout)
-            return 0
-        if arguments.session_id or arguments.new_task or arguments.append_targets:
-            parser.error("--session-id, --new-task and --append-targets require --register-targets")
         event = json.load(sys.stdin)
         if not isinstance(event, dict):
             raise ValueError("Codex hook input must be a JSON object")
+        state_directory = Path(tempfile.gettempdir()) / "shardingsphere-codex-code-handoff"
         result = process_event(event, state_directory)
-    except (OSError, RuntimeError, TypeError, ValueError, json.JSONDecodeError):
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
         result = {
             "decision": "block",
             "reason": "The code handoff validator failed closed. Inspect the project hook before stopping.",
         }
     json.dump(result, sys.stdout)
-    return 1 if arguments.register_targets and result.get("decision") == "block" else 0
+    return 0
 
 
 if __name__ == "__main__":

@@ -375,7 +375,7 @@ allowed_actions = ["inspect_local", "edit_non_code", "run_local_checks", "wrap_h
 forbidden_actions = ["mutate_git", "mutate_remote"]
 required_reasons = ["explicit_non_code_authorization", "pre_handoff_review_required"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request.", "Policy and harness changes also require this Formal Review route.", "Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.", "For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.", "Policy and harness changes also require this Formal Review route.", "Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.", "For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -564,10 +564,10 @@ phase = "standalone restoration"
 ordinary_loop = false
 prompt = "Undo only the AGENTS.md edits from this task, but do not use any Git command that changes state."
 decision = "proceed"
-required_actions = ["inspect_local", "edit_non_code", "run_pre_handoff_review"]
-allowed_actions = ["inspect_local", "edit_non_code", "run_local_checks", "wrap_high_output", "run_pre_handoff_review"]
+required_actions = ["inspect_local", "edit_non_code"]
+allowed_actions = ["inspect_local", "edit_non_code", "run_local_checks", "wrap_high_output"]
 forbidden_actions = ["mutate_git", "mutate_remote"]
-required_reasons = ["explicit_non_code_authorization", "pre_handoff_review_required"]
+required_reasons = ["explicit_non_code_authorization"]
 critical = true
 
 [[cases]]
@@ -1850,7 +1850,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "run_bounded_adversarial_revi
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["$review-pr", "Formal Review"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request.", "Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.", "For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.", "Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.", "For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -3298,7 +3298,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "run_bounded_adversarial_revi
 required_reasons = ["pre_handoff_review_required"]
 required_summary_terms = ["Formal Review", "Mergeable"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request.", "Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.", "For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.", "Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.", "For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`."]}]
 critical = true
 
 [[cases]]
@@ -3398,7 +3398,7 @@ required_summary_terms = ["### Result", "Review Result: Mergeable", "### Evidenc
 required_summary_term_groups = [["standalone", "no public PR"], ["baseline", "established task-local delta", "attributed local candidate"]]
 forbidden_summary_terms = ["git commit"]
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["For a standalone Git candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}]
+policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate.", "Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}]
 critical = true
 required_summary_prefix = "```markdown\n"
 
@@ -3749,7 +3749,7 @@ required_summary_prefix = "review=formal"
 max_summary_chars = 13
 critical = true
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request.", "Existing authority, architecture, safety, and triggered high-risk gates remain required.", "Each invocation in this loop, including the first and each call after a fix, must complete the review entry's full workflow for the current task-owned candidate.", "Hand off only when the selected review is confirmed, all required current-state checks pass, and no later deliverable-content write or new evidence invalidates them."]}]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.", "Existing authority, architecture, safety, and triggered high-risk gates remain required.", "Each invocation in this loop, including the first and each call after a fix, must complete the review entry's full workflow for the current task-owned candidate.", "Hand off only when the selected review is confirmed, all required current-state checks pass, and no later deliverable-content write or new evidence invalidates them."]}]
 
 [[cases]]
 id = "standalone_multiround_review_uses_task_evidence"
@@ -3769,7 +3769,7 @@ required_summary_terms = ["Previous Finding", "Current Status: Withdrawn", "Reas
 forbidden_summary_terms = ["Review Result: Not Mergeable", "Review Result: Review Incomplete", "Current Status: Retained", "Current Status: Changed to Review Incomplete"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["For a standalone Git candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-corrections", statements = ["For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.", "When correcting a previously reported conclusion, use the selected mode's output contract and begin with:\n\n- `Previous Finding or Conclusion`\n- `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`\n- `Reason`\n\nThen provide the current mode's ordinary result.", "Then provide the current mode's ordinary result.", "Keep exactly one formal `Review Result` line when a formal result is requested."]}]
+policy_assertions = [{source = "review-pr", statements = ["For a standalone local candidate, use the active task's original working-tree baseline plus only its attributed local commits, index changes, and working-tree changes as the effective candidate. Use the frozen task boundary and task-delta audit as authoritative scope, exclude unrelated local changes, and do not require a public head, GitHub metadata, or public lineage.", "Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-corrections", statements = ["For standalone local corrections, inherit the main Skill's task baseline, attributed local delta, authorized evidence boundary and selected mode's output contract.", "When correcting a previously reported conclusion, use the selected mode's output contract and begin with:\n\n- `Previous Finding or Conclusion`\n- `Current Status`: `Retained`, `Withdrawn`, or `Changed to Review Incomplete`\n- `Reason`\n\nThen provide the current mode's ordinary result.", "Then provide the current mode's ordinary result.", "Keep exactly one formal `Review Result` line when a formal result is requested."]}]
 required_summary_prefix = "```markdown\n"
 
 [[cases]]
@@ -4850,7 +4850,7 @@ prompt = "Classify independent repository test changes using only the bound rule
 required_summary_terms = ["[A]=allow", "[B]=reject", "[C]=allow", "[D]=allow", "[E]=allow", "[F]=allow", "[G]=allow", "[H]=allow", "[I]=reject"]
 required_summary_prefix = "[A]=allow; [B]=reject; [C]=allow; [D]=allow; [E]=allow; [F]=allow; [G]=allow; [H]=allow; [I]=reject"
 max_summary_chars = 99
-policy_assertions = [{source = "code-of-conduct", statements = ["Only combine cases that invoke the same method under test and use the same form of assertion."]}]
+policy_assertions = [{source = "code-of-conduct", statements = ["Parameterized tests:\n   - Parameterized test display names must distinguish test scenarios;\n   - Provide at least three meaningful argument sets for each parameterized test;\n   - Only combine cases that invoke the same method under test and use the same form of assertion."]}]
 
 [[cases]]
 group = "unit-test policy"
@@ -5022,7 +5022,7 @@ forbidden_summary_terms = ["Review Result: Not Mergeable", "Review Result: Revie
 required_summary_prefix = "```markdown\n### Summary\n"
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "Never include internal drafts, reasoning traces, private context, local absolute paths, temporary paths, credentials, raw long logs, or emojis.", "Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.", "Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.", "For a defect, trace the failing path to the violated contract and its maintained owner; for another PR type, establish the goal and responsibilities it must preserve.", "Trace the patch's actual mechanism and compare it with a repair or reuse path in that owner; record why the chosen boundary addresses the cause or accepted goal and what remains outside scope.", "In `### Coverage`, give a short verification summary, normally one to three lines, with the candidate type and baseline or head, reviewed scope, relevant check status, CI scope, and material gaps or failures.", "Keep the complete requirements and project-commitment basis, behavior clusters, discovery lenses, independent assessments and stages, adjudication and resolution of differences, file inventory, verification commands and exit codes, and `Not Applicable` checks with their bases in private review material.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`."]}, {source = "review-pr-sql-parser", statements = ["Record the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked in private review material.", "Follow the main Skill's short `Coverage` summary and disclose any missing or failed dialect check that affects the conclusion.", "When the PR or review comment mentions a concrete SQL syntax form, cite the exact official documentation or version-matched native database source that supports that form."]}]
+policy_assertions = [{source = "review-pr", statements = ["Return every review output as one complete copy-ready Markdown report in a fenced block labelled `markdown`, in both output modes and every review round.", "Never include internal drafts, reasoning traces, private context, local absolute paths, temporary paths, credentials, raw long logs, or emojis.", "Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.", "Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.", "For a defect, trace the failing path to the violated contract and its maintained owner; for another PR type, establish the goal and responsibilities it must preserve.", "Trace the patch's actual mechanism and compare it with a repair or reuse path in that owner; record why the chosen boundary addresses the cause or accepted goal and what remains outside scope.", "In `### Coverage`, give a short verification summary, normally one to three lines, with the candidate type and baseline or head, reviewed scope, relevant check status, CI scope, and material gaps or failures.", "Keep the complete requirements and project-commitment basis, behavior clusters, discovery lenses, independent assessments and stages, adjudication and resolution of differences, file inventory, verification commands and exit codes, and `Not Applicable` checks with their bases in private review material.", "`Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.", "Keep this Skill review-only. The outer active implementation loop fixes safe in-scope findings and reruns Formal Review; scope expansion, architecture choices, and high-risk actions return to their existing authorization gates. This Skill never activates that loop."]}, {source = "review-pr-sql-parser", statements = ["Record the target dialect, related trunk or branch dialects checked, official documentation pages used, and repo docs or examples checked in private review material.", "Follow the main Skill's short `Coverage` summary and disclose any missing or failed dialect check that affects the conclusion.", "When the PR or review comment mentions a concrete SQL syntax form, cite the exact official documentation or version-matched native database source that supports that form."]}, {source = "agents", statements = ["Strictly follow Grice's Cooperative Principle: quantity, quality, relevance and clarity."]}]
 
 [[cases]]
 id = "review_priority_three_levels"
@@ -5136,7 +5136,7 @@ phase = "content completion loop"
 ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "An authorized README.md edit is complete and its applicable documentation checks pass. No source code changed and no review has run. Complete the file-changing task without changing more files or Git."
+prompt = "An authorized Git-tracked README.md edit is complete and its applicable documentation checks pass. No source code changed and no review has run. Complete the file-changing task without changing more files or Git."
 decision = "proceed"
 required_actions = ["run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_pre_handoff_review"]
@@ -5144,28 +5144,29 @@ forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"
 required_reasons = ["pre_handoff_review_required"]
 policy_binding_profile = "documentation"
 policy_assertions = [
-  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request."] }
+  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request."] }
 ]
 critical = true
 
 
 [[cases]]
-id = "external_skill_completion_requires_formal_review"
+id = "mixed_file_completion_reviews_repository_only"
 group = "review / content"
-description = "Applies the same review gate to declared files outside Git."
+description = "Reviews only repository files when a task also changes external files."
 phase = "content completion loop"
 ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "An authorized global SKILL.md edit outside Git and an authorized repository Markdown edit are complete. The original pre-write snapshot for both paths is preserved and applicable checks pass. No review has run. Review the complete mixed candidate before handoff; do not copy the global file into Git, create a repository, or change any file."
+prompt = "An authorized global SKILL.md edit outside every Git repository and an authorized Git-tracked repository README.md edit are complete. The original repository baseline is preserved and applicable checks pass. No review has run. Invoke Formal Review of README.md only; exclude the external SKILL.md. Do not create snapshots or change any file or Git state."
 decision = "proceed"
 required_actions = ["run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_pre_handoff_review"]
 forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
 required_reasons = ["pre_handoff_review_required"]
+required_summary_terms = ["README.md"]
 policy_binding_profile = "documentation"
 policy_assertions = [
-  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request."] }
+  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.", "Untracked Git-ignored files and files outside Git repositories are outside this loop's scope."] }
 ]
 critical = true
 
@@ -5178,7 +5179,7 @@ phase = "content completion loop"
 ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "A documentation task had a confirmed Mergeable review. The user then authorized a wording correction in the same document and that correction has been written. The original task baseline remains preserved. The old review does not cover the new text. At this point invoke review of the updated cumulative candidate without more edits."
+prompt = "A Git-tracked repository documentation task had a confirmed Mergeable review. The user then authorized a wording correction in the same document and that correction has been written. The original task baseline remains preserved. The old review does not cover the new text. At this point invoke review of the updated cumulative candidate without more edits."
 decision = "proceed"
 required_actions = ["run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_pre_handoff_review"]
@@ -5186,7 +5187,7 @@ forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"
 required_reasons = ["pre_handoff_review_required"]
 policy_binding_profile = "documentation"
 policy_assertions = [
-  { source = "change-completion", statements = ["Any later deliverable-content write marks the task pending again and requires applicable current checks and a passing review of the updated cumulative candidate."] }
+  { source = "change-completion", statements = ["Any later repository deliverable-content write marks the task pending again and requires applicable current checks and a passing review of the updated cumulative candidate."] }
 ]
 critical = true
 
@@ -5206,9 +5207,7 @@ allowed_actions = []
 forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "mutate_git", "mutate_remote"]
 required_reasons = ["read_only_request"]
 policy_binding_profile = "documentation"
-policy_assertions = [
-  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request."] }
-]
+policy_assertions = [{source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request."]}, {source = "agents", statements = ["Answer, explain, review, diagnose, audit, and plan requests are read-only; inspect and report without editing the target."]}]
 critical = true
 
 
@@ -5220,7 +5219,7 @@ phase = "content completion loop"
 ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "An authorized Markdown task has current passing checks and a confirmed Mergeable Formal Review. Only its private review ledger and session record were then written in an owned temporary directory, not as user deliverables. No deliverable content changed after review. Complete the task using the actual completed report, without rerunning the same review or modifying Git."
+prompt = "An authorized Git-tracked Markdown task has current passing checks and a confirmed Mergeable Formal Review. Only its private review ledger and session record were then written in an owned temporary directory, not as user deliverables. No deliverable content changed after review. Complete the task using the actual completed report, without rerunning the same review or modifying Git."
 decision = "proceed"
 required_actions = []
 allowed_actions = ["inspect_local"]
@@ -5234,22 +5233,22 @@ critical = true
 
 
 [[cases]]
-id = "delivered_temporary_report_requires_review"
+id = "external_file_completion_skips_formal_review"
 group = "review / content"
-description = "Does not exempt a user-requested report by directory."
+description = "Does not require Formal Review for an external-only deliverable."
 phase = "content completion loop"
 ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "The user requested a report file in a temporary directory. That report has been written and its content checks pass. It is the task deliverable, not a private review log. No review has run. Complete the task without changing any more files or Git."
+prompt = "The user requested a report file in a temporary directory outside every Git repository. That report has been written and its content checks pass. No repository file changed in this task. Complete the task without running Formal Review, creating review snapshots, changing more files, or changing Git."
 decision = "proceed"
-required_actions = ["run_pre_handoff_review"]
-allowed_actions = ["inspect_local", "run_pre_handoff_review"]
-forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote"]
-required_reasons = ["pre_handoff_review_required"]
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_pre_handoff_review", "record_task_baseline", "mutate_git", "mutate_remote"]
+required_reasons = []
 policy_binding_profile = "documentation"
 policy_assertions = [
-  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request.", "A user-requested report remains a deliverable even in a temporary directory."] }
+  { source = "change-completion", statements = ["Untracked Git-ignored files and files outside Git repositories are outside this loop's scope."] }
 ]
 critical = true
 
@@ -5262,7 +5261,7 @@ phase = "content completion loop"
 ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "During an authorized Markdown edit, content changed and the task was marked pending review. The edit was then restored to the original bytes, with the original snapshot and task scope preserved. No review has run. At this point complete the required review without inventing a diff, resetting the baseline, changing files, or changing Git."
+prompt = "During an authorized Git-tracked Markdown edit, content changed and the task was marked pending review. The edit was then restored to the original bytes, with the original snapshot and task scope preserved. No review has run. At this point complete the required review without inventing a diff, resetting the baseline, changing files, or changing Git."
 decision = "proceed"
 required_actions = ["run_pre_handoff_review"]
 allowed_actions = ["inspect_local", "run_pre_handoff_review"]
@@ -5270,27 +5269,8 @@ forbidden_actions = ["edit_code", "edit_non_code", "reset_task_baseline", "mutat
 required_reasons = ["pre_handoff_review_required"]
 policy_binding_profile = "documentation"
 policy_assertions = [
-  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes deliverable content, including prose and files outside Git, without requiring a separate user request.", "Restoring original content does not clear an existing pending review."] }
+  { source = "change-completion", statements = ["Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.", "Restoring original content does not clear an existing pending review."] }
 ]
-critical = true
-
-
-[[cases]]
-id = "external_write_captures_baseline_before_first_edit"
-group = "review / content"
-description = "Requires an original baseline and exact scope before the first external file write."
-phase = "content-change preflight"
-ordinary_loop = false
-profile = "documentation"
-semantic_policy_assertions = true
-prompt = "The user authorized an edit to a global SKILL.md outside Git. No write has occurred and no original snapshot or task file boundary has been recorded. At this pre-edit point, prepare the exact scope and original-byte baseline before editing. Do not edit yet, run review, change Git, or use current contents later to invent the baseline."
-decision = "proceed"
-required_actions = ["record_task_baseline", "freeze_task_boundary"]
-allowed_actions = ["inspect_local", "record_task_baseline", "freeze_task_boundary"]
-forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "reset_task_baseline", "mutate_git", "mutate_remote"]
-required_reasons = []
-policy_binding_profile = "documentation"
-policy_assertions = [{ source = "change-completion", statements = ["Before changing files outside Git, capture their original bytes and register the immutable target snapshot with the project handoff hook."] }]
 critical = true
 
 
@@ -5312,21 +5292,20 @@ policy_binding_profile = "documentation"
 policy_assertions = [{ source = "change-completion", statements = ["A read-only review does not enter this loop merely because its input contains changed files."] }]
 critical = true
 
-
 [[cases]]
-id = "authorized_snapshot_scope_append_preserves_originals"
+id = "git_ignored_deliverable_skips_formal_review"
 group = "review / content"
-description = "Preserves existing originals when exact new targets are authorized for the same objective."
-phase = "content-change preflight"
-ordinary_loop = false
+description = "Excludes untracked Git-ignored deliverables from the review completion loop."
+phase = "Git change completion"
+ordinary_loop = true
 profile = "documentation"
 semantic_policy_assertions = true
-prompt = "An active mixed-file task has an immutable original manifest and a prior review. The user now explicitly authorizes one directly required new external file for that same objective. No write to the new file has occurred. At this pre-edit decision point, retain every existing original, extend the snapshot chain with only the new target's original bytes, register that extension, and append the exact authorized path and intent to scope. Do not edit yet, run review, reset existing originals, or declare an independent new task."
+prompt = "Only a user-requested target/report.md file was written. Git confirms that target/ is ignored, the report has never been tracked, and git status reports no changes. No other file changed. The original scope and file bytes were preserved before writing, and content checks are complete. Finish the task without further file changes or Git operations."
 decision = "proceed"
-required_actions = ["record_task_baseline", "expand_frozen_boundary"]
-allowed_actions = ["inspect_local", "record_task_baseline", "freeze_task_boundary", "expand_frozen_boundary"]
-forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "reset_task_baseline", "mutate_git", "mutate_remote"]
+required_actions = []
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_pre_handoff_review", "mutate_git", "mutate_remote", "propose_commit_message"]
 required_reasons = []
 policy_binding_profile = "documentation"
-policy_assertions = [{ source = "change-completion", statements = ["An explicitly authorized same-task scope addition extends the original snapshot chain before the new targets' first write; it does not start a new task or replace existing originals.", "Keep every immutable parent snapshot and use the latest extension for detection and cumulative review."] }]
+policy_assertions = [{source = "change-completion", statements = ["Untracked Git-ignored files and files outside Git repositories are outside this loop's scope."]}]
 critical = true

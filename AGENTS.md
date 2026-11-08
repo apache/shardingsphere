@@ -23,7 +23,8 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ## Response Style
 
-- Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
+- Strictly follow Grice's Cooperative Principle: quantity, quality, relevance and clarity.
+- Complete all required task actions; keep required evidence, risks, verification results, and output formats.
 - Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; match detail to the question and context.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
@@ -94,7 +95,7 @@ Optional Skills never waive gates or expand authority or scope.
 
 ## Change Completion Gate
 
-Every authorized task that changes deliverable file content inside or outside Git follows `.codex/context/change-completion.md`, including prose, policy, restoration, and rollback.
+After making authorized changes reported by Git, follow `.codex/context/change-completion.md`, including prose, policy, restoration, and rollback.
 
 ## Functional and Performance Non-Regression Gate
 
