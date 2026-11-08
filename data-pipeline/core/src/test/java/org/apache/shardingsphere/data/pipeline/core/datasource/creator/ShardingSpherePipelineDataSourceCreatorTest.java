@@ -20,12 +20,16 @@ package org.apache.shardingsphere.data.pipeline.core.datasource.creator;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
+import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -35,9 +39,9 @@ import org.mockito.MockedConstruction;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,12 +56,15 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({DataSourcePoolCreator.class, ShardingSphereDataSourceFactory.class, PipelineContextManager.class})
 class ShardingSpherePipelineDataSourceCreatorTest {
+    
+    private final PipelineDataSourceCreator creator = TypedSPILoader.getService(PipelineDataSourceCreator.class, ShardingSpherePipelineDataSourceConfiguration.TYPE);
     
     @Test
     void assertCreateWithProjectConfigurations() throws SQLException {
@@ -75,13 +82,50 @@ class ShardingSpherePipelineDataSourceCreatorTest {
                     actualProps.set(invocation.getArgument(4));
                     return expected;
                 });
-        DataSource actual = new ShardingSpherePipelineDataSourceCreator().create(config);
+        DataSource actual = creator.create(config);
         assertThat(actual, sameInstance(expected));
         assertThat(actualMode.get().getType(), is("Standalone"));
         assertThat(actualMode.get().getRepository().getType(), is("Memory"));
         assertThat(actualRules.get().size(), is(1));
         assertTrue(actualRules.get().stream().noneMatch(AuthorityRuleConfiguration.class::isInstance));
+        assertThat(config.getRuleConfigurations().size(), is(2));
+        assertTrue(config.getRuleConfigurations().stream().anyMatch(AuthorityRuleConfiguration.class::isInstance));
         assertThat(actualProps.get().get("max-connections-size-per-query"), is(100000));
+    }
+    
+    private ShardingSpherePipelineDataSourceConfiguration mockConfiguration() {
+        ShardingSpherePipelineDataSourceConfiguration result = mock(ShardingSpherePipelineDataSourceConfiguration.class);
+        when(result.getDatabaseName()).thenReturn("foo_db");
+        when(result.getDataSourcePoolPropertiesMap()).thenReturn(Collections.singletonMap("ds_0", mock(DataSourcePoolProperties.class)));
+        when(result.getRuleConfigurations()).thenReturn(Arrays.asList(
+                new AuthorityRuleConfiguration(Collections.emptyList(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), Collections.emptyMap(), null),
+                new SingleRuleConfiguration()));
+        return result;
+    }
+    
+    @Test
+    void assertCreateWithIndependentRuleConfigurations() throws SQLException {
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        ruleConfig.getTables().add("ds_0.foo_table");
+        ShardingSpherePipelineDataSourceConfiguration config = mock(ShardingSpherePipelineDataSourceConfiguration.class);
+        when(config.getDatabaseName()).thenReturn("foo_db");
+        when(config.getRuleConfigurations()).thenReturn(Collections.singleton(ruleConfig));
+        Map<String, DataSource> dataSources = Collections.emptyMap();
+        when(DataSourcePoolCreator.create(config.getDataSourcePoolPropertiesMap(), false)).thenReturn(dataSources);
+        AtomicReference<Collection<RuleConfiguration>> actualRules = new AtomicReference<>();
+        when(ShardingSphereDataSourceFactory.createDataSource(eq("foo_db"), any(ModeConfiguration.class), eq(dataSources), anyCollection(), any(Properties.class))).thenAnswer(invocation -> {
+            actualRules.set(invocation.getArgument(3));
+            return new MockedDataSource();
+        });
+        creator.create(config);
+        SingleRuleConfiguration actual = (SingleRuleConfiguration) actualRules.get().iterator().next();
+        assertThat(actual.getTables(), is(Collections.singletonList("ds_0.foo_table")));
+        actual.getTables().add("ds_0.bar_table");
+        creator.create(config);
+        SingleRuleConfiguration actualNext = (SingleRuleConfiguration) actualRules.get().iterator().next();
+        assertThat(ruleConfig.getTables(), is(Collections.singletonList("ds_0.foo_table")));
+        assertThat(actualNext.getTables(), is(Collections.singletonList("ds_0.foo_table")));
+        verify(config, never()).getParameter();
     }
     
     @Test
@@ -93,20 +137,9 @@ class ShardingSpherePipelineDataSourceCreatorTest {
         when(ShardingSphereDataSourceFactory.createDataSource(eq("foo_db"), any(ModeConfiguration.class), eq(dataSources), anyCollection(), any(Properties.class)))
                 .thenThrow(expected);
         try (MockedConstruction<DataSourcePoolDestroyer> destroyers = mockConstruction(DataSourcePoolDestroyer.class)) {
-            assertThat(assertThrows(SQLException.class, () -> new ShardingSpherePipelineDataSourceCreator().create(config)), sameInstance(expected));
+            assertThat(assertThrows(SQLException.class, () -> creator.create(config)), sameInstance(expected));
             assertThat(destroyers.constructed().size(), is(1));
             verify(destroyers.constructed().get(0)).asyncDestroy();
         }
-    }
-    
-    private ShardingSpherePipelineDataSourceConfiguration mockConfiguration() {
-        ShardingSpherePipelineDataSourceConfiguration result = mock(ShardingSpherePipelineDataSourceConfiguration.class);
-        when(result.getDatabaseName()).thenReturn("foo_db");
-        when(result.getDataSourcePoolPropertiesMap()).thenReturn(Collections.singletonMap("ds_0", mock(DataSourcePoolProperties.class)));
-        Collection<RuleConfiguration> rules = new LinkedList<>();
-        rules.add(mock(AuthorityRuleConfiguration.class));
-        rules.add(mock(RuleConfiguration.class));
-        when(result.getCreationRuleConfigurations()).thenReturn(rules);
-        return result;
     }
 }

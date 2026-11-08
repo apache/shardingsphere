@@ -153,7 +153,6 @@ class ShardingSpherePipelineDataSourceConfigurationTest {
             config.getDataSourceConfiguration();
             config.getDataSourcePoolPropertiesMap();
             config.getRuleConfigurations();
-            config.getCreationRuleConfigurations();
             config.getActualDataSourceConfiguration("ds_0");
             yamlEngine.verify(() -> YamlEngine.unmarshal(eq(config.getParameter()), eq(YamlRootConfiguration.class), eq(true)), never());
         }

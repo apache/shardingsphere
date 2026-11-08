@@ -146,18 +146,6 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         return result;
     }
     
-    /**
-     * Get rule configurations for data source creation.
-     *
-     * @return independent rule configurations
-     */
-    public Collection<RuleConfiguration> getCreationRuleConfigurations() {
-        YamlRuleConfigurationSwapperEngine swapper = new YamlRuleConfigurationSwapperEngine();
-        YamlRootConfiguration yamlConfig = new YamlRootConfiguration();
-        yamlConfig.setRules(swapper.swapToYamlRuleConfigurations(ruleConfigurations));
-        return swapper.swapToRuleConfigurations(YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlRootConfiguration.class, true).getRules());
-    }
-    
     @Override
     public Object getDataSourceConfiguration() {
         return this;

@@ -18,10 +18,17 @@
 package org.apache.shardingsphere.data.pipeline.sharding;
 
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.rule.PipelineRuleConfigurationReviser;
+import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -29,16 +36,27 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 class ShardingPipelineRuleConfigurationReviserTest {
     
@@ -72,7 +90,7 @@ class ShardingPipelineRuleConfigurationReviserTest {
     }
     
     @Test
-    void assertRevisionDoesNotChangeOriginalRuleConfiguration() {
+    void assertRevisionDoesNotChangeOriginalRuleConfiguration() throws SQLException {
         YamlRootConfiguration rootConfig = new YamlRootConfiguration();
         rootConfig.setDatabaseName("foo_db");
         Map<String, Object> dataSource = new HashMap<>(2, 1F);
@@ -86,11 +104,27 @@ class ShardingPipelineRuleConfigurationReviserTest {
         rootConfig.setRules(Collections.singleton(yamlRuleConfig));
         ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         ShardingRuleConfiguration original = (ShardingRuleConfiguration) config.getRuleConfigurations().iterator().next();
-        ShardingRuleConfiguration forCreation = (ShardingRuleConfiguration) config.getCreationRuleConfigurations().iterator().next();
-        reviser.revise(forCreation);
-        assertNull(original.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"));
-        assertThat(forCreation.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"), is(Boolean.TRUE.toString()));
-        ShardingRuleConfiguration nextCreation = (ShardingRuleConfiguration) config.getCreationRuleConfigurations().iterator().next();
-        assertNull(nextCreation.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"));
+        AtomicReference<Collection<RuleConfiguration>> actualRules = new AtomicReference<>();
+        try (
+                MockedStatic<DataSourcePoolCreator> poolCreator = mockStatic(DataSourcePoolCreator.class);
+                MockedStatic<ShardingSphereDataSourceFactory> dataSourceFactory = mockStatic(ShardingSphereDataSourceFactory.class);
+                MockedStatic<PipelineContextManager> ignored = mockStatic(PipelineContextManager.class)) {
+            dataSourceFactory.when(() -> ShardingSphereDataSourceFactory.createDataSource(eq("foo_db"), any(ModeConfiguration.class), anyMap(), anyCollection(), any(Properties.class)))
+                    .thenAnswer(invocation -> {
+                        actualRules.set(invocation.getArgument(3));
+                        return mock(DataSource.class);
+                    });
+            PipelineDataSourceCreator creator = TypedSPILoader.getService(PipelineDataSourceCreator.class, ShardingSpherePipelineDataSourceConfiguration.TYPE);
+            creator.create(config);
+            ShardingRuleConfiguration actualForCreation = (ShardingRuleConfiguration) actualRules.get().iterator().next();
+            assertNull(original.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"));
+            assertThat(actualForCreation.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"), is(Boolean.TRUE.toString()));
+            actualForCreation.getShardingAlgorithms().get("inline").getProps().setProperty("foo_creation", "foo_value");
+            creator.create(config);
+            ShardingRuleConfiguration actualNextCreation = (ShardingRuleConfiguration) actualRules.get().iterator().next();
+            assertNull(actualNextCreation.getShardingAlgorithms().get("inline").getProps().getProperty("foo_creation"));
+            assertThat(actualNextCreation.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"), is(Boolean.TRUE.toString()));
+            assertNull(original.getShardingAlgorithms().get("inline").getProps().getProperty("allow-range-query-with-inline-sharding"));
+        }
     }
 }

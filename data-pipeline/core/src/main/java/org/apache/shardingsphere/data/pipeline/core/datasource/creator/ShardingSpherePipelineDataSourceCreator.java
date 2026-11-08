@@ -31,6 +31,9 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 
@@ -50,10 +53,17 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     @Override
     public DataSource create(final Object dataSourceConfig) throws SQLException {
         ShardingSpherePipelineDataSourceConfiguration config = (ShardingSpherePipelineDataSourceConfiguration) dataSourceConfig;
-        Collection<RuleConfiguration> ruleConfigs = config.getCreationRuleConfigurations();
+        Collection<RuleConfiguration> ruleConfigs = copyRuleConfigurations(config.getRuleConfigurations());
         removeAuthorityRuleConfiguration(ruleConfigs);
         reviseRuleConfiguration(ruleConfigs);
         return createShardingSphereDataSource(config, ruleConfigs);
+    }
+    
+    private Collection<RuleConfiguration> copyRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        YamlRuleConfigurationSwapperEngine swapper = new YamlRuleConfigurationSwapperEngine();
+        YamlRootConfiguration yamlConfig = new YamlRootConfiguration();
+        yamlConfig.setRules(swapper.swapToYamlRuleConfigurations(ruleConfigs));
+        return swapper.swapToRuleConfigurations(YamlEngine.unmarshal(YamlEngine.marshal(yamlConfig), YamlRootConfiguration.class, true).getRules());
     }
     
     private void removeAuthorityRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
