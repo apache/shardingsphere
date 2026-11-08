@@ -44,14 +44,8 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     
     private final Map<String, DataSourcePoolProperties> dataSourcePoolPropertiesMap;
     
-    /**
-     * Original JDBC URL property keys used when restoring actual data source parameters.
-     */
     private final Map<String, String> jdbcUrlKeys;
     
-    /**
-     * Original customPoolProps keys; an absent entry differs from an explicitly empty group.
-     */
     private final Map<String, Collection<String>> customPoolPropertiesKeys;
     
     private final Collection<RuleConfiguration> ruleConfigurations;
