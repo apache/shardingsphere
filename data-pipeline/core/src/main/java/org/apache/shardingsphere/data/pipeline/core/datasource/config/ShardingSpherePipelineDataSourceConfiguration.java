@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.type;
+package org.apache.shardingsphere.data.pipeline.core.datasource.config;
 
 import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
