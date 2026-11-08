@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
@@ -264,29 +263,30 @@ class MigrationJobExecutorCallbackTest {
     
     private MigrationJobConfiguration createJobConfiguration() {
         Map<String, PipelineDataSourceConfiguration> sources = new LinkedHashMap<>(1, 1F);
-        sources.put(SOURCE_DATA_SOURCE_NAME, PipelineDataSourceConfigurationFactory.newInstance(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
-        return new MigrationJobConfiguration(createJobId(), DATABASE_NAME, databaseType, databaseType, sources, PipelineDataSourceConfigurationFactory.newInstance(createRootConfiguration(4, 5)),
-                Collections.singletonList("t_order"), null, createJobDataNodeLine(), Collections.singletonList(createJobDataNodeLine()), 1, 3);
+        sources.put(SOURCE_DATA_SOURCE_NAME, new StandardPipelineDataSourceConfiguration(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
+        return new MigrationJobConfiguration(createJobId(), DATABASE_NAME, databaseType, databaseType, sources,
+                new ShardingSpherePipelineDataSourceConfiguration(createRootConfiguration(4, 5)), Collections.singletonList("t_order"),
+                null, createJobDataNodeLine(), Collections.singletonList(createJobDataNodeLine()), 1, 3);
     }
     
     private MigrationJobConfiguration createPostgreSQLJobConfiguration() {
         JobDataNodeLine jobDataNodeLine = new JobDataNodeLine(Collections.singletonList(
                 new JobDataNodeEntry("T_ORDER", Collections.singletonList(new DataNode(SOURCE_DATA_SOURCE_NAME, "UPPER_SCHEMA", "UPPER_TABLE")))));
         Map<String, PipelineDataSourceConfiguration> sources = new LinkedHashMap<>(1, 1F);
-        sources.put(SOURCE_DATA_SOURCE_NAME, PipelineDataSourceConfigurationFactory.newInstance(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
+        sources.put(SOURCE_DATA_SOURCE_NAME, new StandardPipelineDataSourceConfiguration(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
         return new MigrationJobConfiguration(createJobId(jobDataNodeLine), DATABASE_NAME, databaseType, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), sources,
-                PipelineDataSourceConfigurationFactory.newInstance(createRootConfiguration(4, 5)), Collections.singletonList("T_ORDER"), Collections.singletonMap("T_ORDER", "UPPER_SCHEMA"),
-                jobDataNodeLine, Collections.singletonList(jobDataNodeLine), 1, 3);
+                new ShardingSpherePipelineDataSourceConfiguration(createRootConfiguration(4, 5)), Collections.singletonList("T_ORDER"),
+                Collections.singletonMap("T_ORDER", "UPPER_SCHEMA"), jobDataNodeLine, Collections.singletonList(jobDataNodeLine), 1, 3);
     }
     
     private MigrationJobConfiguration createMySQLJobConfiguration() {
         JobDataNodeLine jobDataNodeLine = new JobDataNodeLine(Collections.singletonList(
                 new JobDataNodeEntry("T_ORDER", Collections.singletonList(new DataNode(SOURCE_DATA_SOURCE_NAME + ".UPPER_TABLE")))));
         Map<String, PipelineDataSourceConfiguration> sources = new LinkedHashMap<>(1, 1F);
-        sources.put(SOURCE_DATA_SOURCE_NAME, PipelineDataSourceConfigurationFactory.newInstance(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
+        sources.put(SOURCE_DATA_SOURCE_NAME, new StandardPipelineDataSourceConfiguration(createDataSourceProperties(SOURCE_JDBC_URL, 2, 3)));
         return new MigrationJobConfiguration(createJobId(jobDataNodeLine), DATABASE_NAME, databaseType, TypedSPILoader.getService(DatabaseType.class, "MySQL"), sources,
-                PipelineDataSourceConfigurationFactory.newInstance(createRootConfiguration(4, 5)), Collections.singletonList("T_ORDER"), Collections.singletonMap("T_ORDER", null), jobDataNodeLine,
-                Collections.singletonList(jobDataNodeLine), 1, 3);
+                new ShardingSpherePipelineDataSourceConfiguration(createRootConfiguration(4, 5)), Collections.singletonList("T_ORDER"),
+                Collections.singletonMap("T_ORDER", null), jobDataNodeLine, Collections.singletonList(jobDataNodeLine), 1, 3);
     }
     
     private String createJobId() {

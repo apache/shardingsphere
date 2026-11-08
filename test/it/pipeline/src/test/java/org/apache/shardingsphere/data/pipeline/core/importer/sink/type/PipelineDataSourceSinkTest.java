@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.core.importer.sink.type;
 
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
@@ -86,7 +86,7 @@ class PipelineDataSourceSinkTest {
         poolProps.put("url", "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=root");
         poolProps.put("username", "root");
         poolProps.put("password", "root");
-        dataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(poolProps);
+        dataSourceConfig = new StandardPipelineDataSourceConfiguration(poolProps);
         PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), mockPipelineDataSourceManager());
         importer = new SingleChannelConsumerImporter(channel, 100, 1000L, pipelineSink, new FixtureTransmissionJobItemContext());
     }

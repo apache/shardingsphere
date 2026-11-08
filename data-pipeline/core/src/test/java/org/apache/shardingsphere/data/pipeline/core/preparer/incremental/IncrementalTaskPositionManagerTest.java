@@ -23,7 +23,6 @@ import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDa
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -118,7 +117,7 @@ class IncrementalTaskPositionManagerTest {
         dataSourceProps.put("dataSourceClassName", MockedDataSource.class.getName());
         dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         rootConfig.getDataSources().put("foo_ds", dataSourceProps);
-        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(rootConfig);
+        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         incrementalTaskPositionManager.destroyPosition("foo_job", pipelineDataSourceConfig);
         verify(dialectPositionManager).destroy(any(), eq("foo_job"));
     }
@@ -128,7 +127,7 @@ class IncrementalTaskPositionManagerTest {
         Map<String, Object> dataSourceProps = new HashMap<>(2, 1F);
         dataSourceProps.put("dataSourceClassName", MockedDataSource.class.getName());
         dataSourceProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
-        StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(dataSourceProps);
+        StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(dataSourceProps);
         incrementalTaskPositionManager.destroyPosition("foo_job", pipelineDataSourceConfig);
         verify(dialectPositionManager).destroy(any(), eq("foo_job"));
     }

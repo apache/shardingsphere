@@ -17,21 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -42,41 +37,6 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.NONE)
 @Slf4j
 public final class PipelineDataSourceConfigurationUtils {
-    
-    /**
-     * Get actual data source configuration from the current runtime pool properties.
-     *
-     * @param pipelineDataSourceConfig ShardingSphere pipeline data source configuration
-     * @param actualDataSourceName actual data source name
-     * @return actual data source configuration
-     */
-    public static StandardPipelineDataSourceConfiguration getActualDataSourceConfiguration(final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig,
-                                                                                           final String actualDataSourceName) {
-        DataSourcePoolProperties dataSourcePoolProps = pipelineDataSourceConfig.getDataSourcePoolPropertiesMap().get(actualDataSourceName);
-        Preconditions.checkNotNull(dataSourcePoolProps, "actualDataSourceName '{}' does not exist", actualDataSourceName);
-        Map<String, Object> dataSourceConfig = new YamlDataSourceConfigurationSwapper().swapToMap(dataSourcePoolProps);
-        if ("jdbcUrl".equals(pipelineDataSourceConfig.getJdbcUrlKeys().get(actualDataSourceName)) && dataSourceConfig.containsKey("url")) {
-            dataSourceConfig.put("jdbcUrl", dataSourceConfig.remove("url"));
-        }
-        Collection<String> customPoolPropsKeys = pipelineDataSourceConfig.getCustomPoolPropertiesKeys().get(actualDataSourceName);
-        if (null != customPoolPropsKeys) {
-            Map<String, Object> customPoolProps = new LinkedHashMap<>(customPoolPropsKeys.size(), 1F);
-            Map<String, Object> localProps = dataSourcePoolProps.getAllLocalProperties();
-            customPoolPropsKeys.forEach(each -> {
-                if (localProps.containsKey(each)) {
-                    customPoolProps.put(each, localProps.get(each));
-                } else if (dataSourceConfig.containsKey(each)) {
-                    customPoolProps.put(each, dataSourceConfig.get(each));
-                }
-                dataSourceConfig.remove(each);
-            });
-            dataSourceConfig.put("customPoolProps", customPoolProps);
-        }
-        for (String each : Arrays.asList("minPoolSize", "minimumIdle")) {
-            dataSourceConfig.put(each, "1");
-        }
-        return PipelineDataSourceConfigurationFactory.newInstance(dataSourceConfig);
-    }
     
     /**
      * Transform the given pipeline data source properties.
@@ -182,7 +142,7 @@ public final class PipelineDataSourceConfigurationUtils {
             return pipelineDataSourceConfig;
         }
         logTransformPoolSize(jobId, dataSourceName, jobStandardProps, currentStandardProps);
-        return PipelineDataSourceConfigurationFactory.newInstance(new YamlDataSourceConfigurationSwapper().swapToMap(dataSourcePoolProps));
+        return new StandardPipelineDataSourceConfiguration(new YamlDataSourceConfigurationSwapper().swapToMap(dataSourcePoolProps));
     }
     
     private static boolean isPoolSizeChanged(final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {

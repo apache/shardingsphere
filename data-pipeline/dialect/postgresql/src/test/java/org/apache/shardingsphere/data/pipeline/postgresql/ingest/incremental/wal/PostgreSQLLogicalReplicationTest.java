@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal;
 
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
@@ -74,7 +74,7 @@ class PostgreSQLLogicalReplicationTest {
         poolProps.put("url", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL");
         poolProps.put("username", "root");
         poolProps.put("password", "root");
-        Connection connection = logicalReplication.createConnection(PipelineDataSourceConfigurationFactory.newInstance(poolProps));
+        Connection connection = logicalReplication.createConnection(new StandardPipelineDataSourceConfiguration(poolProps));
         assertFalse(connection.isClosed());
     }
     

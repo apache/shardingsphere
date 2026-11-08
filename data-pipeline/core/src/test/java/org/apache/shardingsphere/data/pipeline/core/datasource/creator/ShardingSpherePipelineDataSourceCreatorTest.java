@@ -21,7 +21,6 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -57,6 +56,7 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -107,8 +107,10 @@ class ShardingSpherePipelineDataSourceCreatorTest {
     void assertCreateWithIndependentRuleConfigurations() throws SQLException {
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.getTables().add("ds_0.foo_table");
-        ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration("foo: [invalid", "foo_db", Collections.emptyMap(), Collections.emptyMap(),
-                Collections.emptyMap(), Collections.singleton(ruleConfig), mock(DatabaseType.class));
+        ShardingSpherePipelineDataSourceConfiguration config = mock(ShardingSpherePipelineDataSourceConfiguration.class);
+        when(config.getDatabaseName()).thenReturn("foo_db");
+        when(config.getRuleConfigurations()).thenReturn(Collections.singleton(ruleConfig));
+        when(config.getDataSourcePoolPropertiesMap()).thenReturn(Collections.emptyMap());
         Map<String, DataSource> dataSources = Collections.emptyMap();
         when(DataSourcePoolCreator.create(config.getDataSourcePoolPropertiesMap(), false)).thenReturn(dataSources);
         AtomicReference<Collection<RuleConfiguration>> actualRules = new AtomicReference<>();
@@ -124,6 +126,7 @@ class ShardingSpherePipelineDataSourceCreatorTest {
         SingleRuleConfiguration actualNext = (SingleRuleConfiguration) actualRules.get().iterator().next();
         assertThat(ruleConfig.getTables(), is(Collections.singletonList("ds_0.foo_table")));
         assertThat(actualNext.getTables(), is(Collections.singletonList("ds_0.foo_table")));
+        verify(config, never()).getParameter();
     }
     
     @Test

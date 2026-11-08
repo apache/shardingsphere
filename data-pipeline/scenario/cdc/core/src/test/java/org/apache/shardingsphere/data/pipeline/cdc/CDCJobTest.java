@@ -54,7 +54,6 @@ import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgori
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
@@ -113,7 +112,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
 @LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings({
-        PipelineJobIdUtils.class, PipelineProcessConfigurationUtils.class, PipelineDataSourceConfigurationFactory.class, PipelineDataSourceConfigurationUtils.class,
+        PipelineJobIdUtils.class, PipelineProcessConfigurationUtils.class, PipelineDataSourceConfigurationFactory.class,
         OrderedSPILoader.class, PipelineAPIFactory.class, PipelineJobProgressPersistService.class,
         PipelineDistributedBarrier.class, ElasticJobServiceLoader.class
 })

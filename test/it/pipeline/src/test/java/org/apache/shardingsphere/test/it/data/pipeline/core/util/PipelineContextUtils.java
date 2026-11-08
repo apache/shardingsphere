@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManag
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.importer.PipelineRequiredColumnsExtractor;
@@ -109,8 +108,7 @@ public final class PipelineContextUtils {
             return;
         }
         String yaml = SystemResourceFileUtils.readFile("config_sharding_sphere_jdbc_source.yaml");
-        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig =
-                (ShardingSpherePipelineDataSourceConfiguration) PipelineDataSourceConfigurationFactory.newInstance(ShardingSpherePipelineDataSourceConfiguration.TYPE, yaml);
+        ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(yaml);
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(pipelineDataSourceConfig.getParameter(), YamlRootConfiguration.class, true);
         Map<String, Map<String, Object>> dataSources = new LinkedHashMap<>(pipelineDataSourceConfig.getDataSourcePoolPropertiesMap().size(), 1F);
         YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();

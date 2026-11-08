@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.sharding;
 
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.rule.PipelineRuleConfigurationReviser;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
@@ -103,7 +102,7 @@ class ShardingPipelineRuleConfigurationReviserTest {
         YamlShardingRuleConfiguration yamlRuleConfig = new YamlShardingRuleConfiguration();
         yamlRuleConfig.getShardingAlgorithms().put("inline", algorithm);
         rootConfig.setRules(Collections.singleton(yamlRuleConfig));
-        ShardingSpherePipelineDataSourceConfiguration config = PipelineDataSourceConfigurationFactory.newInstance(rootConfig);
+        ShardingSpherePipelineDataSourceConfiguration config = new ShardingSpherePipelineDataSourceConfiguration(rootConfig);
         ShardingRuleConfiguration original = (ShardingRuleConfiguration) config.getRuleConfigurations().iterator().next();
         AtomicReference<Collection<RuleConfiguration>> actualRules = new AtomicReference<>();
         try (

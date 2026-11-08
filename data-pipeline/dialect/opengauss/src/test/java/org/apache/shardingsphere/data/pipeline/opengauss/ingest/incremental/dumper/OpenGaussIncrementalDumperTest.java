@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.dum
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.channel.memory.MemoryPipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.DumperCommonContext;
@@ -308,7 +307,7 @@ class OpenGaussIncrementalDumperTest {
         poolProps.put("url", "jdbc:postgresql://localhost:5432/test_db");
         poolProps.put("username", "root");
         poolProps.put("password", "root");
-        DumperCommonContext commonContext = new DumperCommonContext(null, PipelineDataSourceConfigurationFactory.newInstance(poolProps),
+        DumperCommonContext commonContext = new DumperCommonContext(null, new StandardPipelineDataSourceConfiguration(poolProps),
                 new ActualAndLogicTableNameMapper(Collections.singletonMap(new ShardingSphereIdentifier("t_order"), new ShardingSphereIdentifier("t_order"))),
                 new TableAndSchemaNameMapper(Collections.emptyMap()));
         return new IncrementalDumperContext(commonContext, "0101", decodeWithTX);

@@ -70,28 +70,6 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         ruleConfigs.removeIf(AuthorityRuleConfiguration.class::isInstance);
     }
     
-    @SuppressWarnings("unchecked")
-    private void reviseRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
-        OrderedSPILoader.getServices(PipelineRuleConfigurationReviser.class, ruleConfigs).forEach((key, value) -> value.revise(key));
-    }
-    
-    private DataSource createShardingSphereDataSource(final ShardingSpherePipelineDataSourceConfiguration config, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        Map<String, DataSourcePoolProperties> dataSourcePropsMap = config.getDataSourcePoolPropertiesMap();
-        Map<String, DataSource> dataSourceMap = DataSourcePoolCreator.create(dataSourcePropsMap, false);
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(config.getDatabaseName(), createStandaloneModeConfiguration(), dataSourceMap, ruleConfigs, createConfigurationProperties());
-            // CHECKSTYLE:OFF
-        } catch (final SQLException | RuntimeException ex) {
-            // CHECKSTYLE:ON
-            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
-            throw ex;
-        }
-    }
-    
-    private ModeConfiguration createStandaloneModeConfiguration() {
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("Memory", new Properties()));
-    }
-    
     private Properties createConfigurationProperties() {
         Properties realtimeProps = getRealtimeProperties();
         Properties result = new Properties();
@@ -120,6 +98,28 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         result.add(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey());
         result.add(ConfigurationPropertyKey.SQL_SHOW.getKey());
         return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void reviseRuleConfiguration(final Collection<RuleConfiguration> ruleConfigs) {
+        OrderedSPILoader.getServices(PipelineRuleConfigurationReviser.class, ruleConfigs).forEach((key, value) -> value.revise(key));
+    }
+    
+    private ModeConfiguration createStandaloneModeConfiguration() {
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("Memory", new Properties()));
+    }
+    
+    private DataSource createShardingSphereDataSource(final ShardingSpherePipelineDataSourceConfiguration config, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, DataSourcePoolProperties> dataSourcePropsMap = config.getDataSourcePoolPropertiesMap();
+        Map<String, DataSource> dataSourceMap = DataSourcePoolCreator.create(dataSourcePropsMap, false);
+        try {
+            return ShardingSphereDataSourceFactory.createDataSource(config.getDatabaseName(), createStandaloneModeConfiguration(), dataSourceMap, ruleConfigs, createConfigurationProperties());
+            // CHECKSTYLE:OFF
+        } catch (final SQLException | RuntimeException ex) {
+            // CHECKSTYLE:ON
+            dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+            throw ex;
+        }
     }
     
     @Override

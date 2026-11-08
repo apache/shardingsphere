@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLineConvertUtils;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobCreationWithInvalidShardingCountException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
@@ -61,7 +60,6 @@ import org.apache.shardingsphere.data.pipeline.core.preparer.incremental.Increme
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
@@ -171,7 +169,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
         targetRootConfig.setDatabaseName(database.getName());
         targetRootConfig.setDataSources(dataSourcePoolProps);
         targetRootConfig.setRules(ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations()));
-        return PipelineDataSourceConfigurationFactory.newInstance(targetRootConfig);
+        return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
     private void checkJobConfiguration(final CDCJobConfiguration jobConfig) {
@@ -223,7 +221,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     private IncrementalDumperContext buildDumperContext(final CDCJobConfiguration jobConfig, final int jobShardingItem, final TableAndSchemaNameMapper tableAndSchemaNameMapper) {
         JobDataNodeLine dataNodeLine = jobConfig.getJobShardingDataNodes().get(jobShardingItem);
         String dataSourceName = dataNodeLine.getEntries().iterator().next().getDataNodes().iterator().next().getDataSourceName();
-        StandardPipelineDataSourceConfiguration actualDataSourceConfig = PipelineDataSourceConfigurationUtils.getActualDataSourceConfiguration(jobConfig.getDataSourceConfig(), dataSourceName);
+        StandardPipelineDataSourceConfiguration actualDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(dataSourceName);
         return new IncrementalDumperContext(new DumperCommonContext(dataSourceName, actualDataSourceConfig, JobDataNodeLineConvertUtils.buildTableNameMapper(dataNodeLine), tableAndSchemaNameMapper),
                 jobConfig.getJobId(), jobConfig.isDecodeWithTX());
     }
@@ -332,7 +330,7 @@ public final class CDCJobAPI implements TransmissionJobAPI {
     private void cleanup(final CDCJobConfiguration jobConfig) {
         for (String each : jobConfig.getDataSourceConfig().getDataSourcePoolPropertiesMap().keySet()) {
             try {
-                StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = PipelineDataSourceConfigurationUtils.getActualDataSourceConfiguration(jobConfig.getDataSourceConfig(), each);
+                StandardPipelineDataSourceConfiguration pipelineDataSourceConfig = jobConfig.getDataSourceConfig().getActualDataSourceConfiguration(each);
                 new IncrementalTaskPositionManager(pipelineDataSourceConfig.getDatabaseType()).destroyPosition(jobConfig.getJobId(), pipelineDataSourceConfig);
             } catch (final SQLException ex) {
                 log.warn("job destroying failed, jobId={}, dataSourceName={}", jobConfig.getJobId(), each, ex);
