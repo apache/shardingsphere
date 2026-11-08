@@ -209,11 +209,11 @@ public final class DataConsistencyCheckUtils {
     /**
      * Get first unique key value.
      *
-     * @param record record
+     * @param dataRecord record
      * @param uniqueKey unique key
      * @return first unique key value
      */
-    public static Object getFirstUniqueKeyValue(final Map<String, Object> record, @Nullable final String uniqueKey) {
-        return record.isEmpty() || null == uniqueKey ? null : record.get(uniqueKey);
+    public static Object getFirstUniqueKeyValue(final Map<String, Object> dataRecord, @Nullable final String uniqueKey) {
+        return dataRecord.isEmpty() || null == uniqueKey ? null : dataRecord.get(uniqueKey);
     }
 }

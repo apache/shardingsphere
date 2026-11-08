@@ -108,10 +108,8 @@ final class SQLStatementSafetyValidator {
             checkFunction(function);
         } else if (expression instanceof BinaryOperationExpression binary && ":=".equals(binary.getOperator())) {
             throw new MCPBannedSQLStatementException();
-        } else if (expression instanceof ColumnSegment column) {
-            if (column.getOwner().isPresent() && "NEXTVAL".equalsIgnoreCase(column.getIdentifier().getValue())) {
-                throw new MCPBannedSQLStatementException();
-            }
+        } else if (expression instanceof ColumnSegment column && column.getOwner().isPresent() && "NEXTVAL".equalsIgnoreCase(column.getIdentifier().getValue())) {
+            throw new MCPBannedSQLStatementException();
         }
     }
     

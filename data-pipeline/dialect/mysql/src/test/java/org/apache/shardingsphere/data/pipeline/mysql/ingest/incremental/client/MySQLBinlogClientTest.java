@@ -339,7 +339,7 @@ class MySQLBinlogClientTest {
         ArgumentCaptor<ChannelHandler> handlerCaptor = ArgumentCaptor.forClass(ChannelHandler.class);
         verify(pipeline, times(2)).addLast(handlerCaptor.capture());
         ChannelInboundHandlerAdapter handler = handlerCaptor.getAllValues().stream().filter(each -> "MySQLBinlogEventHandler".equals(each.getClass().getSimpleName()))
-                .map(each -> (ChannelInboundHandlerAdapter) each).findFirst().orElseThrow(IllegalStateException::new);
+                .map(ChannelInboundHandlerAdapter.class::cast).findFirst().orElseThrow(IllegalStateException::new);
         ChannelHandlerContext context = mock(ChannelHandlerContext.class);
         handler.channelRead(context, new PlaceholderBinlogEvent("binlog-000005", 32L, 1L));
         doThrow(new PipelineInternalException("connect failed")).doNothing().when(client).connect();

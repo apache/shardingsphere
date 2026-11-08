@@ -80,9 +80,9 @@ public final class PipelineDataSourceSink implements PipelineSink {
     @Override
     public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
         List<DataRecord> dataRecords = new ArrayList<>();
-        for (Record record : records) {
-            if (record instanceof DataRecord) {
-                dataRecords.add((DataRecord) record);
+        for (Record each : records) {
+            if (each instanceof DataRecord) {
+                dataRecords.add((DataRecord) each);
             }
         }
         if (dataRecords.isEmpty()) {

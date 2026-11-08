@@ -54,8 +54,8 @@ public final class RecordTableInventoryCheckCalculator extends AbstractRecordTab
     }
     
     @Override
-    protected Object getFirstUniqueKeyValue(final Map<String, Object> record, final String firstUniqueKey) {
-        return DataConsistencyCheckUtils.getFirstUniqueKeyValue(record, firstUniqueKey);
+    protected Object getFirstUniqueKeyValue(final Map<String, Object> dataRecord, final String firstUniqueKey) {
+        return DataConsistencyCheckUtils.getFirstUniqueKeyValue(dataRecord, firstUniqueKey);
     }
     
     @Override

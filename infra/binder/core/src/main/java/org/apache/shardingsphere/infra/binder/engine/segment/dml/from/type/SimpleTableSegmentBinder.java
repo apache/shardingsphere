@@ -98,10 +98,10 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue databaseName = getDatabaseName(segment, binderContext);
         Optional<IdentifierValue> schemaName = getSchemaName(segment, binderContext, databaseName);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName).getSchema(identifierValue));
         if (isUpdateTargetTableAlias(binderContext, tableBinderContexts, schemaName, tableName.getValue(), segment)) {
             return bindUpdateTargetTableAlias(segment, binderContext, tableBinderContexts, databaseName, schemaName, tableName);
         }
+        Optional<ShardingSphereSchema> schema = schemaName.map(optional -> binderContext.getMetaData().getDatabase(databaseName).getSchema(optional));
         checkTableExists(binderContext, schema.orElse(null), schemaName, tableName, segment, tableBinderContexts);
         checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName);
         String tableAliasOrName = segment.getAliasName().orElseGet(tableName::getValue);

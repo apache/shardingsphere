@@ -95,7 +95,7 @@ class FirebirdBatchMessageCommandExecutorTest {
     private FirebirdBatchStatement batchStatement;
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getDataLength()).thenReturn(8);

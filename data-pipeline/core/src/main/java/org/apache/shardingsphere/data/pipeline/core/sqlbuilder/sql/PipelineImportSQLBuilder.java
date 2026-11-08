@@ -135,7 +135,7 @@ public final class PipelineImportSQLBuilder {
     
     private String buildUpdateSQL0(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String updateMainClause = String.format("UPDATE %s SET %%s", getQualifiedTableName(schemaName, dataRecord.getTableName()));
-        return buildWhereClause(conditionColumns).map(optional -> updateMainClause.concat(optional)).orElse(updateMainClause);
+        return buildWhereClause(conditionColumns).map(updateMainClause::concat).orElse(updateMainClause);
     }
     
     private Optional<String> buildWhereClause(final Collection<Column> conditionColumns) {
@@ -167,7 +167,7 @@ public final class PipelineImportSQLBuilder {
     
     private String buildDeleteSQL0(final String schemaName, final DataRecord dataRecord, final Collection<Column> conditionColumns) {
         String deleteMainClause = buildDeleteMainClause(schemaName, dataRecord);
-        return buildWhereClause(conditionColumns).map(optional -> deleteMainClause.concat(optional)).orElse(deleteMainClause);
+        return buildWhereClause(conditionColumns).map(deleteMainClause::concat).orElse(deleteMainClause);
     }
     
     private String buildDeleteMainClause(final String schemaName, final DataRecord dataRecord) {

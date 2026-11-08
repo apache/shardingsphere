@@ -135,10 +135,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void processEventIgnoreTX(final MySQLBaseBinlogEvent binlogEvent, final List<Object> out) {
-        if (binlogEvent instanceof MySQLQueryBinlogEvent queryEvent) {
-            if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
-                return;
-            }
+        if (binlogEvent instanceof MySQLQueryBinlogEvent queryEvent && TX_BEGIN_SQL.equals(queryEvent.getSql())) {
+            return;
         }
         out.add(binlogEvent);
     }

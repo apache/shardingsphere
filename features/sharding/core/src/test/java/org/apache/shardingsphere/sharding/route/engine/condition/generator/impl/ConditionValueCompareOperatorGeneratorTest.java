@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -88,31 +89,11 @@ class ConditionValueCompareOperatorGeneratorTest {
         assertTrue(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().contains(value));
     }
     
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndGreaterThanOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), ">", null);
-        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
-    }
-    
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndGreaterThanOrEqualOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), ">=", null);
-        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
-    }
-    
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndLessThanOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), "<", null);
-        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
-    }
-    
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndLessThanOrEqualOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), "<=", null);
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {">", ">=", "<", "<="})
+    void assertGenerateWithBinaryOperatorPrefixAndRangeOperator(final String operator) {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"),
+                new LiteralExpressionSegment(0, 0, "100"), operator, null);
         assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
     }
     
