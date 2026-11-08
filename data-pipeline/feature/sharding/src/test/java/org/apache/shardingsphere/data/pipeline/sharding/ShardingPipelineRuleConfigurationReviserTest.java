@@ -109,7 +109,6 @@ class ShardingPipelineRuleConfigurationReviserTest {
                 MockedStatic<DataSourcePoolCreator> poolCreator = mockStatic(DataSourcePoolCreator.class);
                 MockedStatic<ShardingSphereDataSourceFactory> dataSourceFactory = mockStatic(ShardingSphereDataSourceFactory.class);
                 MockedStatic<PipelineContextManager> ignored = mockStatic(PipelineContextManager.class)) {
-            poolCreator.when(() -> DataSourcePoolCreator.create(config.getDataSourcePoolPropertiesMap(), false)).thenReturn(Collections.emptyMap());
             dataSourceFactory.when(() -> ShardingSphereDataSourceFactory.createDataSource(eq("foo_db"), any(ModeConfiguration.class), anyMap(), anyCollection(), any(Properties.class)))
                     .thenAnswer(invocation -> {
                         actualRules.set(invocation.getArgument(3));

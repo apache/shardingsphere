@@ -110,7 +110,6 @@ class ShardingSpherePipelineDataSourceCreatorTest {
         ShardingSpherePipelineDataSourceConfiguration config = mock(ShardingSpherePipelineDataSourceConfiguration.class);
         when(config.getDatabaseName()).thenReturn("foo_db");
         when(config.getRuleConfigurations()).thenReturn(Collections.singleton(ruleConfig));
-        when(config.getDataSourcePoolPropertiesMap()).thenReturn(Collections.emptyMap());
         Map<String, DataSource> dataSources = Collections.emptyMap();
         when(DataSourcePoolCreator.create(config.getDataSourcePoolPropertiesMap(), false)).thenReturn(dataSources);
         AtomicReference<Collection<RuleConfiguration>> actualRules = new AtomicReference<>();
