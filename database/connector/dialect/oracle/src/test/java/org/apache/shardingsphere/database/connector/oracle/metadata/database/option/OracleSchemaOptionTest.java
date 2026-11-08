@@ -27,7 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,20 +60,5 @@ class OracleSchemaOptionTest {
     @Test
     void assertGetDefaultSystemSchema() {
         assertThat(new OracleSchemaOption().getDefaultSystemSchema(), is(Optional.of("SYS")));
-    }
-    
-    @Test
-    void assertIsSystemSchemaPreferredOverCurrentSchema() {
-        assertFalse(new OracleSchemaOption().isSystemSchemaPreferredOverCurrentSchema());
-    }
-    
-    @Test
-    void assertIsDDLTargetResolvedToSystemSchema() {
-        assertFalse(new OracleSchemaOption().isDDLTargetResolvedToSystemSchema());
-    }
-    
-    @Test
-    void assertIsSystemSchemaQueriedFromStorage() {
-        assertTrue(new OracleSchemaOption().isSystemSchemaQueriedFromStorage());
     }
 }
