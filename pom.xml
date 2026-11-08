@@ -1161,6 +1161,9 @@
                 <groupId>org.apache.rat</groupId>
                 <artifactId>apache-rat-plugin</artifactId>
                 <version>${apache-rat-plugin.version}</version>
+                <configuration>
+                    <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -1169,7 +1172,6 @@
                     <failOnViolation>false</failOnViolation>
                     <failsOnError>false</failsOnError>
                     <violationSeverity>warning</violationSeverity>
-                    <!--suppress MavenModelInspection -->
                     <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
