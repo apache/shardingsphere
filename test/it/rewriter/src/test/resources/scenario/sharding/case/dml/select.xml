@@ -110,6 +110,11 @@
         <output sql="SELECT * FROM t_account_0 WHERE amount = 1000 UNION ALL SELECT * FROM t_account_1 WHERE amount = 1000" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="select_with_and_not_or_sharding_conditions_for_literals" db-types="SQLServer,Oracle,SQL92">
+        <input sql="SELECT * FROM t_account WHERE account_id = 100 AND NOT amount = 0 OR account_id = 101" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 AND NOT amount = 0 OR account_id = 101 UNION ALL SELECT * FROM t_account_1 WHERE account_id = 100 AND NOT amount = 0 OR account_id = 101" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_without_sharding_value_with_dollar_parameter_marker_for_parameters" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM public.t_account WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
         <output sql="SELECT * FROM public.t_account_0 WHERE amount = $2 OR amount = $1 UNION ALL SELECT * FROM public.t_account_1 WHERE amount = $2 OR amount = $1" parameters="900, 1000" />

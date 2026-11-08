@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPLockingReadStatementException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -109,9 +110,7 @@ final class SQLStatementSafetyValidator {
         } else if (expression instanceof BinaryOperationExpression binary && ":=".equals(binary.getOperator())) {
             throw new MCPBannedSQLStatementException();
         } else if (expression instanceof ColumnSegment column) {
-            if (column.getOwner().isPresent() && "NEXTVAL".equalsIgnoreCase(column.getIdentifier().getValue())) {
-                throw new MCPBannedSQLStatementException();
-            }
+            ShardingSpherePreconditions.checkState(!column.getOwner().isPresent() || !"NEXTVAL".equalsIgnoreCase(column.getIdentifier().getValue()), MCPBannedSQLStatementException::new);
         }
     }
     

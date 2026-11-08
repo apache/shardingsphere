@@ -106,11 +106,9 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         SQLServerRevokeStatement result = new SQLServerRevokeStatement(getDatabaseType(), getTableSegments(ctx));
-        if (null != ctx.revokeClassPrivilegesClause()) {
-            if (null != ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
-                for (ColumnNamesContext each : ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
-                    result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
-                }
+        if (null != ctx.revokeClassPrivilegesClause() && null != ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
+            for (ColumnNamesContext each : ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
+                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
             }
         }
         return result;

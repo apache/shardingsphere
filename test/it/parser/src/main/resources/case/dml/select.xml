@@ -9734,6 +9734,44 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_distinct_from_and">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from start-index="14" stop-index="29">
+            <simple-table name="#SampleTempTable" start-index="14" stop-index="29"/>
+        </from>
+        <where start-index="31" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="37" stop-index="75">
+                    <left>
+                        <binary-operation-expression start-index="37" stop-index="58">
+                            <left>
+                                <column name="id" start-index="37" stop-index="38"/>
+                            </left>
+                            <right>
+                                <literal-expression value="17" start-index="57" stop-index="58"/>
+                            </right>
+                            <operator>ISDISTINCTFROM</operator>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>AND</operator>
+                    <right>
+                        <binary-operation-expression start-index="64" stop-index="75">
+                            <left>
+                                <column name="order_id" start-index="64" stop-index="71"/>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="1" start-index="75" stop-index="75"/>
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_with_contains_function">
         <projections start-index="7" stop-index="16">
             <column-projection name="product_id" start-index="7" stop-index="16"/>

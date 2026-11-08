@@ -22,7 +22,7 @@ The storage node is the environment that stores various ShardingSphere metadata,
 
 In version 0.1.x of ShardingSphere Operator, two CRD components, Proxy and ProxyServerConfig, were introduced to describe the deployment and configuration of ShardingSphere Proxy, as shown in the figure below.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md3.jpg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md3.png)
 
 These components enable basic maintenance and deployment capabilities for ShardingSphere Proxy, which are sufficient for Proof of Concept (PoC) environments.
 
@@ -32,7 +32,7 @@ However, for the Operator to be useful in production environments, it must be ab
 
 To address these management capabilities, ShardingSphere-On-Cloud has introduced ComputeNode, which can handle these functions within a specific group of objects. The first object is ComputeNode, as shown in the figure below:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md4.jpg)
+![img](https://shardingsphere.apache.org/blog/img/2023_04_13_Revamped_ShardingSphere_On_Cloud_What’s_New_in_Version_0.2.0_with_CRD_ComputeNode.en.md4.png)
 
 
 Compared with Proxy and ProxyServerConfig, ComputeNode brings changes such as cross-version upgrades, horizontal elastic scaling, and configuration security. ComputeNode is still in the v1alpha1 stage and needs to be enabled through a feature gate.

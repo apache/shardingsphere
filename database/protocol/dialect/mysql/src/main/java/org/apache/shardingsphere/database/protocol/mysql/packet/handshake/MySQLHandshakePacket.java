@@ -81,25 +81,6 @@ public final class MySQLHandshakePacket extends MySQLPacket {
     }
     
     /**
-     * There are some different between implement of handshake initialization packet and document.
-     * In source code of 5.7 version, authPluginDataPart2 should be at least 12 bytes,
-     * and then follow a nul byte.
-     * But in document, authPluginDataPart2 is at least 13 bytes, and not nul byte.
-     * From test, the 13th byte is nul byte and should be excluded from authPluginDataPart2.
-     *
-     * @param payload MySQL packet payload
-     * @param capabilityFlagsLower capability flags lower
-     * @return auth plugin data part2
-     */
-    private static byte[] readAuthPluginDataPart2(final MySQLPacketPayload payload, final int capabilityFlagsLower) {
-        return isClientSecureConnection(capabilityFlagsLower) ? payload.readStringNulByBytes() : new byte[0];
-    }
-    
-    private static String readAuthPluginName(final MySQLPacketPayload payload, final int capabilityFlagsUpper) {
-        return isClientPluginAuth(capabilityFlagsUpper) ? payload.readStringNul() : null;
-    }
-    
-    /**
      * Set authentication plugin name.
      *
      * @param authenticationMethod MySQL authentication method
@@ -177,6 +158,25 @@ public final class MySQLHandshakePacket extends MySQLPacket {
             this.capabilityFlagsUpper = capabilityFlagsUpper;
             authPluginData = new MySQLAuthenticationPluginData(authPluginDataPart1, readAuthPluginDataPart2(payload, capabilityFlagsLower));
             authPluginName = readAuthPluginName(payload, capabilityFlagsUpper);
+        }
+        
+        /**
+         * There are some different between implement of handshake initialization packet and document.
+         * In source code of 5.7 version, authPluginDataPart2 should be at least 12 bytes,
+         * and then follow a nul byte.
+         * But in document, authPluginDataPart2 is at least 13 bytes, and not nul byte.
+         * From test, the 13th byte is nul byte and should be excluded from authPluginDataPart2.
+         *
+         * @param payload MySQL packet payload
+         * @param capabilityFlagsLower capability flags lower
+         * @return auth plugin data part2
+         */
+        private static byte[] readAuthPluginDataPart2(final MySQLPacketPayload payload, final int capabilityFlagsLower) {
+            return isClientSecureConnection(capabilityFlagsLower) ? payload.readStringNulByBytes() : new byte[0];
+        }
+        
+        private static String readAuthPluginName(final MySQLPacketPayload payload, final int capabilityFlagsUpper) {
+            return isClientPluginAuth(capabilityFlagsUpper) ? payload.readStringNul() : null;
         }
     }
 }

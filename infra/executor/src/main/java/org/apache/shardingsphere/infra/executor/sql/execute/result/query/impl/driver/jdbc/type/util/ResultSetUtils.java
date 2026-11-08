@@ -22,6 +22,7 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 
@@ -282,6 +283,30 @@ public final class ResultSetUtils {
         }
         int firstChar = Character.toLowerCase(stringVal.charAt(0));
         return 't' == firstChar || 'y' == firstChar || '1' == firstChar || "-1".equals(stringVal);
+    }
+    
+    /**
+     * Convert an internal SQL TIME value to its requested JDBC representation.
+     *
+     * @param value SQL TIME value
+     * @param convertType requested Java type
+     * @return converted value
+     * @throws SQLFeatureNotSupportedException SQL feature not supported exception
+     */
+    @HighFrequencyInvocation
+    public static Object convertTimeValue(final LocalTime value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
+        if (LocalTime.class == convertType) {
+            return value;
+        }
+        if (String.class == convertType) {
+            return DateTimeFormatter.ISO_LOCAL_TIME.format(value);
+        }
+        if (Timestamp.class == convertType) {
+            return Timestamp.valueOf(value.atDate(LocalDate.of(1970, 1, 1)));
+        }
+        Time result = Time.valueOf(value);
+        result.setTime(result.getTime() + value.getNano() / 1_000_000);
+        return convertValue(result, convertType);
     }
     
     /**

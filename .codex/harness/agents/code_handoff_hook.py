@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Require an explicit review handoff after Codex changes implementation files."""
+"""Require an explicit review handoff after Codex changes repository deliverables."""
 
 from __future__ import annotations
 
@@ -29,13 +29,13 @@ import sys
 import tempfile
 from typing import Any
 
-PROSE_SUFFIXES = frozenset({".adoc", ".md", ".rst"})
-PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:Add|Delete|Update) File: (.+)$", re.MULTILINE)
+PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:(?:Add|Delete|Update) File|Move to): (.+)$", re.MULTILINE)
 FIELD_PATTERN = r"(?P<emphasis>\*\*)?{label}:(?(emphasis)(?:\*\*)?)[ \t]*(?P<value>.*?)"
 FIELD_PREFIX_PATTERN = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:#{1,6}[ \t]+)?")
 FENCE_PATTERN = re.compile(r"(?:`{3,}[^`]*|~{3,}.*)")
 FENCE_OPEN_PATTERN = re.compile(r"^ {0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
-SHELL_TOOL_NAMES = frozenset({"Bash", "exec_command", "write_stdin"})
+SNAPSHOT_TOOL_NAMES = frozenset({"Bash", "apply_patch", "exec_command", "write_stdin"})
+COMMIT_EXEMPT_SUFFIXES = frozenset({".adoc", ".md", ".rst"})
 PASSING_RESULT = "Mergeable"
 PAUSED_RESULTS = frozenset({"Not Mergeable", "Review Incomplete"})
 
@@ -47,26 +47,27 @@ def process_event(event: dict[str, Any], state_directory: Path) -> dict[str, str
         _record_pre_tool_state(event, state_directory)
         return {}
     if "PostToolUse" == event_name:
-        _record_implementation_change(event, state_directory)
+        _record_tool_change(event, state_directory)
         return {}
     if "Stop" != event_name:
         return {}
     marker_path = _marker_path(event, state_directory)
+    message = event.get("last_assistant_message")
     if not marker_path.exists():
         return {}
-    message = event.get("last_assistant_message")
-    passing_failures = validate_handoff(message)
+    require_commit = _pending_requires_commit(marker_path)
+    passing_failures = validate_handoff(message, require_commit=require_commit)
     if not passing_failures:
         marker_path.unlink()
         return {}
     paused_failures = validate_paused_handoff(message)
     if not paused_failures:
         return {}
-    return {"decision": "block", "reason": _continuation_reason(passing_failures, paused_failures)}
+    return {"decision": "block", "reason": _continuation_reason(passing_failures, paused_failures, require_commit)}
 
 
 def _record_pre_tool_state(event: dict[str, Any], state_directory: Path) -> None:
-    if event.get("tool_name") not in SHELL_TOOL_NAMES:
+    if event.get("tool_name") not in SNAPSHOT_TOOL_NAMES:
         return
     snapshot_path = _snapshot_path(event, state_directory)
     snapshot_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -74,26 +75,9 @@ def _record_pre_tool_state(event: dict[str, Any], state_directory: Path) -> None
     snapshot_path.write_text(json.dumps(snapshot, sort_keys=True), encoding="utf-8")
 
 
-def _record_implementation_change(event: dict[str, Any], state_directory: Path) -> None:
-    tool_name = event.get("tool_name")
-    if tool_name in SHELL_TOOL_NAMES:
-        _record_shell_change(event, state_directory)
+def _record_tool_change(event: dict[str, Any], state_directory: Path) -> None:
+    if event.get("tool_name") not in SNAPSHOT_TOOL_NAMES:
         return
-    if "apply_patch" != tool_name:
-        return
-    tool_input = event.get("tool_input")
-    patch = None
-    if isinstance(tool_input, dict):
-        patch = tool_input.get("command") or tool_input.get("patch")
-    if not isinstance(patch, str):
-        _mark_pending(event, state_directory)
-        return
-    if not _changes_implementation_file(patch):
-        return
-    _mark_pending(event, state_directory)
-
-
-def _record_shell_change(event: dict[str, Any], state_directory: Path) -> None:
     snapshot_path = _snapshot_path(event, state_directory)
     try:
         before = json.loads(snapshot_path.read_text(encoding="utf-8"))
@@ -111,23 +95,30 @@ def _record_shell_change(event: dict[str, Any], state_directory: Path) -> None:
     if not isinstance(before_files, dict) or not isinstance(after_files, dict):
         _mark_pending(event, state_directory)
         return
+    for path in before_files.keys() - after_files.keys():
+        after_files[path] = _path_digest(Path(path))
     changed_paths = {
         each for each in before_files.keys() | after_files.keys()
         if before_files.get(each) != after_files.get(each)
     }
-    if any(Path(each).suffix.lower() not in PROSE_SUFFIXES for each in changed_paths):
-        _mark_pending(event, state_directory)
+    if changed_paths:
+        _mark_pending(event, state_directory, require_commit=_requires_commit_message(changed_paths))
 
 
-def _mark_pending(event: dict[str, Any], state_directory: Path) -> None:
+def _requires_commit_message(paths: set[str]) -> bool:
+    return any(Path(path).suffix.lower() not in COMMIT_EXEMPT_SUFFIXES for path in paths)
+
+
+def _mark_pending(event: dict[str, Any], state_directory: Path, require_commit: bool = True) -> None:
     marker_path = _marker_path(event, state_directory)
     marker_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    marker_path.touch(exist_ok=True)
+    require_commit = require_commit or (marker_path.exists() and _pending_requires_commit(marker_path))
+    marker_path.write_text(json.dumps({"require_commit": require_commit}), encoding="utf-8")
 
 
-def _changes_implementation_file(patch: str) -> bool:
-    paths = PATCH_FILE_PATTERN.findall(patch)
-    return not paths or any(Path(each).suffix.lower() not in PROSE_SUFFIXES for each in paths)
+def _pending_requires_commit(marker_path: Path) -> bool:
+    content = marker_path.read_text(encoding="utf-8")
+    return not content or json.loads(content)["require_commit"]
 
 
 def _marker_path(event: dict[str, Any], state_directory: Path) -> Path:
@@ -160,18 +151,75 @@ def _repository_snapshot(event: dict[str, Any]) -> dict[str, Any] | None:
         directory = base_directory or Path(os.getcwd())
     root_result = _run_git(directory, "rev-parse", "--show-toplevel")
     if root_result is None:
+        selected = directory.resolve()
+        if any((parent / ".git").exists() for parent in (selected, *selected.parents)):
+            return None
+    if root_result is None and base_directory is not None and directory != base_directory:
+        root_result = _run_git(base_directory, "rev-parse", "--show-toplevel")
+    root = None
+    files = {}
+    if root_result is not None:
+        line_ending = b"\r\n" if os.name == "nt" and root_result.endswith(b"\r\n") else b"\n"
+        root = Path(root_result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape")).resolve()
+        status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
+        if status is None:
+            return None
+        files = {str(root / path): _path_digest(root / path) for path in _status_entries(status)}
+    if "apply_patch" == event.get("tool_name") and isinstance(tool_input, dict):
+        patch = tool_input.get("command") or tool_input.get("patch")
+        if isinstance(patch, str):
+            targets = set()
+            for path in PATCH_FILE_PATTERN.findall(patch):
+                target = Path(path)
+                if not target.is_absolute():
+                    target = directory / target
+                target = target.parent.resolve() / target.name
+                targets.add(target)
+                if target.is_symlink():
+                    targets.add(target.resolve())
+            listed_paths = _git_listed_paths(targets, root)
+            if listed_paths is None:
+                return None
+            for target in listed_paths:
+                files[str(target)] = _path_digest(target)
+    return {"root": str(root) if root is not None else None, "files": files}
+
+
+def _git_listed_paths(paths: set[Path], root: Path | None) -> set[Path] | None:
+    roots = {root: root} if root is not None else {}
+    try:
+        repositories = {_path_git_root(path, roots) for path in paths}
+    except RuntimeError:
         return None
-    line_ending = b"\r\n" if os.name == "nt" and root_result.endswith(b"\r\n") else b"\n"
-    root = Path(root_result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape"))
-    status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
-    if status is None:
-        return None
-    entries = _status_entries(status)
-    files = {
-        path: f"{state}:{_path_digest(root / path)}"
-        for path, state in entries.items()
-    }
-    return {"root": str(root.resolve()), "files": files}
+    repositories.discard(None)
+    listed = set()
+    for repository in repositories:
+        result = _run_git(repository, "ls-files", "--cached", "--others", "--exclude-standard", "--full-name", "-z")
+        if result is None:
+            return None
+        listed_paths = (repository / os.fsdecode(path) for path in result.split(b"\0") if path)
+        listed.update(paths.intersection(listed_paths))
+    return listed
+
+
+def _path_git_root(path: Path, roots: dict[Path, Path | None]) -> Path | None:
+    pending = []
+    for directory in path.parents:
+        if directory in roots:
+            root = roots[directory]
+            break
+        pending.append(directory)
+        if (directory / ".git").exists():
+            result = _run_git(directory, "rev-parse", "--show-toplevel")
+            if result is None:
+                raise RuntimeError("Unable to inspect declared Git repository")
+            line_ending = b"\r\n" if os.name == "nt" and result.endswith(b"\r\n") else b"\n"
+            root = Path(result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape")).resolve()
+            break
+    else:
+        root = None
+    roots.update(dict.fromkeys(pending, root))
+    return root
 
 
 def _run_git(cwd: Path, *arguments: str) -> bytes | None:
@@ -219,8 +267,8 @@ def _path_digest(path: Path) -> str:
     return hashlib.sha256(f"{mode}:".encode("ascii") + value).hexdigest()
 
 
-def validate_handoff(message: Any) -> list[str]:
-    """Return every missing or invalid successful code handoff element."""
+def validate_handoff(message: Any, require_commit: bool = True) -> list[str]:
+    """Return every missing or invalid successful handoff element."""
     failures = _validate_handoff_evidence(message, frozenset({PASSING_RESULT}), require_review=True)
     if not isinstance(message, str):
         return failures
@@ -229,7 +277,7 @@ def validate_handoff(message: Any) -> list[str]:
     legacy_passing_review = not statuses and results == [PASSING_RESULT]
     if ["Completed"] != statuses and not legacy_passing_review:
         failures.append("exactly one Task Status: Completed or legacy Review Result: Mergeable")
-    if not _field_value(message, "Commit Message"):
+    if require_commit and not _field_value(message, "Commit Message"):
         failures.append("nonempty Commit Message")
     return failures
 
@@ -330,11 +378,12 @@ def _field_value(message: str, label: str) -> str:
     return "" if FENCE_PATTERN.fullmatch(value) else value
 
 
-def _continuation_reason(passing_failures: list[str], paused_failures: list[str]) -> str:
+def _continuation_reason(passing_failures: list[str], paused_failures: list[str], require_commit: bool) -> str:
     passing = ", ".join(passing_failures)
     paused = ", ".join(paused_failures)
+    commit_requirement = " with a nonempty Commit Message" if require_commit else ""
     return (
-        "The code-writing task has an unresolved handoff. Report Task Status: Completed with a nonempty Commit Message after required checks and full review. "
+        f"The file-writing task has an unresolved handoff. Report Task Status: Completed{commit_requirement} after required checks and full review. "
         f"Passing handoff failures: {passing}. "
         "Completion requires one actual Review Result: Mergeable report in a markdown-labelled fenced block with Result, Evidence and Coverage. "
         "If an exact user decision, authority, or unavailable evidence blocks continuation, report "
