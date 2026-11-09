@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.AdditionalAnswers;
 import org.mockito.MockedConstruction;
@@ -485,34 +486,14 @@ class ShardingWorkflowValidationServiceTest {
                 request, inspectionService, createQueryFacade()).get("overall_status"), is("failed"));
     }
     
-    @Test
-    void assertValidateDefaultStrategyRejectsIncompleteState() {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"Incomplete state, DATABASE, ''", "Different name, TABLE, STANDARD", "Different type, DATABASE, HINT"})
+    void assertValidateDefaultStrategyWithMismatchedState(final String name, final String strategyName, final String strategyType) {
         ShardingWorkflowRequest request = createTableRuleRequest();
         request.setDefaultStrategyType("DATABASE");
         ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
-        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "DATABASE", "type", "")));
-        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
-                request, inspectionService, createQueryFacade()).get("overall_status"), is("failed"));
-    }
-    
-    @Test
-    void assertValidateDefaultStrategyRejectsDifferentName() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setDefaultStrategyType("DATABASE");
-        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
-        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "TABLE", "type", "STANDARD")));
-        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
-                request, inspectionService, createQueryFacade()).get("overall_status"), is("failed"));
-    }
-    
-    @Test
-    void assertValidateDefaultStrategyRejectsDifferentType() {
-        ShardingWorkflowRequest request = createTableRuleRequest();
-        request.setDefaultStrategyType("DATABASE");
-        ShardingInspectionService inspectionService = mock(ShardingInspectionService.class);
-        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", "DATABASE", "type", "HINT")));
-        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND,
-                request, inspectionService, createQueryFacade()).get("overall_status"), is("failed"));
+        when(inspectionService.queryDefaultStrategy(any(), any())).thenReturn(List.of(Map.of("name", strategyName, "type", strategyType)));
+        assertThat(validateState("create", ShardingFeatureDefinition.DEFAULT_STRATEGY_WORKFLOW_KIND, request, inspectionService, createQueryFacade()).get("overall_status"), is("failed"));
     }
     
     @Test

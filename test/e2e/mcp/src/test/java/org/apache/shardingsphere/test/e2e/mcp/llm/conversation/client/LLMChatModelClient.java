@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * LLM chat client.
@@ -196,8 +195,7 @@ public final class LLMChatModelClient {
     }
     
     private List<Map<String, Object>> createToolCalls(final List<LLMToolCall> toolCalls) {
-        return toolCalls.stream()
-                .map(each -> Map.of("id", each.getId(), "type", "function", "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson()))).collect(Collectors.toList());
+        return toolCalls.stream().map(each -> Map.of("id", each.getId(), "type", "function", "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson()))).toList();
     }
     
     private List<LLMToolCall> createToolCalls(final Object rawValue) {

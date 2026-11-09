@@ -22,10 +22,8 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByStreamMergedResult;
@@ -106,19 +104,13 @@ public final class GroupByStreamMergedResult extends OrderByStreamMergedResult {
     private List<Comparable<?>> getAggregationValues(final AggregationProjection aggregationProjection) throws SQLException {
         List<Comparable<?>> result = new ArrayList<>(2);
         if (aggregationProjection.getDerivedAggregationProjections().isEmpty()) {
-            result.add(getAggregationValue(aggregationProjection));
+            result.add(AggregationValueUtils.getValue(getCurrentQueryResult(), aggregationProjection));
         } else {
             for (AggregationProjection each : aggregationProjection.getDerivedAggregationProjections()) {
-                result.add(getAggregationValue(each));
+                result.add(AggregationValueUtils.getValue(getCurrentQueryResult(), each));
             }
         }
         return result;
-    }
-    
-    private Comparable<?> getAggregationValue(final AggregationProjection aggregationProjection) throws SQLException {
-        Object result = getCurrentQueryResult().getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation", result));
-        return (Comparable<?>) result;
     }
     
     private void cacheCurrentRow() throws SQLException {

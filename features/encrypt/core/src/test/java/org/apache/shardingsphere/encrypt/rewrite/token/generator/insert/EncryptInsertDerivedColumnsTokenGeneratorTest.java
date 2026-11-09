@@ -18,125 +18,304 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.GeneratedKeyInsertColumnToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedConstruction;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class EncryptInsertDerivedColumnsTokenGeneratorTest {
     
-    private static MockedConstruction<DatabaseTypeRegistry> registryConstruction;
+    private final EncryptRule rule = mock(EncryptRule.class);
     
-    @BeforeAll
-    static void beforeAll() {
-        registryConstruction = mockConstruction(DatabaseTypeRegistry.class, (mock, mockContext) -> {
-            DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-            when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(QuoteCharacter.NONE);
-            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-        });
-    }
-    
-    @AfterAll
-    static void afterAll() {
-        registryConstruction.close();
-    }
+    private final EncryptInsertDerivedColumnsTokenGenerator generator = new EncryptInsertDerivedColumnsTokenGenerator(rule);
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotInsertStatementContext() {
-        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator(mock(EncryptRule.class)).isGenerateSQLToken(mock(SQLStatementContext.class)));
+        assertFalse(generator.isGenerateSQLToken(mock(SQLStatementContext.class)));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
-        assertFalse(new EncryptInsertDerivedColumnsTokenGenerator(mock(EncryptRule.class)).isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
+        assertFalse(generator.isGenerateSQLToken(mock(InsertStatementContext.class)));
     }
     
     @Test
     void assertIsGenerateSQLTokenWithInsertColumns() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(insertStatementContext.containsInsertColumns()).thenReturn(true);
-        assertTrue(new EncryptInsertDerivedColumnsTokenGenerator(mock(EncryptRule.class)).isGenerateSQLToken(insertStatementContext));
+        assertTrue(generator.isGenerateSQLToken(insertStatementContext));
     }
     
     @Test
-    void assertGenerateSQLTokensNotContainColumns() {
-        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
-        assertTrue(tokenGenerator.generateSQLTokens(insertStatementContext).isEmpty());
+    void assertGenerateSQLTokensWithoutEncryptTable() {
+        assertTrue(generator.generateSQLTokens(mockInsertStatementContextWithTable()).isEmpty());
     }
     
-    @Test
-    void assertGenerateSQLTokensNotExistColumns() {
-        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
-        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
-        when(columnSegment.getIdentifier().getValue()).thenReturn("bar_col");
-        InsertStatementContext insertStatementContext = mockInsertStatementContext();
-        when(insertStatementContext.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));
-        assertTrue(tokenGenerator.generateSQLTokens(insertStatementContext).isEmpty());
-    }
-    
-    @Test
-    void assertGenerateSQLTokensExistColumns() {
-        EncryptInsertDerivedColumnsTokenGenerator tokenGenerator = new EncryptInsertDerivedColumnsTokenGenerator(mockEncryptRule());
-        Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getStartIndex(), is(1));
-    }
-    
-    private EncryptRule mockEncryptRule() {
-        EncryptRule result = mock(EncryptRule.class);
-        EncryptTable encryptTable = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
-        Optional<AssistedQueryColumnItem> assistedQueryColumnItem = Optional.of(new AssistedQueryColumnItem("assisted_query_col", mockEncryptAlgorithm()));
-        when(encryptTable.isEncryptColumn("foo_col")).thenReturn(true);
-        when(encryptTable.getEncryptColumn("foo_col").getAssistedQuery()).thenReturn(assistedQueryColumnItem);
-        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
-        return result;
-    }
-    
-    private EncryptAlgorithm mockEncryptAlgorithm() {
-        EncryptAlgorithm result = mock(EncryptAlgorithm.class);
-        when(result.getMetaData()).thenReturn(new EncryptAlgorithmMetaData(true, true, true, String.class));
-        when(result.getEncoder()).thenReturn(Optional.empty());
-        when(result.toConfiguration()).thenReturn(new AlgorithmConfiguration("FIXTURE", new Properties()));
-        return result;
-    }
-    
-    private InsertStatementContext mockInsertStatementContext() {
+    private InsertStatementContext mockInsertStatementContextWithTable() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement().getTable()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
-        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
-        when(columnSegment.getIdentifier().getValue()).thenReturn("foo_col");
-        when(result.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));
+        SimpleTableSegment table = mock(SimpleTableSegment.class, RETURNS_DEEP_STUBS);
+        when(table.getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
+        when(result.getSqlStatement().getTable()).thenReturn(Optional.of(table));
         return result;
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithoutColumns() {
+        mockEncryptTable();
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.emptyList(), 31);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS))) {
+            assertTrue(generator.generateSQLTokens(insertStatementContext).isEmpty());
+        }
+    }
+    
+    private EncryptTable mockEncryptTable() {
+        EncryptTable result = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
+        when(rule.findEncryptTable("foo_tbl")).thenReturn(Optional.of(result));
+        return result;
+    }
+    
+    private InsertStatementContext mockInsertStatementContext(final Collection<ColumnSegment> columns, final int insertColumnsStopIndex) {
+        InsertStatementContext result = mockInsertStatementContextWithTable();
+        when(result.getSqlStatement().getColumns()).thenReturn(columns);
+        if (insertColumnsStopIndex >= 0) {
+            when(result.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(new InsertColumnsSegment(20, insertColumnsStopIndex, columns)));
+        }
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(mock(DatabaseType.class));
+        return result;
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithUnencryptedColumn() {
+        mockEncryptTable();
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.singleton(new ColumnSegment(24, 30, new IdentifierValue("foo_col"))), 31);
+        SQLToken previousToken = mock(SQLToken.class);
+        List<SQLToken> previousTokens = Collections.singletonList(previousToken);
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS))) {
+            assertTrue(generator.generateSQLTokens(insertStatementContext).isEmpty());
+            assertThat(previousTokens, contains(sameInstance(previousToken)));
+        }
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithoutDerivedColumns() {
+        mockEncryptTableWithDerivedColumns(false, false);
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.singleton(new ColumnSegment(24, 30, new IdentifierValue("foo_col"))), 31);
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext("foo_id", true, true)));
+        SQLToken generatedKeyToken = new GeneratedKeyInsertColumnToken(31, "foo_id");
+        List<SQLToken> previousTokens = Collections.singletonList(generatedKeyToken);
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS))) {
+            assertTrue(generator.generateSQLTokens(insertStatementContext).isEmpty());
+            assertThat(previousTokens, contains(sameInstance(generatedKeyToken)));
+        }
+    }
+    
+    private EncryptTable mockEncryptTableWithDerivedColumns(final boolean assistedQuery, final boolean likeQuery) {
+        EncryptTable result = mockEncryptTable();
+        when(result.isEncryptColumn("foo_col")).thenReturn(true);
+        if (assistedQuery) {
+            AssistedQueryColumnItem assistedColumn = mock(AssistedQueryColumnItem.class);
+            when(assistedColumn.getName()).thenReturn("foo_assisted");
+            when(result.getEncryptColumn("foo_col").getAssistedQuery()).thenReturn(Optional.of(assistedColumn));
+        }
+        if (likeQuery) {
+            LikeQueryColumnItem likeColumn = mock(LikeQueryColumnItem.class);
+            when(likeColumn.getName()).thenReturn("foo_like");
+            when(result.getEncryptColumn("foo_col").getLikeQuery()).thenReturn(Optional.of(likeColumn));
+        }
+        return result;
+    }
+    
+    private GeneratedKeyContext createGeneratedKeyContext(final String columnName, final boolean generated, final boolean hasValues) {
+        GeneratedKeyContext result = new GeneratedKeyContext(columnName, generated);
+        if (hasValues) {
+            result.getGeneratedValues().add(1);
+        }
+        return result;
+    }
+    
+    @ParameterizedTest(name = "assisted={0}, like={1}")
+    @MethodSource("getDerivedColumnCases")
+    void assertGenerateSQLTokensWithDerivedColumns(final boolean assistedQuery, final boolean likeQuery, final String expectedColumns) {
+        mockEncryptTableWithDerivedColumns(assistedQuery, likeQuery);
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.singleton(new ColumnSegment(24, 30, new IdentifierValue("foo_col"))), 31);
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext("foo_id", true, true)));
+        SQLToken prefixToken = mock(SQLToken.class);
+        SQLToken generatedKeyToken = new GeneratedKeyInsertColumnToken(31, "foo_id");
+        SQLToken cipherToken = mock(SQLToken.class);
+        List<SQLToken> previousTokens = new LinkedList<>(Arrays.asList(prefixToken, generatedKeyToken, cipherToken));
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(QuoteCharacter.NONE)) {
+            Collection<SQLToken> actual = generator.generateSQLTokens(insertStatementContext);
+            assertThat(actual.size(), is(1));
+            SQLToken actualToken = actual.iterator().next();
+            assertThat(actualToken, isA(Attachable.class));
+            assertThat(actualToken.getStartIndex(), is(31));
+            assertThat(actualToken.getStopIndex(), is(31));
+            assertThat(actualToken.toString(), is(expectedColumns));
+            assertThat(previousTokens, contains(sameInstance(prefixToken), sameInstance(cipherToken)));
+        }
+    }
+    
+    private MockedConstruction<DatabaseTypeRegistry> mockDatabaseTypeRegistry(final QuoteCharacter quoteCharacter) {
+        return mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
+                (registry, context) -> when(registry.getDialectDatabaseMetaData().getQuoteCharacter()).thenReturn(quoteCharacter));
+    }
+    
+    private static Stream<Arguments> getDerivedColumnCases() {
+        return Stream.of(Arguments.of(true, false, ", foo_assisted, foo_id"), Arguments.of(false, true, ", foo_like, foo_id"), Arguments.of(true, true, ", foo_assisted, foo_like, foo_id"));
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithQuotedColumns() {
+        mockEncryptTableWithDerivedColumns(true, true);
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.singleton(new ColumnSegment(24, 30, new IdentifierValue("foo_col"))), 31);
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext("\"Foo_Id\"", true, true)));
+        List<SQLToken> previousTokens = new LinkedList<>(Collections.singleton(new GeneratedKeyInsertColumnToken(31, "\"Foo_Id\"")));
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(QuoteCharacter.BACK_QUOTE)) {
+            Collection<SQLToken> actual = generator.generateSQLTokens(insertStatementContext);
+            assertThat(actual.size(), is(1));
+            SQLToken actualToken = actual.iterator().next();
+            assertThat(actualToken, isA(Attachable.class));
+            assertThat(actualToken.getStartIndex(), is(31));
+            assertThat(actualToken.getStopIndex(), is(31));
+            assertThat(actualToken.toString(), is(", `foo_assisted`, `foo_like`, \"Foo_Id\""));
+            assertTrue(previousTokens.isEmpty());
+        }
+    }
+    
+    @ParameterizedTest(name = "context={0}, generated={1}, values={2}")
+    @MethodSource("getGeneratedKeyCases")
+    void assertGenerateSQLTokensWithoutGeneratedKey(final boolean hasKeyContext, final boolean generated, final boolean hasValues) {
+        mockEncryptTableWithDerivedColumns(true, false);
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.singleton(new ColumnSegment(24, 30, new IdentifierValue("foo_col"))), 31);
+        if (hasKeyContext) {
+            when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext("foo_id", generated, hasValues)));
+        }
+        SQLToken prefixToken = mock(SQLToken.class);
+        List<SQLToken> previousTokens = Collections.singletonList(prefixToken);
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(QuoteCharacter.NONE)) {
+            Collection<SQLToken> actual = generator.generateSQLTokens(insertStatementContext);
+            assertThat(actual.size(), is(1));
+            SQLToken actualToken = actual.iterator().next();
+            assertThat(actualToken, isA(Attachable.class));
+            assertThat(actualToken.getStartIndex(), is(31));
+            assertThat(actualToken.getStopIndex(), is(31));
+            assertThat(actualToken.toString(), is(", foo_assisted"));
+            assertThat(previousTokens, contains(sameInstance(prefixToken)));
+        }
+    }
+    
+    private static Stream<Arguments> getGeneratedKeyCases() {
+        return Stream.of(Arguments.of(false, false, false), Arguments.of(true, false, true), Arguments.of(true, true, false));
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithMultipleColumns() {
+        EncryptTable encryptTable = mockEncryptTableWithDerivedColumns(true, false);
+        when(encryptTable.isEncryptColumn("bar_col")).thenReturn(true);
+        LikeQueryColumnItem likeColumn = mock(LikeQueryColumnItem.class);
+        when(likeColumn.getName()).thenReturn("bar_like");
+        when(encryptTable.getEncryptColumn("bar_col").getLikeQuery()).thenReturn(Optional.of(likeColumn));
+        Collection<ColumnSegment> columns = Arrays.asList(new ColumnSegment(20, 26, new IdentifierValue("foo_col")), new ColumnSegment(29, 34, new IdentifierValue("status")),
+                new ColumnSegment(37, 43, new IdentifierValue("bar_col")));
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(columns, 44);
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext("foo_id", true, true)));
+        SQLToken prefixToken = mock(SQLToken.class);
+        SQLToken generatedKeyToken = new GeneratedKeyInsertColumnToken(44, "foo_id");
+        SQLToken cipherToken = mock(SQLToken.class);
+        List<SQLToken> previousTokens = new LinkedList<>(Arrays.asList(prefixToken, generatedKeyToken, cipherToken));
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(QuoteCharacter.NONE)) {
+            Collection<SQLToken> actual = generator.generateSQLTokens(insertStatementContext);
+            assertThat(actual.size(), is(2));
+            Iterator<SQLToken> actualTokens = actual.iterator();
+            SQLToken actualFirstToken = actualTokens.next();
+            assertThat(actualFirstToken, isA(Attachable.class));
+            assertThat(actualFirstToken.getStartIndex(), is(27));
+            assertThat(actualFirstToken.getStopIndex(), is(27));
+            assertThat(actualFirstToken.toString(), is(", foo_assisted"));
+            SQLToken actualLastToken = actualTokens.next();
+            assertThat(actualLastToken, isA(Attachable.class));
+            assertThat(actualLastToken.getStartIndex(), is(44));
+            assertThat(actualLastToken.getStopIndex(), is(44));
+            assertThat(actualLastToken.toString(), is(", bar_like, foo_id"));
+            assertThat(previousTokens, contains(sameInstance(prefixToken), sameInstance(cipherToken)));
+        }
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithGapBeforeClosingParenthesis() {
+        mockEncryptTableWithDerivedColumns(true, false);
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.singleton(new ColumnSegment(24, 30, new IdentifierValue("foo_col"))), 33);
+        when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(createGeneratedKeyContext("foo_id", true, true)));
+        SQLToken generatedKeyToken = new GeneratedKeyInsertColumnToken(33, "foo_id");
+        List<SQLToken> previousTokens = Collections.singletonList(generatedKeyToken);
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDatabaseTypeRegistry(QuoteCharacter.NONE)) {
+            Collection<SQLToken> actual = generator.generateSQLTokens(insertStatementContext);
+            assertThat(actual.size(), is(1));
+            SQLToken actualToken = actual.iterator().next();
+            assertThat(actualToken, isA(Attachable.class));
+            assertThat(actualToken.getStartIndex(), is(31));
+            assertThat(actualToken.getStopIndex(), is(31));
+            assertThat(actualToken.toString(), is(", foo_assisted"));
+            assertThat(previousTokens, contains(sameInstance(generatedKeyToken)));
+        }
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWithoutInsertColumnsSegment() {
+        mockEncryptTable();
+        InsertStatementContext insertStatementContext = mockInsertStatementContext(Collections.emptyList(), -1);
+        SQLToken prefixToken = mock(SQLToken.class);
+        List<SQLToken> previousTokens = Collections.singletonList(prefixToken);
+        generator.setPreviousSQLTokens(previousTokens);
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS))) {
+            assertTrue(generator.generateSQLTokens(insertStatementContext).isEmpty());
+            assertThat(previousTokens, contains(sameInstance(prefixToken)));
+        }
     }
 }

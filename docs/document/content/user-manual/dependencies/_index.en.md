@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.5. </b>"
+pre = "<b>4.8. </b>"
 title = "Dependency Management"
-weight = 5
+weight = 8
 chapter = true
 +++
 

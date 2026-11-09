@@ -326,7 +326,7 @@ By default, when we use CloudFormation, an internal domain name `proxy.shardings
 
 ![img](https://shardingsphere.apache.org/blog/img/2022_12_13_Use_AWS_CloudFormation_to_create_ShardingSphere_HA_clusters5.png)
 
-**Note:** [DistSQL (Distributed SQL)](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/) is ShardingSphere's SQL-like operating language. It's used the same way as standard SQL, and is designed to provide incremental SQL operation capability.
+**Note:** [DistSQL (Distributed SQL)](https://shardingsphere.apache.org/document/current/en/user-manual/distsql/) is ShardingSphere's SQL-like operating language. It's used the same way as standard SQL, and is designed to provide incremental SQL operation capability.
 
 # Conclusion
 

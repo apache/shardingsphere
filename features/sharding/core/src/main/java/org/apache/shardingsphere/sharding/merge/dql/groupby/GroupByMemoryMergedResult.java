@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResu
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnit;
 import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.AggregationUnitFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -91,20 +90,14 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (each.getDerivedAggregationProjections().isEmpty()) {
-                values.add(getAggregationValue(queryResult, each));
+                values.add(AggregationValueUtils.getValue(queryResult, each));
             } else {
                 for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
-                    values.add(getAggregationValue(queryResult, derived));
+                    values.add(AggregationValueUtils.getValue(queryResult, derived));
                 }
             }
             aggregationMap.get(groupByValue).get(each).merge(values);
         }
-    }
-    
-    private Comparable<?> getAggregationValue(final QueryResult queryResult, final AggregationProjection aggregationProjection) throws SQLException {
-        Object result = queryResult.getValue(aggregationProjection.getIndex(), Object.class);
-        ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Aggregation", result));
-        return (Comparable<?>) result;
     }
     
     private void setAggregationValueToMemoryRow(final SelectStatementContext selectStatementContext,

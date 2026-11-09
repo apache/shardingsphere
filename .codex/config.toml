@@ -14,7 +14,7 @@
 # limitations under the License.
 
 [[hooks.PreToolUse]]
-matcher = "^(Bash|exec_command|write_stdin)$"
+matcher = "^(Bash|apply_patch|exec_command|write_stdin)$"
 
 [[hooks.PreToolUse.hooks]]
 type = "command"

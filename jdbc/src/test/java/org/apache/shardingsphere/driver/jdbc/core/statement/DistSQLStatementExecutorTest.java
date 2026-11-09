@@ -187,7 +187,7 @@ class DistSQLStatementExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideQueriesInTransaction")
-    void assertIsQueryInTransaction(final String name, final DistSQLStatement sqlStatement) throws SQLException {
+    void assertIsQueryInTransaction(final String name, final DistSQLStatement sqlStatement) {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()).thenReturn(true);
         DistSQLStatementExecutor executor = new DistSQLStatementExecutor(connection, mock(StatementManager.class), mock(Statement.class));

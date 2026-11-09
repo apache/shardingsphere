@@ -19,77 +19,44 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.time.LocalTime;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class CompareUtilsTest {
     
-    private final boolean caseSensitive = true;
-    
-    @Test
-    void assertCompareToWhenBothNull() {
-        assertThat(CompareUtils.compareTo(null, null, OrderDirection.DESC, NullsOrderType.FIRST, caseSensitive), is(0));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("comparisonArguments")
+    void assertCompareTo(final String name, final Comparable<?> firstValue, final Comparable<?> secondValue, final OrderDirection direction, final NullsOrderType nullsOrderType,
+                         final boolean caseSensitive, final int expected) {
+        assertThat(CompareUtils.compareTo(firstValue, secondValue, direction, nullsOrderType, caseSensitive), is(expected));
     }
     
-    @Test
-    void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullsFirst() {
-        assertThat(CompareUtils.compareTo(null, 1, OrderDirection.ASC, NullsOrderType.FIRST, caseSensitive), is(-1));
-    }
-    
-    @Test
-    void assertCompareToWhenFirstValueIsNullForOrderByAscAndNullsLast() {
-        assertThat(CompareUtils.compareTo(null, 1, OrderDirection.ASC, NullsOrderType.LAST, caseSensitive), is(1));
-    }
-    
-    @Test
-    void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullsFirst() {
-        assertThat(CompareUtils.compareTo(null, 1, OrderDirection.DESC, NullsOrderType.FIRST, caseSensitive), is(-1));
-    }
-    
-    @Test
-    void assertCompareToWhenFirstValueIsNullForOrderByDescAndNullsLast() {
-        assertThat(CompareUtils.compareTo(null, 1, OrderDirection.DESC, NullsOrderType.LAST, caseSensitive), is(1));
-    }
-    
-    @Test
-    void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullsFirst() {
-        assertThat(CompareUtils.compareTo(1, null, OrderDirection.ASC, NullsOrderType.FIRST, caseSensitive), is(1));
-    }
-    
-    @Test
-    void assertCompareToWhenSecondValueIsNullForOrderByAscAndNullsLast() {
-        assertThat(CompareUtils.compareTo(1, null, OrderDirection.ASC, NullsOrderType.LAST, caseSensitive), is(-1));
-    }
-    
-    @Test
-    void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullsFirst() {
-        assertThat(CompareUtils.compareTo(1, null, OrderDirection.DESC, NullsOrderType.FIRST, caseSensitive), is(1));
-    }
-    
-    @Test
-    void assertCompareToWhenSecondValueIsNullForOrderByDescAndNullsLast() {
-        assertThat(CompareUtils.compareTo(1, null, OrderDirection.DESC, NullsOrderType.LAST, caseSensitive), is(-1));
-    }
-    
-    @Test
-    void assertCompareToWhenAsc() {
-        assertThat(CompareUtils.compareTo(1, 2, OrderDirection.ASC, NullsOrderType.FIRST, caseSensitive), is(-1));
-    }
-    
-    @Test
-    void assertCompareToWhenDesc() {
-        assertThat(CompareUtils.compareTo(1, 2, OrderDirection.DESC, NullsOrderType.FIRST, caseSensitive), is(1));
-    }
-    
-    @Test
-    void assertCompareToStringWithCaseSensitive() {
-        assertThat(CompareUtils.compareTo("A", "a", OrderDirection.DESC, NullsOrderType.FIRST, caseSensitive), is(32));
-    }
-    
-    @Test
-    void assertCompareToStringWithCaseInsensitive() {
-        assertThat(CompareUtils.compareTo("A", "a", OrderDirection.DESC, NullsOrderType.FIRST, !caseSensitive), is(0));
+    private static Stream<Arguments> comparisonArguments() {
+        LocalTime firstValue = LocalTime.of(12, 34, 56, 123456000);
+        LocalTime secondValue = LocalTime.of(12, 34, 56, 123457000);
+        return Stream.of(
+                Arguments.of("both-null", null, null, OrderDirection.DESC, NullsOrderType.FIRST, true, 0),
+                Arguments.of("first-null-ascending-first", null, 1, OrderDirection.ASC, NullsOrderType.FIRST, true, -1),
+                Arguments.of("first-null-ascending-last", null, 1, OrderDirection.ASC, NullsOrderType.LAST, true, 1),
+                Arguments.of("first-null-descending-first", null, 1, OrderDirection.DESC, NullsOrderType.FIRST, true, -1),
+                Arguments.of("first-null-descending-last", null, 1, OrderDirection.DESC, NullsOrderType.LAST, true, 1),
+                Arguments.of("second-null-ascending-first", 1, null, OrderDirection.ASC, NullsOrderType.FIRST, true, 1),
+                Arguments.of("second-null-ascending-last", 1, null, OrderDirection.ASC, NullsOrderType.LAST, true, -1),
+                Arguments.of("second-null-descending-first", 1, null, OrderDirection.DESC, NullsOrderType.FIRST, true, 1),
+                Arguments.of("second-null-descending-last", 1, null, OrderDirection.DESC, NullsOrderType.LAST, true, -1),
+                Arguments.of("ascending-numbers", 1, 2, OrderDirection.ASC, NullsOrderType.FIRST, true, -1),
+                Arguments.of("descending-numbers", 1, 2, OrderDirection.DESC, NullsOrderType.FIRST, true, 1),
+                Arguments.of("case-sensitive-strings", "A", "a", OrderDirection.DESC, NullsOrderType.FIRST, true, 32),
+                Arguments.of("case-insensitive-strings", "A", "a", OrderDirection.DESC, NullsOrderType.FIRST, false, 0),
+                Arguments.of("ascending-microseconds", firstValue, secondValue, OrderDirection.ASC, NullsOrderType.FIRST, true, -1),
+                Arguments.of("descending-microseconds", firstValue, secondValue, OrderDirection.DESC, NullsOrderType.FIRST, true, 1),
+                Arguments.of("equal-microseconds", firstValue, firstValue, OrderDirection.ASC, NullsOrderType.FIRST, true, 0));
     }
 }
