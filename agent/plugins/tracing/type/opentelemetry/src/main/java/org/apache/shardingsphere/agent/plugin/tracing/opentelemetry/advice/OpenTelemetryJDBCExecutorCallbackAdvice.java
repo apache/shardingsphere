@@ -69,7 +69,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     @Override
     @HighFrequencyInvocation
     public boolean isPluginEnabled() {
-        return super.isPluginEnabled() || 0 < getPendingSpanCount();
+        return super.isPluginEnabled() || getPendingSpanCount() > 0;
     }
     
     private static int getPendingSpanCount() {
@@ -111,7 +111,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     
     private static void decreasePendingSpanCount() {
         int count = getPendingSpanCount() - 1;
-        if (0 < count) {
+        if (count > 0) {
             PENDING_SPAN_COUNT.set(count);
         } else {
             PENDING_SPAN_COUNT.remove();

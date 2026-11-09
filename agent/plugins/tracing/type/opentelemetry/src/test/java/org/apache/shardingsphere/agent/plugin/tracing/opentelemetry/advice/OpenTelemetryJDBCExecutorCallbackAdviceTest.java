@@ -31,6 +31,7 @@ import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
+import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
 import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
 import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
@@ -95,8 +96,12 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     
     private JDBCExecutionUnit executionUnit;
     
+    private boolean originalEnhancedForProxy;
+    
     @BeforeEach
     void setup() {
+        originalEnhancedForProxy = PluginContext.getInstance().isEnhancedForProxy();
+        PluginContext.getInstance().setEnhancedForProxy(false);
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
@@ -130,6 +135,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         parentSpan.end();
         testExporter.reset();
         ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
+        PluginContext.getInstance().setEnhancedForProxy(originalEnhancedForProxy);
     }
     
     @Test
