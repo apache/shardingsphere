@@ -157,6 +157,19 @@ class CommandExecutorTaskTest {
     }
     
     @Test
+    void assertRunMarksCommandExecuting() throws SQLException, BackendConnectionException {
+        mockProxyContext(false);
+        when(commandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        new CommandExecutorTask(engine, connectionSession, handlerContext, message).run();
+        InOrder inOrder = inOrder(databaseConnectionManager, commandExecutor);
+        inOrder.verify(databaseConnectionManager).markCommandExecuting();
+        inOrder.verify(commandExecutor).execute();
+        inOrder.verify(databaseConnectionManager).closeExecutionResources();
+    }
+    
+    @Test
     void assertRunByCommandExecutor() throws SQLException, BackendConnectionException {
         mockProxyContext(false);
         when(commandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));

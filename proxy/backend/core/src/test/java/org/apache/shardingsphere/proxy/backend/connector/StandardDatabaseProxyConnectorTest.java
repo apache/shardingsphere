@@ -843,6 +843,46 @@ class StandardDatabaseProxyConnectorTest {
     }
     
     @Test
+    void assertCancel() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        engine.add(resultSet);
+        engine.add(statement);
+        engine.cancel();
+        verify(resultSet).close();
+        verify(statement).cancel();
+        verify(statement, never()).close();
+    }
+    
+    @Test
+    void assertCancelWithClosedStatement() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        when(statement.isClosed()).thenReturn(true);
+        engine.add(statement);
+        engine.cancel();
+        verify(statement, never()).cancel();
+    }
+    
+    @Test
+    void assertCancelSkipCachedPreparedStatement() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        engine.add(preparedStatement);
+        when(databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(preparedStatement)).thenReturn(true);
+        engine.cancel();
+        verify(preparedStatement, never()).cancel();
+    }
+    
+    @Test
+    void assertCancelWithExceptionThrown() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        SQLException expected = new SQLException("Statement");
+        doThrow(expected).when(statement).cancel();
+        engine.add(statement);
+        SQLException actual = assertThrows(SQLException.class, engine::cancel);
+        assertThat(actual.getNextException(), sameInstance(expected));
+    }
+    
+    @Test
     void assertCloseResultSetsWithExceptionThrown() throws SQLException {
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");

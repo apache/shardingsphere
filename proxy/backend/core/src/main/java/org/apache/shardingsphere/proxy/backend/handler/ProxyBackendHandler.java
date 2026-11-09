@@ -57,6 +57,16 @@ public interface ProxyBackendHandler {
     }
     
     /**
+     * Cancel the execution in progress from another thread.
+     *
+     * <p>Statements stay open, because the executing thread may still be using them and closes them itself.</p>
+     *
+     * @throws SQLException SQL exception
+     */
+    default void cancel() throws SQLException {
+    }
+    
+    /**
      * Close.
      *
      * @throws SQLException SQL exception

@@ -82,6 +82,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     private final Object closeLock = new Object();
     
+    @Getter(AccessLevel.NONE)
+    private boolean commandExecuting;
+    
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
             TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
@@ -319,12 +322,22 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     }
     
     /**
+     * Mark a command as executing until its execution resources are closed.
+     */
+    public void markCommandExecuting() {
+        synchronized (closeLock) {
+            commandExecuting = true;
+        }
+    }
+    
+    /**
      * Close resources used in execution.
      *
      * @throws BackendConnectionException backend connection exception
      */
     public void closeExecutionResources() throws BackendConnectionException {
         synchronized (closeLock) {
+            commandExecuting = false;
             Collection<Exception> result = new LinkedList<>(closeHandlers(false));
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext()))) {
                 result.addAll(closeHandlers(true));
@@ -343,16 +356,33 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     /**
      * Close all resources.
      *
+     * <p>While a command is executing, only cancel it. Its statements and connections are released by {@link #closeExecutionResources()} when it finishes.</p>
+     *
      * @return exceptions occurred during closing resources
      */
     public Collection<SQLException> closeAllResources() {
         synchronized (closeLock) {
             closed.set(true);
-            Collection<SQLException> result = new LinkedList<>();
-            result.addAll(closeHandlers(true));
-            result.addAll(closeConnections(true));
-            return result;
+            if (!commandExecuting) {
+                Collection<SQLException> result = new LinkedList<>();
+                result.addAll(closeHandlers(true));
+                result.addAll(closeConnections(true));
+                return result;
+            }
         }
+        return cancelHandlers();
+    }
+    
+    private Collection<SQLException> cancelHandlers() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (ProxyBackendHandler each : proxyBackendHandlers) {
+            try {
+                each.cancel();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
     }
     
     /**
