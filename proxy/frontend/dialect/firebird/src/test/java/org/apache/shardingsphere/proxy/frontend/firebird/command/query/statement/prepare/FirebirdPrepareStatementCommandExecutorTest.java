@@ -468,33 +468,65 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertDescribeOctetsColumns() throws Exception {
+        addOctetsTable();
+        when(packet.getSQL()).thenReturn("SELECT vo, co FROM octets_tbl");
+        mockOctetsDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertOctetsColumn(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.VARYING, 10);
+        assertOctetsColumn(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.TEXT, 4);
+    }
+    
+    private void addOctetsTable() {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
         ShardingSphereColumn varyingColumn = new ShardingSphereColumn("vo", Types.VARBINARY, false, false, true, true, false, true);
         ShardingSphereColumn textColumn = new ShardingSphereColumn("co", Types.BINARY, false, false, true, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("octets_tbl", Arrays.asList(varyingColumn, textColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable table = new ShardingSphereTable("octets_tbl", Arrays.asList(idColumn, varyingColumn, textColumn), Collections.emptyList(), Collections.emptyList());
         database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList()));
         when(database.findDefaultSchema()).thenCallRealMethod();
         Map<String, Integer> columnSizes = new HashMap<>(2, 1F);
         columnSizes.put("vo", 10);
         columnSizes.put("co", 4);
         FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("foo_db", "octets_tbl", columnSizes);
-        when(packet.getSQL()).thenReturn("SELECT vo, co FROM octets_tbl");
+    }
+    
+    private void mockOctetsDescribeRequest(final FirebirdSQLInfoPacketType describeType) {
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
                 FirebirdSQLInfoPacketType.SUB_TYPE, FirebirdSQLInfoPacketType.SUB_TYPE, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH,
                 FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+    }
+    
+    private void assertOctetsColumn(final FirebirdReturnColumnPacket actual, final FirebirdBinaryColumnType expectedType, final int expectedLength) {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.write(payload);
+        verify(payload).writeInt4LE(expectedType.getValue() + 1);
+        verify(payload).writeInt4LE(ISCConstants.CS_BINARY);
+        verify(payload).writeInt4LE(expectedLength);
+    }
+    
+    @Test
+    void assertDescribeOctetsInsertParameters() throws Exception {
+        addOctetsTable();
+        when(packet.getSQL()).thenReturn("INSERT INTO octets_tbl (id, vo, co) VALUES (?, ?, ?)");
+        mockOctetsDescribeRequest(FirebirdSQLInfoPacketType.BIND);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
-        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
-        FirebirdPacketPayload varyingPayload = mock(FirebirdPacketPayload.class);
-        actualReturnPacket.getDescribeSelect().get(0).write(varyingPayload);
-        verify(varyingPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
-        verify(varyingPayload).writeInt4LE(ISCConstants.CS_BINARY);
-        verify(varyingPayload).writeInt4LE(10);
-        FirebirdPacketPayload textPayload = mock(FirebirdPacketPayload.class);
-        actualReturnPacket.getDescribeSelect().get(1).write(textPayload);
-        verify(textPayload).writeInt4LE(FirebirdBinaryColumnType.TEXT.getValue() + 1);
-        verify(textPayload).writeInt4LE(ISCConstants.CS_BINARY);
-        verify(textPayload).writeInt4LE(4);
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(3));
+        assertParameterType(actualReturnPacket.getDescribeBind().get(0), FirebirdBinaryColumnType.LONG);
+        assertOctetsColumn(actualReturnPacket.getDescribeBind().get(1), FirebirdBinaryColumnType.VARYING, 10);
+        assertOctetsColumn(actualReturnPacket.getDescribeBind().get(2), FirebirdBinaryColumnType.TEXT, 4);
+    }
+    
+    @Test
+    void assertDescribeOctetsUpdateParameters() throws Exception {
+        addOctetsTable();
+        when(packet.getSQL()).thenReturn("UPDATE octets_tbl SET co = ? WHERE vo = ?");
+        mockOctetsDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        assertOctetsColumn(actualReturnPacket.getDescribeBind().get(0), FirebirdBinaryColumnType.TEXT, 4);
+        assertOctetsColumn(actualReturnPacket.getDescribeBind().get(1), FirebirdBinaryColumnType.VARYING, 10);
     }
     
     @Test

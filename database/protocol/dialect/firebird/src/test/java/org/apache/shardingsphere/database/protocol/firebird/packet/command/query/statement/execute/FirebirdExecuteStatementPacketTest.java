@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -102,7 +103,7 @@ class FirebirdExecuteStatementPacketTest {
                 .writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
                 .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
                 .writeByte(BlrConstants.blr_end);
-        FirebirdPacketPayload packetPayload = createExecutePayload(blr);
+        FirebirdPacketPayload packetPayload = createExecutePayload(blr, 0);
         packetPayload.writeBytes(new byte[]{(byte) 0xab, 0x00, 0x01, 0x02});
         packetPayload.writeBuffer(new byte[]{0x00, (byte) 0xff, (byte) 0x80});
         FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
@@ -111,7 +112,7 @@ class FirebirdExecuteStatementPacketTest {
         assertThat((byte[]) actual.getParameterValues().get(1), is(new byte[]{0x00, (byte) 0xff, (byte) 0x80}));
     }
     
-    private FirebirdPacketPayload createExecutePayload(final ByteBuf blr) {
+    private FirebirdPacketPayload createExecutePayload(final ByteBuf blr, final int nullBits) {
         FirebirdPacketPayload result = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
         result.writeInt4(FirebirdCommandPacketType.EXECUTE.getValue());
         result.writeInt4(1);
@@ -119,15 +120,31 @@ class FirebirdExecuteStatementPacketTest {
         result.writeBuffer(blr);
         result.writeInt4(0);
         result.writeInt4(1);
-        result.writeInt1(0);
+        result.writeInt1(nullBits);
         result.writePadding(1);
         return result;
     }
     
     @Test
+    void assertExecuteStatementPacketWithNullOctetsParameters() {
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(6).writeByte(0)
+                .writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
+                .writeByte(BlrConstants.blr_end);
+        FirebirdPacketPayload packetPayload = createExecutePayload(blr, 0b101);
+        packetPayload.writeBuffer(new byte[]{0x01, 0x02});
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getParameterValues().size(), is(3));
+        assertNull(actual.getParameterValues().get(0));
+        assertThat((byte[]) actual.getParameterValues().get(1), is(new byte[]{0x01, 0x02}));
+        assertNull(actual.getParameterValues().get(2));
+    }
+    
+    @Test
     void assertExecuteStatementPacketWithTextParameter() {
         ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(2).writeByte(0).writeByte(BlrConstants.blr_text2).writeShortLE(4).writeShortLE(3).writeZero(2).writeByte(BlrConstants.blr_end);
-        FirebirdPacketPayload packetPayload = createExecutePayload(blr);
+        FirebirdPacketPayload packetPayload = createExecutePayload(blr, 0);
         packetPayload.writeBytes("foo".getBytes(StandardCharsets.UTF_8));
         packetPayload.writePadding(3);
         packetPayload.writeInt4(123);
