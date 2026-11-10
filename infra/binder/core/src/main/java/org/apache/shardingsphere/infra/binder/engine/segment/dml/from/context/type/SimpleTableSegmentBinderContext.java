@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Shor
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +44,9 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     
     @Getter(AccessLevel.NONE)
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
+    
+    @Getter(AccessLevel.NONE)
+    private final Collection<ProjectionSegment> orderedProjectionSegments = new ArrayList<>();
     
     private final TableSourceType tableSourceType;
     
@@ -69,8 +73,10 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     
     private void putColumnLabelProjectionSegments(final ProjectionSegment projectionSegment, final Map<String, ProjectionSegment> columnLabelProjectionSegments) {
         if (projectionSegment instanceof ShorthandProjectionSegment) {
+            orderedProjectionSegments.addAll(((ShorthandProjectionSegment) projectionSegment).getActualProjectionSegments());
             ((ShorthandProjectionSegment) projectionSegment).getActualProjectionSegments().forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel(), each));
         } else {
+            orderedProjectionSegments.add(projectionSegment);
             columnLabelProjectionSegments.put(projectionSegment.getColumnLabel(), projectionSegment);
         }
     }
@@ -82,7 +88,7 @@ public final class SimpleTableSegmentBinderContext implements TableSegmentBinder
     
     @Override
     public Collection<ProjectionSegment> getProjectionSegments() {
-        return columnLabelProjectionSegments.values();
+        return orderedProjectionSegments.isEmpty() ? columnLabelProjectionSegments.values() : orderedProjectionSegments;
     }
     
     @Override

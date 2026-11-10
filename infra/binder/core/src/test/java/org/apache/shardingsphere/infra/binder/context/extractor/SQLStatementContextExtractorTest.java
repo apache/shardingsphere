@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.context.extractor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementBaseContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -80,6 +82,7 @@ class SQLStatementContextExtractorTest {
     @Test
     void assertGetAllSubqueryContextsForInsertStatement() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
+        when(insertStatementContext.getBaseContext()).thenReturn(mock(InsertStatementBaseContext.class));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSubqueryContexts()).thenReturn(Collections.singletonMap(0, mock(SelectStatementContext.class)));
         InsertSelectContext insertSelectContext = mock(InsertSelectContext.class);
@@ -87,6 +90,36 @@ class SQLStatementContextExtractorTest {
         when(insertStatementContext.getInsertSelectContext()).thenReturn(insertSelectContext);
         Collection<SelectStatementContext> actual = SQLStatementContextExtractor.getAllSubqueryContexts(insertStatementContext);
         assertThat(actual.size(), is(2));
+    }
+    
+    @Test
+    void assertGetAllInsertBaseSubqueryContextsWithInsertValues() {
+        InsertStatementContext insert = mock(InsertStatementContext.class);
+        InsertStatementBaseContext base = mock(InsertStatementBaseContext.class);
+        when(insert.getBaseContext()).thenReturn(base);
+        SelectStatementContext common = mock(SelectStatementContext.class);
+        SelectStatementContext nested = mock(SelectStatementContext.class);
+        when(common.getSubqueryContexts()).thenReturn(Collections.singletonMap(20, nested));
+        when(base.getSubqueryContexts()).thenReturn(Collections.singletonMap(10, common));
+        Collection<SelectStatementContext> actual = SQLStatementContextExtractor.getAllSubqueryContexts(insert);
+        assertThat(actual, is(Arrays.asList(common, nested)));
+    }
+    
+    @Test
+    void assertGetAllInsertBaseSubqueryContextsWithInsertSelect() {
+        InsertStatementContext insert = mock(InsertStatementContext.class);
+        InsertStatementBaseContext base = mock(InsertStatementBaseContext.class);
+        when(insert.getBaseContext()).thenReturn(base);
+        SelectStatementContext common = mock(SelectStatementContext.class);
+        SelectStatementContext nested = mock(SelectStatementContext.class);
+        when(common.getSubqueryContexts()).thenReturn(Collections.singletonMap(20, nested));
+        when(base.getSubqueryContexts()).thenReturn(Collections.singletonMap(10, common));
+        SelectStatementContext source = mock(SelectStatementContext.class);
+        InsertSelectContext select = mock(InsertSelectContext.class);
+        when(select.getSelectStatementContext()).thenReturn(source);
+        when(insert.getInsertSelectContext()).thenReturn(select);
+        Collection<SelectStatementContext> actual = SQLStatementContextExtractor.getAllSubqueryContexts(insert);
+        assertThat(actual, is(Arrays.asList(source, common, nested)));
     }
     
     @Test

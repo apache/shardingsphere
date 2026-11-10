@@ -3172,4 +3172,32 @@
             </assignment>
         </set>
     </update>
+    <update sql-case-id="update_ignore_sequential_values_mysql" parameters="1.6, 1" ignore="true">
+        <table start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </table>
+        <set start-index="22" stop-index="59">
+            <assignment start-index="26" stop-index="36">
+                <column name="user_id" start-index="26" stop-index="32" />
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="36" stop-index="36" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="39" stop-index="59">
+                <column name="merchant_id" start-index="39" stop-index="49" />
+                <assignment-value>
+                    <column name="user_id" start-index="53" stop-index="59" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="61" stop-index="78">
+            <expr>
+                <binary-operation-expression start-index="67" stop-index="78">
+                    <left><column name="order_id" start-index="67" stop-index="74" /></left>
+                    <operator>=</operator>
+                    <right><parameter-marker-expression parameter-index="1" start-index="78" stop-index="78" /></right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
 </sql-parser-test-cases>

@@ -103,10 +103,8 @@ final class SQLStatementObjectExtractor {
     private void extractQualifiedFunctions(final SQLStatement sqlStatement, final Collection<SQLStatementObjectName> result) {
         new SQLStatementTreeWalker(each -> {
         }, expression -> {
-            if (expression instanceof FunctionSegment function) {
-                if (null != function.getOwner()) {
-                    result.add(SQLStatementObjectName.from(Optional.of(function.getOwner()), new IdentifierValue(function.getFunctionName())));
-                }
+            if (expression instanceof FunctionSegment function && null != function.getOwner()) {
+                result.add(SQLStatementObjectName.from(Optional.of(function.getOwner()), new IdentifierValue(function.getFunctionName())));
             }
         }).walk(sqlStatement);
     }

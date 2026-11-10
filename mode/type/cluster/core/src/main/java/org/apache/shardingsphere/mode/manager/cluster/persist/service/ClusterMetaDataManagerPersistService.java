@@ -148,18 +148,21 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourcePoolProperties> toBeRegisteredProps) {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDataSourceUnitService().persist(databaseName, toBeRegisteredProps);
-        afterStorageUnitsAltered(databaseName, originalMetaDataContexts);
+        getReloadedMetaDataContexts(originalMetaDataContexts);
+        RetryExecutor retryExecutor = new RetryExecutor(30000L, 1000L);
+        ShardingSpherePreconditions.checkState(retryExecutor.execute(arg -> metaDataContextManager.getMetaDataContexts().getMetaData()
+                .getDatabase(databaseName).getResourceMetaData().getStorageUnits().keySet().containsAll(arg), toBeRegisteredProps.keySet()), ReloadMetaDataContextFailedException::new);
+        afterStorageUnitsAltered(databaseName, originalMetaDataContexts, metaDataContextManager.getMetaDataContexts());
     }
     
     @Override
     public void alterStorageUnits(final ShardingSphereDatabase database, final Map<String, DataSourcePoolProperties> toBeUpdatedProps) {
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDataSourceUnitService().persist(database.getName(), toBeUpdatedProps);
-        afterStorageUnitsAltered(database.getName(), originalMetaDataContexts);
+        afterStorageUnitsAltered(database.getName(), originalMetaDataContexts, getReloadedMetaDataContexts(originalMetaDataContexts));
     }
     
-    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts) {
-        MetaDataContexts reloadMetaDataContexts = getReloadedMetaDataContexts(originalMetaDataContexts);
+    private void afterStorageUnitsAltered(final String databaseName, final MetaDataContexts originalMetaDataContexts, final MetaDataContexts reloadMetaDataContexts) {
         ShardingSphereDatabase reloadedDatabase = rebuildDatabaseSchemaIndex(databaseName, reloadMetaDataContexts);
         Optional.ofNullable(reloadMetaDataContexts.getStatistics().getDatabaseStatistics(databaseName))
                 .ifPresent(optional -> optional.getSchemaStatisticsMap().forEach((schemaName, schemaStatistics) -> metaDataPersistFacade.getStatisticsService()

@@ -88,7 +88,7 @@ class FirebirdBatchReleaseCommandExecutorTest {
     private Connection backendConnection;
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, new FirebirdBatchStatement(STATEMENT_ID));
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
@@ -101,7 +101,7 @@ class FirebirdBatchReleaseCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWhenBatchNotFound() throws SQLException {
+    void assertExecuteWhenBatchNotFound() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         Collection<DatabasePacket> actual = new FirebirdBatchReleaseCommandExecutor(packet, connectionSession).execute();

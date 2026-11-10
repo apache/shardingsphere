@@ -25,6 +25,7 @@ import org.apache.calcite.sql.SqlPostfixOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
 
@@ -47,6 +48,9 @@ public final class ExpressionOrderByItemConverter {
         Optional<SqlNode> result = null == segment ? Optional.empty() : ExpressionConverter.convert(segment.getExpr());
         if (!result.isPresent()) {
             return Optional.empty();
+        }
+        if (OrderDirection.DESC == segment.getOrderDirection()) {
+            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result.get()), SqlParserPos.ZERO));
         }
         if (segment.getNullsOrderType().isPresent()) {
             SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST == segment.getNullsOrderType().get() ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;

@@ -26,6 +26,8 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
@@ -177,6 +179,35 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
             assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("runtime failure"));
             logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
+        }
+    }
+    
+    @Test
+    void assertReadResourceSanitizesSerializationFailure(final LogCaptureAssertion logCaptureAssertion) {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://foo", "foo", "Foo", "Read foo.", "application/json", MCPResourceAnnotations.EMPTY, Map.of());
+        Map<String, Object> payload = Map.of("foo_field", "foo_value");
+        IllegalStateException expectedCause = new IllegalStateException("foo_sensitive_detail");
+        JsonException expectedException = mock(JsonException.class);
+        when(expectedException.getMessage()).thenReturn("foo_sensitive_detail");
+        when(expectedException.getCause()).thenReturn(expectedCause);
+        try (
+                MockedStatic<ResourceDefinitionRegistry> mockedRegistry = mockStatic(ResourceDefinitionRegistry.class);
+                MockedStatic<JsonEngine> mockedJsonEngine = mockStatic(JsonEngine.class)) {
+            mockedRegistry.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mockedRegistry.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://foo")))
+                    .thenReturn(Optional.of(new MCPMapPayload(payload)));
+            mockedJsonEngine.when(() -> JsonEngine.marshal(payload)).thenThrow(expectedException);
+            SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications().getFirst();
+            McpError actual = assertThrows(McpError.class, () -> actualSpecification.readHandler().apply(createExchange(), new ReadResourceRequest("shardingsphere://foo")));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+            assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
+            Map<?, ?> actualData = (Map<?, ?>) actual.getJsonRpcError().data();
+            assertThat(actualData.get("error_id"), isA(String.class));
+            assertThat(actualData, is(Map.of("response_mode", "recovery", "summary", "Service is temporarily unavailable.", "error_id", actualData.get("error_id"))));
+            logCaptureAssertion.assertErrorLog(actualException -> {
+                assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException));
+                assertThat(((ThrowableProxy) actualException).getThrowable().getCause(), sameInstance(expectedCause));
+            });
         }
     }
     

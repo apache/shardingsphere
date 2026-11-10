@@ -162,6 +162,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Di
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.SetSchemaDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -332,6 +333,8 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
                     result.renameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof RenameColumnSegment) {
                     result.renameColumnDefinition((RenameColumnSegment) each);
+                } else if (each instanceof SetSchemaDefinitionSegment) {
+                    result.setSchemaDefinition((SetSchemaDefinitionSegment) each);
                 }
             }
         }
@@ -359,6 +362,11 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         }
         if (null != ctx.renameTableSpecification()) {
             result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
+        }
+        if (null != ctx.SCHEMA()) {
+            SetSchemaDefinitionSegment setSchemaDefinition = new SetSchemaDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+            setSchemaDefinition.setSchemaName((IdentifierValue) visit(ctx.name()));
+            result.getValue().add(setSchemaDefinition);
         }
         return result;
     }

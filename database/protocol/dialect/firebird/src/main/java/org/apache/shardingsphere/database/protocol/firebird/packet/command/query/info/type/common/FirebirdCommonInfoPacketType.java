@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,13 +73,8 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
      */
     public static void parseCommonInfo(final FirebirdPacketPayload data, final FirebirdCommonInfoPacketType type) {
         // TODO implement other request types handle
-        switch (type) {
-            case END:
-                data.writeInt1(END.getCode());
-                break;
-            default:
-                throw new DatabaseProtocolException("Unknown common information request type %d", type.getCode());
-        }
+        ShardingSpherePreconditions.checkState(END == type, () -> new DatabaseProtocolException("Unknown common information request type %d", type.getCode()));
+        data.writeInt1(END.getCode());
     }
     
     @Override

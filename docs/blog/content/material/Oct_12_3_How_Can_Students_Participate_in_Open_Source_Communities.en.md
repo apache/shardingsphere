@@ -1,5 +1,6 @@
 +++
 title = "How Can Students Participate in Open-Source Communities?"
+translationKey = "Oct_12_3_How_Can_Students_Participate_in_Open_Source_Communities"
 weight = 19
 chapter = true
 +++

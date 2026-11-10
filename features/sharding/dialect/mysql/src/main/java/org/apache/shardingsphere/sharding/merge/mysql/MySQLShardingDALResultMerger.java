@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.merge.result.impl.stream.IteratorStreamMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.merge.dal.DialectShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingLogicTablesMergedResult;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowInde
 import org.apache.shardingsphere.sharding.merge.mysql.type.MySQLShardingShowTableStatusMergedResult;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.index.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.table.MySQLShowCreateTableStatement;
@@ -50,6 +53,9 @@ public final class MySQLShardingDALResultMerger implements DialectShardingDALRes
     public Optional<MergedResult> merge(final String databaseName, final ShardingRule rule,
                                         final SQLStatementContext sqlStatementContext, final ShardingSphereSchema schema, final List<QueryResult> queryResults) throws SQLException {
         SQLStatement dalStatement = sqlStatementContext.getSqlStatement();
+        if (dalStatement instanceof ExplainStatement && ((ExplainStatement) dalStatement).getExplainableSQLStatement() instanceof SelectStatement) {
+            return Optional.of(new IteratorStreamMergedResult(queryResults));
+        }
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return Optional.of(new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(databaseName))));
         }

@@ -3,6 +3,12 @@
 **/logs/**
 **/*.log
 **/*.tokens
+**/__pycache__/**
+
+# AI tool files
+
+**/.codex/**
+**/.claude/**
 
 # IDE files
 

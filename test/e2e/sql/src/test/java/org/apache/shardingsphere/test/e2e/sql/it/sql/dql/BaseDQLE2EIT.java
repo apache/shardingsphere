@@ -89,7 +89,9 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
      * @throws JAXBException JAXB exception
      */
     protected final void executeDQL(final SQLE2EITContext context, final DQLExecutionCallback callback) throws SQLException, IOException, JAXBException {
-        Lock lock = DQLExclusiveExecutionDetector.requiresExclusiveExecution(context.getSQL()) ? DQL_EXECUTION_LOCK.writeLock() : DQL_EXECUTION_LOCK.readLock();
+        Lock lock = DQLExclusiveExecutionDetector.requiresExclusiveExecution(context.getSQL()) || null != context.getAssertion().getInitialSQL() || null != context.getAssertion().getDestroySQL()
+                ? DQL_EXECUTION_LOCK.writeLock()
+                : DQL_EXECUTION_LOCK.readLock();
         lock.lock();
         try {
             callback.execute();
@@ -98,7 +100,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         }
     }
     
-    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
+    protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) {
         fillDataOnlyOnce(testParam);
         expectedDataSource = getExpectedDataSource(testParam, context);
         useXMLAsExpectedDataset = null != context.getAssertion().getExpectedDataFile();
