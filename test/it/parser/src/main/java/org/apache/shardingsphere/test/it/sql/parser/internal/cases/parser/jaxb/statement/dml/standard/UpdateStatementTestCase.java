@@ -31,6 +31,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.where.ExpectedWhereClause;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.with.ExpectedWithClause;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -39,6 +40,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class UpdateStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute
+    private Boolean ignore;
     
     @XmlElement(name = "returning")
     private ExpectedReturningClause returningClause;

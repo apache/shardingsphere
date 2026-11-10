@@ -85,6 +85,7 @@ class UpdateStatementBinderTest {
         UpdateStatement updateStatement = UpdateStatement.builder()
                 .databaseType(databaseType)
                 .table(simpleTableSegment)
+                .ignore(true)
                 .where(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
                         new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")))
                 .errorLogging(errorLogging)
@@ -92,6 +93,7 @@ class UpdateStatementBinderTest {
                 .build();
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
+        assertTrue(actual.isIgnore());
         assertThat(actual.getErrorLogging().get(), is(errorLogging));
         assertThat(actual.getReturning().get().getStartIndex(), is(returning.getStartIndex()));
         assertThat(actual.getReturning().get().getStopIndex(), is(returning.getStopIndex()));
