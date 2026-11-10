@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdSQLException;
+import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.ISCConstants;
@@ -71,6 +73,22 @@ class FirebirdStatusVectorTest {
         inOrder.verify(payload).writeInt4(ISCConstants.isc_random);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
         inOrder.verify(payload).writeString("Problematic key value is (\"COL1\" = 1)");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteBatchParameterVersionWithNumberArguments() {
+        FirebirdStatusVector vector = new FirebirdStatusVector(new FirebirdSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, 2, 1));
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        vector.write(payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_batch_param_version);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(2);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(1);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
         verifyNoMoreInteractions(payload);
     }

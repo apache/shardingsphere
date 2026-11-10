@@ -23,7 +23,9 @@ import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -37,7 +39,7 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveRebuildsDuplicateKeyVectorAsSegments() {
-        List<Segment> actual = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
+        List<Segment> actual = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000", Collections.emptyList());
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getGdsCode(), is(ISCConstants.isc_unique_key_violation));
         assertThat(actual.get(0).getArguments(), contains("INTEG_2", "MY_TABLE"));
@@ -48,11 +50,11 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveRendersDuplicateKeyTableNameWithoutNull() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000");
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, DUPLICATE_KEY_MESSAGE, "23000", Collections.emptyList());
         StringBuilder rendered = new StringBuilder();
         for (Segment each : segments) {
             GDSExceptionHelper.GDSMessage segmentMessage = GDSExceptionHelper.getMessage(each.getGdsCode());
-            segmentMessage.setParameters(each.getArguments());
+            segmentMessage.setParameters(each.getArguments().stream().map(String::valueOf).collect(Collectors.toList()));
             if (rendered.length() > 0) {
                 rendered.append("; ");
             }
@@ -63,7 +65,7 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveUsesRandomCodeWhenErrorCodeIsLowerThanArithExcept() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_arith_except - 1, "plain", "00000");
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_arith_except - 1, "plain", "00000", Collections.emptyList());
         assertThat(segments.size(), is(1));
         assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_random));
         assertThat(segments.get(0).getArguments(), is(Arrays.asList("plain")));
@@ -71,7 +73,7 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveFailSafeUsesRandomCodeAndKeepsSqlStateForUnmatchedParameterizedTemplate() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, "totally unrelated text", "23000");
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_unique_key_violation, "totally unrelated text", "23000", Collections.emptyList());
         assertThat(segments.size(), is(1));
         assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_random));
         assertThat(segments.get(0).getArguments(), contains("totally unrelated text"));
@@ -80,7 +82,7 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveKeepsBatchParameterVersionCodeWithBothArguments() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000");
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Collections.emptyList());
         assertThat(segments.size(), is(1));
         assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
         assertThat(segments.get(0).getArguments(), contains("2", "1"));
@@ -88,8 +90,24 @@ class FirebirdErrorSegmentResolverTest {
     }
     
     @Test
+    void assertResolveKeepsTypedBatchParameterVersionArguments() {
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Arrays.asList(2, 1));
+        assertThat(segments.size(), is(1));
+        assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        assertThat(segments.get(0).getArguments(), contains(2, 1));
+        assertNull(segments.get(0).getSqlState());
+    }
+    
+    @Test
+    void assertResolveIgnoresTypedArgumentsNotMatchingMessage() {
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Arrays.asList(3, 1));
+        assertThat(segments.size(), is(1));
+        assertThat(segments.get(0).getArguments(), contains("2", "1"));
+    }
+    
+    @Test
     void assertResolveKeepsBatchParamCode() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param, "Statement used in batch must have parameters", "07001");
+        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param, "Statement used in batch must have parameters", "07001", Collections.emptyList());
         assertThat(segments.size(), is(1));
         assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_batch_param));
         assertTrue(segments.get(0).getArguments().isEmpty());
