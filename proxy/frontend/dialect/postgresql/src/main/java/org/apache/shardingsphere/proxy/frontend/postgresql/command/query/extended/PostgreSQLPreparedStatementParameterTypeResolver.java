@@ -114,7 +114,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         List<Object> result = new ArrayList<>(params);
         for (Entry<Integer, Collection<Integer>> entry : getParameterColumnTypes(connectionSession, preparedStatement, params).entrySet()) {
             int parameterIndex = entry.getKey();
-            if (parameterIndex < result.size() && result.get(parameterIndex) instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
+            if (result.get(parameterIndex) instanceof PostgreSQLTypeUnspecifiedSQLParameter) {
                 result.set(parameterIndex, resolveUnspecifiedParameterValue(result.get(parameterIndex), entry.getValue()));
             }
         }
@@ -336,8 +336,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     
     private static boolean isNotNullValue(final ExpressionSegment expression, final List<Object> params) {
         if (expression instanceof ParameterMarkerExpressionSegment) {
-            int parameterMarkerIndex = ((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex();
-            return parameterMarkerIndex < params.size() && null != params.get(parameterMarkerIndex);
+            return null != params.get(((ParameterMarkerExpressionSegment) expression).getParameterMarkerIndex());
         }
         return expression instanceof LiteralExpressionSegment && null != ((LiteralExpressionSegment) expression).getLiterals();
     }
