@@ -1910,7 +1910,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType);
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType).ignore(null != ctx.updateSpecification_().IGNORE());
         if (null != ctx.withClause()) {
             result.with((WithSegment) visit(ctx.withClause()));
         }
