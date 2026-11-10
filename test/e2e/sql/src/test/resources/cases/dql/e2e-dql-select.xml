@@ -52,7 +52,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT RDB$RELATION_ID + 1 AS NEXT_RELATION_ID, RDB$RELATION_ID * 2 FROM RDB$DATABASE" db-types="Firebird" scenario-types="db">
+    <test-case sql="SELECT RDB$RELATION_ID + 1 AS NEXT_RELATION_ID, RDB$RELATION_ID * 2 FROM RDB$RELATIONS WHERE RDB$RELATION_NAME = 'RDB$DATABASE'" db-types="Firebird" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     

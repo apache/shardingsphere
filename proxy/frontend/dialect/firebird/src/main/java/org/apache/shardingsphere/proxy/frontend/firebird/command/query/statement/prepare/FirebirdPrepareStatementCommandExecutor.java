@@ -98,6 +98,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Sa
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.jspecify.annotations.Nullable;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -118,6 +120,10 @@ import java.util.function.Supplier;
 public final class FirebirdPrepareStatementCommandExecutor implements CommandExecutor {
     
     private static final ShardingSphereTable LITERAL_TABLE = new ShardingSphereTable(null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    
+    private static final int INT128_TYPE = Types.NUMERIC;
+    
+    private static final int SCALED_NUMERIC_TYPE = Types.DECIMAL;
     
     private final FirebirdPrepareStatementPacket packet;
     
@@ -523,7 +529,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return getColumnType(((ColumnSegment) operand).getColumnBoundInfo(), sqlStatementContext, database, schema);
         }
         if (operand instanceof LiteralExpressionSegment) {
-            return getLiteralType(((LiteralExpressionSegment) operand).getLiterals());
+            return getLiteralOperandType(((LiteralExpressionSegment) operand).getLiterals());
         }
         if (operand instanceof FunctionSegment) {
             return getFunctionOperandType((FunctionSegment) operand, sqlStatementContext, database, schema);
@@ -550,7 +556,17 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return Types.OTHER;
         }
         ShardingSphereColumn column = getTable(tableName, database, schema).getColumn(boundInfo.getOriginalColumn().getValue());
-        return null == column ? Types.OTHER : column.getDataType();
+        if (null == column) {
+            return Types.OTHER;
+        }
+        return Types.NUMERIC == column.getDataType() || Types.DECIMAL == column.getDataType() ? SCALED_NUMERIC_TYPE : column.getDataType();
+    }
+    
+    private int getLiteralOperandType(@Nullable final Object value) {
+        if (value instanceof BigInteger) {
+            return INT128_TYPE;
+        }
+        return value instanceof BigDecimal ? SCALED_NUMERIC_TYPE : getLiteralType(value);
     }
     
     private int getFunctionOperandType(final FunctionSegment function, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -564,10 +580,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return getCommonType(Iterables.limit(function.getParameters(), 1), sqlStatementContext, database, schema);
             case "iif":
                 return getCommonType(Iterables.skip(function.getParameters(), 1), sqlStatementContext, database, schema);
+            case "current_time":
+                return Types.TIME_WITH_TIMEZONE;
+            case "current_timestamp":
+                return Types.TIMESTAMP_WITH_TIMEZONE;
             case "gen_id":
             case "current_date":
             case "localtime":
-            case "current_timestamp":
             case "localtimestamp":
                 return getFunctionType(function.getFunctionName());
             default:
@@ -593,10 +612,12 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return Types.INTEGER;
             case "BIGINT":
                 return Types.BIGINT;
+            case "INT128":
+                return INT128_TYPE;
             case "NUMERIC":
             case "DECIMAL":
             case "DEC":
-                return Types.NUMERIC;
+                return SCALED_NUMERIC_TYPE;
             case "DATE":
                 return Types.DATE;
             case "TIME":
@@ -633,9 +654,34 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             return leftType;
         }
         if (isNumericType(leftType) && isNumericType(rightType)) {
-            return isApproximateNumericType(leftType) || isApproximateNumericType(rightType) ? Types.DOUBLE : Types.NUMERIC;
+            return getCommonNumericType(leftType, rightType);
         }
         return isDateOrTimestampType(leftType) && isDateOrTimestampType(rightType) ? Types.TIMESTAMP : Types.OTHER;
+    }
+    
+    private int getCommonNumericType(final int leftType, final int rightType) {
+        if (isApproximateNumericType(leftType) || isApproximateNumericType(rightType)) {
+            return Types.DOUBLE;
+        }
+        if (SCALED_NUMERIC_TYPE == leftType || SCALED_NUMERIC_TYPE == rightType) {
+            return SCALED_NUMERIC_TYPE;
+        }
+        return getIntegerTypeSize(leftType) >= getIntegerTypeSize(rightType) ? leftType : rightType;
+    }
+    
+    private int getIntegerTypeSize(final int dataType) {
+        switch (dataType) {
+            case Types.TINYINT:
+                return 1;
+            case Types.SMALLINT:
+                return 2;
+            case Types.INTEGER:
+                return 4;
+            case Types.BIGINT:
+                return 8;
+            default:
+                return 16;
+        }
     }
     
     private boolean isDateOrTimestampType(final int dataType) {
@@ -649,11 +695,25 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return Types.BIGINT;
             case MAX:
             case MIN:
+                return getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema);
             case SUM:
             case AVG:
-                return getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema);
+                return getSumType(getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema));
             default:
                 return Types.OTHER;
+        }
+    }
+    
+    private int getSumType(final int dataType) {
+        switch (dataType) {
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+                return Types.BIGINT;
+            case Types.BIGINT:
+                return INT128_TYPE;
+            default:
+                return dataType;
         }
     }
     
@@ -675,10 +735,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private int getArithmeticType(final String operator, final int leftType, final int rightType) {
         if (isDateTimeType(leftType) && isDateTimeType(rightType)) {
-            if (!"-".equals(operator)) {
-                return Types.TIMESTAMP;
-            }
-            return Types.DATE == leftType && Types.DATE == rightType ? Types.INTEGER : Types.NUMERIC;
+            return "-".equals(operator) ? getDateTimeDifferenceType(leftType, rightType) : getDateTimeSumType(leftType, rightType);
         }
         if (isDateTimeType(leftType) && isNumericType(rightType)) {
             return leftType;
@@ -689,7 +746,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (!isNumericType(leftType) || !isNumericType(rightType)) {
             return Types.OTHER;
         }
-        return isApproximateNumericType(leftType) || isApproximateNumericType(rightType) ? Types.DOUBLE : Types.BIGINT;
+        if (isApproximateNumericType(leftType) || isApproximateNumericType(rightType)) {
+            return Types.DOUBLE;
+        }
+        return SCALED_NUMERIC_TYPE == leftType || SCALED_NUMERIC_TYPE == rightType ? Types.OTHER : getExactArithmeticType(operator, leftType, rightType);
     }
     
     private boolean isDateTimeType(final int dataType) {
@@ -703,6 +763,18 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             default:
                 return false;
         }
+    }
+    
+    private int getDateTimeDifferenceType(final int leftType, final int rightType) {
+        return Types.DATE == leftType && Types.DATE == rightType ? Types.INTEGER : Types.OTHER;
+    }
+    
+    private int getDateTimeSumType(final int leftType, final int rightType) {
+        return isTimeZoneType(leftType) || isTimeZoneType(rightType) ? Types.TIMESTAMP_WITH_TIMEZONE : Types.TIMESTAMP;
+    }
+    
+    private boolean isTimeZoneType(final int dataType) {
+        return Types.TIME_WITH_TIMEZONE == dataType || Types.TIMESTAMP_WITH_TIMEZONE == dataType;
     }
     
     private boolean isNumericType(final int dataType) {
@@ -721,6 +793,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private boolean isApproximateNumericType(final int dataType) {
         return Types.FLOAT == dataType || Types.REAL == dataType || Types.DOUBLE == dataType;
+    }
+    
+    private int getExactArithmeticType(final String operator, final int leftType, final int rightType) {
+        if (INT128_TYPE == leftType || INT128_TYPE == rightType) {
+            return INT128_TYPE;
+        }
+        boolean multiplicative = "*".equals(operator) || "/".equals(operator);
+        return multiplicative && (Types.BIGINT == leftType || Types.BIGINT == rightType) ? INT128_TYPE : Types.BIGINT;
     }
     
     private int getLiteralType(@Nullable final Object value) {
