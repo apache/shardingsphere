@@ -64,7 +64,7 @@ class FirebirdServerPreparedStatementTest {
     void assertConvertExactNumericParametersWithOtherParameters() {
         FirebirdServerPreparedStatement preparedStatement = createPreparedStatement();
         preparedStatement.getExactNumericParameterIndexes().addAll(Arrays.asList(1, 2));
-        List<Object> actual = new ArrayList<>(Arrays.asList("10", null));
+        List<Object> actual = Arrays.asList("10", null);
         preparedStatement.convertExactNumericParameters(actual);
         assertThat(actual, is(Arrays.asList("10", null)));
     }

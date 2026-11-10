@@ -545,6 +545,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         if (binary.getLeft() instanceof ColumnSegment) {
             putAffectedColumn((ColumnSegment) binary.getLeft(), binary.getRight(), affectedColumns);
         }
+        if (binary.getRight() instanceof ColumnSegment) {
+            putAffectedColumn((ColumnSegment) binary.getRight(), binary.getLeft(), affectedColumns);
+        }
     }
     
     private Map<Integer, DataTypeSegment> findCastDataTypes(final SQLStatementContext sqlStatementContext) {

@@ -512,6 +512,29 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeInsertSelectReversedComparisonParameters() throws Exception {
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereColumn amountColumn = new ShardingSphereColumn("amount", Types.DECIMAL, false, false, true, true, false, true);
+        ProxyContext.getInstance().getContextManager().getDatabase("foo_db").getSchema("foo_db")
+                .putTable(new ShardingSphereTable("bar_tbl", Arrays.asList(idColumn, amountColumn), Collections.emptyList(), Collections.emptyList()));
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id + 2 FROM bar_tbl WHERE ? = id AND ? < amount");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload amountPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeBind().get(1).write(amountPayload);
+        verify(amountPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+        verify(amountPayload).writeInt4LE(32765);
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(preparedStatement.getExactNumericParameterIndexes(), is(Collections.singleton(1)));
+    }
+    
+    @Test
     void assertDescribeInsertSelectCastParameters() throws Exception {
         when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) SELECT CAST(? AS INTEGER), CAST(? AS VARCHAR(20)) FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
