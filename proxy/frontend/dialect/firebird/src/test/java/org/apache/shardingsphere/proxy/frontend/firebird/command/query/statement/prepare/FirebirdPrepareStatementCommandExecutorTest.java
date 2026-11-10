@@ -380,8 +380,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWithSignExtendedStatementHandle() throws Exception {
-        ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue()).writeInt(1).writeInt(0xFFFF8001).writeInt(3)
-                .writeInt(8).writeBytes("SELECT 1".getBytes(StandardCharsets.UTF_8)).writeInt(1).writeByte(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()).writeZero(3).writeInt(100);
+        ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue()).writeInt(1).writeInt(0xFFFF8001).writeInt(3).writeInt(8)
+                .writeBytes("SELECT 1".getBytes(StandardCharsets.UTF_8)).writeInt(1).writeByte(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()).writeZero(3).writeInt(100);
         FirebirdPrepareStatementPacket prepareStatementPacket = new FirebirdPrepareStatementPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
         new FirebirdPrepareStatementCommandExecutor(prepareStatementPacket, connectionSession).execute();
         assertThat(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(0x8001).getSql(), is("SELECT 1"));

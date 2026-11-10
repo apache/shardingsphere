@@ -135,6 +135,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * @return object handle
      * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L512-L516">Firebird remote protocol handle decoding</a>
      */
+    @HighFrequencyInvocation
     public int readObjectHandle() {
         int result = byteBuf.readInt();
         return result < 0 ? result & 0xFFFF : result;

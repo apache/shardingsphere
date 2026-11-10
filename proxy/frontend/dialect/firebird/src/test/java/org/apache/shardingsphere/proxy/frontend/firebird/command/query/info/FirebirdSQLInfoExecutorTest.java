@@ -129,8 +129,8 @@ class FirebirdSQLInfoExecutorTest {
         FirebirdInfoPacket infoPacket = new FirebirdInfoPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), FirebirdSQLInfoPacketType::valueOf);
         ServerPreparedStatementRegistry registry = createPreparedStatementRegistry(statementId, mock(InsertStatement.class));
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(registry);
-        Collection<DatabasePacket> responsePackets = new FirebirdSQLInfoExecutor(infoPacket, connectionSession).execute();
-        return (FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) responsePackets.iterator().next()).getData();
+        Collection<DatabasePacket> actualResponsePackets = new FirebirdSQLInfoExecutor(infoPacket, connectionSession).execute();
+        return (FirebirdSQLInfoReturnPacket) ((FirebirdGenericResponsePacket) actualResponsePackets.iterator().next()).getData();
     }
     
     @Test
