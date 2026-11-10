@@ -49,8 +49,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     
     @Override
     public void handleException(final ConnectionSession connectionSession, final Exception exception) {
-        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()
-                && !isRecoverableException(exception)) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && !isRecoverableException(exception)) {
             connectionSession.getConnectionContext().getTransactionContext().setExceptionOccur(true);
         }
     }

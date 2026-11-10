@@ -77,21 +77,25 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         int connectionId = connectionSession.getConnectionId();
         ShardingSpherePreconditions.checkState(null == FirebirdBatchStatementManager.getInstance().getBatchStatement(connectionId, statementId), () -> new BatchAlreadyOpenedException(statementId));
         if (preparedStatement.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
-            BatchParameters.validateVersion(packet.getBatchParametersBuffer());
-            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, packet.getBatchBlr());
+            ByteBuf batchBlr = packet.getBatchBlr();
+            validateMessageLength(FirebirdParseBatchBlr.parseForFraming(batchBlr, batchBlr.readableBytes()).getMessageLength());
+            FirebirdBatchRegistry.getInstance().registerRejectedBatchFormat(connectionId, statementId, batchBlr);
+            BatchParameters.validateWireParameters(packet.getBatchParametersBuffer());
             throw new InvalidBatchStatementTypeException();
         }
         ByteBuf batchBlr = packet.getBatchBlr();
         FirebirdParseBatchBlr messageFormat = FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes());
         ShardingSpherePreconditions.checkNotEmpty(messageFormat.getFields(), () -> new BatchParametersRequiredException(statementId));
-        if (packet.getBatchMessageLength() != messageFormat.getMessageLength()) {
-            throw new InvalidBatchMessageFormatException(
-                    String.format("invalid message length: computed %d from BLR but client sent %d", messageFormat.getMessageLength(), packet.getBatchMessageLength()));
-        }
+        validateMessageLength(messageFormat.getMessageLength());
         BatchParameters batchParameters = BatchParameters.parse(packet.getBatchParametersBuffer());
         FirebirdBatchStatementManager.getInstance().registerBatchStatement(
                 connectionId, statementId, messageFormat.getFields(), batchParameters.getBufferSize(), batchParameters.isRecordCounts(), batchParameters.isMultiError());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
+    }
+    
+    private void validateMessageLength(final int expectedMessageLength) {
+        ShardingSpherePreconditions.checkState(expectedMessageLength == packet.getBatchMessageLength(),
+                () -> new InvalidBatchMessageFormatException(String.format("invalid message length: computed %d from BLR but client sent %d", expectedMessageLength, packet.getBatchMessageLength())));
     }
     
     @RequiredArgsConstructor
@@ -160,6 +164,32 @@ public final class FirebirdBatchCreateCommandExecutor implements CommandExecutor
         private static int readIntegerValue(final ByteBuf reader, final int tag, final int valueLength) {
             ShardingSpherePreconditions.checkState(INTEGER_VALUE_LENGTH == valueLength, () -> new DatabaseProtocolException("Invalid batch parameter integer length for tag %d: %d", tag, valueLength));
             return reader.readIntLE();
+        }
+        
+        private static void validateWireParameters(final ByteBuf batchParamsBuffer) {
+            validateVersion(batchParamsBuffer);
+            validateWireParameter(batchParamsBuffer, TAG_RECORD_COUNTS);
+            validateWireParameter(batchParamsBuffer, TAG_BLOB_POLICY);
+        }
+        
+        private static void validateWireParameter(final ByteBuf batchParamsBuffer, final int expectedTag) {
+            if (!batchParamsBuffer.isReadable()) {
+                return;
+            }
+            ByteBuf reader = batchParamsBuffer.duplicate();
+            reader.skipBytes(1);
+            while (reader.isReadable()) {
+                ensureClumpletHeaderReadable(reader);
+                int tag = reader.readUnsignedByte();
+                int valueLength = reader.readIntLE();
+                ensureClumpletValueReadable(reader, tag, valueLength);
+                if (expectedTag == tag) {
+                    ShardingSpherePreconditions.checkState(valueLength <= INTEGER_VALUE_LENGTH, () -> new DatabaseProtocolException("Invalid batch parameter integer length for tag %d: %d", tag,
+                            valueLength));
+                    return;
+                }
+                reader.skipBytes(valueLength);
+            }
         }
     }
 }
