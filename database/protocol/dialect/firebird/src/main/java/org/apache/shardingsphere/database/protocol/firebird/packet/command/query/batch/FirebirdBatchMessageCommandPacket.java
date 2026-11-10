@@ -71,9 +71,9 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
         int startReaderIndex = payload.getByteBuf().readerIndex();
         payload.skipReserved(4);
         int statementHandle = payload.readInt4();
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, statementHandle);
-        ShardingSpherePreconditions.checkNotNull(batchStatement, () -> new InvalidBatchHandleException(statementHandle));
-        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), batchStatement.getColumnDescriptors());
+        List<FirebirdBatchColumnDescriptor> messageFormat = FirebirdBatchRegistry.getInstance().getMessageFormat(connectionId, statementHandle);
+        ShardingSpherePreconditions.checkNotNull(messageFormat, () -> new InvalidBatchHandleException(statementHandle));
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), messageFormat);
     }
     
     /**
