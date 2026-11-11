@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public final class ExpectedOutfileClause extends AbstractExpectedSQLSegment {
      */
     public Map<String, String> getProperties() {
         if (null == propertyList || propertyList.isEmpty()) {
-            return null;
+            return Collections.emptyMap();
         }
         return propertyList.stream().collect(Collectors.toMap(ExpectedProperty::getKey, ExpectedProperty::getValue, (oldValue, newValue) -> newValue, LinkedHashMap::new));
     }

@@ -45,11 +45,23 @@ public final class MySQLLoadDataStatementTestCase extends SQLParserTestCase {
     @XmlAttribute
     private Boolean local;
     
+    @XmlAttribute
+    private Boolean ignore;
+    
+    @XmlAttribute
+    private Boolean replace;
+    
     @XmlElement(name = "file-name")
     private ExpectedLiteralValue fileName;
     
     @XmlElement
     private ExpectedSimpleTable table;
+    
+    @XmlAttribute(name = "partition-start-index")
+    private Integer partitionStartIndex;
+    
+    @XmlAttribute(name = "partition-stop-index")
+    private Integer partitionStopIndex;
     
     @XmlElement(name = "partition")
     private final List<ExpectedPartition> partitions = new LinkedList<>();

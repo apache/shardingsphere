@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -55,9 +56,15 @@ public abstract class LoadDataStatement extends DMLStatement {
     
     private boolean local;
     
+    private boolean ignore;
+    
+    private boolean replace;
+    
     private LiteralValueSegment fileName;
     
     private final Collection<PartitionSegment> partitions = new LinkedList<>();
+    
+    private PartitionDefinitionSegment partitionDefinition;
     
     private LiteralValueSegment columnSeparator;
     
@@ -75,6 +82,15 @@ public abstract class LoadDataStatement extends DMLStatement {
         super(databaseType);
         this.table = table;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
+    }
+    
+    /**
+     * Get partition definition.
+     *
+     * @return partition definition, or empty when no partition selection is specified
+     */
+    public Optional<PartitionDefinitionSegment> getPartitionDefinition() {
+        return Optional.ofNullable(partitionDefinition);
     }
     
     /**

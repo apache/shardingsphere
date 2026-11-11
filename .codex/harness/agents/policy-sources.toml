@@ -27,7 +27,7 @@ coding-standards-audit = ["agents", "code-of-conduct", "coding-standards", "stan
 runtime-diagnosis = ["agents", "runtime-triage", "code-verification"]
 command-execution = ["agents", "token-efficiency", "docker-resources", "code-verification"]
 cross-cutting = ["agents", "cross-cutting-skills"]
-documentation = ["agents", "documentation-wording"]
+documentation = ["agents", "documentation-wording", "change-completion", "review-pr", "review-pr-coordination"]
 analyze-issue = ["agents", "analyze-issue", "analyze-issue-output"]
 gen-ut = ["agents", "code-of-conduct", "code-implementation", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "gen-ut", "gen-ut-verification", "change-completion"]
 review-pr = ["agents", "code-of-conduct", "coding-standards", "maven-dependencies", "java-naming", "java-types", "java-annotation-order", "java-constructors", "java-preconditions", "java-exceptions", "java-collections", "java-expressions", "java-line-wrapping", "java-testing", "defensive-code", "implementation-rules", "testing-rules", "contracts-and-removal", "non-regression", "code-verification", "review-pr", "review-pr-coordination", "review-pr-evidence", "review-pr-high-risk", "review-pr-sql-parser", "review-pr-corrections"]
@@ -388,7 +388,7 @@ id = "review-pr-sql-parser"
 path = ".codex/skills/review-pr/references/sql-parser-review.md"
 kind = "reference"
 semantic = true
-references = []
+references = [".codex/skills/code-implementation/references/rules/testing.md"]
 
 [[sources]]
 id = "review-pr-corrections"

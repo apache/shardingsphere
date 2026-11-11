@@ -319,7 +319,8 @@ logs, or emojis.
 
 Use this format for both public-PR and local-candidate reviews.
 
-Begin the Formal Review with `### Summary` before `### Result`, explaining the problem or goal, actual change mechanism, direction assessment and material limits in two to four concise sentences.
+Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.
+Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.
 Keep a required `### Correction` first, then give the current summary and result using only verified facts.
 
 - `Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.
@@ -328,6 +329,14 @@ Keep a required `### Correction` first, then give the current summary and result
 
 For a qualified negative result, use the `Not Mergeable` structure with `Review Status: Not Converged` and `Confirmed Blocking Issues: N` in place of `Blocking Issues: N`.
 State that the findings are a confirmed subset, and report the actual completed and unreviewed coverage, unresolved differences, failed or unavailable checks, and the reason confirmation could not finish.
+
+For each reported issue, prefix its title with `[P0]`, `[P1]`, or `[P2]` according to the proven impact and urgency.
+
+- P0 (urgent): Critical failures requiring immediate action, such as severe data loss, critical security exposure, or widespread core-service outage.
+- P1 (high): Serious failures on supported paths that require prompt correction and do not meet P0.
+- P2 (normal): All other warranted issues, including ordinary or minor defects and violations of applicable coding standards.
+
+Priority expresses impact and urgency; determine proof, blocking status, feedback mode and overall result using the existing review gates.
 
 For each blocking issue include:
 

@@ -511,10 +511,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (SequenceFunction.valueFrom(ctx.name().getText()).isPresent()) {
             return createSequenceFunction(ctx);
         }
-        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
-            if (SequenceFunction.valueFrom(ctx.nestedItem().get(0).getText()).isPresent()) {
-                return createSequenceFunction(ctx);
-            }
+        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty() && SequenceFunction.valueFrom(ctx.nestedItem().get(0).getText()).isPresent()) {
+            return createSequenceFunction(ctx);
         }
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();

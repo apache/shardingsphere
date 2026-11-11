@@ -9,7 +9,7 @@ chapter = true
 
 Recently, [Alibaba Cloud](https://us.alibabacloud.com/?utm_key=se_1007722888&utm_content=se_1007722888&gclid=Cj0KCQiAyMKbBhD1ARIsANs7rEE71bHtu1aPbMS_E5-awHyWwTtyRn8CfmMU0qD1eH2hKSVEIDxcxaIaAuAVEALw_wcB)'s [OpenSergo](https://opensergo.io/) and [ShardingSphere](https://shardingsphere.apache.org/) jointly released the database governance standard for microservices. By combining the [Database Plus](https://medium.com/faun/whats-the-database-plus-concepand-what-challenges-can-it-solve-715920ba65aa?source=your_stories_page-------------------------------------) and [Database Mesh](https://medium.com/faun/shardingsphere-database-mesh-4ad75bf4bac8?source=your_stories_page-------------------------------------) concepts, the two communities have standardized the existing database governance concepts, patterns, and paths, further completing the database governance ecosystem under the cloud-native environment.
 
-![img](https://shardingsphere.apache.org/blog/img/2022_11_15_Alibaba_Cloud's_OpenSergo_&_ShardingSphere_release_database_governance_standard_for_microservices_—_combining_Database_Plus_and_Database_Mesh_concepts1.png)
+![img](https://shardingsphere.apache.org/blog/img/2022_11_15_Alibaba_Cloud’s_OpenSergo_&_ShardingSphere_release_database_governance_standard_for_microservices_-_combining_Database_Plus_and_Database_Mesh_concepts1.png)
 
 ***The founders of both communities expressed their opinions concerning the collaboration between the ShardingSphere community and the OpenSergo community:***
 

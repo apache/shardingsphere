@@ -267,7 +267,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Statement visitor for PostgreSQL.
@@ -462,7 +461,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return Optional.of(createInSegment(ctx));
         }
         if (null != ctx.patternMatchingOperator()) {
-            return Optional.of(createPatternMatchingOperationSegment(ctx));
+            return Optional.of(createPatternMatchingOperationSegment(ctx, ctx.patternMatchingOperator()));
+        }
+        if (null != ctx.qualOp() && null != ctx.qualOp().patternMatchingSymbol() && null != ctx.aExpr(1)) {
+            return Optional.of(createPatternMatchingOperationSegment(ctx, ctx.qualOp()));
         }
         if (null != ctx.subqueryOp() && (null != ctx.subqueryOp().LIKE() || null != ctx.subqueryOp().ILIKE())) {
             return Optional.of(createQuantifiedPatternMatchingOperationSegment(ctx));
@@ -539,14 +541,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.SLASH_()) {
             return Optional.of(ctx.SLASH_().getText());
         }
-        if (null != ctx.qualOp() && (null != ctx.qualOp().CUSTOM_OPERATOR_() || null != ctx.qualOp().OPERATOR())) {
+        if (null != ctx.qualOp() && (null != ctx.qualOp().CUSTOM_OPERATOR_() || null != ctx.qualOp().OPERATOR() || null != ctx.qualOp().SAFE_EQ_() || null != ctx.qualOp().BQ_()
+                || null != ctx.qualOp().AND_())) {
             return Optional.of(ctx.qualOp().getText());
         }
         return Optional.empty();
     }
     
-    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
-        String operator = getOriginalText(ctx.patternMatchingOperator()).toUpperCase();
+    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx, final ParserRuleContext operatorContext) {
+        String operator = getOriginalText(operatorContext).toUpperCase();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex());
         for (int i = 1; i < ctx.aExpr().size(); i++) {
@@ -1051,10 +1054,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        IdentifierContext identifierContext = ctx.identifier();
-        return new KeywordValue(null == identifierContext
-                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
-                : identifierContext.getText());
+        return new KeywordValue(null != ctx.numericTypeName() && null != ctx.numericTypeName().DOUBLE()
+                ? String.join(" ", ctx.numericTypeName().DOUBLE().getText(), ctx.numericTypeName().PRECISION().getText())
+                : ctx.getChild(0).getText());
     }
     
     @Override

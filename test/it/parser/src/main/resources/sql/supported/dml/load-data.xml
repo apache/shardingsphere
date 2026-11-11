@@ -49,4 +49,8 @@
     <sql-case id="load_data_hive_local_partition_with_inputformat_serde" value="LOAD DATA LOCAL INPATH '/home/user/partitioned_parquet_data/' INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' INTO TABLE parquet_partitioned_table PARTITION (region='north')" db-types="Hive" />
     <sql-case id="load_data_hive_hdfs_overwrite_partition_with_inputformat_serde" value="LOAD DATA INPATH '/user/hive/overwrite_orc_updates/' OVERWRITE INPUTFORMAT 'org.apache.hadoop.hive.ql.io.orc.OrcInputFormat' SERDE 'org.apache.hadoop.hive.ql.io.orc.OrcSerde' INTO TABLE orc_partitioned_table PARTITION (dt='2025-07-12')" db-types="Hive" />
     <sql-case id="load_data_hive_local_overwrite_partition_with_inputformat_serde" value="LOAD DATA LOCAL INPATH '/home/user/overwrite_parquet_data/' OVERWRITE INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' INTO TABLE parquet_partitioned_table PARTITION (region='south')" db-types="Hive" />
+    <sql-case id="load_data_ignore" value="LOAD DATA INFILE 'data.csv' IGNORE INTO TABLE t_order" db-types="MySQL" />
+    <sql-case id="load_data_replace_partition" value="LOAD DATA INFILE 'data.csv' REPLACE INTO TABLE t_order PARTITION(p0, p1)" db-types="MySQL" />
+    <sql-case id="load_data_ignore_with_ignore_lines" value="LOAD DATA INFILE 'data.csv' IGNORE INTO TABLE t_order IGNORE 1 LINES" db-types="MySQL" />
+    <sql-case id="load_data_partition_with_ignore_lines" value="LOAD DATA INFILE 'data.csv' INTO TABLE t_order PARTITION(p0) IGNORE 1 LINES" db-types="MySQL" />
 </sql-cases>

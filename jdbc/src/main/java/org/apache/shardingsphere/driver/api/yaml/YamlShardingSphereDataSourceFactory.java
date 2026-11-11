@@ -25,6 +25,8 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.yaml.YamlJDBCConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.DatabaseNameValidator;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
@@ -39,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * ShardingSphere data source factory for YAML.
@@ -55,8 +58,18 @@ public final class YamlShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final File yamlFile) throws SQLException, IOException {
-        YamlJDBCConfiguration rootConfig = YamlEngine.unmarshal(yamlFile, YamlJDBCConfiguration.class);
-        return createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig);
+        return createDataSource(YamlEngine.unmarshal(yamlFile, YamlJDBCConfiguration.class));
+    }
+    
+    private static DataSource createDataSource(final YamlJDBCConfiguration jdbcConfig) throws SQLException {
+        String databaseName = jdbcConfig.getDatabaseName();
+        ModeConfiguration modeConfig = null == jdbcConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(jdbcConfig.getMode());
+        jdbcConfig.rebuild();
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(jdbcConfig.getRules());
+        Map<String, DataSourcePoolProperties> dataSourcePoolPropsMap = new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(jdbcConfig.getDataSources());
+        Properties props = jdbcConfig.getProps();
+        DatabaseNameValidator.validate(databaseName);
+        return ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, DataSourcePoolCreator.create(dataSourcePoolPropsMap, true), ruleConfigs, props);
     }
     
     /**
@@ -68,8 +81,7 @@ public final class YamlShardingSphereDataSourceFactory {
      * @throws IOException IO exception
      */
     public static DataSource createDataSource(final byte[] yamlBytes) throws SQLException, IOException {
-        YamlJDBCConfiguration rootConfig = YamlEngine.unmarshal(yamlBytes, YamlJDBCConfiguration.class);
-        return createDataSource(new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources()), rootConfig);
+        return createDataSource(YamlEngine.unmarshal(yamlBytes, YamlJDBCConfiguration.class));
     }
     
     /**
@@ -85,6 +97,16 @@ public final class YamlShardingSphereDataSourceFactory {
         return createDataSource(dataSourceMap, YamlEngine.unmarshal(yamlFile, YamlJDBCConfiguration.class));
     }
     
+    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
+        String databaseName = jdbcConfig.getDatabaseName();
+        ModeConfiguration modeConfig = null == jdbcConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(jdbcConfig.getMode());
+        jdbcConfig.rebuild();
+        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(jdbcConfig.getRules());
+        Properties props = jdbcConfig.getProps();
+        DatabaseNameValidator.validate(databaseName);
+        return ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
+    }
+    
     /**
      * Create ShardingSphere data source.
      *
@@ -96,6 +118,12 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final File yamlFile) throws SQLException, IOException {
         return createDataSource(dataSource, YamlEngine.unmarshal(yamlFile, YamlJDBCConfiguration.class));
+    }
+    
+    private static DataSource createDataSource(final DataSource dataSource, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(
+                Collections.singletonMap(Strings.isNullOrEmpty(jdbcConfig.getDatabaseName()) ? DefaultDatabase.LOGIC_NAME : jdbcConfig.getDatabaseName(), dataSource));
+        return createDataSource(dataSourceMap, jdbcConfig);
     }
     
     /**
@@ -122,19 +150,5 @@ public final class YamlShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final DataSource dataSource, final byte[] yamlBytes) throws SQLException, IOException {
         return createDataSource(dataSource, YamlEngine.unmarshal(yamlBytes, YamlJDBCConfiguration.class));
-    }
-    
-    private static DataSource createDataSource(final DataSource dataSource, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(
-                Collections.singletonMap(Strings.isNullOrEmpty(jdbcConfig.getDatabaseName()) ? DefaultDatabase.LOGIC_NAME : jdbcConfig.getDatabaseName(), dataSource));
-        return createDataSource(dataSourceMap, jdbcConfig);
-    }
-    
-    private static DataSource createDataSource(final Map<String, DataSource> dataSourceMap, final YamlJDBCConfiguration jdbcConfig) throws SQLException {
-        DatabaseNameValidator.validate(jdbcConfig.getDatabaseName());
-        ModeConfiguration modeConfig = null == jdbcConfig.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(jdbcConfig.getMode());
-        jdbcConfig.rebuild();
-        Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(jdbcConfig.getRules());
-        return ShardingSphereDataSourceFactory.createDataSource(jdbcConfig.getDatabaseName(), modeConfig, dataSourceMap, ruleConfigs, jdbcConfig.getProps());
     }
 }

@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,13 +35,23 @@ public final class FunctionTableSegmentBinderContext implements TableSegmentBind
     
     private final Map<String, ProjectionSegment> columnLabelProjectionSegments;
     
+    private final OwnerSegment originalOwner;
+    
     public FunctionTableSegmentBinderContext() {
         columnLabelProjectionSegments = Collections.emptyMap();
+        originalOwner = null;
     }
     
-    public FunctionTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments) {
+    /**
+     * Create a function source context with its declared alias; a null owner represents an unaliased source.
+     *
+     * @param projectionSegments declared function output columns
+     * @param owner declared source alias, or null when absent
+     */
+    public FunctionTableSegmentBinderContext(final Collection<ProjectionSegment> projectionSegments, final OwnerSegment owner) {
         columnLabelProjectionSegments = new CaseInsensitiveMap<>(projectionSegments.size(), 1F);
         projectionSegments.forEach(each -> columnLabelProjectionSegments.put(each.getColumnLabel(), each));
+        originalOwner = owner;
     }
     
     @Override
@@ -56,5 +67,10 @@ public final class FunctionTableSegmentBinderContext implements TableSegmentBind
     @Override
     public TableSourceType getTableSourceType() {
         return TableSourceType.TEMPORARY_TABLE;
+    }
+    
+    @Override
+    public Optional<OwnerSegment> getOriginalOwner() {
+        return Optional.ofNullable(originalOwner);
     }
 }

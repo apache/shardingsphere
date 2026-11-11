@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -164,6 +165,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(preparedStatement.getSql(), is("SELECT 1"));
         assertThat(preparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
+    }
+    
+    @Test
+    void assertExecuteWithUnsupportedStatement() {
+        when(packet.getSQL()).thenReturn("DROP ROLE foo_role");
+        assertThrows(UnsupportedSQLOperationException.class, () -> new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute());
     }
     
     private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {

@@ -406,12 +406,12 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     private boolean isSameColumn(final ColumnSegment groupByColumn, final ColumnSegment orderByColumn) {
         ColumnSegmentBoundInfo groupByBoundInfo = groupByColumn.getColumnBoundInfo();
         ColumnSegmentBoundInfo orderByBoundInfo = orderByColumn.getColumnBoundInfo();
-        ColumnSegmentBoundInfo groupByOtherUsingBoundInfo = groupByColumn.getOtherUsingColumnBoundInfo();
-        ColumnSegmentBoundInfo orderByOtherUsingBoundInfo = orderByColumn.getOtherUsingColumnBoundInfo();
         if (!groupByColumn.getQualifiedName().equals(orderByColumn.getQualifiedName()) || null == groupByBoundInfo || null == orderByBoundInfo
                 || !isSameColumnBoundInfo(groupByBoundInfo, orderByBoundInfo)) {
             return false;
         }
+        ColumnSegmentBoundInfo groupByOtherUsingBoundInfo = groupByColumn.getOtherUsingColumnBoundInfo();
+        ColumnSegmentBoundInfo orderByOtherUsingBoundInfo = orderByColumn.getOtherUsingColumnBoundInfo();
         if (null == groupByOtherUsingBoundInfo && null != orderByOtherUsingBoundInfo) {
             return false;
         }

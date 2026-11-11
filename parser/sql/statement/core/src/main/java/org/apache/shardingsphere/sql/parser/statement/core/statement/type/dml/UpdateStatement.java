@@ -70,14 +70,15 @@ public final class UpdateStatement extends DMLStatement {
     
     private final boolean targetTableIsFromAlias;
     
+    private final boolean ignore;
+    
     private final SQLStatementAttributes attributes;
     
     @Builder
     private UpdateStatement(final DatabaseType databaseType, final TableSegment table, final SetAssignmentSegment setAssignment, final WhereSegment where,
                             final OrderBySegment orderBy, final LimitSegment limit, final TableSegment from, final WhereSegment deleteWhere, final WithSegment with,
                             final ReturningSegment returning, final ErrorLoggingSegment errorLogging, final WithTableHintSegment withTableHint, final OptionHintSegment optionHint,
-                            final OutputSegment output,
-                            final boolean targetTableIsFromAlias) {
+                            final OutputSegment output, final boolean targetTableIsFromAlias, final boolean ignore) {
         super(databaseType);
         this.table = table;
         this.setAssignment = setAssignment;
@@ -93,6 +94,7 @@ public final class UpdateStatement extends DMLStatement {
         this.optionHint = optionHint;
         this.output = output;
         this.targetTableIsFromAlias = targetTableIsFromAlias;
+        this.ignore = ignore;
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     

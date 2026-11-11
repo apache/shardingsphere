@@ -1,5 +1,6 @@
 +++
 title = "易华录 X ShardingSphere｜葫芦 App 后台数据处理的逻辑捷径"
+translationKey = "Oct_12_5_E_Hualu_ShardingSphere_Hulu_Story_Data_Processing_Shortcut"
 weight = 21
 chapter = true
 +++

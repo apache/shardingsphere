@@ -67,6 +67,15 @@ class ProjectionEngineTest {
     }
     
     @Test
+    void assertPreserveRepeatedShorthandColumns() {
+        ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(7, 7);
+        shorthand.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("value"))));
+        shorthand.getActualProjectionSegments().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("value"))));
+        ShorthandProjection actual = (ShorthandProjection) new ProjectionEngine(databaseType).createProjection(shorthand).get();
+        assertThat(actual.getActualColumns().size(), is(2));
+    }
+    
+    @Test
     void assertCreateProjectionWhenProjectionSegmentInstanceOfColumnProjectionSegment() {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(new ColumnSegment(0, 10, new IdentifierValue("name")));
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));

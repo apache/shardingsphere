@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatem
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HandlerStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ImportStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LeadLagInfoContext;
@@ -39,6 +40,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowI
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -105,7 +108,17 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        MySQLLoadDataStatement result = new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setIgnore(!ctx.IGNORE().isEmpty() && ctx.IGNORE(0).getSymbol().getTokenIndex() < ctx.INTO().getSymbol().getTokenIndex());
+        result.setReplace(null != ctx.REPLACE());
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (IdentifierValue) visit(each)));
+            }
+            result.setPartitionDefinition(new PartitionDefinitionSegment(ctx.partitionNames().start.getStartIndex(), ctx.partitionNames().stop.getStopIndex(),
+                    result.getTable(), result.getPartitions()));
+        }
+        return result;
     }
     
     @Override

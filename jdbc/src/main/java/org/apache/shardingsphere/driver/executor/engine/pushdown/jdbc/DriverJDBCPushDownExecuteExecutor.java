@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteCallbackFactory;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplay
 import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionalExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -74,6 +76,11 @@ public final class DriverJDBCPushDownExecuteExecutor {
     private final JDBCExecutor jdbcExecutor;
     
     /**
+     * First routed storage type, or {@code null} if no unit is routed.
+     */
+    private DatabaseType storageType;
+    
+    /**
      * Execute.
      *
      * @param database database
@@ -86,8 +93,12 @@ public final class DriverJDBCPushDownExecuteExecutor {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
+    @HighFrequencyInvocation
     public boolean execute(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        storageType = executionContext.getExecutionUnits().isEmpty()
+                ? null
+                : database.getResourceMetaData().getStorageUnits().get(executionContext.getExecutionUnits().iterator().next().getDataSourceName()).getStorageType();
         return new DriverTransactionalExecutor(connection).execute(
                 database, executionContext, () -> doExecute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback));
     }
@@ -151,40 +162,27 @@ public final class DriverJDBCPushDownExecuteExecutor {
      * @return result set
      * @throws SQLException SQL exception
      */
+    @HighFrequencyInvocation
     public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         if (sqlStatementContext instanceof SelectStatementContext || sqlStatementContext.getSqlStatement() instanceof DALStatement) {
-            List<ResultSet> resultSets = getResultSets(statements);
+            List<ResultSet> resultSets = new ArrayList<>(statements.size());
+            List<QueryResult> queryResults = new ArrayList<>(statements.size());
+            for (Statement each : statements) {
+                ResultSet resultSet = each.getResultSet();
+                if (null != resultSet) {
+                    resultSets.add(resultSet);
+                    queryResults.add(new JDBCStreamQueryResult(resultSet, storageType));
+                }
+            }
             if (resultSets.isEmpty()) {
                 return Optional.empty();
             }
-            List<QueryResult> queryResults = getQueryResults(resultSets);
             MergedResult mergedResult = new MergeEngine(metaData, database, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext())
                     .merge(queryResults, queryContext);
             return Optional.of(new ShardingSphereResultSet(resultSets, mergedResult, statement, sqlStatementContext));
         }
         return Optional.empty();
-    }
-    
-    private List<ResultSet> getResultSets(final List<? extends Statement> statements) throws SQLException {
-        List<ResultSet> result = new ArrayList<>(statements.size());
-        for (Statement each : statements) {
-            ResultSet resultSet = each.getResultSet();
-            if (null != resultSet) {
-                result.add(resultSet);
-            }
-        }
-        return result;
-    }
-    
-    private List<QueryResult> getQueryResults(final List<ResultSet> resultSets) throws SQLException {
-        List<QueryResult> result = new ArrayList<>(resultSets.size());
-        for (ResultSet each : resultSets) {
-            if (null != each) {
-                result.add(new JDBCStreamQueryResult(each));
-            }
-        }
-        return result;
     }
 }

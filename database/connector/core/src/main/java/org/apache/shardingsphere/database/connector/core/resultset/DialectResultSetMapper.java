@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Dialect result set mapper.
@@ -48,6 +49,16 @@ public interface DialectResultSetMapper extends DatabaseTypedSPI {
      * @throws SQLException SQL exception
      */
     Object getDateValue(ResultSet resultSet, int columnIndex) throws SQLException;
+    
+    /**
+     * Create a TIME reader for one result set.
+     * Implementations must return a new reader when it holds result-set-specific state.
+     *
+     * @return TIME reader, or empty to preserve the caller's native JDBC getter
+     */
+    default Optional<ResultSetTimeValueReader> createTimeValueReader() {
+        return Optional.empty();
+    }
     
     /**
      * Get default value from result set for unhandled column types.

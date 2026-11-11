@@ -99,4 +99,4 @@ Use `executeUpdate` for non-query DistSQL and `executeQuery` for DistSQL that re
 Non-query DistSQL cannot execute within a transaction; use a connection with auto-commit enabled for these statements.
 The availability of each statement depends on the DistSQL executors on the classpath and the running mode.
 The default ShardingSphere-JDBC dependencies do not include the data pipeline executors required for migration and CDC.
-For detailed syntax, see the [DistSQL Reference](/en/user-manual/shardingsphere-proxy/distsql/).
+For detailed syntax, see the [DistSQL Reference](/en/user-manual/distsql/).
