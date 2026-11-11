@@ -34,6 +34,12 @@ import java.time.ZoneOffset;
 @Setter
 public final class FirebirdDateTimeUtils {
     
+    /**
+     * Shift applied to an offset in minutes to obtain the Firebird time zone identifier: {@code UTC} is 1439 and
+     * {@code +02:00} is 1559, which keeps the whole supported range positive.
+     */
+    public static final int TIME_ZONE_ID_CORRECTION = 1439;
+    
     static final int NANOSECONDS_PER_FRACTION = 100 * 1000;
     
     static final int FRACTIONS_PER_MILLISECOND = 10;
