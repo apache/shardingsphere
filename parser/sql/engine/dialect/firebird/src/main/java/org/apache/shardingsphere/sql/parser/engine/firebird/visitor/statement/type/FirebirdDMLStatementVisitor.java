@@ -93,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Gro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
@@ -374,7 +375,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitFirstValue(final FirstValueContext ctx) {
-        // TODO Add expression support for firstSkipClause
+        if (null != ctx.expr()) {
+            return new ExpressionLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
+        }
         if (null != ctx.numberLiterals()) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
@@ -383,10 +386,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         getParameterMarkerSegments().add(result);
         return result;
     }
-    
+
     @Override
     public ASTNode visitSkipValue(final SkipValueContext ctx) {
-        // TODO Add expression support for firstSkipClause
+        if (null != ctx.expr()) {
+            return new ExpressionLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
+        }
         if (null != ctx.numberLiterals()) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.numberLiterals())).getValue().longValue());
         }
