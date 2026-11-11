@@ -53,6 +53,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -103,6 +104,18 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     void assertCheckCreationWithValidTransactionalReadQueryStrategy(final String name, final String transactionalReadQueryStrategy) {
         ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), transactionalReadQueryStrategy, null);
         assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
+    }
+
+    @Test
+    void assertCheckCreationWithValidTransactionalReadQueryStrategyUnderTurkishLocale() {
+        Locale defaultLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+            ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "primary", null);
+            assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
+        } finally {
+            Locale.setDefault(defaultLocale);
+        }
     }
     
     @ParameterizedTest(name = "{0}")

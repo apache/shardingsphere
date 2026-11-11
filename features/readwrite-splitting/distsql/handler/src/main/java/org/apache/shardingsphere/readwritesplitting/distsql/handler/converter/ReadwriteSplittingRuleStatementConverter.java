@@ -28,6 +28,7 @@ import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalRea
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -61,7 +62,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
         return null == segment.getTransactionalReadQueryStrategy()
                 ? new ReadwriteSplittingDataSourceGroupRuleConfiguration(segment.getName(), segment.getWriteDataSource(), new LinkedList<>(segment.getReadDataSources()), loadBalancerName)
                 : new ReadwriteSplittingDataSourceGroupRuleConfiguration(segment.getName(), segment.getWriteDataSource(), new LinkedList<>(segment.getReadDataSources()),
-                        TransactionalReadQueryStrategy.valueOf(segment.getTransactionalReadQueryStrategy().toUpperCase()), loadBalancerName);
+                        TransactionalReadQueryStrategy.valueOf(segment.getTransactionalReadQueryStrategy().toUpperCase(Locale.ROOT)), loadBalancerName);
     }
     
     private static AlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
