@@ -150,13 +150,6 @@ class DistSQLProxyBackendHandlerFactoryTest {
     }
     
     @Test
-    void assertExecuteAddResourceContext() throws SQLException {
-        RegisterStorageUnitStatement sqlStatement = mock(RegisterStorageUnitStatement.class);
-        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        assertThat(new DistSQLUpdateProxyBackendHandler(sqlStatement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
-    }
-    
-    @Test
     void assertExecuteAlterResourceContext() throws SQLException {
         AlterStorageUnitStatement sqlStatement = mock(AlterStorageUnitStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());

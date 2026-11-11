@@ -77,8 +77,9 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     public void execute(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) throws SQLException {
         String originDatabase = connectionSession.getUsedDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName(metaData) : originDatabase;
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
-        ShardingSpherePreconditions.checkState(metaData.getDatabase(databaseName).containsDataSource(), () -> new EmptyStorageUnitException(databaseName));
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
+        ShardingSpherePreconditions.checkState(database.containsDataSource(), () -> new EmptyStorageUnitException(databaseName));
         HintValueContext hintValueContext = SQLHintUtils.extractHint(sql);
         try {
             connectionSession.setCurrentDatabaseName(databaseName);

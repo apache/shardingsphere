@@ -74,4 +74,32 @@ class ShadowInspectionServiceTest {
         MCPQueryFailedException actual = assertThrows(MCPQueryFailedException.class, () -> new ShadowInspectionService().queryAlgorithmPlugins(queryFacade));
         assertThat(actual, is(expected));
     }
+    
+    @Test
+    void assertQueryTableRules() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        new ShadowInspectionService().queryTableRules(queryFacade, "foo_db");
+        verify(queryFacade).query("foo_db", "SHOW SHADOW TABLE RULES FROM foo_db");
+    }
+    
+    @Test
+    void assertQueryAlgorithms() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        new ShadowInspectionService().queryAlgorithms(queryFacade, "foo_db");
+        verify(queryFacade).query("foo_db", "SHOW SHADOW ALGORITHMS FROM foo_db");
+    }
+    
+    @Test
+    void assertQueryDefaultAlgorithm() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        new ShadowInspectionService().queryDefaultAlgorithm(queryFacade, "foo_db");
+        verify(queryFacade).query("foo_db", "SHOW DEFAULT SHADOW ALGORITHM FROM foo_db");
+    }
+    
+    @Test
+    void assertQueryRuleCount() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        new ShadowInspectionService().queryRuleCount(queryFacade, "foo_db");
+        verify(queryFacade).query("foo_db", "COUNT SHADOW RULE FROM foo_db");
+    }
 }

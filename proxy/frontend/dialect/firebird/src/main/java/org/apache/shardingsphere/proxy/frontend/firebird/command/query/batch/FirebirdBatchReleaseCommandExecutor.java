@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -39,8 +40,13 @@ public final class FirebirdBatchReleaseCommandExecutor implements CommandExecuto
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket> execute() throws SQLException {
-        FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+    public Collection<DatabasePacket> execute() {
+        FirebirdBatchStatementManager batchStatementManager = FirebirdBatchStatementManager.getInstance();
+        // TODO restore checkNotNull when FirebirdFrontendEngine stops marking the transaction as failed for InvalidBatchHandleException
+        if (null == batchStatementManager.getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle())) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidBatchHandleException(packet.getStatementHandle())));
+        }
+        batchStatementManager.unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

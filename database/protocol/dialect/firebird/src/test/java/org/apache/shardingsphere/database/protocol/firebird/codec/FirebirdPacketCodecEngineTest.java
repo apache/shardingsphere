@@ -39,6 +39,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.firebirdsql.gds.BlrConstants;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,6 +96,11 @@ class FirebirdPacketCodecEngineTest {
         when(context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
         when(context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get()).thenReturn(1);
         when(context.alloc().compositeBuffer(anyInt())).thenAnswer(invocation -> Unpooled.compositeBuffer(invocation.getArgument(0)));
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
     }
     
     @ParameterizedTest(name = "{0}")
@@ -273,9 +279,7 @@ class FirebirdPacketCodecEngineTest {
     void assertDecodeValidPacketFollowedByInvalidDiscardsValidPacket() {
         EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
         channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
-        ByteBuf in = Unpooled.buffer()
-                .writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue()).writeInt(0)
-                .writeInt(UNKNOWN_COMMAND_TYPE).writeInt(0);
+        ByteBuf in = Unpooled.buffer().writeInt(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue()).writeInt(0).writeInt(UNKNOWN_COMMAND_TYPE).writeInt(0);
         channel.writeInbound(in);
         channel.runPendingTasks();
         assertNull(channel.readInbound());
@@ -294,58 +298,46 @@ class FirebirdPacketCodecEngineTest {
     @Test
     void assertDecodeBatchMessageWithMultipleRowsInSingleFrame() {
         setUpBatchContext();
-        try {
-            ByteBuf in = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100, 200);
-            List<Object> out = new LinkedList<>();
-            codecEngine.decode(context, in, out);
-            assertThat(out.size(), is(1));
-            FirebirdBatchMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
-            assertThat(actualPacket.getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
-            assertThat(actualPacket.getMessageCount(), is(2L));
-            assertNull(getPendingPacketType());
-            assertTrue(getPendingMessages().isEmpty());
-        } finally {
-            tearDownBatchContext();
-        }
+        ByteBuf in = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100, 200);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(1));
+        FirebirdBatchMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) out.iterator().next());
+        assertThat(actualPacket.getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+        assertThat(actualPacket.getMessageCount(), is(2L));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
     }
     
     @Test
     void assertDecodeBatchMessageSplitInsideRow() {
         setUpBatchContext();
-        try {
-            final ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100, 200);
-            final ByteBuf firstFrame = batchMessage.readRetainedSlice(24);
-            final ByteBuf secondFrame = batchMessage.readRetainedSlice(batchMessage.readableBytes());
-            List<Object> firstOut = new LinkedList<>();
-            codecEngine.decode(context, firstFrame, firstOut);
-            assertTrue(firstOut.isEmpty());
-            assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
-            FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE);
-            assertTrue(batchStatement.getParameterValues().isEmpty());
-            List<Object> secondOut = new LinkedList<>();
-            codecEngine.decode(context, secondFrame, secondOut);
-            assertThat(secondOut.size(), is(1));
-            assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getMessageCount(), is(2L));
-            assertTrue(batchStatement.getParameterValues().isEmpty());
-            assertNull(getPendingPacketType());
-            assertTrue(getPendingMessages().isEmpty());
-        } finally {
-            tearDownBatchContext();
-        }
+        ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100, 200);
+        ByteBuf firstFrame = batchMessage.readRetainedSlice(24);
+        ByteBuf secondFrame = batchMessage.readRetainedSlice(batchMessage.readableBytes());
+        List<Object> firstOut = new LinkedList<>();
+        codecEngine.decode(context, firstFrame, firstOut);
+        assertTrue(firstOut.isEmpty());
+        assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
+        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE);
+        assertTrue(batchStatement.getParameterValues().isEmpty());
+        List<Object> secondOut = new LinkedList<>();
+        codecEngine.decode(context, secondFrame, secondOut);
+        assertThat(secondOut.size(), is(1));
+        assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getMessageCount(), is(2L));
+        assertTrue(batchStatement.getParameterValues().isEmpty());
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
     }
     
     @Test
     void assertDecodeBatchMessageWithoutRegisteredBatchStatementSendsErrorResponse() {
         FirebirdBatchRegistry.getInstance().registerConnection(BATCH_CONNECTION_ID);
-        try {
-            ByteBuf in = buildBatchMessage(999, 100);
-            List<Object> out = new LinkedList<>();
-            codecEngine.decode(context, in, out);
-            assertTrue(out.isEmpty());
-            assertThat(captureErrorResponse().getErrorCode(), is(335545159));
-        } finally {
-            FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
-        }
+        ByteBuf in = buildBatchMessage(999, 100);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertTrue(out.isEmpty());
+        assertThat(captureErrorResponse().getErrorCode(), is(335545159));
     }
     
     @Test
@@ -355,48 +347,34 @@ class FirebirdPacketCodecEngineTest {
                 Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)), 8L);
         batchStatement.addSize(1L);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE, batchStatement);
-        try {
-            ByteBuf in = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
-            List<Object> out = new LinkedList<>();
-            codecEngine.decode(context, in, out);
-            assertThat(out.size(), is(1));
-            assertThat(createBatchSendMessagePacket((ByteBuf) out.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
-            verify(context.channel(), never()).writeAndFlush(any());
-        } finally {
-            FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
-        }
+        ByteBuf in = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(1));
+        assertThat(createBatchSendMessagePacket((ByteBuf) out.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+        verify(context.channel(), never()).writeAndFlush(any());
     }
     
     @Test
     void assertDecodeBatchMessageWithIncompleteHeaderDefersOutput() {
         setUpBatchContext();
-        try {
-            ByteBuf in = Unpooled.buffer()
-                    .writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue())
-                    .writeInt(BATCH_STATEMENT_HANDLE);
-            List<Object> out = new LinkedList<>();
-            codecEngine.decode(context, in, out);
-            assertTrue(out.isEmpty());
-            assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
-            assertThat(getPendingMessages().size(), is(1));
-        } finally {
-            tearDownBatchContext();
-        }
+        ByteBuf in = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE);
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertTrue(out.isEmpty());
+        assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
+        assertThat(getPendingMessages().size(), is(1));
     }
     
     @Test
     void assertDecodeBatchMessageAfterResetReadsFreshHeader() {
         setUpBatchContext();
-        try {
-            List<Object> firstOut = new LinkedList<>();
-            codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 100), firstOut);
-            assertThat(createBatchSendMessagePacket((ByteBuf) firstOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
-            List<Object> secondOut = new LinkedList<>();
-            codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 300), secondOut);
-            assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
-        } finally {
-            tearDownBatchContext();
-        }
+        List<Object> firstOut = new LinkedList<>();
+        codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 100), firstOut);
+        assertThat(createBatchSendMessagePacket((ByteBuf) firstOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+        List<Object> secondOut = new LinkedList<>();
+        codecEngine.decode(context, buildBatchMessage(BATCH_STATEMENT_HANDLE, 300), secondOut);
+        assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
     }
     
     @Test
@@ -463,8 +441,7 @@ class FirebirdPacketCodecEngineTest {
     }
     
     private ByteBuf buildBlobBatchMessage() {
-        return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(1)
-                .writeByte(0).writeZero(3).writeLong(123L);
+        return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(1).writeByte(0).writeZero(3).writeLong(123L);
     }
     
     @Test
@@ -504,10 +481,6 @@ class FirebirdPacketCodecEngineTest {
         FirebirdBatchRegistry.getInstance().registerBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE,
                 new FirebirdBatchStatement(BATCH_STATEMENT_HANDLE,
                         Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.LONG, Integer.BYTES, 0, 0)), 256L * 1024 * 1024));
-    }
-    
-    private void tearDownBatchContext() {
-        FirebirdBatchRegistry.getInstance().unregisterConnection(BATCH_CONNECTION_ID);
     }
     
     private FirebirdBatchMessageCommandPacket createBatchSendMessagePacket(final ByteBuf byteBuf) {
@@ -552,8 +525,7 @@ class FirebirdPacketCodecEngineTest {
     }
     
     private ByteBuf buildMixedBatchMessage() {
-        ByteBuf result = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(1)
-                .writeByte(0).writeZero(3);
+        ByteBuf result = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(1).writeByte(0).writeZero(3);
         result.writeCharSequence("abc", StandardCharsets.UTF_8);
         result.writeByte(0).writeInt(3);
         result.writeCharSequence("def", StandardCharsets.UTF_8);

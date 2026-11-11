@@ -528,7 +528,7 @@ By default, we create an internal domain `proxy.shardingsphere.org` and the user
 
 **Description:**
 
-DistSQL (Distributed SQL) is Apache ShardingSphere's SQL-like operational language. It's used in exactly the same way as standard SQL to provide SQL-level manipulation capabilities for incremental functionality, as described [here](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/).
+DistSQL (Distributed SQL) is Apache ShardingSphere's SQL-like operational language. It's used in exactly the same way as standard SQL to provide SQL-level manipulation capabilities for incremental functionality, as described [here](https://shardingsphere.apache.org/document/current/cn/user-manual/distsql/).
 
 # Conclusion
 

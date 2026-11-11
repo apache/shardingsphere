@@ -13,7 +13,7 @@ Proxy provides user authentication and can adapt to different authentication mod
 
 **Note:** this post only discusses password authentication, and does not include non-password authentication methods such as UDS (Unix Domain Socket).
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md1.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md1.jpg)
 
 
 # Background Info
@@ -30,7 +30,7 @@ Taking `MySQL 5.7` as an example, you can easily understand the authentication i
 
 - Based on the random data, the client encrypts passwords entered by users, then sends the encrypted information to the server for password verification. [1]
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md2.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md2.jpg)
 
 MySQL Native Authentication Process
 
@@ -71,7 +71,7 @@ Common authentication methods for openGauss [4] include：
 
 As a powerful database proxy, ShardingSphere-Proxy supports multiple database protocols and provides user authentication through its AuthenticationEngine.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md3.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md3.jpg)
 
 The goal of AuthenticationEngine is to achieve protocol handshake and identity authentication.
 
@@ -164,14 +164,14 @@ dataSources:
 ## gsql login
 Connection succeeded.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md4.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md4.jpg)
 
 Here we use gsql in opengauss:3.1.0 to access ShardingSphere-Proxy.
 
 ## psql login
 Connection failed.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md5.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md5.jpg)
 
 We see that it’s actually due to the authentication protocol.
 
@@ -214,12 +214,12 @@ Remains unchanged.
 ## gsql login
 Connection succeeded.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md6.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md6.jpg)
 
 ## psql login as root user
 Connection failed.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md7.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md7.jpg)
 
 Psql fails to connect because no `scram-sha-256` authentication mechanism is supported. Then what about the sharding user?
 
@@ -227,11 +227,11 @@ Psql fails to connect because no `scram-sha-256` authentication mechanism is sup
 ## psql login as sharding user
 Connection succeeded.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md8.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md8.jpg)
 
 Now we see that `psql` has successfully connected to ShardingSphere-Proxy under the openGauss protocol.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md9.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_18_Enhancing_Database_Security_ShardingSphere-Proxy’s_Authentication.en.md9.jpg)
 
 # Future Plans
 

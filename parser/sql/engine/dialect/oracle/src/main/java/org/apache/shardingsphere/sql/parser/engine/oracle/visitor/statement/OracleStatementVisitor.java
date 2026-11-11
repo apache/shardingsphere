@@ -174,6 +174,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -510,10 +511,8 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (SequenceFunction.valueFrom(ctx.name().getText()).isPresent()) {
             return createSequenceFunction(ctx);
         }
-        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty()) {
-            if (SequenceFunction.valueFrom(ctx.nestedItem().get(0).getText()).isPresent()) {
-                return createSequenceFunction(ctx);
-            }
+        if (null != ctx.nestedItem() && !ctx.nestedItem().isEmpty() && SequenceFunction.valueFrom(ctx.nestedItem().get(0).getText()).isPresent()) {
+            return createSequenceFunction(ctx);
         }
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
@@ -620,7 +619,12 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.booleanPrimary());
         }
         if (null != ctx.LP_()) {
-            return visit(ctx.expr(0));
+            ASTNode result = visit(ctx.expr(0));
+            if (result instanceof ColumnSegment) {
+                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
+                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
+            }
+            return result;
         }
         if (null != ctx.andOperator()) {
             return createBinaryOperationExpression(ctx, ctx.andOperator().getText());
@@ -726,10 +730,10 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return createBinaryOperationExpressionFromLike(ctx);
         }
         if (null != ctx.PRIOR()) {
-            return null == ctx.predicate() ? new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx)) : visit(ctx.predicate());
+            return null == ctx.predicate() ? new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), Collections.emptyList()) : visit(ctx.predicate());
         }
         if (null == ctx.bitExpr(0)) {
-            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), Collections.emptyList());
         }
         return visit(ctx.bitExpr(0));
     }
@@ -823,7 +827,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return new SubqueryExpressionSegment((SubquerySegment) astNode);
         }
         if (astNode instanceof OtherLiteralValue) {
-            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText());
+            return new CommonExpressionSegment(context.getStart().getStartIndex(), context.getStop().getStopIndex(), context.getText(), Collections.emptyList());
         }
         return astNode;
     }
@@ -854,16 +858,20 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.privateExprOfDb()) {
             return visit(ctx.privateExprOfDb());
         }
-        if (null != ctx.LP_()) {
-            if (1 == ctx.expr().size()) {
-                return visit(ctx.expr(0));
-            } else {
-                ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
-                for (ExprContext each : ctx.expr()) {
-                    result.getItems().add((ExpressionSegment) visit(each));
-                }
-                return result;
+        if (null != ctx.LP_() && 1 == ctx.expr().size()) {
+            ASTNode result = visit(ctx.expr(0));
+            if (result instanceof ColumnSegment) {
+                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
+                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
             }
+            return result;
+        }
+        if (null != ctx.LP_()) {
+            ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());
+            for (ExprContext each : ctx.expr()) {
+                result.getItems().add((ExpressionSegment) visit(each));
+            }
+            return result;
         }
         return visitRemainSimpleExpr(ctx, startIndex, stopIndex);
     }
@@ -871,7 +879,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitPseudorecord(final PseudorecordContext ctx) {
         if (null == ctx.NEW() && null == ctx.OLD()) {
-            return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+            return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), Collections.emptyList());
         }
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
         int ownerStartIndex = null == ctx.NEW() ? ctx.OLD().getSymbol().getStartIndex() : ctx.NEW().getSymbol().getStartIndex();
@@ -916,7 +924,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         for (SimpleExprContext each : ctx.simpleExpr()) {
             visit(each);
         }
-        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText());
+        return new CommonExpressionSegment(startIndex, stopIndex, ctx.getText(), Collections.emptyList());
     }
     
     @Override
@@ -1137,7 +1145,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), Collections.emptyList());
     }
     
     @Override

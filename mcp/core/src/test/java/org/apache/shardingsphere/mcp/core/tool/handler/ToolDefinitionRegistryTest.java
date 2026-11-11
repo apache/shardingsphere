@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
@@ -35,26 +36,170 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolArgumentCont
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory.RequestContextFixture;
+import org.apache.shardingsphere.mcp.support.MCPFeatureRequestContext;
 import org.apache.shardingsphere.mcp.support.security.MCPRuntimeProtectionPolicy;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class ToolDefinitionRegistryTest {
+    
+    @Test
+    void assertGetToolDefinitionWithEmptyName() {
+        UnsupportedToolException actual = assertThrows(UnsupportedToolException.class, () -> ToolDefinitionRegistry.getToolDefinition(""));
+        assertThat(actual.getToolName(), is(""));
+        assertThat(actual.getMessage(), is("Unsupported tool."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("registrationFailureCases")
+    @SuppressWarnings("unchecked")
+    void assertGetSupportedToolDescriptorsWithInvalidRegistration(final String name, final Collection<String> toolNames, final String expectedMessage) {
+        Collection<MCPToolHandler<?>> handlers = new ArrayList<>(toolNames.size());
+        for (String each : toolNames) {
+            MCPToolHandler<MCPFeatureRequestContext> handler = mock(MCPToolHandler.class);
+            when(handler.getToolName()).thenReturn(each);
+            if (!each.isEmpty()) {
+                when(handler.getContextType()).thenReturn(MCPFeatureRequestContext.class);
+            }
+            handlers.add(handler);
+        }
+        MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class);
+        when(handlerProvider.getToolHandlers()).thenReturn(handlers);
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
+            Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolDefinitionRegistry.class.getName(), false, createIsolatedToolDefinitionRegistryClassLoader()));
+            InvocationTargetException actual = assertThrows(InvocationTargetException.class, () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedToolDescriptors"), null));
+            assertThat(actual.getCause(), isA(ExceptionInInitializerError.class));
+            assertThat(actual.getCause().getCause().getMessage(), is(String.format(expectedMessage, handlers.iterator().next().getClass().getName())));
+        }
+    }
+    
+    private static Stream<Arguments> registrationFailureCases() {
+        return Stream.of(
+                Arguments.of("empty tool name", List.of(""), "Tool name is required for `%1$s`."),
+                Arguments.of("duplicate tool name", List.of("database_gateway_search_metadata", "database_gateway_search_metadata"),
+                        "Duplicate tool name `database_gateway_search_metadata` with `%1$s` and `%1$s`."),
+                Arguments.of("descriptor without handler", List.of("database_gateway_search_metadata"), "MCP tool descriptor `database_gateway_validate_runtime_database` has no registered handler."));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validArgumentCases")
+    @SuppressWarnings("unchecked")
+    void assertDispatchWithSchemaValue(final String name, final Map<String, Object> property, final Object value) {
+        Map<String, Object> schema = Map.of("type", "object", "properties", Map.of("foo_value", property), "additionalProperties", true);
+        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
+        when(descriptor.getName()).thenReturn("foo_tool");
+        when(descriptor.getInputSchema()).thenReturn(schema);
+        MCPToolHandler<MCPFeatureRequestContext> handler = mock(MCPToolHandler.class);
+        when(handler.getContextType()).thenReturn(MCPFeatureRequestContext.class);
+        MCPFeatureRuntimeRequestContext context = mock(MCPFeatureRuntimeRequestContext.class);
+        Map<String, Object> args = Map.of("foo_value", value, "foo_extra", "foo_text");
+        MCPSuccessPayload expected = mock(MCPSuccessPayload.class);
+        when(handler.handle(context, args)).thenReturn(expected);
+        MCPSuccessPayload actual = ToolDefinitionRegistry.dispatch(context, new MCPToolDefinition(descriptor, handler), args);
+        assertThat(actual, sameInstance(expected));
+        verify(handler).handle(context, args);
+    }
+    
+    private static Stream<Arguments> validArgumentCases() {
+        return Stream.of(
+                Arguments.of("byte integer", Map.of("type", "integer"), (byte) 1),
+                Arguments.of("short integer", Map.of("type", "integer"), (short) 2),
+                Arguments.of("long integer", Map.of("type", "integer"), 3L),
+                Arguments.of("big integer", Map.of("type", "integer", "minimum", 0, "maximum", 10), BigInteger.TEN),
+                Arguments.of("number", Map.of("type", "number"), 1.5D),
+                Arguments.of("array without item schema", Map.of("type", "array"), List.of("foo_text")),
+                Arguments.of("additional property schema", Map.of("type", "object", "additionalProperties", Map.of("type", "string")), Map.of("foo_key", "foo_text")),
+                Arguments.of("schema without type", Map.of("enum", List.of("foo_text")), "foo_text"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("integerRangeCases")
+    void assertDispatchWithIntegerRangeViolation(final String name, final Map<String, Object> property, final Object value, final int expectedSuggestion) {
+        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
+        when(descriptor.getName()).thenReturn("foo_tool");
+        when(descriptor.getInputSchema()).thenReturn(Map.of("type", "object", "properties", Map.of("foo_value", property), "additionalProperties", false));
+        MCPInvalidToolArgumentException actual = assertThrows(MCPInvalidToolArgumentException.class,
+                () -> ToolDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), new MCPToolDefinition(descriptor, mock(MCPToolHandler.class)), Map.of("foo_value", value)));
+        assertThat(actual.getArgumentPath(), is("foo_value"));
+        assertThat(actual.getSuggestedValue(), is(expectedSuggestion));
+        assertThat(actual.getMinimumValue(), is(0));
+        assertThat(actual.getMaximumValue(), is(10));
+    }
+    
+    private static Stream<Arguments> integerRangeCases() {
+        return Stream.of(
+                Arguments.of("below minimum", Map.of("type", "integer", "minimum", 0, "maximum", 10), -1, 0),
+                Arguments.of("above maximum", Map.of("type", "integer", "minimum", 0, "maximum", 10), BigInteger.valueOf(Long.MAX_VALUE), 10),
+                Arguments.of("valid default", Map.of("type", "integer", "minimum", 0, "maximum", 10, "default", 5), 11L, 5));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requiredNestedArgumentCases")
+    void assertDispatchWithInvalidRequiredNestedArgument(final String name, final Map<String, Object> property, final Object value, final String expectedPath) {
+        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
+        when(descriptor.getName()).thenReturn("foo_tool");
+        when(descriptor.getInputSchema()).thenReturn(Map.of("type", "object", "properties", Map.of("foo_value", property), "required", List.of("foo_value"), "additionalProperties", false));
+        MCPToolArgumentContractViolationException actual = assertThrows(MCPToolArgumentContractViolationException.class,
+                () -> ToolDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), new MCPToolDefinition(descriptor, mock(MCPToolHandler.class)), Map.of("foo_value", value)));
+        assertThat(actual.getArgumentPath(), is(expectedPath));
+        assertThat(actual.getCategory(), is("invalid_argument_type"));
+        assertTrue(actual.getSuggestedArguments().isEmpty());
+    }
+    
+    private static Stream<Arguments> requiredNestedArgumentCases() {
+        return Stream.of(
+                Arguments.of("array item", Map.of("type", "array", "items", Map.of("type", "integer")), List.of("foo_text"), "foo_value[0]"),
+                Arguments.of("object in array", Map.of("type", "array", "items", Map.of("type", "object", "properties", Map.of("foo_key", Map.of("type", "boolean")))),
+                        List.of(Map.of("foo_key", "foo_text")), "foo_value[0].foo_key"),
+                Arguments.of("array in object", Map.of("type", "object", "properties", Map.of("foo_key", Map.of("type", "array", "items", Map.of("type", "number")))),
+                        Map.of("foo_key", List.of("foo_text")), "foo_value.foo_key[0]"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("safeExecutionModeCases")
+    void assertDispatchWithMissingExecutionModeSuggestion(final String name, final Map<String, Object> property, final Map<String, Object> expectedSuggestion) {
+        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
+        when(descriptor.getName()).thenReturn("foo_tool");
+        when(descriptor.getInputSchema()).thenReturn(Map.of("type", "object", "properties", Map.of("execution_mode", property), "required", List.of("execution_mode"), "additionalProperties", false));
+        MCPExecutionModeRequiredException actual = assertThrows(MCPExecutionModeRequiredException.class,
+                () -> ToolDefinitionRegistry.dispatch(mock(MCPFeatureRuntimeRequestContext.class), new MCPToolDefinition(descriptor, mock(MCPToolHandler.class)), Map.of()));
+        assertThat(actual.getSuggestedArguments(), is(expectedSuggestion));
+    }
+    
+    private static Stream<Arguments> safeExecutionModeCases() {
+        return Stream.of(
+                Arguments.of("manual review", Map.of("type", "string", "enum", List.of("execute", "manual-only")), Map.of("execution_mode", "manual-only")),
+                Arguments.of("first declared mode", Map.of("type", "string", "enum", List.of("execute")), Map.of("execution_mode", "execute")),
+                Arguments.of("no declared mode", Map.of("type", "string"), Map.of()));
+    }
     
     @Test
     void assertGetSupportedToolDescriptors() {

@@ -28,8 +28,8 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
-import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
@@ -130,8 +130,8 @@ public final class ShardingSphereProxyEmbeddedContainer implements EmbeddedE2ECo
     @SneakyThrows({SQLException.class, IOException.class, InterruptedException.class})
     private void startProxy() {
         Path tempConfigurationDirectory = getTempConfigurationDirectory();
-        YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(tempConfigurationDirectory.toString());
-        new BootstrapInitializer().init(yamlConfig, proxyPort);
+        ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load(tempConfigurationDirectory.toString());
+        new BootstrapInitializer().init(loadResult, proxyPort);
         ProxySSLContext.init();
         proxy = new ShardingSphereProxy();
         List<ChannelFuture> channelFutures = proxy.startInternal(proxyPort, Collections.singletonList("0.0.0.0"));

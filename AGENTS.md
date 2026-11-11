@@ -6,13 +6,14 @@ Follow this guide; paths are repository-relative.
 
 1. Inspect the applicable `CODE_OF_CONDUCT.md` section before changing code or tests.
 2. Before Maven, E2E, Proxy startup, database clients, IDE/MCP runs, large structured analysis, or commands likely to exceed 100 lines, read or reuse `.codex/context/token-efficiency.md` and follow its Command Contract.
+   Read `.codex/context/docker-resources.md` before direct or indirect Docker use.
 3. Before changing production, tests, scripts, build logic, generated source, or behavior configuration, read `.codex/skills/code-implementation/SKILL.md` through EOF. Read-only and prose-only work does not activate it, and no Skill grants authority or scope.
 4. If Skill discovery omits required `code-implementation`, load its repository file directly. A missing required canonical source keeps ordinary writes read-only; only an exact user-authorized policy or harness repair may use `.codex/harness/agents/policy-maintenance.md`.
 5. For read-only code or test analysis, planning, design, or review, read the implementation rules without activating the write workflow. Load testing, removal, contract, or non-regression rules only when that topic can affect the requested conclusion.
 6. Before classifying an artifact as unused or removable, read and apply the complete removal and contract-impact rules.
 7. For runtime diagnosis, read `.codex/context/runtime-triage.md`; an authorized fix activates `code-implementation` before its first write.
 8. Select optional Skills from their catalog triggers. Read `.codex/context/cross-cutting-skills.md` only when a matching trigger may apply, and use the smallest matching Skill set.
-9. Before running or assessing a repository verification command, read the verification rules. For an authorized change, read `.codex/context/change-completion.md` before completion review or handoff.
+9. Before running or assessing a repository verification command, read the verification rules. For an authorized change, read `.codex/context/change-completion.md` before the first write, then follow it through review and handoff.
 10. Before revising documentation, Skills, prompts, comments, or configuration prose, read `.codex/context/documentation-wording.md`.
 11. Keep task-specific notes outside repository Skills.
 
@@ -22,7 +23,9 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ## Response Style
 
-- Use plain language and the shortest complete answer.
+- Strictly follow Grice's Cooperative Principle: quantity, quality, relevance and clarity.
+- Complete all required task actions; keep required evidence, risks, verification results, and output formats.
+- Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; match detail to the question and context.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
 ## Authority and Safety
@@ -58,12 +61,16 @@ Evaluate premises that affect correctness, scope, compatibility, safety, or cost
 
 Before editing, record the goal, boundary, acceptance criteria, and required verification. Inspect only the owners, consumers, contracts, tests, configuration, registrations, precedent, and instructions needed to make the change. For non-trivial work, plan only the ordered steps needed to control dependencies and verification.
 
+Before choosing a solution or drafting content, read the relevant context and establish the current responsibilities.
+For existing artifacts, prefer applicable capabilities and patterns, adding only what the task requires.
+Keep changes at the abstraction and detail appropriate to their surroundings.
+
 ### Strict Scope and Task-Delta Gate
 
-1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm.
+1. An active task is one independent, verifiable objective including its corrections and follow-ups. Start a new baseline only after completion and an explicit independent objective; when ambiguous, stay read-only and confirm. At each turn's start and before renewed analysis, planning, or decisions, check the original request and task record; stop goal or scope drift.
 2. Derive acceptance criteria only from requested outcomes, proven direct prerequisites, and focused regression protection. Do not add cleanup, generalization, consistency work, adjacent fixes, or optional improvements.
-3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks.
-4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only.
+3. Before a file-changing tool, record original status and relevant diffs, infer the smallest owning paths, and freeze `file -> allowed intent -> unmet criterion`. A named module or path is the maximum boundary, and an allowed file does not authorize unrelated hunks. Check each write against its recorded file, intent, and criterion.
+4. Keep the baseline and boundary through follow-ups, reviews, failures, and verification. Expand only with exact additional path and intent authorization, append without rebaselining, and keep other scope read-only. Recover missing or conflicting records read-only; if unrecoverable, stay read-only and confirm missing constraints. Retain the record across context reduction; summaries cannot authorize expansion.
 5. Inspect every path and hunk after each coherent edit batch. Inspect immediately after a formatter, generator, bulk replacement, or any action whose write set is not exact. Before an outside-boundary edit, report its evidence, minimum scope, affected contracts, and consequence of declining it.
 6. Preserve pre-existing and unattributed changes; do not overwrite, format, remove, roll back, or claim them, and do not infer ownership from baseline absence.
 7. After the last write, audit the delta against the original baseline and remove only safely separable unnecessary task changes.
@@ -80,12 +87,46 @@ Do not add over 10,000 physical production and test source lines in one active t
 
 ## Specialized Workflows
 
-Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with `code-implementation` for unit-test generation or coverage, and `$review-pr` for PR correctness, mergeability, CI, or a triggered Formal Review. Complete reviews or recommendations use Formal Review with `### Result`, one `Review Result`, `### Evidence`, and `### Coverage`; Coverage identifies local-only changes. Standalone review is read-only. A missing required specialized Skill uses an equivalent manual checklist; do not install or create one for the task. Optional Skills never waive gates or expand authority or scope.
+Use `$analyze-issue` for issue diagnosis and maintainer replies, `$gen-ut` with `code-implementation` for unit-test generation or coverage, and `$review-pr` for explicit code or PR reviews, mergeability, CI, or a triggered Formal Review.
+Ordinary implementation completion self-review follows the Change Completion Gate.
+Standalone review is read-only.
+A missing required specialized Skill uses an equivalent manual checklist; do not install or create one for the task.
+Optional Skills never waive gates or expand authority or scope.
 
 ## Change Completion Gate
 
-Every authorized code-writing task follows `.codex/context/change-completion.md`, including a restoration or rollback that changes production, test, script, build, generated, or behavior-affecting configuration artifacts.
+After making authorized changes reported by Git, follow `.codex/context/change-completion.md`, including prose, policy, restoration, and rollback.
 
 ## Functional and Performance Non-Regression Gate
 
 Preserve supported behavior outside the exact authorized change. Load the full non-regression rules when a change affects a public or shared contract, crosses owners, or has credible functional or performance risk. Do not benchmark when inspection rules out credible cost growth.
+
+## Jev/Codex Routing
+
+### Roles and Boundaries
+
+- The `typesafe-ai` skill guides Jev tool selection, request construction, and result interpretation; it does not execute requests.
+- Jev MCP executes the actual Jev judgment and returns the result.
+- Codex performs deep analysis, code changes, execution, final verification, and Jev result review.
+- When Jev MCP is unavailable, Codex is the fallback; the skill is not an MCP substitute.
+
+### Routing
+
+- Prefer Jev for bounded judgments such as classification, routing, ranking, prioritization, relevance, triage, and quick review.
+- Keep code changes, debugging, long-context analysis, multi-step reasoning, exact calculations, command execution, test execution, and high-risk or irreversible operations in Codex.
+- For a Jev-suitable task, consult the skill when available before checking MCP.
+- Call Jev MCP only when it is installed and its tools are available. Unknown quota or balance allows an initial call for a useful bounded judgment. Later calls still require task suitability.
+- If the skill is unavailable but MCP is installed, available, and clear, MCP may be called without installing the skill.
+- If MCP is unavailable, the API key is missing or known invalid, or quota or balance is known insufficient, do not call Jev; let Codex handle the task.
+- If a Jev MCP call reports insufficient quota, insufficient balance, authentication failure, or rate limiting, do not make further Jev calls during the current task.
+
+### Results and Safety
+
+- Treat Jev as advisory. It must not edit files, run commands, authorize destructive actions, or replace user confirmation.
+- Use the `typesafe-ai` guidance and the task's impact and risk to judge whether a Jev result is reliable.
+- If the probability, uncertainty, result meaning, or applicability is unclear, Codex must review the result.
+- Before acting, Codex must verify important conclusions with source code, tests, or command output.
+- Do not send API keys, passwords, connection strings, or unrelated private source code to Jev.
+- Deterministic rules and simple arithmetic do not need Jev.
+
+Do not include routine Jev usage feedback in task reports unless the user explicitly requests it.

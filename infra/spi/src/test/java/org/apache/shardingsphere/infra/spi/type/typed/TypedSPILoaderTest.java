@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.infra.spi.type.typed;
 
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.fixture.MissingTypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.TypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.fixture.impl.TypedSPIFixtureImpl;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -62,6 +67,30 @@ class TypedSPILoaderTest {
     
     @Test
     void assertGetServiceWhenTypeIsNotExist() {
-        assertThrows(ServiceProviderNotFoundException.class, () -> TypedSPILoader.getService(TypedSPIFixture.class, "NOT_EXISTED"));
+        assertThrows(ServiceProviderNotFoundException.class, () -> TypedSPILoader.getService(MissingTypedSPIFixture.class, "NOT_EXISTED"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("containsServiceArguments")
+    void assertContainsService(final String name, final Object type, final boolean expected) {
+        assertThat(TypedSPILoader.containsService(TypedSPIFixture.class, type), is(expected));
+    }
+    
+    private static Stream<Arguments> containsServiceArguments() {
+        return Stream.of(
+                Arguments.of("Type", "TYPED.FIXTURE", true),
+                Arguments.of("Case insensitive type", "typed.fixture", true),
+                Arguments.of("Alias", "TYPED.ALIAS", true),
+                Arguments.of("Default", null, true),
+                Arguments.of("Missing type", "NOT_EXISTED", false));
+    }
+    
+    @Test
+    void assertContainsServiceDoesNotInitializeService() {
+        Properties props = new Properties();
+        props.setProperty("key", "expected");
+        TypedSPIFixtureImpl service = (TypedSPIFixtureImpl) TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE", props);
+        assertTrue(TypedSPILoader.containsService(TypedSPIFixture.class, "TYPED.FIXTURE"));
+        assertThat(service.getValue(), is("expected"));
     }
 }

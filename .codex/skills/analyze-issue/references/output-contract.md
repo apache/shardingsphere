@@ -22,6 +22,8 @@ two-part response, a reusable reply template, or multi-line code whose Markdown
 fences require special handling. Complete the main Skill's evidence workflow
 before applying these output shapes.
 
+Labels, severity, topology, commands, class names, method names, SQL, YAML, and Java snippets retain their original English or code form.
+
 ## Maintainer Reply Templates
 
 Use these as compact shape guides, not rigid text.
@@ -66,7 +68,16 @@ Please verify with a version that includes #<fix-pr>. I suggest labeling this as
 ```markdown
 Hi @user, thanks for the suggestion.
 This is not supported today and should be handled as an enhancement rather than a bug.
-Before implementation, we need to define <semantic contract>, <compatibility impact>, and <test scope>. I suggest labeling this as `type: enhancement`.
+Classifying this as an enhancement does not by itself accept implementation or expand the supported contract.
+Before implementation, establish <ShardingSphere responsibility>, <narrow behavior boundary>, <new project commitments>, <compatibility impact>, and <test scope>. If public evidence does not yet establish acceptance, please continue the design discussion rather than submitting a PR. I suggest labeling this as `type: enhancement`.
+```
+
+### Out of Scope / Won't Fix
+
+```markdown
+Hi @user, thanks for the suggestion.
+This request is outside the current ShardingSphere project responsibility because <official project-positioning, maintained-contract, or explicit maintainer evidence> assigns the behavior to <owner>.
+The usefulness or availability of an implementation does not establish a ShardingSphere support commitment. I suggest closing this request without inviting a PR.
 ```
 
 ### Needs More Info
@@ -80,6 +91,8 @@ Please provide these details within <7-14 days>. If there is no update, we may c
 ```
 
 ## Reference Analysis Requirements
+
+Apply these requirements only to the Reference Analysis portion of the selected output mode.
 
 - In two-part mode, put the maintainer reply first, then add this bridge sentence:
   `The reply above is based on the analysis below; the detailed reasoning is kept here for reference and follow-up contributors.`
@@ -95,9 +108,11 @@ Please provide these details within <7-14 days>. If there is no update, we may c
 - Prefer bullets over tables and concise evidence over raw JSON, full logs, or
   terminal transcripts. Keep command evidence in inline code or short fenced
   blocks.
+- Every conclusion cites at least one `OBS-*` or `INF-*` evidence ID, and every `INF-*` derives from one or more observations.
+- `Problem Conclusion` includes all fields required by the selected shape.
+- Enhancement and Out of Scope / Won't Fix conclusions include their conditional project-responsibility and commitment fields.
 
-Use this four-section shape for Question, Misunderstanding / Invalid Usage, and
-Duplicate:
+Use this four-section shape for Question, Misunderstanding / Invalid Usage, Duplicate, and Out of Scope / Won't Fix:
 
 ```markdown
 ### Problem Understanding
@@ -114,7 +129,7 @@ Duplicate:
 
 ### Problem Analysis
 
-- **Issue Type:** Question / Misunderstanding / Invalid Usage / Duplicate
+- **Issue Type:** Question / Misunderstanding / Invalid Usage / Duplicate / Out of Scope / Won't Fix
 - **Evidence:** ...
 - **Label Recommendation:** ...
 
@@ -129,6 +144,7 @@ Duplicate:
 - **Merged In:** commit/milestone/version if known (Duplicate only)
 - **Recommended Labels:** ...
 - **Next Action:** ...
+- **Project Responsibility:** External owner / Conflicts with project boundary (Out of Scope / Won't Fix only)
 ```
 
 Use this five-section shape for Bug and Enhancement:
@@ -170,6 +186,8 @@ Use this five-section shape for Bug and Enhancement:
 - **Next Action:** ...
 - **Compatibility:** Behavior/Config/API-SPI/SQL
 - **Regression Scope:** ...
+- **Project Responsibility:** ShardingSphere / External owner / Maintainer decision required (Enhancement only)
+- **Commitment Status:** Existing contract / Accepted new contract / Maintainer decision required (Enhancement only)
 ```
 
 ## Codex Chat Delivery
@@ -185,22 +203,4 @@ Use this five-section shape for Bug and Enhancement:
   body begins and ends inside the outer fence.
 - If fence safety is uncertain, replace the inner fence with inline code or a
   plain bullet.
-
-## Output Self-Check
-
-- The opening reply addresses the author when known and states the decision in
-  its first paragraph.
-- A two-part response contains the exact bridge sentence and the required four-
-  or five-section Reference Analysis.
-- Every conclusion cites at least one `OBS-*` or `INF-*` evidence ID, and every
-  `INF-*` derives from one or more observations.
-- `Problem Conclusion` includes all fields required by the selected shape.
-- Documentation evidence has concrete URLs; code evidence has repository paths
-  or class names.
-- Labels, severity, topology, commands, class names, method names, SQL, YAML,
-  and Java snippets retain their original English or code form.
-- The inner GitHub-facing body is not itself wrapped in a blockquote, HTML/XML
-  container, or transcript.
-- A local checker or CI step may enforce the required sections, conclusion
-  fields, evidence references, and type-label consistency. Treat a failed check
-  as incomplete output.
+- The inner GitHub-facing body is not itself wrapped in a blockquote, HTML/XML container, or transcript.

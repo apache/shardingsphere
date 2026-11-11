@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.sql.it.distsql.rql;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Splitter;
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.ScenarioCommonPath;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
@@ -34,16 +42,22 @@ import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -56,25 +70,38 @@ class RQLE2EIT implements SQLE2EIT {
     @ParameterizedTest(name = "{0}", allowZeroInvocations = true)
     @EnabledIf("isEnabled")
     @ArgumentsSource(SQLE2EITArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, IOException {
         SQLE2EITContext context = new SQLE2EITContext(testParam);
-        assertExecute(context);
+        assertExecute(context, testParam);
     }
     
-    private void assertExecute(final SQLE2EITContext context) throws SQLException {
+    private void assertExecute(final SQLE2EITContext context, final AssertionTestParameter testParam) throws SQLException, IOException {
         try (
                 Connection connection = environmentEngine.getTargetDataSource().getConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(context.getSQL());
             try (ResultSet resultSet = statement.getResultSet()) {
-                assertResultSet(context, resultSet);
+                assertResultSet(context, resultSet, testParam);
             }
         }
     }
     
-    private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet) throws SQLException {
+    private void assertResultSet(final SQLE2EITContext context, final ResultSet resultSet, final AssertionTestParameter testParam) throws SQLException, IOException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns(context));
-        assertRows(resultSet, context.getDataSet().getRows());
+        if ("jdbc".equals(testParam.getAdapter()) && ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile())
+                || "show_storage_units_jdbc.xml".equals(context.getAssertion().getExpectedDataFile()))) {
+            assertThat(getActualRows(resultSet), containsInAnyOrder(getExpectedJdbcRows(context, testParam).toArray()));
+        } else {
+            assertRows(resultSet, context.getDataSet().getRows());
+        }
+    }
+    
+    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
+        assertThat(actual.getColumnCount(), is(expected.size()));
+        int index = 1;
+        for (DataSetColumn each : expected) {
+            assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
+        }
     }
     
     private Collection<DataSetColumn> getExpectedColumns(final SQLE2EITContext context) {
@@ -85,12 +112,55 @@ class RQLE2EIT implements SQLE2EIT {
         return result;
     }
     
-    private void assertMetaData(final ResultSetMetaData actual, final Collection<DataSetColumn> expected) throws SQLException {
-        assertThat(actual.getColumnCount(), is(expected.size()));
-        int index = 1;
-        for (DataSetColumn each : expected) {
-            assertThat(actual.getColumnLabel(index++).toLowerCase(), is(each.getName().toLowerCase()));
+    private Collection<List<Object>> getActualRows(final ResultSet actual) throws SQLException {
+        Collection<List<Object>> result = new LinkedList<>();
+        ResultSetMetaData actualMetaData = actual.getMetaData();
+        while (actual.next()) {
+            result.add(getActualRow(actual, actualMetaData));
         }
+        return result;
+    }
+    
+    private List<Object> getActualRow(final ResultSet actual, final ResultSetMetaData actualMetaData) throws SQLException {
+        List<Object> result = new ArrayList<>(actualMetaData.getColumnCount());
+        for (int columnIndex = 1; columnIndex <= actualMetaData.getColumnCount(); columnIndex++) {
+            String actualValue = String.valueOf(actual.getObject(columnIndex));
+            assertThat(String.valueOf(actual.getObject(actualMetaData.getColumnLabel(columnIndex))), is(actualValue));
+            result.add(12 == columnIndex ? JsonEngine.unmarshal(actualValue, JsonNode.class) : actualValue);
+        }
+        return result;
+    }
+    
+    private Collection<List<Object>> getExpectedJdbcRows(final SQLE2EITContext context, final AssertionTestParameter testParam) throws IOException {
+        Map<String, Map<String, Object>> dataSources = YamlEngine.unmarshal(
+                new File(new ScenarioCommonPath(testParam.getScenario()).getRuleConfigurationFile(testParam.getDatabaseType())), YamlRootConfiguration.class).getDataSources();
+        Collection<List<Object>> result = new ArrayList<>(context.getDataSet().getRows().size());
+        URI uri = URI.create(((HikariDataSource) environmentEngine.getActualDataSourceMap().values().iterator().next()).getJdbcUrl().substring("jdbc:".length()));
+        for (DataSetRow each : context.getDataSet().getRows()) {
+            List<Object> row = new ArrayList<>(each.splitValues("|"));
+            row.set(2, uri.getHost());
+            row.set(3, String.valueOf(uri.getPort()));
+            if ("show_storage_units.xml".equals(context.getAssertion().getExpectedDataFile())) {
+                Map<String, Object> dataSourceProps = dataSources.get(row.get(0).toString());
+                row.set(8, dataSourceProps.get("maxPoolSize").toString());
+                row.set(9, dataSourceProps.get("minPoolSize").toString());
+                row.set(11, getExpectedAttributes(row.get(11).toString(), dataSourceProps.get("url").toString()));
+            } else {
+                row.set(11, JsonEngine.unmarshal(row.get(11).toString(), JsonNode.class));
+            }
+            result.add(row);
+        }
+        return result;
+    }
+    
+    private JsonNode getExpectedAttributes(final String value, final String jdbcUrl) {
+        ObjectNode result = (ObjectNode) JsonEngine.unmarshal(value, JsonNode.class);
+        ObjectNode queryProperties = result.putObject("queryProperties");
+        for (String each : Splitter.on("&").split(URI.create(jdbcUrl.substring("jdbc:".length())).getQuery())) {
+            String[] property = each.split("=", 2);
+            queryProperties.put(property[0], property[1]);
+        }
+        return result;
     }
     
     private void assertRows(final ResultSet actual, final List<DataSetRow> expected) throws SQLException {

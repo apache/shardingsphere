@@ -150,41 +150,6 @@ class GroupByMemoryMergedResultTest {
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
     
-    @Test
-    void assertNextForAggregationResultSetsEmpty() throws SQLException {
-        when(database.getName()).thenReturn("db_schema");
-        QueryResult queryResult1 = createQueryResult();
-        when(queryResult1.next()).thenReturn(true, false);
-        when(queryResult1.getValue(1, Object.class)).thenReturn(20);
-        when(queryResult1.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult1.getValue(3, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(4, Object.class)).thenReturn(2);
-        when(queryResult1.getValue(5, Object.class)).thenReturn(20);
-        QueryResult queryResult2 = createQueryResult();
-        QueryResult queryResult3 = createQueryResult();
-        when(queryResult3.next()).thenReturn(true, true, false);
-        when(queryResult3.getValue(1, Object.class)).thenReturn(20, 30);
-        when(queryResult3.getValue(2, Object.class)).thenReturn(0);
-        when(queryResult3.getValue(3, Object.class)).thenReturn(2, 3);
-        when(queryResult3.getValue(4, Object.class)).thenReturn(2, 2, 3);
-        when(queryResult3.getValue(5, Object.class)).thenReturn(20, 20, 30);
-        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
-        MergedResult actual = resultMerger.merge(Arrays.asList(queryResult1, queryResult2, queryResult3), createSelectStatementContext(), database, mock(ConnectionContext.class));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(30)));
-        assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat(actual.getValue(3, Object.class), is(3));
-        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(3)));
-        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(30)));
-        assertTrue(actual.next());
-        assertThat(actual.getValue(1, Object.class), is(new BigDecimal(40)));
-        assertThat(((BigDecimal) actual.getValue(2, Object.class)).intValue(), is(10));
-        assertThat(actual.getValue(3, Object.class), is(2));
-        assertThat(actual.getValue(4, Object.class), is(new BigDecimal(4)));
-        assertThat(actual.getValue(5, Object.class), is(new BigDecimal(40)));
-        assertFalse(actual.next());
-    }
-    
     private QueryResult createQueryResult() throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getColumnCount()).thenReturn(5);

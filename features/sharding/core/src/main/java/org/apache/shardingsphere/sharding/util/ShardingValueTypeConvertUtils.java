@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -33,6 +34,7 @@ import java.time.MonthDay;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -174,6 +176,9 @@ public final class ShardingValueTypeConvertUtils {
         if (value instanceof BigInteger) {
             return new BigDecimal((BigInteger) value);
         }
+        if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long) {
+            return BigDecimal.valueOf(((Number) value).longValue());
+        }
         if (value instanceof Number) {
             return BigDecimal.valueOf(((Number) value).doubleValue());
         }
@@ -267,15 +272,15 @@ public final class ShardingValueTypeConvertUtils {
             return new Time(((Date) value).getTime());
         }
         if (value instanceof LocalTime) {
-            return java.sql.Time.valueOf((LocalTime) value);
+            return Time.valueOf((LocalTime) value);
         }
         if (value instanceof LocalDateTime) {
-            return java.sql.Time.valueOf(((LocalDateTime) value).toLocalTime());
+            return Time.valueOf(((LocalDateTime) value).toLocalTime());
         }
         if (value instanceof Number) {
             return new Time(((Number) value).longValue());
         }
-        return java.sql.Time.valueOf(parseLocalTime(value.toString()));
+        return Time.valueOf(parseLocalTime(value.toString()));
     }
     
     private static Timestamp convertToTimestamp(final Comparable<?> value) {
@@ -286,15 +291,15 @@ public final class ShardingValueTypeConvertUtils {
             return new Timestamp(((Date) value).getTime());
         }
         if (value instanceof LocalDateTime) {
-            return java.sql.Timestamp.valueOf((LocalDateTime) value);
+            return Timestamp.valueOf((LocalDateTime) value);
         }
         if (value instanceof Instant) {
-            return java.sql.Timestamp.from((Instant) value);
+            return Timestamp.from((Instant) value);
         }
         if (value instanceof Number) {
             return new Timestamp(((Number) value).longValue());
         }
-        return java.sql.Timestamp.from(parseInstant(value.toString()));
+        return Timestamp.from(parseInstant(value.toString()));
     }
     
     private static LocalDate convertToLocalDate(final Comparable<?> value) {
@@ -421,9 +426,7 @@ public final class ShardingValueTypeConvertUtils {
     private static Instant parseInstant(final String value) {
         try {
             return Instant.parse(value);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        } catch (final DateTimeParseException ignored) {
             return parseInstantByLocalDateTime(value);
         }
     }
@@ -431,9 +434,7 @@ public final class ShardingValueTypeConvertUtils {
     private static Instant parseInstantByLocalDateTime(final String value) {
         try {
             return LocalDateTime.parse(value).atZone(ZoneId.systemDefault()).toInstant();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        } catch (final DateTimeException ignored) {
             return LocalDate.parse(value).atStartOfDay(ZoneId.systemDefault()).toInstant();
         }
     }
@@ -441,9 +442,7 @@ public final class ShardingValueTypeConvertUtils {
     private static LocalDate parseLocalDate(final String value) {
         try {
             return LocalDate.parse(value);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        } catch (final DateTimeParseException ignored) {
             return LocalDateTime.parse(value).toLocalDate();
         }
     }
@@ -451,9 +450,7 @@ public final class ShardingValueTypeConvertUtils {
     private static LocalDateTime parseLocalDateTime(final String value) {
         try {
             return LocalDateTime.parse(value);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        } catch (final DateTimeParseException ignored) {
             return Instant.parse(value).atZone(ZoneId.systemDefault()).toLocalDateTime();
         }
     }
@@ -461,9 +458,7 @@ public final class ShardingValueTypeConvertUtils {
     private static LocalTime parseLocalTime(final String value) {
         try {
             return LocalTime.parse(value);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
+        } catch (final DateTimeParseException ignored) {
             return LocalDateTime.parse(value).toLocalTime();
         }
     }

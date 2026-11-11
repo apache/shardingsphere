@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptBindin
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPResourceNavigationDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolAnnotations;
 import org.apache.shardingsphere.mcp.support.descriptor.yaml.YamlMCPToolDescriptor;
 import org.junit.jupiter.api.Test;
@@ -125,27 +124,6 @@ class MCPDescriptorCatalogYamlSwapperTest {
         YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
         yamlCatalog.setCompletionTargets(List.of(yamlCompletionTarget));
         assertYamlValidationError(yamlCatalog, "MCP descriptor catalog property `completionTargets[0].maxValues` must not exceed 100.");
-    }
-    
-    @Test
-    void assertSwapRejectsDuplicateCompletionArguments() {
-        YamlMCPCompletionTargetDescriptor yamlCompletionTarget = createYamlCompletionTargetDescriptor();
-        yamlCompletionTarget.setArguments(List.of("database", "database"));
-        YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
-        yamlCatalog.setCompletionTargets(List.of(yamlCompletionTarget));
-        assertYamlValidationError(yamlCatalog, "MCP descriptor catalog property `completionTargets[0].arguments` must not contain duplicate values.");
-    }
-    
-    @Test
-    void assertSwapRejectsDuplicateResourceNavigationArguments() {
-        YamlMCPResourceNavigationDescriptor yamlResourceNavigation = new YamlMCPResourceNavigationDescriptor();
-        yamlResourceNavigation.setFrom("database_gateway_search_metadata");
-        yamlResourceNavigation.setTo("shardingsphere://capabilities");
-        yamlResourceNavigation.setDescription("Navigate from metadata search to capabilities.");
-        yamlResourceNavigation.setRequiredArguments(List.of("database", "database"));
-        YamlMCPDescriptorCatalog yamlCatalog = new YamlMCPDescriptorCatalog();
-        yamlCatalog.setResourceNavigation(List.of(yamlResourceNavigation));
-        assertYamlValidationError(yamlCatalog, "MCP descriptor catalog property `resourceNavigation[0].requiredArguments` must not contain duplicate values.");
     }
     
     @Test

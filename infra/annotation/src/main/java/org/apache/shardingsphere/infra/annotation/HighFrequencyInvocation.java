@@ -23,16 +23,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The class to which this annotation is applied is high frequency invocation.
+ * Marks declarations on paths whose work repeats as throughput grows under a supported normal workload.
+ * SQL execution, metadata queries, and transaction operations can each be high-frequency without running for every SQL request.
+ * Repeated Pipeline processing of records, events, packets, or batches remains high-frequency inside a method invoked only once.
+ * Judge external APIs by supported normal per-request use and internal helpers by actual call paths.
+ * Missing repository callers or a construction or closing role alone do not prove low frequency; theoretical repeatability alone does not prove high frequency.
  */
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.SOURCE)
 public @interface HighFrequencyInvocation {
     
     /**
-     * Whether invocation of the method can be cached.
+     * Whether the annotated target has a cacheable resource intended for reuse.
      *
-     * @return can be cached or not
+     * @return whether the annotated target has a reusable cacheable resource
      */
     boolean canBeCached() default false;
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.connector.core.type;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
@@ -49,25 +48,5 @@ public final class DatabaseTypeRegistry {
     public Collection<DatabaseType> getAllBranchDatabaseTypes() {
         return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class)
                 .stream().filter(each -> each.getTrunkDatabaseType().map(optional -> optional == databaseType).orElse(false)).collect(Collectors.toList());
-    }
-    
-    /**
-     * Format identifier pattern.
-     *
-     * @param identifierPattern identifier pattern
-     * @return formatted identifier pattern
-     * @deprecated use {@link org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine#normalize(IdentifierCasePolicy, String)} instead
-     */
-    @Deprecated
-    public String formatIdentifierPattern(final String identifierPattern) {
-        switch (dialectDatabaseMetaData.getIdentifierPatternType()) {
-            case UPPER_CASE:
-                return identifierPattern.toUpperCase();
-            case LOWER_CASE:
-                return identifierPattern.toLowerCase();
-            case KEEP_ORIGIN:
-            default:
-                return identifierPattern;
-        }
     }
 }

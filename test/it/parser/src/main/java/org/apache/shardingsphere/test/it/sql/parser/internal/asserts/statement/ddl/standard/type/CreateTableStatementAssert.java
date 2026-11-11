@@ -59,6 +59,11 @@ public final class CreateTableStatementAssert {
      * @param expected expected create table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        if (Boolean.TRUE.equals(expected.getIfNotExists())) {
+            assertTrue(actual.isIfNotExists(), assertContext.getText("Conditional table flag assertion error: "));
+        } else if (Boolean.FALSE.equals(expected.getIfNotExists())) {
+            assertFalse(actual.isIfNotExists(), assertContext.getText("Conditional table flag assertion error: "));
+        }
         if (null != expected.getTemporary()) {
             assertThat(assertContext.getText("Temporary table assertion error: "), actual.isTemporary(), is(expected.getTemporary()));
         }

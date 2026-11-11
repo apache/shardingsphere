@@ -315,6 +315,12 @@
         </shadow-algorithm>
     </alter-default-shadow-algorithm>
     
+    <alter-default-shadow-algorithm sql-case-id="alter-default-shadow-algorithm-without-quote-on-build-in-algorithm-type">
+        <shadow-algorithm algorithm-id="default">
+            <algorithm algorithm-name="SQL_HINT"/>
+        </shadow-algorithm>
+    </alter-default-shadow-algorithm>
+    
     <alter-default-sharding-strategy sql-case-id="alter-default-sharding-strategy">
         <strategy default-type="TABLE" strategy-type="standard" sharding-column="order_id">
             <algorithm-segment algorithm-name="INLINE">

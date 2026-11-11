@@ -13,11 +13,11 @@ This page explains how to connect an already running ShardingSphere-MCP HTTP Ser
 
 ## Prerequisites
 
-- Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
+- Start the HTTP MCP Server by following [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/).
 - Expose only a secured remote endpoint that OpenAI API can reach. The built-in ShardingSphere-MCP HTTP Server does not provide authentication or authorization.
 - For remote platform access, place ShardingSphere-MCP behind a trusted gateway or reverse proxy that provides TLS termination, authentication,
   authorization policy, network access control, and audit logs.
-  See [Deployment](../../deployment/) and [Configuration](../../configuration/) for the security boundary.
+  See [Deployment](/en/user-manual/shardingsphere-mcp/deployment/) and [Configuration](/en/user-manual/shardingsphere-mcp/configuration/) for the security boundary.
 - The secured remote endpoint must support `Streamable HTTP` or `HTTP/SSE`.
 - Prepare an OpenAI API key and choose a model that supports remote MCP.
 - If the secured remote endpoint or gateway requires OAuth or Bearer authentication, prepare an access token that can be passed to the MCP tool.
@@ -89,18 +89,18 @@ If the integration fails, check these items first:
 - The OpenAI Responses API remote MCP tool works with remote HTTP MCP Servers. It does not connect to local `STDIO` processes.
 - Remote MCP calls require approval by default. Keep approvals in place for tools that can write data or cause side effects, or explicitly constrain the surface with `allowed_tools`.
 - Only expose ShardingSphere-MCP through an environment you trust, and prefer a server URL you control.
-- This page covers the OpenAI API integration path only. If you want to connect ShardingSphere-MCP directly in the ChatGPT product UI, use [ChatGPT Developer Mode](../chatgpt-developer-mode/).
-- See the [Capability Catalog](../../capabilities/) for the supported task surface and usage boundaries.
+- This page covers the OpenAI API integration path only. If you want to connect ShardingSphere-MCP directly in the ChatGPT product UI, use [ChatGPT Developer Mode](/en/user-manual/shardingsphere-mcp/client-integration/chatgpt-developer-mode/).
+- See the [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/) for the supported task surface and usage boundaries.
 
 ## References
 
 ### Related documents
 
-- [Quick Start](../../quick-start/)
-- [Capability Catalog](../../capabilities/)
-- [Configuration](../../configuration/)
-- [Codex](../codex/)
-- [ChatGPT Developer Mode](../chatgpt-developer-mode/)
+- [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/)
+- [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/)
+- [Configuration](/en/user-manual/shardingsphere-mcp/configuration/)
+- [Codex](/en/user-manual/shardingsphere-mcp/client-integration/codex/)
+- [ChatGPT Developer Mode](/en/user-manual/shardingsphere-mcp/client-integration/chatgpt-developer-mode/)
 
 ### Official references
 

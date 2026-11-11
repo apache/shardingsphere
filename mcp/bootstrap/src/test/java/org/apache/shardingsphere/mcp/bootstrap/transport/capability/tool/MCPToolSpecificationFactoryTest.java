@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.tool;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpError;
+import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.ErrorCodes;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolAnnotations;
@@ -31,7 +34,11 @@ import org.apache.shardingsphere.mcp.core.tool.handler.ToolDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 
 import java.util.List;
@@ -39,6 +46,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -50,6 +58,8 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(value = "org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory", suppressOutput = true)
 class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactoryTest {
     
     @Test
@@ -131,15 +141,16 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
     }
     
     @Test
-    void assertCreateToolSpecificationsSanitizeUnexpectedError() {
+    void assertCreateToolSpecificationsSanitizeUnexpectedError(final LogCaptureAssertion logCaptureAssertion) {
         try (MockedStatic<ToolDefinitionRegistry> mockedToolDefinitionRegistry = mockStatic(ToolDefinitionRegistry.class)) {
             MCPToolDefinition toolDefinition = mockSupportedTool(mockedToolDefinitionRegistry, createToolDescriptorWithoutOutputSchema("fixture_ping"));
-            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(Map.of())))
-                    .thenThrow(new IllegalStateException("sensitive detail"));
+            IllegalStateException expectedException = new IllegalStateException("sensitive detail");
+            mockedToolDefinitionRegistry.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(toolDefinition), eq(Map.of()))).thenThrow(expectedException);
             McpError actual = assertThrows(McpError.class, () -> callTool(createToolSpecification(MCPTransportType.STDIO), createExchange(), "fixture_ping", Map.of()));
             assertThat(actual.getJsonRpcError().code(), is(ErrorCodes.INTERNAL_ERROR));
             assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
             assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("sensitive detail"));
+            logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
         }
     }
     
@@ -169,6 +180,24 @@ class MCPToolSpecificationFactoryTest extends AbstractMCPToolSpecificationFactor
             assertTrue(String.valueOf(actualPayload.get("summary")).contains("database_gateway_search_metadata"));
             assertNull(actual.structuredContent());
             assertTrue(actual.isError());
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsPreservesNestedArgumentsAfterClarification() {
+        try (MockedStatic<ToolDefinitionRegistry> mocked = mockStatic(ToolDefinitionRegistry.class)) {
+            String toolName = "database_gateway_plan_encrypt_rule";
+            MCPToolDefinition definition = mockSupportedTool(mocked,
+                    createPlanningToolDescriptor(toolName, Map.of("plan_id", Map.of("type", "string", "description", "Existing workflow plan identifier."))));
+            mocked.when(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(definition), any()))
+                    .thenReturn(new MCPMapPayload(createClarifyingPayload(createClarifyingQuestion("custom_properties.display-name", "string", false, "Provide display name."))),
+                            new MCPMapPayload(Map.of("status", "planned")));
+            McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of("field_1", "foo_display")));
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(createRuntimeContext(MCPTransportType.STDIO)).createToolSpecifications().getFirst();
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new McpSchema.CallToolRequest(toolName, Map.of("custom_properties", Map.of("foo_key", "foo_value"))));
+            assertThat(actual.structuredContent(), is(Map.of("status", "planned")));
+            mocked.verify(() -> ToolDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq(definition),
+                    eq(Map.of("plan_id", "plan-1", "custom_properties", Map.of("foo_key", "foo_value", "display-name", "foo_display")))));
         }
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleCreateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.type.DatabaseRuleCreateExecutor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;

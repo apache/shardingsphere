@@ -22,11 +22,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationCheckEngine;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -63,11 +65,14 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                        final ComputeNodeInstanceContext computeNodeInstanceContext, final ResourceMetaData resourceMetaData) {
+        RuleConfigurationValidator.validate(databaseConfig.getRuleConfigurations());
+        Map<RuleConfiguration, DatabaseRuleBuilder> ruleBuilderMap = getRuleBuilderMap(databaseConfig);
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
+        for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : ruleBuilderMap.entrySet()) {
             DatabaseRuleConfigurationChecker configChecker = OrderedSPILoader.getServicesByClass(
                     DatabaseRuleConfigurationChecker.class, Collections.singleton(entry.getKey().getClass())).get(entry.getKey().getClass());
             if (null != configChecker) {
+                DatabaseRuleConfigurationCheckEngine.checkTableNamesNotDuplicated(entry.getKey(), databaseName, configChecker);
                 configChecker.check(databaseName, entry.getKey(), resourceMetaData.getDataSourceMap(), result);
             }
             DatabaseRule rule = entry.getValue().build(entry.getKey(), databaseName, protocolType, resourceMetaData, result, computeNodeInstanceContext);
@@ -90,10 +95,12 @@ public final class DatabaseRulesBuilder {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static ShardingSphereRule build(final String databaseName, final DatabaseType protocolType, final Collection<ShardingSphereRule> rules, final RuleConfiguration ruleConfig,
                                            final ComputeNodeInstanceContext computeNodeInstanceContext, final ResourceMetaData resourceMetaData) {
+        RuleConfigurationValidator.validate(ruleConfig);
         DatabaseRuleBuilder databaseRuleBuilder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
         DatabaseRuleConfigurationChecker configChecker =
                 OrderedSPILoader.getServicesByClass(DatabaseRuleConfigurationChecker.class, Collections.singleton(ruleConfig.getClass())).get(ruleConfig.getClass());
         if (null != configChecker) {
+            DatabaseRuleConfigurationCheckEngine.checkTableNamesNotDuplicated(ruleConfig, databaseName, configChecker);
             configChecker.check(databaseName, ruleConfig, resourceMetaData.getDataSourceMap(), rules);
         }
         return databaseRuleBuilder.build(ruleConfig, databaseName, protocolType, resourceMetaData, rules, computeNodeInstanceContext);
@@ -145,7 +152,9 @@ public final class DatabaseRulesBuilder {
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>(defaultBuilders.size(), 1F);
         // TODO consider about order for new put items
         for (Entry<DatabaseRuleBuilder, DefaultDatabaseRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
-            result.put(entry.getValue().build(), entry.getKey());
+            RuleConfiguration ruleConfig = entry.getValue().build();
+            RuleConfigurationValidator.validate(ruleConfig);
+            result.put(ruleConfig, entry.getKey());
         }
         return result;
     }

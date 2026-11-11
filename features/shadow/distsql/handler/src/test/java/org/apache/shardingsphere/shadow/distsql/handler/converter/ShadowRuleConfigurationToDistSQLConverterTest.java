@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.converter;
 
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.spi.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;

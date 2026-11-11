@@ -23,6 +23,9 @@ import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.impl.MySQLBinFunction;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * SQL federation function register for MySQL.
  */
@@ -33,6 +36,58 @@ public final class MySQLSQLFederationFunctionRegister implements DialectSQLFeder
         schemaPlus.add("bin", ScalarFunctionImpl.create(MySQLBinFunction.class, "bin"));
         schemaPlus.add("atan", ScalarFunctionImpl.create(SqlFunctions.class, "atan2"));
         schemaPlus.add("atan2", ScalarFunctionImpl.create(SqlFunctions.class, "atan"));
+    }
+    
+    @Override
+    public Collection<String> getUnsupportedFunctionNames() {
+        return Arrays.asList(
+                "AES_DECRYPT",
+                "AES_ENCRYPT",
+                "BENCHMARK",
+                "BIT_LENGTH",
+                "CEILING",
+                "CHAR",
+                "CHARSET",
+                "COERCIBILITY",
+                "CONV",
+                "CRC32",
+                "DATABASE",
+                "ELT",
+                "EXPORT_SET",
+                "FIELD",
+                "FIND_IN_SET",
+                "FORMAT",
+                "FROM_UNIXTIME",
+                "HEX",
+                "INSERT",
+                "LCASE",
+                "LEAST",
+                "LENGTH",
+                "LOAD_FILE",
+                "LOCATE",
+                "LOG",
+                "LOG2",
+                "LPAD",
+                "LTRIM",
+                "MAKE_SET",
+                "MID",
+                "OCT",
+                "OCTET_LENGTH",
+                "ORD",
+                "POW",
+                "QUOTE",
+                "REGEXP_INSTR",
+                "REGEXP_LIKE",
+                "REGEXP_SUBSTR",
+                "RPAD",
+                "RTRIM",
+                "SHA",
+                "SUBSTRING",
+                "SUBSTRING_INDEX",
+                "TIMEDIFF",
+                "UCASE",
+                "UNHEX",
+                "WEIGHT_STRING");
     }
     
     @Override

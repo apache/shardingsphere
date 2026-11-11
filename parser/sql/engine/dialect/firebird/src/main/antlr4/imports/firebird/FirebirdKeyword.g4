@@ -507,6 +507,10 @@ NULLIF
     : N U L L I F
     ;
 
+NULLS
+    : N U L L S
+    ;
+
 NUMERIC
     : N U M E R I C
     ;

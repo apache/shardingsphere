@@ -21,7 +21,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.ExportMetaDataExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedClusterInfo;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.model.ExportedMetaData;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDataSourceConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.YamlDatabaseConfiguration;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
@@ -53,11 +58,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfigurati
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
-import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInfo;
-import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -300,25 +301,25 @@ class ExportMetaDataExecutorTest {
     private void assertDatabaseConfig(final Map<String, String> actual, final Map<String, String> expected) {
         assertThat(actual.size(), is(expected.size()));
         for (Entry<String, String> entry : expected.entrySet()) {
-            assertDatabaseConfig(convertToYamlProxyDatabaseConfig(actual.get(entry.getKey())), convertToYamlProxyDatabaseConfig(entry.getValue()));
+            assertDatabaseConfig(convertToYamlDatabaseConfig(actual.get(entry.getKey())), convertToYamlDatabaseConfig(entry.getValue()));
         }
     }
     
-    private void assertDatabaseConfig(final YamlProxyDatabaseConfiguration actual, final YamlProxyDatabaseConfiguration expected) {
+    private void assertDatabaseConfig(final YamlDatabaseConfiguration actual, final YamlDatabaseConfiguration expected) {
         assertThat(actual.getDatabaseName(), is(expected.getDatabaseName()));
         assertDataSources(actual.getDataSources(), expected.getDataSources());
         assertRules(actual.getRules(), expected.getRules());
     }
     
-    private void assertDataSources(final Map<String, YamlProxyDataSourceConfiguration> actual, final Map<String, YamlProxyDataSourceConfiguration> expected) {
+    private void assertDataSources(final Map<String, YamlDataSourceConfiguration> actual, final Map<String, YamlDataSourceConfiguration> expected) {
         if (null == expected) {
             assertNull(actual);
             return;
         }
         assertThat(actual.size(), is(expected.size()));
-        for (Entry<String, YamlProxyDataSourceConfiguration> entry : expected.entrySet()) {
-            YamlProxyDataSourceConfiguration actualDataSourceConfig = actual.get(entry.getKey());
-            YamlProxyDataSourceConfiguration exceptedDataSourceConfig = entry.getValue();
+        for (Entry<String, YamlDataSourceConfiguration> entry : expected.entrySet()) {
+            YamlDataSourceConfiguration actualDataSourceConfig = actual.get(entry.getKey());
+            YamlDataSourceConfiguration exceptedDataSourceConfig = entry.getValue();
             assertThat(actualDataSourceConfig.getDataSourceClassName(), is(exceptedDataSourceConfig.getDataSourceClassName()));
             assertThat(actualDataSourceConfig.getUrl(), is(exceptedDataSourceConfig.getUrl()));
             assertThat(actualDataSourceConfig.getUsername(), is(exceptedDataSourceConfig.getUsername()));
@@ -341,7 +342,7 @@ class ExportMetaDataExecutorTest {
         return YamlEngine.unmarshal(serverConfig, YamlProxyServerConfiguration.class);
     }
     
-    private YamlProxyDatabaseConfiguration convertToYamlProxyDatabaseConfig(final String databaseConfig) {
-        return YamlEngine.unmarshal(databaseConfig, YamlProxyDatabaseConfiguration.class);
+    private YamlDatabaseConfiguration convertToYamlDatabaseConfig(final String databaseConfig) {
+        return YamlEngine.unmarshal(databaseConfig, YamlDatabaseConfiguration.class);
     }
 }

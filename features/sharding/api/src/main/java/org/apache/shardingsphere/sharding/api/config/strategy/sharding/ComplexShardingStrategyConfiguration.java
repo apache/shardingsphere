@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.api.config.strategy.sharding;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Complex sharding strategy configuration.
  */
@@ -27,8 +29,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ComplexShardingStrategyConfiguration implements ShardingStrategyConfiguration {
     
+    @NotBlank
     private final String shardingColumns;
     
+    @NotBlank
     private final String shardingAlgorithmName;
     
     @Override

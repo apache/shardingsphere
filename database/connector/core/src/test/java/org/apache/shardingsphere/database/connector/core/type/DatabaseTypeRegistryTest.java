@@ -17,21 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.core.type;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,63 +40,5 @@ class DatabaseTypeRegistryTest {
     @Test
     void assertGetAllBranchDatabaseTypesWithBranchType() {
         assertTrue(new DatabaseTypeRegistry(branchDatabaseType).getAllBranchDatabaseTypes().isEmpty());
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("formatIdentifierPatternArguments")
-    void assertFormatIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType, final String expectedIdentifierPattern) throws ReflectiveOperationException {
-        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, null);
-        assertThat(databaseTypeRegistry.formatIdentifierPattern("Foo"), is(expectedIdentifierPattern));
-    }
-    
-    private static Stream<Arguments> formatIdentifierPatternArguments() {
-        return Stream.of(
-                Arguments.of("identifier pattern upper case", IdentifierPatternType.UPPER_CASE, "FOO"),
-                Arguments.of("identifier pattern lower case", IdentifierPatternType.LOWER_CASE, "foo"),
-                Arguments.of("identifier pattern keep origin", IdentifierPatternType.KEEP_ORIGIN, "Foo"));
-    }
-    
-    private DatabaseTypeRegistry createDatabaseTypeRegistry(final IdentifierPatternType identifierPatternType, final String defaultSchema) throws ReflectiveOperationException {
-        DatabaseTypeRegistry result = new DatabaseTypeRegistry(trunkDatabaseType);
-        Plugins.getMemberAccessor().set(DatabaseTypeRegistry.class.getDeclaredField("dialectDatabaseMetaData"),
-                result, new FixtureDialectDatabaseMetaData(identifierPatternType, defaultSchema));
-        return result;
-    }
-    
-    private static final class FixtureDialectDatabaseMetaData implements DialectDatabaseMetaData {
-        
-        private final IdentifierPatternType identifierPatternType;
-        
-        private final DefaultSchemaOption schemaOption;
-        
-        private FixtureDialectDatabaseMetaData(final IdentifierPatternType identifierPatternType, final String defaultSchema) {
-            this.identifierPatternType = identifierPatternType;
-            schemaOption = new DefaultSchemaOption(false, defaultSchema, DialectSchemaSemantics.NATIVE_SCHEMA);
-        }
-        
-        @Override
-        public QuoteCharacter getQuoteCharacter() {
-            return QuoteCharacter.NONE;
-        }
-        
-        @Override
-        public IdentifierPatternType getIdentifierPatternType() {
-            return identifierPatternType;
-        }
-        
-        @Override
-        public NullsOrderType getDefaultNullsOrderType() {
-            return NullsOrderType.LOW;
-        }
-        
-        @Override
-        public DefaultSchemaOption getSchemaOption() {
-            return schemaOption;
-        }
-        
-        @Override
-        public String getDatabaseType() {
-            return "FIXTURE";
-        }
     }
 }

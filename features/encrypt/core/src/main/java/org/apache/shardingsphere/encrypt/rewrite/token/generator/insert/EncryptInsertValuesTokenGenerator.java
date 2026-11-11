@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -240,7 +241,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private ExpressionSegment createDefaultExpression(final ExpressionSegment valueExpression) {
-        return new CommonExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), DEFAULT_EXPRESSION);
+        return new CommonExpressionSegment(valueExpression.getStartIndex(), valueExpression.getStopIndex(), DEFAULT_EXPRESSION, Collections.emptyList());
     }
     
     private boolean isLiteralExpression(final ExpressionSegment valueExpression) {

@@ -55,13 +55,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.OuterJoinExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Expression segment binder.
@@ -142,8 +147,16 @@ public final class ExpressionSegmentBinder {
         if (segment instanceof UnaryOperationExpression) {
             return UnaryOperationExpressionBinder.bind((UnaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
+        if (segment instanceof TypeCastExpression) {
+            TypeCastExpression typeCast = (TypeCastExpression) segment;
+            return new TypeCastExpression(typeCast.getStartIndex(), typeCast.getStopIndex(), typeCast.getText(),
+                    bind(typeCast.getExpression(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts), typeCast.getDataType());
+        }
         if (segment instanceof CollateExpression) {
             return CollateExpressionBinder.bind((CollateExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof CommonExpressionSegment) {
+            return bindCommonExpression((CommonExpressionSegment) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bound
         return segment;
@@ -157,5 +170,18 @@ public final class ExpressionSegmentBinder {
             result.getItems().add(bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
         return result;
+    }
+    
+    private static CommonExpressionSegment bindCommonExpression(final CommonExpressionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
+                                                                final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (segment.getChildren().isEmpty()) {
+            return segment;
+        }
+        Collection<ExpressionSegment> children = new ArrayList<>(segment.getChildren().size());
+        for (ExpressionSegment each : segment.getChildren()) {
+            children.add(bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
+        }
+        return new CommonExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), children);
     }
 }

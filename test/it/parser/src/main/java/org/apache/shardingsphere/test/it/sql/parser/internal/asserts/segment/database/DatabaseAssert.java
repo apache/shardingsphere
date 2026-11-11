@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.database.ExpectedDatabase;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * Database assert.
  */
@@ -39,6 +41,7 @@ public final class DatabaseAssert {
      * @param expected expected database
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedDatabase expected) {
+        assertNotNull(actual, assertContext.getText("Actual database should exist."));
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Database");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }

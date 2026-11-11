@@ -182,6 +182,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
@@ -215,8 +216,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Statement visitor for openGauss.
@@ -224,6 +225,8 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParserBaseVisitor<ASTNode> {
+    
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     
     private final DatabaseType databaseType;
     
@@ -329,7 +332,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         super.visitAExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     private Optional<String> findBinaryOperator(final AExprContext ctx) {
@@ -413,7 +416,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
             return visit(ctx.aexprConst());
         }
         if (null != ctx.aExpr()) {
-            return visit(ctx.aExpr());
+            ASTNode result = visit(ctx.aExpr());
+            if (result instanceof ColumnSegment) {
+                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
+                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
+            }
+            return result;
         }
         if (null != ctx.funcExpr()) {
             return visit(ctx.funcExpr());
@@ -426,7 +434,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         super.visitCExpr(ctx);
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), text, Collections.emptyList());
     }
     
     private ExpressionSegment createSubqueryExpressionSegment(final CExprContext ctx) {
@@ -673,10 +681,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        IdentifierContext identifierContext = ctx.identifier();
-        return new KeywordValue(null == identifierContext
-                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
-                : identifierContext.getText());
+        return new KeywordValue(null != ctx.numericTypeName() && null != ctx.numericTypeName().DOUBLE()
+                ? String.join(" ", ctx.numericTypeName().DOUBLE().getText(), ctx.numericTypeName().PRECISION().getText())
+                : ctx.getChild(0).getText());
     }
     
     @Override
@@ -1028,7 +1035,8 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     public ASTNode visitCommonTableExpr(final CommonTableExprContext ctx) {
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (AliasSegment) visit(ctx.alias()),
                 new SubquerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (SelectStatement) visit(ctx.preparableStmt().select()),
-                        getOriginalText(ctx.preparableStmt().select())));
+                        getOriginalText(ctx.preparableStmt().select())),
+                null);
         if (null != ctx.optNameList().nameList()) {
             result.getColumns().addAll(generateUsingColumn(ctx.optNameList().nameList()));
         }
@@ -1173,7 +1181,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
             result.setOrderBySegment(orderBySegment);
         }
         if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText(), Collections.emptyList()));
         }
     }
     
@@ -1199,7 +1207,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         if (null == groupByItem.aExpr()) {
             return false;
         }
-        String expression = getOriginalText(groupByItem.aExpr()).replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
+        String expression = WHITESPACE_PATTERN.matcher(getOriginalText(groupByItem.aExpr())).replaceAll("").toUpperCase(Locale.ROOT);
         return (expression.startsWith("CUBE(") || expression.startsWith("ROLLUP(")) && expression.endsWith(")");
     }
     

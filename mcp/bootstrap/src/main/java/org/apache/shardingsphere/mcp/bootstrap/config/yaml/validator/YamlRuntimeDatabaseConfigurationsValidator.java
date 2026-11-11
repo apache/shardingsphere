@@ -27,53 +27,30 @@ import java.util.Map.Entry;
 /**
  * YAML runtime database configurations validator.
  */
-public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<String, YamlRuntimeDatabaseConfiguration>> {
+public final class YamlRuntimeDatabaseConfigurationsValidator implements ConstraintValidator<ValidYamlRuntimeDatabaseConfigurations, Map<?, ?>> {
     
     @Override
-    public boolean isValid(final Map<String, YamlRuntimeDatabaseConfiguration> value, final ConstraintValidatorContext context) {
+    public boolean isValid(final Map<?, ?> value, final ConstraintValidatorContext context) {
         if (null == value) {
             return true;
         }
         boolean result = true;
-        for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : value.entrySet()) {
-            result = validateRuntimeDatabase(entry.getKey(), entry.getValue(), context) && result;
+        for (Entry<?, ?> entry : value.entrySet()) {
+            result = validateRuntimeDatabase((String) entry.getKey(), (YamlRuntimeDatabaseConfiguration) entry.getValue(), context) && result;
         }
         return result;
     }
     
     private boolean validateRuntimeDatabase(final String databaseName, final YamlRuntimeDatabaseConfiguration config, final ConstraintValidatorContext context) {
         if (isPlaceholder(databaseName)) {
-            addViolation(context, String.format("contains placeholder database name `%s`", databaseName));
+            addViolation(context, "contains placeholder database name");
             return false;
         }
         if (null == config) {
-            addViolation(context, String.format("contains null configuration for database `%s`", databaseName));
+            addViolation(context, "contains null database configuration");
             return false;
         }
-        return validateNoPlaceholders(databaseName, config, context);
-    }
-    
-    private boolean validateNoPlaceholders(final String databaseName, final YamlRuntimeDatabaseConfiguration config, final ConstraintValidatorContext context) {
-        boolean result = validateNoPlaceholder(databaseName, "jdbcUrl", config.getJdbcUrl(), context);
-        result = validateNoPlaceholder(databaseName, "username", config.getUsername(), context) && result;
-        result = validateNoPlaceholder(databaseName, "driverClassName", config.getDriverClassName(), context) && result;
-        return validateNoPasswordPlaceholder(databaseName, config.getPassword(), context) && result;
-    }
-    
-    private boolean validateNoPlaceholder(final String databaseName, final String propertyName, final String value, final ConstraintValidatorContext context) {
-        if (null == value || !isPlaceholder(value)) {
-            return true;
-        }
-        addViolation(context, String.format("contains placeholder database `%s` property `%s`", databaseName, propertyName));
-        return false;
-    }
-    
-    private boolean validateNoPasswordPlaceholder(final String databaseName, final String value, final ConstraintValidatorContext context) {
-        if (null == value || !isStandalonePlaceholder(value)) {
-            return true;
-        }
-        addViolation(context, String.format("contains placeholder database `%s` property `password`", databaseName));
-        return false;
+        return validateNoPlaceholders(config, context);
     }
     
     private boolean isPlaceholder(final String value) {
@@ -82,13 +59,36 @@ public final class YamlRuntimeDatabaseConfigurationsValidator implements Constra
         return startIndex >= 0 && actualValue.indexOf('>', startIndex + 1) > startIndex + 1;
     }
     
-    private boolean isStandalonePlaceholder(final String value) {
-        String actualValue = value.trim();
-        return actualValue.startsWith("<") && actualValue.endsWith(">") && actualValue.length() > 2;
-    }
-    
     private void addViolation(final ConstraintValidatorContext context, final String message) {
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
+    }
+    
+    private boolean validateNoPlaceholders(final YamlRuntimeDatabaseConfiguration config, final ConstraintValidatorContext context) {
+        boolean result = validateNoPlaceholder("jdbcUrl", config.getJdbcUrl(), context);
+        result = validateNoPlaceholder("username", config.getUsername(), context) && result;
+        result = validateNoPlaceholder("driverClassName", config.getDriverClassName(), context) && result;
+        return validateNoPasswordPlaceholder(config.getPassword(), context) && result;
+    }
+    
+    private boolean validateNoPlaceholder(final String propertyName, final String value, final ConstraintValidatorContext context) {
+        if (null == value || !isPlaceholder(value)) {
+            return true;
+        }
+        addViolation(context, String.format("contains placeholder database property `%s`", propertyName));
+        return false;
+    }
+    
+    private boolean validateNoPasswordPlaceholder(final String value, final ConstraintValidatorContext context) {
+        if (null == value || !isStandalonePlaceholder(value)) {
+            return true;
+        }
+        addViolation(context, "contains placeholder database property `password`");
+        return false;
+    }
+    
+    private boolean isStandalonePlaceholder(final String value) {
+        String actualValue = value.trim();
+        return actualValue.startsWith("<") && actualValue.endsWith(">") && actualValue.length() > 2;
     }
 }

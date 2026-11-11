@@ -20,6 +20,8 @@ package org.apache.shardingsphere.shadow.config.datasource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Shadow data source mapper configuration.
  */
@@ -27,9 +29,12 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class ShadowDataSourceConfiguration {
     
+    @NotBlank
     private final String name;
     
+    @NotBlank
     private final String productionDataSourceName;
     
+    @NotBlank
     private final String shadowDataSourceName;
 }

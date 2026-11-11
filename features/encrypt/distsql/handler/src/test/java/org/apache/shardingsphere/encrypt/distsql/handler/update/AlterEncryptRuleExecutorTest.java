@@ -31,7 +31,6 @@ import org.apache.shardingsphere.encrypt.distsql.statement.AlterEncryptRuleState
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -66,30 +65,6 @@ class AlterEncryptRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         assertThrows(MissingRequiredRuleException.class,
                 () -> new DistSQLUpdateExecuteEngine(createSQLStatementWithAssistQueryAndLikeColumns(), "foo_db", mockContextManager(rule), null).executeUpdate());
-    }
-    
-    @Test
-    void assertExecuteUpdateWithConflictAssistQueryColumnNames() {
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> new DistSQLUpdateExecuteEngine(createColumnNameConflictedSQLStatement("user_id", "like_column"), "foo_db", mockContextManager(rule), null).executeUpdate());
-    }
-    
-    @Test
-    void assertExecuteUpdateWithConflictLikeColumnNames() {
-        EncryptRule rule = mock(EncryptRule.class);
-        when(rule.getAllTableNames()).thenReturn(Collections.singleton("t_encrypt"));
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> new DistSQLUpdateExecuteEngine(createColumnNameConflictedSQLStatement("assisted_column", "user_id"), "foo_db", mockContextManager(rule), null).executeUpdate());
-    }
-    
-    private AlterEncryptRuleStatement createColumnNameConflictedSQLStatement(final String assistQueryColumnName, final String likeColumnName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id",
-                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("MD5", new Properties())),
-                new EncryptColumnItemSegment(assistQueryColumnName, new AlgorithmSegment("MD5", new Properties())),
-                new EncryptColumnItemSegment(likeColumnName, new AlgorithmSegment("MD5", new Properties())));
-        return new AlterEncryptRuleStatement(Collections.singleton(new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment))));
     }
     
     @Test

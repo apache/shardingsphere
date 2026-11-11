@@ -19,11 +19,20 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.CursorForLoopStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ProcedureCallNamesSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,11 +43,20 @@ public final class OraclePLSQLBlockStatement extends DDLStatement {
     
     private final List<ProcedureCallNameSegment> procedureCallNames;
     
+    private final List<SQLStatementSegment> sqlStatements = new ArrayList<>();
+    
+    private final List<CursorForLoopStatementSegment> cursorForLoopStatements = new ArrayList<>();
+    
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
     private final SQLStatementAttributes attributes;
     
+    @HighFrequencyInvocation
     public OraclePLSQLBlockStatement(final DatabaseType databaseType, final List<ProcedureCallNameSegment> procedureCallNames) {
         super(databaseType);
         this.procedureCallNames = procedureCallNames;
-        attributes = new SQLStatementAttributes(new ProcedureCallNamesSQLStatementAttribute(procedureCallNames));
+        attributes = new SQLStatementAttributes(new ProcedureCallNamesSQLStatementAttribute(procedureCallNames), new TableSQLStatementAttribute(tables));
     }
 }

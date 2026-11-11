@@ -84,7 +84,7 @@ class FirebirdDatabaseInfoReturnPacketTest {
     private static Stream<Arguments> databaseInfoTypes() {
         return Stream.of(
                 Arguments.of("db sql dialect", FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT, 1, 3, true),
-                Arguments.of("ods version", FirebirdDatabaseInfoPacketType.ODS_VERSION, 4, 5, false),
-                Arguments.of("ods minor version", FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION, 4, 0, false));
+                Arguments.of("ods version", FirebirdDatabaseInfoPacketType.ODS_VERSION, 4, 13, false),
+                Arguments.of("ods minor version", FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION, 4, 1, false));
     }
 }

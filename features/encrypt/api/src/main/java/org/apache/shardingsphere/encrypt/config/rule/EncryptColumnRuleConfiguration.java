@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Optional;
 
 /**
@@ -31,12 +34,17 @@ import java.util.Optional;
 @Setter
 public final class EncryptColumnRuleConfiguration {
     
+    @NotBlank
     private final String name;
     
+    @NotNull
+    @Valid
     private final EncryptColumnItemRuleConfiguration cipher;
     
+    @Valid
     private EncryptColumnItemRuleConfiguration assistedQuery;
     
+    @Valid
     private EncryptColumnItemRuleConfiguration likeQuery;
     
     /**

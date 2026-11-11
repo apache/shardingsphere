@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionOptionReplayCallback;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
@@ -47,7 +46,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -137,13 +135,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
     
     @Override
     public boolean containsProviderType(final String providerType) {
-        try {
-            TypedSPILoader.checkService(XATransactionManagerProvider.class, providerType, new Properties());
-            return true;
-        } catch (final ServiceProviderNotFoundException ex) {
-            return false;
-        }
-        
+        return TypedSPILoader.containsService(XATransactionManagerProvider.class, providerType);
     }
     
     @Override

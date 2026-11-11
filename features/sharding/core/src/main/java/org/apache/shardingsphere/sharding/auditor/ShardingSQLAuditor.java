@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.auditor;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditor;
@@ -41,7 +42,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
         if (auditStrategies.isEmpty()) {
             return;
         }
-        Collection<String> disableAuditNames = queryContext.getHintValueContext().getDisableAuditNames();
+        Collection<String> disableAuditNames = new CaseInsensitiveSet<>(queryContext.getHintValueContext().getDisableAuditNames());
         for (ShardingAuditStrategyConfiguration each : auditStrategies) {
             audit(queryContext, database, rule, each, disableAuditNames);
         }
@@ -50,7 +51,7 @@ public final class ShardingSQLAuditor implements SQLAuditor<ShardingRule> {
     private void audit(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule,
                        final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> disableAuditNames) {
         for (String each : auditStrategy.getAuditorNames()) {
-            if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(each.toLowerCase())) {
+            if (!auditStrategy.isAllowHintDisable() || !disableAuditNames.contains(each)) {
                 rule.getAuditors().get(each).check(queryContext.getSqlStatementContext(), queryContext.getParameters(), queryContext.getMetaData().getGlobalRuleMetaData(), database);
             }
         }

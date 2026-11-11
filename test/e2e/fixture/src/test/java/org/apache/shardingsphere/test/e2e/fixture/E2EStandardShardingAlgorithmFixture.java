@@ -25,12 +25,13 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public final class E2EStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class E2EStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Comparable<?>> {
     
     @Override
-    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Integer> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        long value = ((Number) shardingValue.getValue()).longValue();
         for (String each : availableTargetNames) {
-            if (each.endsWith(String.valueOf(shardingValue.getValue() % 10))) {
+            if (each.endsWith(String.valueOf(value % 10L))) {
                 return each;
             }
         }
@@ -38,12 +39,12 @@ public final class E2EStandardShardingAlgorithmFixture implements StandardShardi
     }
     
     @Override
-    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
+    public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size(), 1F);
-        int minValue = shardingValue.getValueRange().hasLowerBound() ? shardingValue.getValueRange().lowerEndpoint() : Integer.MIN_VALUE;
-        int maxValue = shardingValue.getValueRange().hasUpperBound() ? shardingValue.getValueRange().upperEndpoint() : Integer.MAX_VALUE;
+        long minValue = shardingValue.getValueRange().hasLowerBound() ? ((Number) shardingValue.getValueRange().lowerEndpoint()).longValue() : Integer.MIN_VALUE;
+        long maxValue = shardingValue.getValueRange().hasUpperBound() ? ((Number) shardingValue.getValueRange().upperEndpoint()).longValue() : Integer.MAX_VALUE;
         long range = BigInteger.valueOf(maxValue).subtract(BigInteger.valueOf(minValue)).longValue();
-        int begin = Math.abs(minValue) % 10;
+        int begin = (int) (Math.abs(minValue) % 10L);
         if (range > 9L) {
             return availableTargetNames;
         }

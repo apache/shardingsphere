@@ -54,4 +54,7 @@
     <sql-case id="select_group_by_rollup_oracle" value="SELECT dept, SUM(salary) FROM employees GROUP BY ROLLUP(dept)" db-types="Oracle" />
     <sql-case id="select_group_by_null_expression" value="SELECT COUNT(*) FROM t_order GROUP BY NULL" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
     <sql-case id="select_having_without_group_by_oracle" value="SELECT MIN(order_id) FROM t_order HAVING MIN(order_id) &lt; ?" db-types="Oracle" />
+
+    <sql-case id="select_postgresql_group_by_all" value="SELECT foo_order_id FROM t_order GROUP BY ALL foo_order_id" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="select_postgresql_group_by_distinct" value="SELECT foo_order_id FROM t_order GROUP BY DISTINCT foo_order_id" db-types="PostgreSQL" case-types="literal" />
 </sql-cases>

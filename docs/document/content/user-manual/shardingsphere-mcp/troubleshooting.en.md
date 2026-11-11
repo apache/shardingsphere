@@ -6,7 +6,7 @@ weight = 7
 This page organizes troubleshooting by user-visible symptoms for ShardingSphere-MCP, AI application integration, database connectivity, metadata inspection, queries, and rule changes.
 For feature-specific rule planning, execution, and validation issues, see the corresponding feature plugin documentation.
 When troubleshooting, distinguish external environment issues from MCP protection behavior. Database service availability, account privileges, gateway forwarding, and AI application configuration must be fixed in their own systems. MCP provides failure categories and runtime protection details to help locate the issue.
-If you have not completed the basic post-deployment checks yet, start with the health-check and observability entrypoints in [Deployment](../deployment/) before using this symptom-oriented page.
+If you have not completed the basic post-deployment checks yet, start with the health-check and observability entrypoints in [Deployment](/en/user-manual/shardingsphere-mcp/deployment/) before using this symptom-oriented page.
 
 ## Issue List
 
@@ -30,7 +30,7 @@ Additional notes:
 - Queries return at most 100 rows by default. A single query can request at most 5000 rows, and the maximum requested query timeout is 300000 milliseconds.
 - Secret placeholders in manual packages should be replaced by operators in a controlled environment.
 - ShardingSphere-MCP does not fetch real sensitive values; real sensitive values must stay outside the AI application. If a rule change needs keys or credentials, replace the neutral placeholders in the manual execution package outside MCP and the AI application in a controlled environment.
-- For protocol request debugging, see the [Custom Integration Appendix](../developer-appendix/).
+- For protocol request debugging, see the [Custom Integration Appendix](/en/user-manual/shardingsphere-mcp/developer-appendix/).
 
 ## Connection Failure Categories
 

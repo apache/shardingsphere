@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
@@ -32,7 +34,8 @@ import java.util.Collection;
 @Getter
 public final class BroadcastRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private final Collection<String> tables;
+    @NotNull
+    private final Collection<@NotBlank String> tables;
     
     @Override
     public Collection<String> getLogicTableNames() {

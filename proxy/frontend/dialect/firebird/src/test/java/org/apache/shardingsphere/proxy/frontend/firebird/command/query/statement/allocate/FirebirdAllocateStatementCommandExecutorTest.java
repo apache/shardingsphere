@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -42,9 +41,6 @@ class FirebirdAllocateStatementCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
-    @Mock
-    private FirebirdAllocateStatementPacket packet;
-    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
@@ -61,7 +57,7 @@ class FirebirdAllocateStatementCommandExecutorTest {
     
     @Test
     void assertExecute() {
-        FirebirdAllocateStatementCommandExecutor executor = new FirebirdAllocateStatementCommandExecutor(packet, connectionSession);
+        FirebirdAllocateStatementCommandExecutor executor = new FirebirdAllocateStatementCommandExecutor(connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));

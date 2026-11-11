@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -46,6 +45,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -409,10 +409,10 @@ class WorkflowPlanningSupportTest {
     }
     
     private ShardingSphereTable createTableMetadata(final String tableName) {
-        return new ShardingSphereTable(tableName, List.of(), List.of(), List.of(), TableType.TABLE);
+        return new ShardingSphereTable(tableName, List.of(), List.of(), List.of());
     }
     
     private MCPColumnMetadata createColumnMetadata(final String tableName, final String columnName) {
-        return new MCPColumnMetadata(tableName, columnName, 1, java.sql.Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
+        return new MCPColumnMetadata(tableName, columnName, 1, Types.VARCHAR, "VARCHAR", Nullability.NULLABLE);
     }
 }

@@ -90,9 +90,7 @@ public final class MD5AssistedEncryptAlgorithm implements EncryptAlgorithm {
     @Override
     public AlgorithmConfiguration toConfiguration() {
         Properties result = PropertiesBuilder.build(new Property(SALT_KEY, props.getProperty(SALT_KEY, "")));
-        if (props.containsKey(MD5_ENCODER)) {
-            result.setProperty(MD5_ENCODER, md5Encoder);
-        }
+        result.setProperty(MD5_ENCODER, md5Encoder);
         return new AlgorithmConfiguration(getType(), result);
     }
     

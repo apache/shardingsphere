@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
@@ -62,6 +64,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof AccessDeniedException) {
             return toSQLException(FirebirdVendorError.LOGIN_FAILED);
+        }
+        if (sqlDialectException instanceof LoginErrorException) {
+            return toSQLException(FirebirdVendorError.LOGIN_ERROR);
         }
         if (sqlDialectException instanceof InvalidBatchHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_BATCH_HANDLE);
@@ -92,8 +97,7 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
             return toSQLException(FirebirdVendorError.EXCESS_TRANSACTIONS, ((ExcessTransactionsException) sqlDialectException).getMaxTransactions());
         }
         if (sqlDialectException instanceof DialectSQLParsingException) {
-            DialectSQLParsingException ex = (DialectSQLParsingException) sqlDialectException;
-            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, ex.getMessage());
+            return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, sqlDialectException.getMessage());
         }
         if (sqlDialectException instanceof TableExistsException) {
             return toSQLException(FirebirdVendorError.TABLE_ALREADY_EXISTS, ((TableExistsException) sqlDialectException).getTableName());
@@ -109,6 +113,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof CannotUpdateOldBlobException) {
             return toSQLException(FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB);
+        }
+        if (sqlDialectException instanceof InvalidSegstrTypeException) {
+            return toSQLException(FirebirdVendorError.INVALID_SEGSTR_TYPE);
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

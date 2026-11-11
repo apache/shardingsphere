@@ -103,6 +103,22 @@ public enum SQLVisitorRule {
     
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
+    CREATE_STATISTICS("CreateStatistics", SQLStatementType.DDL),
+    
+    CREATE_SUBSCRIPTION("CreateSubscription", SQLStatementType.DDL),
+    
+    CREATE_OPERATOR_CLASS("CreateOperatorClass", SQLStatementType.DDL),
+    
+    ALTER_OPERATOR_CLASS("AlterOperatorClass", SQLStatementType.DDL),
+    
+    CREATE_OPERATOR_FAMILY("CreateOperatorFamily", SQLStatementType.DDL),
+    
+    ALTER_OPERATOR_FAMILY("AlterOperatorFamily", SQLStatementType.DDL),
+    
+    ALTER_EVENT_TRIGGER("AlterEventTrigger", SQLStatementType.DDL),
+    
+    IMPORT_FOREIGN_SCHEMA("ImportForeignSchema", SQLStatementType.DDL),
+    
     CREATE_PACKAGE("CreatePackage", SQLStatementType.DDL),
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
@@ -182,6 +198,16 @@ public enum SQLVisitorRule {
     DROP_LOGFILE_GROUP("DropLogfileGroup", SQLStatementType.DDL),
     
     CREATE_SERVER("CreateServer", SQLStatementType.DDL),
+    
+    CREATE_USER_MAPPING("CreateUserMapping", SQLStatementType.DDL),
+    
+    ALTER_USER_MAPPING("AlterUserMapping", SQLStatementType.DDL),
+    
+    DROP_USER_MAPPING("DropUserMapping", SQLStatementType.DDL),
+    
+    CREATE_TRANSFORM("CreateTransform", SQLStatementType.DDL),
+    
+    ALTER_LARGE_OBJECT("AlterLargeObject", SQLStatementType.DDL),
     
     CREATE_SYNONYM("CreateSynonym", SQLStatementType.DDL),
     
@@ -903,7 +929,9 @@ public enum SQLVisitorRule {
     
     REFRESH("Refresh", SQLStatementType.DAL),
     
-    OPEN("Open", SQLStatementType.DDL);
+    OPEN("Open", SQLStatementType.DDL),
+    
+    GET_DIAGNOSTICS("GetDiagnosticsStatement", SQLStatementType.DAL);
     
     private final String name;
     

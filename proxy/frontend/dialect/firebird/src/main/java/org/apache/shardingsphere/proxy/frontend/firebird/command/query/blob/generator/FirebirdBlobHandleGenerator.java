@@ -71,12 +71,10 @@ public final class FirebirdBlobHandleGenerator {
      */
     public int nextBlobHandle(final int connectionId) {
         ConnectionBlobHandles connectionBlobHandles = connectionRegistry.get(connectionId);
-        ShardingSpherePreconditions.checkState(null != connectionBlobHandles,
-                () -> new DatabaseProtocolException("Connection %d is not registered.", connectionId));
+        ShardingSpherePreconditions.checkNotNull(connectionBlobHandles, () -> new DatabaseProtocolException("Connection %d is not registered.", connectionId));
         synchronized (connectionBlobHandles) {
             int handleIndex = connectionBlobHandles.handles.nextClearBit(connectionBlobHandles.searchPosition);
-            ShardingSpherePreconditions.checkState(MAX_OBJECT_HANDLE > handleIndex,
-                    () -> new DatabaseProtocolException("No free BLOB handles are available for connection %d.", connectionId));
+            ShardingSpherePreconditions.checkState(handleIndex < MAX_OBJECT_HANDLE, () -> new DatabaseProtocolException("No free BLOB handles are available for connection %d.", connectionId));
             connectionBlobHandles.handles.set(handleIndex);
             connectionBlobHandles.lastBlobHandle = handleIndex + 1;
             connectionBlobHandles.searchPosition = connectionBlobHandles.lastBlobHandle;
@@ -133,12 +131,10 @@ public final class FirebirdBlobHandleGenerator {
         if (null == connectionBlobHandles) {
             return;
         }
-        ShardingSpherePreconditions.checkState(0 < blobHandle && MAX_OBJECT_HANDLE >= blobHandle,
-                () -> new DatabaseProtocolException("Invalid BLOB handle %d.", blobHandle));
+        ShardingSpherePreconditions.checkState(blobHandle > 0 && blobHandle <= MAX_OBJECT_HANDLE, () -> new DatabaseProtocolException("Invalid BLOB handle %d.", blobHandle));
         synchronized (connectionBlobHandles) {
-            ShardingSpherePreconditions.checkState(connectionBlobHandles.handles.get(blobHandle - 1),
-                    () -> new DatabaseProtocolException("Invalid BLOB handle %d.", blobHandle));
             int position = blobHandle - 1;
+            ShardingSpherePreconditions.checkState(connectionBlobHandles.handles.get(position), () -> new DatabaseProtocolException("Invalid BLOB handle %d.", blobHandle));
             connectionBlobHandles.handles.clear(position);
             connectionBlobHandles.searchPosition = Math.min(connectionBlobHandles.searchPosition, position);
             if (blobHandle == connectionBlobHandles.lastBlobHandle) {
@@ -164,5 +160,4 @@ public final class FirebirdBlobHandleGenerator {
         
         private int lastBlobHandle;
     }
-    
 }

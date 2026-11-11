@@ -374,7 +374,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         }
         if (null != ctx.windowSpecification().frameClause()) {
             result.setFrameClause(new CommonExpressionSegment(ctx.windowSpecification().frameClause().start.getStartIndex(), ctx.windowSpecification().frameClause().stop.getStopIndex(),
-                    getOriginalText(ctx.windowSpecification().frameClause())));
+                    getOriginalText(ctx.windowSpecification().frameClause()), Collections.emptyList()));
         }
         return result;
     }
@@ -751,7 +751,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
     public ASTNode visitMatchExpression(final MatchExpressionContext ctx) {
         visit(ctx.expr());
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     @Override
@@ -937,12 +937,12 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         if (null != expr) {
             ASTNode result = visit(expr);
             if (result instanceof ColumnSegment) {
-                return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+                return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
             } else {
                 return result;
             }
         }
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList());
     }
     
     @Override

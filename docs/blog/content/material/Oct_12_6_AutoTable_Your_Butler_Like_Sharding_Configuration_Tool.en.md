@@ -1,5 +1,6 @@
 +++
 title = "AutoTable: Your Butler-Like Sharding Configuration Tool"
+translationKey = "Oct_12_6_AutoTable_Your_Butler_Like_Sharding_Configuration_Tool"
 weight = 22 
 chapter = true
 +++

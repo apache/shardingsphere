@@ -20,16 +20,23 @@ package org.apache.shardingsphere.sqlfederation.distsql.handler.update;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLGlobalRuleDefinitionExecutorAssert;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorSettings;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.update.DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 @DistSQLRuleDefinitionExecutorSettings("cases/alter-sql-federation-rule.xml")
 class AlterSQLFederationRuleExecutorTest {
@@ -40,6 +47,13 @@ class AlterSQLFederationRuleExecutorTest {
     @ArgumentsSource(DistSQLRuleDefinitionExecutorTestCaseArgumentsProvider.class)
     void assertExecuteUpdate(final String name, final GlobalRuleConfiguration ruleConfig,
                              final DistSQLStatement sqlStatement, final RuleConfiguration matchedRuleConfig, final Class<? extends Exception> expectedException) throws SQLException {
-        executorAssert.assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
+        SQLFederationProvider provider = mock(SQLFederationProvider.class);
+        when(provider.getType()).thenReturn("NONE");
+        when(provider.isDefault()).thenReturn(true);
+        try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class, CALLS_REAL_METHODS)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLFederationProvider.class)).thenReturn(Collections.singleton(provider));
+            executorAssert.assertExecuteUpdate(ruleConfig, sqlStatement, matchedRuleConfig, expectedException);
+        }
     }
+    
 }

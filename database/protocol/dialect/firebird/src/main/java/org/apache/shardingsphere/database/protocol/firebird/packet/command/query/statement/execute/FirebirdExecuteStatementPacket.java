@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -73,30 +72,23 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
             }
             payload.skipPadding(length);
         }
-        
         for (int i = 0; i < parameterTypes.size(); i++) {
-            Integer nullBit = nullBits.get(i / 8);
-            if (((nullBit >> i % 8) & 1) == 0) {
-                FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(i));
-                parameterValues.add(binaryProtocolValue.read(payload));
+            if (0 == ((nullBits.get(i / 8) >> i % 8) & 1)) {
+                parameterValues.add(FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(i)).read(payload));
             } else {
                 parameterValues.add(null);
             }
         }
-        
         if (isStoredProcedure()) {
             returnColumns.addAll(FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes());
             outputMessageNumber = payload.readInt4();
         }
-        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION16.getCode()) {
             statementTimeout = payload.readInt4Unsigned();
         }
-        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION18.getCode()) {
             cursorFlags = payload.readInt4Unsigned();
         }
-        
         if (protocolVersion.getCode() >= FirebirdProtocolVersion.PROTOCOL_VERSION19.getCode()) {
             maxBlobSize = payload.readInt4Unsigned();
         }

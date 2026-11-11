@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CreateUserContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.GrantContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
 
 import java.util.Collections;
@@ -44,19 +46,22 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        return new GrantStatement(getDatabaseType(),
-                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
+        return new GrantStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        return new RevokeStatement(getDatabaseType(),
-                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
+        return new RevokeStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override
     public ASTNode visitCreateRole(final CreateRoleContext ctx) {
         return new CreateRoleStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropRole(final DropRoleContext ctx) {
+        return new DropRoleStatement(getDatabaseType());
     }
     
     @Override

@@ -112,6 +112,29 @@ class ShardingSQLAuditorTest {
     }
     
     @Test
+    void assertAuditSuccessWithDisableAuditNamesInDifferentCase() {
+        when(auditStrategy.isAllowHintDisable()).thenReturn(true);
+        when(hintValueContext.getDisableAuditNames()).thenReturn(Collections.singleton("FOO_AUDITOR"));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), metaData);
+        sqlAuditor.audit(queryContext, database, rule);
+        verify(rule.getAuditors().get("foo_auditor"), never()).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
+    }
+    
+    @Test
+    void assertAuditSuccessWithAuditorNameContainingUpperCase() {
+        when(auditStrategy.isAllowHintDisable()).thenReturn(true);
+        when(auditStrategy.getAuditorNames()).thenReturn(Collections.singletonList("Foo_Auditor"));
+        when(hintValueContext.getDisableAuditNames()).thenReturn(Collections.singleton("Foo_Auditor"));
+        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), hintValueContext, mock(ConnectionContext.class), metaData);
+        sqlAuditor.audit(queryContext, database, rule);
+        verify(rule.getAuditors().get("Foo_Auditor"), never()).check(sqlStatementContext, Collections.emptyList(), globalRuleMetaData, database);
+    }
+    
+    @Test
     void assertAuditSuccessWithoutDisableAuditNames() {
         when(hintValueContext.getDisableAuditNames()).thenReturn(Collections.singleton("bar_auditor"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);

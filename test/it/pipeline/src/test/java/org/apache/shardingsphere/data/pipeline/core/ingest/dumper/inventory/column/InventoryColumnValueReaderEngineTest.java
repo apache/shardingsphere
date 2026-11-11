@@ -138,6 +138,12 @@ class InventoryColumnValueReaderEngineTest {
     }
     
     @Test
+    void assertReadWithNullUnsignedBigIntValue() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.BIGINT);
+        assertNull(engine.read(resultSet, metaData, 1));
+    }
+    
+    @Test
     void assertReadWithNumericValue() throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.NUMERIC);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("1"));

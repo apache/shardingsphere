@@ -1,7 +1,7 @@
 +++
-pre = "<b>8. </b>"
+pre = "<b>9. </b>"
 title = "FAQ"
-weight = 8
+weight = 9
 chapter = true
 +++
 
@@ -104,7 +104,7 @@ DROP DATABASE sharding_db;
 
 1. 第三方数据库工具在连接 ShardingSphere-Proxy 时会发送一些 SQL 查询元数据，当 ShardingSphere-Proxy 没有创建 `database` 或者没有注册 `storage unit` 时，ShardingSphere-Proxy 无法执行 SQL。
 2. 推荐先创建 `database` 并注册 `storage unit` 之后再使用第三方数据库工具连接。
-3. 有关 `storage unit` 的详情请参考。[相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)
+3. 有关 `storage unit` 的详情请参考。[相关介绍](/cn/user-manual/distsql/syntax/rdl/storage-unit-definition/)
 
 ## 分片
 
@@ -125,7 +125,7 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 回答：
 
-不分库分表的表在 ShardingSphere 中叫做单表，可以使用 [LOAD 语句](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)或者 [SINGLE 规则](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)配置需要加载的单表。
+不分库分表的表在 ShardingSphere 中叫做单表，可以使用 [LOAD 语句](https://shardingsphere.apache.org/document/current/cn/user-manual/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)或者 [SINGLE 规则](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)配置需要加载的单表。
 
 ### 为什么绑定表中包含数字结尾的表名时会提示配置无效？
 
@@ -221,7 +221,7 @@ rules:
 LOAD SINGLE TABLE *.*;
 ```
 
-更多 LOAD 单表 DistSQL 请参考[单表加载](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)。
+更多 LOAD 单表 DistSQL 请参考[单表加载](/cn/user-manual/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)。
 
 ## DistSQL
 
@@ -231,7 +231,7 @@ LOAD SINGLE TABLE *.*;
 
 1. 如需自定义 JDBC 参数，请使用 `urlSource` 的方式定义 `dataSource`。
 2. ShardingSphere 预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
-3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)。
+3. 以上规则请参考 [相关介绍](/cn/user-manual/distsql/syntax/rdl/storage-unit-definition/)。
 
 ### 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleRule]`。
 

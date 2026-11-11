@@ -90,6 +90,16 @@ class ReadwriteSplittingStatusWorkflowPlanningServiceTest {
         verify(queryFacade, never()).query("logic_db", "SHOW STATUS FROM READWRITE_SPLITTING RULE readwrite_ds FROM logic_db");
     }
     
+    @Test
+    void assertPlanClarifiesMissingDatabase() {
+        ReadwriteSplittingStatusWorkflowRequest request = new ReadwriteSplittingStatusWorkflowRequest();
+        request.setTargetStatus("enable");
+        WorkflowContextSnapshot actual = planningService.plan(new TestWorkflowSessionContext(), mock(MCPFeatureQueryFacade.class), request);
+        assertThat(actual.getStatus(), is(WorkflowLifecycle.STATUS_CLARIFYING));
+        assertThat(actual.getIssues().getFirst().getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
+        assertTrue(actual.getRuleArtifacts().isEmpty());
+    }
+    
     private MCPFeatureQueryFacade createQueryFacade(final List<Map<String, Object>> statuses) {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.isSameIdentifier("logic_db", IdentifierScope.TABLE, "readwrite_ds", "readwrite_ds")).thenReturn(true);

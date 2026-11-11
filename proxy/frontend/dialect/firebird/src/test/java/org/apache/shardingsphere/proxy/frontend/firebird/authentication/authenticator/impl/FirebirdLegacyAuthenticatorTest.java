@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.firebirdsql.gds.ng.wire.auth.legacy.UnixCrypt;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,7 +40,7 @@ class FirebirdLegacyAuthenticatorTest {
     @Test
     void assertAuthenticateSuccess() {
         ShardingSphereUser user = new ShardingSphereUser("foo", "password", "");
-        String expectedPassword = UnixCrypt.crypt(user.getPassword(), "9z").substring(2, 13);
+        String expectedPassword = UnixCrypt.crypt(user.getPassword(), "9z", StandardCharsets.UTF_8.name()).substring(2, 13);
         assertTrue(authenticator.authenticate(user, new Object[]{expectedPassword}));
     }
     

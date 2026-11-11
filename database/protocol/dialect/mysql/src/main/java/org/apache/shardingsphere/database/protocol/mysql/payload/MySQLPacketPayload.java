@@ -118,7 +118,7 @@ public final class MySQLPacketPayload implements PacketPayload {
     public long readInt6() {
         long result = 0L;
         for (int i = 0; i < 6; i++) {
-            result |= ((long) (0xff & byteBuf.readByte())) << (8 * i);
+            result |= (long) (0xff & byteBuf.readByte()) << (8 * i);
         }
         return result;
     }

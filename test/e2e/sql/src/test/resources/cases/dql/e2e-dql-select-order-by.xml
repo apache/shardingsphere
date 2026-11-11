@@ -17,7 +17,7 @@
   -->
 
 <e2e-test-cases>
-    <test-case sql="SELECT * FROM t_order_item WHERE item_id &lt;&gt; ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order_item WHERE item_id &lt;&gt; ? ORDER BY item_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="100001:int" expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -47,7 +47,7 @@
         <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order WHERE user_id &gt;= ? AND user_id &lt;= ? AND order_id &gt;= ? AND order_id &lt;= ? ORDER BY user_id, order_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 12:int, 1009:int, 1108:int" expected-data-source-name="read_dataset" />
         <assertion parameters="10:int, 12:int, 1309:int, 1408:int" expected-data-source-name="read_dataset" />
     </test-case>

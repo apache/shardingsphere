@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,5 +56,57 @@ class MySQLSQLFederationFunctionRegisterTest {
         ScalarFunctionImpl actualFunction = (ScalarFunctionImpl) functions.iterator().next();
         assertTrue(expectedClass.isAssignableFrom(actualFunction.method.getDeclaringClass()));
         assertThat(actualFunction.method.getName(), is(expectedMethod));
+    }
+    
+    @Test
+    void assertGetUnsupportedFunctionNames() {
+        assertThat(register.getUnsupportedFunctionNames(), containsInAnyOrder(
+                "AES_DECRYPT",
+                "AES_ENCRYPT",
+                "BENCHMARK",
+                "BIT_LENGTH",
+                "CEILING",
+                "CHAR",
+                "CHARSET",
+                "COERCIBILITY",
+                "CONV",
+                "CRC32",
+                "DATABASE",
+                "ELT",
+                "EXPORT_SET",
+                "FIELD",
+                "FIND_IN_SET",
+                "FORMAT",
+                "FROM_UNIXTIME",
+                "HEX",
+                "INSERT",
+                "LCASE",
+                "LEAST",
+                "LENGTH",
+                "LOAD_FILE",
+                "LOCATE",
+                "LOG",
+                "LOG2",
+                "LPAD",
+                "LTRIM",
+                "MAKE_SET",
+                "MID",
+                "OCT",
+                "OCTET_LENGTH",
+                "ORD",
+                "POW",
+                "QUOTE",
+                "REGEXP_INSTR",
+                "REGEXP_LIKE",
+                "REGEXP_SUBSTR",
+                "RPAD",
+                "RTRIM",
+                "SHA",
+                "SUBSTRING",
+                "SUBSTRING_INDEX",
+                "TIMEDIFF",
+                "UCASE",
+                "UNHEX",
+                "WEIGHT_STRING"));
     }
 }

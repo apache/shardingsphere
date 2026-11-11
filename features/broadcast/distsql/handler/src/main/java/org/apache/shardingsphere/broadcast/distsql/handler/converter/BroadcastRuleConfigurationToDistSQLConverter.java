@@ -19,7 +19,7 @@ package org.apache.shardingsphere.broadcast.distsql.handler.converter;
 
 import com.google.common.base.Joiner;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
-import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.convert.spi.RuleConfigurationToDistSQLConverter;
 
 /**
  * Broadcast rule configuration to DistSQL converter.

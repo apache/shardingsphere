@@ -28,6 +28,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
@@ -63,6 +64,12 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     private boolean closed;
     
+    private int localUpdateCount = -1;
+    
+    protected final void setLocalUpdateCount(final int localUpdateCount) {
+        this.localUpdateCount = localUpdateCount;
+    }
+    
     protected final void handleAutoCommitBeforeExecution(final SQLStatement sqlStatement, final ShardingSphereConnection connection) throws SQLException {
         checkAllowedSQLStatementWhenTransactionFailed(sqlStatement, connection);
         if (AutoCommitUtils.isNeedStartTransaction(sqlStatement)) {
@@ -75,7 +82,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
         if (!transactionContext.isExceptionOccur()) {
             return;
         }
-        DatabaseType databaseType = connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
+        DatabaseType databaseType = connection.getContextManager().getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
         if (new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()) {
             ShardingSpherePreconditions.checkState(sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement,
                     () -> new SQLFeatureNotSupportedException("Current transaction is aborted, commands ignored until end of transaction block."));
@@ -90,8 +97,11 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
         if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
-            DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+            ShardingSphereDatabase database = metaData.getDatabase(connection.getCurrentDatabaseName());
+            if (null == database) {
+                return;
+            }
+            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData();
             if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);
             }
@@ -175,6 +185,9 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final int getUpdateCount() throws SQLException {
+        if (0 <= localUpdateCount) {
+            return localUpdateCount;
+        }
         if (isAccumulate()) {
             return accumulate();
         }
@@ -203,6 +216,10 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final boolean getMoreResults() throws SQLException {
+        if (0 <= localUpdateCount) {
+            localUpdateCount = -1;
+            return false;
+        }
         boolean result = false;
         for (Statement each : getRoutedStatements()) {
             result = each.getMoreResults();
@@ -212,6 +229,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final boolean getMoreResults(final int current) {
+        localUpdateCount = -1;
         return false;
     }
     

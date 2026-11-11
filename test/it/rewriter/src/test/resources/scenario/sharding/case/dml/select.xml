@@ -110,6 +110,11 @@
         <output sql="SELECT * FROM t_account_0 WHERE amount = 1000 UNION ALL SELECT * FROM t_account_1 WHERE amount = 1000" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="select_with_and_not_or_sharding_conditions_for_literals" db-types="SQLServer,Oracle,SQL92">
+        <input sql="SELECT * FROM t_account WHERE account_id = 100 AND NOT amount = 0 OR account_id = 101" />
+        <output sql="SELECT * FROM t_account_0 WHERE account_id = 100 AND NOT amount = 0 OR account_id = 101 UNION ALL SELECT * FROM t_account_1 WHERE account_id = 100 AND NOT amount = 0 OR account_id = 101" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_without_sharding_value_with_dollar_parameter_marker_for_parameters" db-types="PostgreSQL,openGauss">
         <input sql="SELECT * FROM public.t_account WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
         <output sql="SELECT * FROM public.t_account_0 WHERE amount = $2 OR amount = $1 UNION ALL SELECT * FROM public.t_account_1 WHERE amount = $2 OR amount = $1" parameters="900, 1000" />
@@ -124,6 +129,12 @@
         <input sql="SELECT distinct a.account_id FROM t_account as a" />
         <output sql="SELECT distinct a.account_id FROM t_account_0 as a ORDER BY a.account_id ASC " />
         <output sql="SELECT distinct a.account_id FROM t_account_1 as a ORDER BY a.account_id ASC " />
+    </rewrite-assertion>
+
+    <rewrite-assertion id="select_distinct_with_table_owner_with_multiple_route" db-types="MySQL">
+        <input sql="SELECT DISTINCT t_account.account_id FROM t_account" />
+        <output sql="SELECT DISTINCT t_account_0.account_id FROM t_account_0 ORDER BY t_account_0.account_id ASC " />
+        <output sql="SELECT DISTINCT t_account_1.account_id FROM t_account_1 ORDER BY t_account_1.account_id ASC " />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_for_literals_with_order_by_with_table_prefix" db-types="MySQL">
@@ -253,6 +264,12 @@
         <input sql="SELECT o.* FROM t_account o JOIN t_account_detail i ON o.account_id GROUP BY i.amount" />
         <output sql="SELECT o.* , i.amount AS GROUP_BY_DERIVED_0 FROM t_account_0 o JOIN t_account_detail_0 i ON o.account_id GROUP BY i.amount ORDER BY i.amount ASC " />
         <output sql="SELECT o.* , i.amount AS GROUP_BY_DERIVED_0 FROM t_account_1 o JOIN t_account_detail_1 i ON o.account_id GROUP BY i.amount ORDER BY i.amount ASC " />
+    </rewrite-assertion>
+    
+    <rewrite-assertion id="select_group_by_with_table_owner_with_multiple_route">
+        <input sql="SELECT t_account.status, COUNT(*) FROM t_account GROUP BY t_account.status" />
+        <output sql="SELECT t_account_0.status, COUNT(*) FROM t_account_0 GROUP BY t_account_0.status ORDER BY t_account_0.status ASC " />
+        <output sql="SELECT t_account_1.status, COUNT(*) FROM t_account_1 GROUP BY t_account_1.status ORDER BY t_account_1.status ASC " />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_group_by_and_order_by_with_different_item_with_multiple_route">

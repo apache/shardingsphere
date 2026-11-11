@@ -37,6 +37,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -76,11 +77,34 @@ class AlterShardingKeyGenerateStrategyExecutorTest {
     void assertCheckBeforeUpdateWithConflictingGeneratedKeyGenerator() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerateStrategies().put("order_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration("old_generator", "t_order", "order_id"));
+        currentRuleConfig.getKeyGenerators().put("order_strategy_snowflake", new AlgorithmConfiguration("UUID", new Properties()));
+        executor.setRule(mockRule(currentRuleConfig));
+        AlterShardingKeyGenerateStrategyStatement sqlStatement = new AlterShardingKeyGenerateStrategyStatement("order_strategy",
+                new ColumnKeyGenerateStrategyDefinitionSegment("t_order", "order_id", null, new AlgorithmSegment("SNOWFLAKE", new Properties())));
+        DuplicateRuleException actual = assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertThat(actual.getMessage(), is("Duplicate key generator rule names 'order_strategy_snowflake' in database 'foo_db'."));
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithStrategyNamedKeyGenerator() {
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.getKeyGenerateStrategies().put("order_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration("old_generator", "t_order", "order_id"));
         currentRuleConfig.getKeyGenerators().put("order_strategy", new AlgorithmConfiguration("UUID", new Properties()));
         executor.setRule(mockRule(currentRuleConfig));
         AlterShardingKeyGenerateStrategyStatement sqlStatement = new AlterShardingKeyGenerateStrategyStatement("order_strategy",
                 new ColumnKeyGenerateStrategyDefinitionSegment("t_order", "order_id", null, new AlgorithmSegment("SNOWFLAKE", new Properties())));
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
+    void assertCheckBeforeUpdateWithCurrentGeneratedKeyGenerator() {
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.getKeyGenerateStrategies().put("order_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration("order_strategy_snowflake", "t_order", "order_id"));
+        currentRuleConfig.getKeyGenerators().put("order_strategy_snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        executor.setRule(mockRule(currentRuleConfig));
+        AlterShardingKeyGenerateStrategyStatement sqlStatement = new AlterShardingKeyGenerateStrategyStatement("order_strategy",
+                new ColumnKeyGenerateStrategyDefinitionSegment("t_order", "order_id", null, new AlgorithmSegment("SNOWFLAKE", new Properties())));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test

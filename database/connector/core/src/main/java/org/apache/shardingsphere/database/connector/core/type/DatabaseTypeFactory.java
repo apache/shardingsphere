@@ -71,7 +71,7 @@ public final class DatabaseTypeFactory {
     
     private static Optional<DatabaseType> findByDialectJdbcUrlFetcher(final Connection connection) throws SQLException {
         for (DialectJdbcUrlFetcher each : ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)) {
-            if (connection.isWrapperFor(each.getConnectionClass())) {
+            if (each.getConnectionClass().isInstance(connection) || connection.isWrapperFor(each.getConnectionClass())) {
                 return Optional.of(get(each.fetch(connection)));
             }
         }

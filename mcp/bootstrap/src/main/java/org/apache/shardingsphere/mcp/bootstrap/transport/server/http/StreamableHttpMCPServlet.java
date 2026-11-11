@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
@@ -72,8 +73,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
-    private final McpJsonMapper jsonMapper;
-    
     private final ServerTransportSecurityValidator securityValidator;
     
     private final MCPSessionManager sessionManager;
@@ -92,7 +91,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
                 new OriginHeaderConstraint(HttpTransportHostUtils.isLoopbackHost(config.getBindHost())),
                 new ProtocolVersionHeaderConstraint(), sessionAttributionResolver);
         delegate = createDelegate(jsonMapper, config.getEndpointPath());
-        this.jsonMapper = jsonMapper;
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         closed = new AtomicBoolean();
@@ -237,7 +235,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         McpError error = MCPTransportErrorFactory.createError(cause);
         response.setStatus(cause.getStatusCode());
         response.setContentType(JSON_CONTENT_TYPE);
-        response.getWriter().write(jsonMapper.writeValueAsString(Map.of("jsonrpc", McpSchema.JSONRPC_VERSION, "error", error.getJsonRpcError())));
+        response.getWriter().write(JsonEngine.marshal(Map.of("jsonrpc", McpSchema.JSONRPC_VERSION, "error", error.getJsonRpcError())));
     }
     
     private Map<String, List<String>> extractHeaders(final HttpServletRequest request) {

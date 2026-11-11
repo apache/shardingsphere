@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
-import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -38,9 +38,7 @@ public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPa
         payload.skipReserved(4);
         blobHandle = payload.readBlobHandle();
         segmentLength = payload.readInt4();
-        ByteBuf buffer = payload.readBuffer();
-        segment = new byte[buffer.readableBytes()];
-        buffer.readBytes(segment);
+        segment = ByteBufUtil.getBytes(payload.readBuffer());
     }
     
     @Override
@@ -54,8 +52,6 @@ public final class FirebirdGetBlobSegmentCommandPacket extends FirebirdCommandPa
      * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
-        int length = 12;
-        length += payload.getBufferLength(length);
-        return length;
+        return 12 + payload.getBufferLength(12);
     }
 }

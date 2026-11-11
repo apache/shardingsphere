@@ -20,6 +20,9 @@ package org.apache.shardingsphere.shadow.config.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 /**
@@ -29,7 +32,9 @@ import java.util.Collection;
 @Getter
 public final class ShadowTableConfiguration {
     
-    private final Collection<String> dataSourceNames;
+    @NotNull
+    private final Collection<@NotBlank String> dataSourceNames;
     
-    private final Collection<String> shadowAlgorithmNames;
+    @NotEmpty
+    private final Collection<@NotBlank String> shadowAlgorithmNames;
 }

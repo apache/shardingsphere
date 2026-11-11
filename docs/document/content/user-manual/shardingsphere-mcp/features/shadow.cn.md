@@ -27,7 +27,7 @@ weight = 6
 - 确认清理计划包含目标算法未被使用的证据。
 - 执行 workflow 前，确认返回的 `plan_id`、`resources_to_read`、`next_actions` 和 `distsql_artifacts`。
 
-规则变更的通用审查流程见[规则变更流程](../plugin-workflow/)。
+规则变更的通用审查流程见[规则变更流程](/cn/user-manual/shardingsphere-mcp/features/plugin-workflow/)。
 
 ## 限制
 

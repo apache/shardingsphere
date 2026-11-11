@@ -250,4 +250,22 @@ class EncryptProjectionTokenGeneratorTest {
         }
         return result;
     }
+    
+    @Test
+    void assertGenerateSQLTokensWithDerivedSubqueryProjections() {
+        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()),
+                identifierContext);
+        SelectStatementContext subqueryContext = mockInsertSelectStatementContext(TableSourceType.PHYSICAL_TABLE, QuoteCharacter.QUOTE);
+        when(subqueryContext.getSubqueryType()).thenReturn(SubqueryType.TABLE);
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSubqueryContexts()).thenReturn(Collections.singletonMap(0, subqueryContext));
+        Collection<SQLToken> actual = actualGenerator.generateSQLTokens(sqlStatementContext);
+        assertThat(actual.size(), is(1));
+        SubstitutableColumnNameToken actualToken = (SubstitutableColumnNameToken) actual.iterator().next();
+        List<ColumnProjection> actualProjections = getColumnProjections(actualToken.getProjections());
+        assertThat(getProjectionNames(actualProjections), is(Arrays.asList("cipher_mobile", "assisted_mobile", "like_mobile")));
+        assertThat(actualProjections.get(0).getAlias().get().getValue(), is(EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName("mobile", identifierContext)));
+        assertThat(actualProjections.get(1).getAlias().get().getValue(), is(EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName("mobile", identifierContext)));
+        assertThat(actualProjections.get(2).getAlias().get().getValue(), is(EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName("mobile", identifierContext)));
+    }
 }

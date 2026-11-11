@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.algorithm.core.config;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Properties;
 
 /**
@@ -31,12 +30,12 @@ import java.util.Properties;
 @EqualsAndHashCode
 public final class AlgorithmConfiguration {
     
+    @NotEmpty(message = "Type is required.")
     private final String type;
     
     private final Properties props;
     
     public AlgorithmConfiguration(final String type, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
         this.type = type;
         this.props = null == props ? new Properties() : props;
     }

@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
-import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.context.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.executor.preview.PreviewExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -36,7 +39,6 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
@@ -49,6 +51,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -57,9 +60,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -67,9 +67,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.MockedConstruction;
 import org.mockito.invocation.InvocationOnMock;
 
@@ -87,7 +88,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -106,23 +109,21 @@ class PreviewExecutorTest {
     
     private ContextManager contextManager;
     
+    private ConnectionContext connectionContext;
+    
     @BeforeEach
     void setUp() {
-        contextManager = mockContextManager();
-        ProxyContext.init(contextManager);
-        BackendExecutorContext.getInstance().init();
+        contextManager = mockContextManager(mockCompleteDatabase());
+        connectionContext = new ConnectionContext(Collections::emptyList);
+        connectionContext.setCurrentDatabaseName("foo_db");
+        executor.setConnectionContext(mockConnectionContext(new HintValueContext(), connectionContext, mock(DatabaseConnectionManager.class)));
     }
     
-    @AfterEach
-    void tearDown() {
-        BackendExecutorContext.getInstance().shutdown();
-    }
-    
-    private ContextManager mockContextManager() {
+    private ContextManager mockContextManager(final ShardingSphereDatabase... databases) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Collection<ShardingSphereRule> rules = Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
-        when(result.getMetaDataContexts().getMetaData()).thenReturn(
-                new ShardingSphereMetaData(Collections.emptyList(), mock(), new RuleMetaData(rules), new ConfigurationProperties(new Properties())));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Arrays.asList(databases), mock(), new RuleMetaData(rules), new ConfigurationProperties(new Properties()));
+        when(result.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         return result;
     }
     
@@ -133,22 +134,87 @@ class PreviewExecutorTest {
     
     @Test
     void assertGetRowsWithInvalidSQL() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(databaseType);
-        executor.setDatabase(database);
         assertThrows(DialectSQLParsingException.class, () -> executor.getRows(new PreviewStatement("invalid sql"), contextManager));
     }
     
     @Test
     void assertGetRowsWithIncompleteDatabase() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getName()).thenReturn("foo_db");
-        executor.setDatabase(database);
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        contextManager = mockContextManager(database);
         HintValueContext hintValueContext = new HintValueContext();
-        executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
+        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, mock(DatabaseConnectionManager.class)));
         assertThrows(EmptyRuleException.class, () -> executor.getRows(new PreviewStatement("SELECT 1"), contextManager));
         assertTrue(hintValueContext.isSkipMetadataValidate());
+    }
+    
+    @ParameterizedTest(name = "{0}, current database: {1}")
+    @CsvSource({"SELECT 1,", "SELECT 1 FROM foo_db.foo_table,", "SELECT 1 FROM foo_db.foo_table FOR UPDATE,", "SELECT 1 FROM foo_table,foo_db"})
+    void assertGetRowsWithDatabaseResolution(final String sql, final String currentDatabaseName) {
+        connectionContext = new ConnectionContext(Collections::emptyList);
+        connectionContext.setCurrentDatabaseName(currentDatabaseName);
+        executor.setConnectionContext(mockConnectionContext(new HintValueContext(), connectionContext, mock(DatabaseConnectionManager.class)));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        ExecutionContext executionContext = new ExecutionContext(mock(QueryContext.class), Collections.singletonList(createExecutionUnit("foo_ds", "SELECT 1")), mock(RouteContext.class));
+        try (
+                MockedConstruction<SQLFederationEngine> ignoredFederationEngine = mockConstruction(SQLFederationEngine.class, (mock, context) -> {
+                    assertThat(context.arguments().get(0), is("foo_db"));
+                    when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false);
+                });
+                MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class)))
+                                .thenAnswer(invocation -> {
+                                    QueryContext actualQueryContext = invocation.getArgument(0);
+                                    assertThat(actualQueryContext.getUsedDatabase(), sameInstance(database));
+                                    return executionContext;
+                                }))) {
+            assertThat(executor.getRows(new PreviewStatement(sql), contextManager).iterator().next().getCell(1), is("foo_ds"));
+            assertThat(connectionContext.getCurrentDatabaseName(), is(Optional.ofNullable(currentDatabaseName)));
+        }
+    }
+    
+    @Test
+    void assertGetRowsWithNoDatabaseSelected() {
+        connectionContext = new ConnectionContext(Collections::emptyList);
+        executor.setConnectionContext(mockConnectionContext(new HintValueContext(), connectionContext, mock(DatabaseConnectionManager.class)));
+        assertThrows(NoDatabaseSelectedException.class, () -> executor.getRows(new PreviewStatement("SELECT 1 FROM foo_table"), contextManager));
+    }
+    
+    @Test
+    void assertGetRowsWithUnknownDatabase() {
+        connectionContext.setCurrentDatabaseName("unknown_db");
+        assertThrows(UnknownDatabaseException.class, () -> executor.getRows(new PreviewStatement("SELECT 1"), contextManager));
+    }
+    
+    @Test
+    void assertGetRowsWithUnknownQualifiedDatabase() {
+        connectionContext = new ConnectionContext(Collections::emptyList);
+        executor.setConnectionContext(mockConnectionContext(new HintValueContext(), connectionContext, mock(DatabaseConnectionManager.class)));
+        assertThrows(UnknownDatabaseException.class, () -> executor.getRows(new PreviewStatement("SELECT 1 FROM unknown_db.foo_table"), contextManager));
+    }
+    
+    @Test
+    void assertGetRowsWithMultipleDatabasesWithFederation() {
+        ShardingSphereDatabase database = mockCompleteDatabase();
+        ShardingSphereDatabase otherDatabase = mockCompleteDatabase();
+        when(otherDatabase.getName()).thenReturn("bar_db");
+        contextManager = mockContextManager(database, otherDatabase);
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
+        AtomicReference<String> actualSchemaName = new AtomicReference<>();
+        try (
+                MockedConstruction<DriverExecutionPrepareEngine> ignoredPrepareEngine = mockConstruction(DriverExecutionPrepareEngine.class);
+                MockedConstruction<SQLFederationEngine> ignoredFederationEngine = mockConstruction(SQLFederationEngine.class, (mock, context) -> {
+                    configureSQLFederationEngine(mock, context, actualSchemaName);
+                    when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenAnswer(invocation -> {
+                        QueryContext actualQueryContext = invocation.getArgument(0);
+                        assertThat(actualQueryContext.getUsedDatabaseNames(), containsInAnyOrder("foo_db", "bar_db"));
+                        return true;
+                    });
+                })) {
+            assertThat(executor.getRows(new PreviewStatement("SELECT 1 FROM foo_db.foo_table, bar_db.bar_table"), contextManager).iterator().next().getCell(1), is("bar_ds"));
+            assertThat(actualSchemaName.get(), is("foo_db"));
+        }
     }
     
     @Test
@@ -156,17 +222,17 @@ class PreviewExecutorTest {
         HintValueContext hintValueContext = new HintValueContext();
         ShardingSphereDatabase database = mockCompleteDatabase();
         when(database.getDefaultSchemaName()).thenReturn("foo_default_schema");
-        executor.setDatabase(database);
-        executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
+        contextManager = mockContextManager(database);
+        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(null));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
         ExecutionContext executionContext = new ExecutionContext(mock(QueryContext.class), Collections.singletonList(createExecutionUnit("foo_ds", "SELECT 1")), mock(RouteContext.class));
         try (
                 MockedConstruction<SQLBindEngine> ignoredBindEngine =
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(sqlStatementContext));
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
                         mockConstruction(SQLFederationEngine.class, (mock, context) -> {
                             assertThat(context.arguments().get(1), is("foo_default_schema"));
@@ -182,15 +248,13 @@ class PreviewExecutorTest {
     @Test
     void assertGetRowsWithCursorHeldAndNoCursorName() {
         HintValueContext hintValueContext = new HintValueContext();
-        executor.setDatabase(mockCompleteDatabase());
-        executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
+        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(null));
         CursorHeldSQLStatementContext cursorHeldSQLStatementContext = new CursorHeldSQLStatementContext(sqlStatement);
         ExecutionContext executionContext = new ExecutionContext(mock(QueryContext.class), Collections.singletonList(createExecutionUnit("foo_ds", "SELECT 1")), mock(RouteContext.class));
         try (
                 MockedConstruction<SQLBindEngine> ignoredBindEngine =
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(cursorHeldSQLStatementContext));
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<SQLFederationEngine> ignoredFederationEngine =
                         mockConstruction(SQLFederationEngine.class, (mock, context) -> when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false));
                 MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
@@ -202,24 +266,21 @@ class PreviewExecutorTest {
     
     @Test
     void assertGetRowsWithCursorHeldAndCursorNameWithFederation() {
-        ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);
+        connectionContext = new ConnectionContext(Collections::emptyList);
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
         when(tablesContext.getSchemaName()).thenReturn(Optional.of("foo_schema"));
+        when(tablesContext.getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         when(cursorStatementContext.getTablesContext()).thenReturn(tablesContext);
         connectionContext.getCursorContext().getCursorStatementContexts().put("foo_cursor", cursorStatementContext);
-        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
-        when(databaseConnectionManager.getConnectionSession().getProcessId()).thenReturn("process_id");
         HintValueContext hintValueContext = new HintValueContext();
-        executor.setDatabase(mockCompleteDatabase());
-        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, databaseConnectionManager));
+        executor.setConnectionContext(mockConnectionContext(hintValueContext, connectionContext, mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(new CursorNameSegment(0, 0, new IdentifierValue("FOO_CURSOR"))));
         CursorHeldSQLStatementContext cursorHeldSQLStatementContext = new CursorHeldSQLStatementContext(sqlStatement);
         AtomicReference<String> actualSchemaName = new AtomicReference<>();
         try (
                 MockedConstruction<SQLBindEngine> ignoredBindEngine =
                         mockConstruction(SQLBindEngine.class, (mock, context) -> when(mock.bind(any(SQLStatement.class))).thenReturn(cursorHeldSQLStatementContext));
-                MockedConstruction<JDBCExecutor> ignoredJDBCExecutor = mockConstruction(JDBCExecutor.class);
                 MockedConstruction<DriverExecutionPrepareEngine> ignoredPrepareEngine = mockConstruction(DriverExecutionPrepareEngine.class);
                 MockedConstruction<SQLFederationEngine> ignored4 = mockConstruction(SQLFederationEngine.class, (mock, context) -> configureSQLFederationEngine(mock, context, actualSchemaName))) {
             assertThat(executor.getRows(new PreviewStatement("SELECT 1"), contextManager).iterator().next().getCell(1), is("bar_ds"));
@@ -235,6 +296,8 @@ class PreviewExecutorTest {
         when(result.isComplete()).thenReturn(true);
         when(result.getResourceMetaData()).thenReturn(createResourceMetaData());
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(result.getDefaultSchemaName()).thenReturn("foo_db");
+        when(result.getSchema(any(IdentifierValue.class))).thenReturn(new ShardingSphereSchema("foo_db", databaseType));
         return result;
     }
     
@@ -258,7 +321,9 @@ class PreviewExecutorTest {
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getHintValueContext()).thenReturn(hintValueContext);
         when(queryContext.getConnectionContext()).thenReturn(connectionContext);
-        return new DistSQLConnectionContext(queryContext, 1, databaseType, databaseConnectionManager, mock(ExecutorStatementManager.class));
+        DistSQLConnectionContext result = new DistSQLConnectionContext(queryContext, 1, databaseType, databaseConnectionManager, mock(ExecutorStatementManager.class));
+        result.setProcessId("process_id");
+        return result;
     }
     
     private SQLStatement mockSQLStatement(final CursorSQLStatementAttribute cursorSQLStatementAttribute) {
@@ -283,6 +348,7 @@ class PreviewExecutorTest {
     }
     
     private void configureSQLFederationEngine(final SQLFederationEngine federationEngine, final MockedConstruction.Context context, final AtomicReference<String> actualSchemaName) {
+        assertThat(context.arguments().get(0), is("foo_db"));
         actualSchemaName.set(context.arguments().get(1).toString());
         when(federationEngine.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(true);
         doAnswer(this::executePreviewCallback).when(federationEngine).executeQuery(any(), any(), any(SQLFederationContext.class));
@@ -290,6 +356,7 @@ class PreviewExecutorTest {
     
     private Object executePreviewCallback(final InvocationOnMock invocation) throws SQLException {
         SQLFederationContext sqlFederationContext = invocation.getArgument(2);
+        assertThat(sqlFederationContext.getProcessId(), is("process_id"));
         JDBCExecutorCallback<? extends ExecuteResult> callback = invocation.getArgument(1);
         callback.execute(Collections.singletonList(createJDBCExecutionUnit("foo_ds", "SELECT 2", false)), true, "process_id");
         try {

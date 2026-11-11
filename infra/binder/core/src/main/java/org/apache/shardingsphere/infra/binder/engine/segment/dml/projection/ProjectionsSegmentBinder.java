@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationDistinctProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationProjectionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.RowExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.ColumnProjectionSegmentBinder;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundE
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -77,24 +79,28 @@ public final class ProjectionsSegmentBinder {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
         for (ProjectionSegment each : segment.getProjections()) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
-            result.getProjections().add(bind(binderContext, boundTableSegment, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
+            result.getProjections().add(bind(binderContext, boundTableSegment, result.getProjections(), tableBinderContexts, outerTableBinderContexts, each));
+        }
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
+        for (ExpressionSegment each : segment.getDistinctOnItems()) {
+            result.getDistinctOnItems().add(bindDistinctOnItem(each, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts));
+        }
+        for (RowExpression each : segment.getValuesRows()) {
+            result.getValuesRows().add(RowExpressionBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
         return result;
     }
     
-    private static ProjectionSegment bind(final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment,
-                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
+    private static ProjectionSegment bind(final SQLStatementBinderContext binderContext, final TableSegment boundTableSegment, final Collection<ProjectionSegment> boundProjections,
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
-                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
-                                          final ProjectionSegment projectionSegment) {
+                                          final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final ProjectionSegment projectionSegment) {
         try {
             return bind(projectionSegment, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts);
         } catch (final ColumnNotFoundException ignored) {
             if (isWholeRowProjection(projectionSegment, binderContext, boundTableSegment, tableBinderContexts)) {
                 return createWholeRowProjection((ColumnProjectionSegment) projectionSegment);
             }
-            return bind(projectionSegment, binderContext, boundTableSegment, currentTableBinderContexts, outerTableBinderContexts);
+            return bind(projectionSegment, binderContext, boundTableSegment, createCurrentTableBinderContexts(binderContext, boundProjections), outerTableBinderContexts);
         }
     }
     
@@ -105,7 +111,12 @@ public final class ProjectionsSegmentBinder {
             return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundTableSegment, tableBinderContexts);
+            ShorthandProjectionSegment shorthand = (ShorthandProjectionSegment) projectionSegment;
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> contexts =
+                    shorthand.getOwner().isPresent() && !tableBinderContexts.containsKey(CaseInsensitiveString.of(shorthand.getOwner().get().getIdentifier().getValue()))
+                            ? outerTableBinderContexts
+                            : tableBinderContexts;
+            return ShorthandProjectionSegmentBinder.bind(shorthand, boundTableSegment, contexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
             Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
@@ -134,6 +145,17 @@ public final class ProjectionsSegmentBinder {
         return projectionSegment;
     }
     
+    private static ExpressionSegment bindDistinctOnItem(final ExpressionSegment segment, final SQLStatementBinderContext binderContext,
+                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
+                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        try {
+            return ExpressionSegmentBinder.bind(segment, SegmentType.ORDER_BY, binderContext, tableBinderContexts, outerTableBinderContexts);
+        } catch (final ColumnNotFoundException ignored) {
+            return ExpressionSegmentBinder.bind(segment, SegmentType.ORDER_BY, binderContext, currentTableBinderContexts, outerTableBinderContexts);
+        }
+    }
+    
     private static AggregationDistinctProjectionSegment bindAggregationDistinctProjection(final AggregationDistinctProjectionSegment aggregationDistinctSegment,
                                                                                           final SQLStatementBinderContext binderContext,
                                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
@@ -160,9 +182,11 @@ public final class ProjectionsSegmentBinder {
             return false;
         }
         ColumnSegment columnSegment = ((ColumnProjectionSegment) projectionSegment).getColumn();
+        if (columnSegment.getOwner().isPresent() || null != columnSegment.getNestedObjectAttributes() && !columnSegment.getNestedObjectAttributes().isEmpty()) {
+            return false;
+        }
         String columnName = columnSegment.getIdentifier().getValue();
-        return !columnSegment.getOwner().isPresent() && (null == columnSegment.getNestedObjectAttributes() || columnSegment.getNestedObjectAttributes().isEmpty())
-                && (isTableAliasOrName(boundTableSegment, columnName) || tableBinderContexts.containsKey(CaseInsensitiveString.of(columnName)));
+        return isTableAliasOrName(boundTableSegment, columnName) || tableBinderContexts.containsKey(CaseInsensitiveString.of(columnName));
     }
     
     private static boolean isSupportWholeRowProjection(final SQLStatementBinderContext binderContext) {

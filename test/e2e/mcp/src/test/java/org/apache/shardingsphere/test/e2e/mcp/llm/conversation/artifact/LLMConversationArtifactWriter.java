@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,24 +32,16 @@ import java.util.Map;
  */
 public final class LLMConversationArtifactWriter {
     
-    private static final List<String> REQUIRED_SCORE_EVIDENCE_KEYS = List.of(
-            "runtimeMode", "dockerOwned", "provider", "serverRuntime", "serverImage", "serverImageId", "baseServerImage", "baseServerImageDigest",
-            "modelRepository", "modelReference", "servedModelId",
-            "modelQuantization", "modelRevision", "modelFileName", "modelSha256", "modelPackaging", "contextWindowTokens", "baseUrlOwnedByTest");
-    
     /**
      * Write one conversation result.
      *
      * @param artifactDirectory artifact directory
      * @param conversationResult conversation result
-     * @param runtimeEvidence runtime evidence
      * @param sensitiveValues concrete sensitive values
      * @throws IOException IO exception
      */
-    public void write(final Path artifactDirectory, final Result conversationResult, final Map<String, Object> runtimeEvidence,
-                      final Collection<String> sensitiveValues) throws IOException {
-        validateRuntimeEvidence(runtimeEvidence);
-        writeContent(artifactDirectory.resolve("run-context.json"), JsonEngine.marshal(createRunContext(conversationResult, runtimeEvidence)), sensitiveValues);
+    public void write(final Path artifactDirectory, final Result conversationResult, final Collection<String> sensitiveValues) throws IOException {
+        writeContent(artifactDirectory.resolve("run-context.json"), JsonEngine.marshal(createRunContext(conversationResult)), sensitiveValues);
         writeContent(artifactDirectory.resolve("system-prompt.md"), conversationResult.systemPrompt(), sensitiveValues);
         writeContent(artifactDirectory.resolve("question.txt"), conversationResult.scenario().question(), sensitiveValues);
         writeContent(artifactDirectory.resolve("answer.txt"), conversationResult.actualAnswer(), sensitiveValues);
@@ -61,35 +52,16 @@ public final class LLMConversationArtifactWriter {
         writeContent(artifactDirectory.resolve("assertion-report.json"), JsonEngine.marshal(conversationResult.assertionReport()), sensitiveValues);
     }
     
-    private Map<String, Object> createRunContext(final Result conversationResult, final Map<String, Object> runtimeEvidence) {
+    private void writeContent(final Path file, final String content, final Collection<String> sensitiveValues) throws IOException {
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, MCPArtifactUtils.redact(content, sensitiveValues));
+    }
+    
+    private Map<String, Object> createRunContext(final Result conversationResult) {
         return Map.of(
                 "scenarioId", conversationResult.scenario().id(),
                 "modelProvider", conversationResult.modelProvider(),
                 "modelName", conversationResult.modelName(),
-                "runtime", runtimeEvidence,
                 "failureType", conversationResult.assertionReport().getFailureType());
-    }
-    
-    private void validateRuntimeEvidence(final Map<String, Object> runtimeEvidence) {
-        if (!Boolean.TRUE.equals(runtimeEvidence.get("scoreClosing"))) {
-            return;
-        }
-        for (String each : REQUIRED_SCORE_EVIDENCE_KEYS) {
-            if (isMissingEvidenceValue(runtimeEvidence.get(each))) {
-                throw new IllegalStateException(String.format("Missing score-closing LLM runtime evidence field `%s`.", each));
-            }
-        }
-        if (!Boolean.TRUE.equals(runtimeEvidence.get("dockerOwned")) || !Boolean.TRUE.equals(runtimeEvidence.get("baseUrlOwnedByTest"))) {
-            throw new IllegalStateException("Score-closing LLM runtime evidence must be Docker-owned and test-owned.");
-        }
-    }
-    
-    private boolean isMissingEvidenceValue(final Object value) {
-        return null == value || value instanceof String && ((String) value).isBlank();
-    }
-    
-    private void writeContent(final Path file, final String content, final Collection<String> sensitiveValues) throws IOException {
-        Files.createDirectories(file.getParent());
-        Files.writeString(file, MCPArtifactUtils.redact(content, sensitiveValues));
     }
 }

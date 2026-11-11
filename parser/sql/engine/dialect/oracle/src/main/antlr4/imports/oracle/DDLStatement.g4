@@ -414,7 +414,7 @@ inlineRefConstraint
     ;
 
 virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
+    : columnName dataType? visibleClause (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
     ;
 
 outOfLineConstraint
@@ -733,7 +733,11 @@ modifyColSubstitutable
     ;
 
 dropColumnClause
-    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropColumnSpecification
+    : SET UNUSED columnOrColumnList cascadeOrInvalidate* | dropUnusedColumnsClause | dropColumnSpecification
+    ;
+
+dropUnusedColumnsClause
+    : DROP UNUSED COLUMNS (CHECKPOINT INTEGER_?)?
     ;
 
 dropColumnSpecification

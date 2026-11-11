@@ -45,7 +45,7 @@ runtimeDatabases:
 
 Adjust `logic_db`, `127.0.0.1`, `3307`, `root`, and the empty password according to the actual ShardingSphere-Proxy connection information.
 The MCP Server resolves the database type from `jdbcUrl`.
-If the target database driver is not provided with the distribution, put the corresponding JDBC driver jar under `plugins/` before startup.
+The distribution does not include MySQL Connector/J. Put a compatible MySQL Connector/J jar under `plugins/` before startup.
 
 ## Start the HTTP MCP Server
 
@@ -69,8 +69,8 @@ Choose an MCP-capable AI application, IDE extension, or agent platform, and conf
 
 Typical client configuration examples:
 
-- [Codex](../client-integration/codex/)
-- [Claude Code](../client-integration/claude-code/)
+- [Codex](/en/user-manual/shardingsphere-mcp/client-integration/codex/)
+- [Claude Code](/en/user-manual/shardingsphere-mcp/client-integration/claude-code/)
 
 For other clients, follow their own documentation and use the ShardingSphere-MCP address: `http://127.0.0.1:18088/mcp`.
 
@@ -83,5 +83,5 @@ After configuration, enter the following tasks in the AI application to verify t
 - "Query the first 10 rows from `orders`."
 
 If the application returns the logical database, table structure, or query results, the MCP Server can access the target ShardingSphere-Proxy logical database through the AI application.
-For deployment choices, health checks, and basic observability entrypoints, see [Deployment](../deployment/).
-If the AI application cannot connect or cannot see the logical database, see [Troubleshooting](../troubleshooting/).
+For deployment choices, health checks, and basic observability entrypoints, see [Deployment](/en/user-manual/shardingsphere-mcp/deployment/).
+If the AI application cannot connect or cannot see the logical database, see [Troubleshooting](/en/user-manual/shardingsphere-mcp/troubleshooting/).

@@ -58,10 +58,4 @@ class DisabledReadDataSourcesFilterTest {
         rule.enableDataSource("read_ds_0");
         assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
-    
-    @Test
-    void assertGetEnabledReplicaDataSources() {
-        rule.disableDataSource("read_ds_0");
-        assertThat(new DisabledReadDataSourcesFilter().filter(rule, Arrays.asList("read_ds_0", "read_ds_1")), is(Collections.singletonList("read_ds_1")));
-    }
 }

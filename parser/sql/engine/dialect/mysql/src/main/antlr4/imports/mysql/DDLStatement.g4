@@ -277,7 +277,7 @@ dropEvent
 
 createFunction
     : CREATE ownerStatement?
-      FUNCTION functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
+      FUNCTION ifNotExists? functionName LP_ (identifier dataType)? (COMMA_ identifier dataType)* RP_
       RETURNS dataType
       routineOption*
       routineBody
@@ -421,7 +421,7 @@ dropLogfileGroup
     ;
 
 createTrigger
-    :  CREATE ownerStatement? TRIGGER triggerName triggerTime triggerEvent ON tableName FOR EACH ROW triggerOrder? routineBody
+    :  CREATE ownerStatement? TRIGGER ifNotExists? triggerName triggerTime triggerEvent ON tableName FOR EACH ROW triggerOrder? routineBody
     ;
 
 dropTrigger
@@ -556,7 +556,7 @@ createTableOption
     | option = (CHECKSUM | TABLE_CHECKSUM) EQ_? NUMBER_
     | option = DELAY_KEY_WRITE EQ_? NUMBER_
     | option = ROW_FORMAT EQ_? format = (DEFAULT | DYNAMIC | FIXED | COMPRESSED | REDUNDANT | COMPACT)
-    | option = UNION EQ_? LP_ tableList RP_
+    | option = UNION EQ_? LP_ tableList? RP_
     | defaultCharset
     | defaultCollation
     | option = INSERT_METHOD EQ_? method = (NO| FIRST| LAST)
@@ -618,6 +618,7 @@ partitionDefinitionOption
     | MAX_ROWS EQ_? NUMBER_
     | MIN_ROWS EQ_? NUMBER_
     | TABLESPACE EQ_? identifier
+    | NODEGROUP EQ_? numberLiterals
     ;
 
 subpartitionDefinition
@@ -682,12 +683,42 @@ compoundStatement
     ;
 
 validStatement
-    : (createTable | alterTable | dropTable | dropDatabase | truncateTable
-    | insert | replace | update | delete | select | call
-    | createView | prepare | executeStmt | commit | deallocate
-    | setVariable | beginStatement | declareStatement | flowControlStatement | cursorStatement | conditionHandlingStatement
-    | setStatement | showStatement | showCreateTable | startTransaction | rollback | commit | show
-    | alterEvent | dropEvent | doStatement | explain | analyzeTable) SEMI_?
+    : (createTable
+    | alterTable
+    | dropTable
+    | dropDatabase
+    | truncateTable
+    | insert
+    | replace
+    | update
+    | delete
+    | select
+    | call
+    | createView
+    | prepare
+    | executeStmt
+    | commit
+    | deallocate
+    | setVariable
+    | beginStatement
+    | declareStatement
+    | flowControlStatement
+    | cursorStatement
+    | conditionHandlingStatement
+    | setStatement
+    | showStatement
+    | showCreateTable
+    | startTransaction
+    | rollback
+    | commit
+    | show
+    | alterEvent
+    | dropEvent
+    | doStatement
+    | explain
+    | analyzeTable
+    | flush
+    | kill) SEMI_?
     ;
 
 showStatement

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.database.connector.hive.jdbcurl;
 
 import org.apache.hive.jdbc.HiveConnection;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.DialectJdbcUrlFetcher;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -26,14 +28,24 @@ import java.sql.SQLException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class HiveJdbcUrlFetcherTest {
     
-    private final HiveJdbcUrlFetcher fetcher = new HiveJdbcUrlFetcher();
+    private final DialectJdbcUrlFetcher fetcher = ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class).iterator().next();
     
     @Test
-    void assertFetch() throws SQLException {
+    void assertFetchWithNativeConnection() throws SQLException {
+        HiveConnection connection = mock(HiveConnection.class);
+        when(connection.getConnectedUrl()).thenReturn("jdbc:hive2://localhost:10000/db");
+        assertThat(fetcher.fetch(connection), is("jdbc:hive2://localhost:10000/db"));
+        verify(connection, never()).unwrap(HiveConnection.class);
+    }
+    
+    @Test
+    void assertFetchWithWrappedConnection() throws SQLException {
         HiveConnection hiveConnection = mock(HiveConnection.class);
         when(hiveConnection.getConnectedUrl()).thenReturn("jdbc:hive2://localhost:10000/db");
         Connection connection = mock(Connection.class);

@@ -18,4 +18,7 @@
 
 <sql-cases>
     <sql-case id="create_server_doris_basic" value="CREATE SERVER s0 FOREIGN DATA WRAPPER mysql OPTIONS (USER 'doris_user', HOST '127.0.0.1')" db-types="Doris,MySQL" />
+    <sql-case id="create_server_basic_pg" value="CREATE SERVER foo_server FOREIGN DATA WRAPPER foo_wrapper" db-types="PostgreSQL" />
+    <sql-case id="create_server_options_pg" value="CREATE SERVER foo_server FOREIGN DATA WRAPPER foo_wrapper OPTIONS (host 'foo')" db-types="PostgreSQL" />
+    <sql-case id="create_server_version_pg" value="CREATE SERVER IF NOT EXISTS foo_server TYPE 'foo_type' VERSION '1' FOREIGN DATA WRAPPER foo_wrapper" db-types="PostgreSQL" />
 </sql-cases>

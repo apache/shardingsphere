@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Ord
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * Order by clause assert.
  */
@@ -37,6 +39,7 @@ public final class OrderByClauseAssert {
      * @param expected expected order by clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OrderBySegment actual, final ExpectedOrderByClause expected) {
+        assertNotNull(actual, assertContext.getText("Actual order by clause should exist."));
         OrderByItemAssert.assertIs(assertContext, actual.getOrderByItems(), expected, "Order by");
     }
 }

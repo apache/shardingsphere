@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TC
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * SQL command type.
@@ -82,17 +81,17 @@ public enum SQLCommandType {
     /**
      * Resource & Rule Administration Language.
      */
-    RAL(RALStatement.class, "e2e-ral", true, Collections.singletonList("proxy")),
+    RAL(RALStatement.class, "e2e-ral", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Resource & Rule Definition Language.
      */
-    RDL(RDLStatement.class, "e2e-rdl", true, Collections.singletonList("proxy")),
+    RDL(RDLStatement.class, "e2e-rdl", true, Arrays.asList("jdbc", "proxy")),
     
     /**
      * Resource & Rule Query Language.
      */
-    RQL(RQLStatement.class, "e2e-rql", true, Collections.singletonList("proxy"));
+    RQL(RQLStatement.class, "e2e-rql", true, Arrays.asList("jdbc", "proxy"));
     
     private final Class<? extends SQLStatement> sqlStatementClass;
     

@@ -80,6 +80,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfiguration;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -196,7 +198,8 @@ class ProxySQLExecutorTest {
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(metaData.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(transactionRule.getDefaultType()).thenReturn(TransactionType.XA);
-        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(mock(SQLFederationRule.class), transactionRule)));
+        SQLFederationRuleConfiguration federationConfig = new SQLFederationRuleConfiguration(false, new SQLFederationCacheOption(4, 64L), null);
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Arrays.asList(new SQLFederationRule(federationConfig, Collections.emptyList()), transactionRule)));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
@@ -496,7 +499,7 @@ class ProxySQLExecutorTest {
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
-                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT")));
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT", Collections.emptyList())));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-and-no-column-list-special-default".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
@@ -504,7 +507,7 @@ class ProxySQLExecutorTest {
                 when(insertStatementContext.getInsertColumnNames()).thenReturn(Collections.emptyList());
                 when(insertStatementContext.getColumnNames()).thenReturn(Arrays.asList("foo_id", "name"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
-                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new CommonExpressionSegment(0, 0, "DEFAULT"), mock(LiteralExpressionSegment.class)));
+                when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(new CommonExpressionSegment(0, 0, "DEFAULT", Collections.emptyList()), mock(LiteralExpressionSegment.class)));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else if ("execute-with-driver-and-no-column-list-special-null".equals(name)) {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", false);
@@ -527,7 +530,7 @@ class ProxySQLExecutorTest {
                 when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
                 when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_id"));
                 InsertValueContext insertValueContext = mock(InsertValueContext.class);
-                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT")));
+                when(insertValueContext.getValueExpressions()).thenReturn(Collections.singletonList(new CommonExpressionSegment(0, 0, "DEFAULT", Collections.emptyList())));
                 when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
             } else {
                 GeneratedKeyContext generatedKeyContext = new GeneratedKeyContext("foo_id", isReturnGeneratedKeys);

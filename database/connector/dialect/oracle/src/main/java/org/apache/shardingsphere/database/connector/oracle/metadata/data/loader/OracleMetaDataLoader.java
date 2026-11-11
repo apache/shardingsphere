@@ -118,7 +118,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private Collection<String> loadViewNames(final Connection connection, final Collection<String> tables, final String schema) throws SQLException {
         Collection<String> result = new LinkedList<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getViewMetaDataSQL(tables))) {
+        String viewMetaDataSQL = getViewMetaDataSQL(tables);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(viewMetaDataSQL)) {
             preparedStatement.setString(1, schema);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -135,7 +136,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables, final String schema) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1F);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
+        String tableMetaDataSQL = getTableMetaDataSQL(tables, connection.getMetaData());
+        try (PreparedStatement preparedStatement = connection.prepareStatement(tableMetaDataSQL)) {
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
             preparedStatement.setString(1, schema);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -212,7 +214,8 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames, final String schema) throws SQLException {
         Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableNames.size(), 1F);
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
+        String indexMetaDataSQL = getIndexMetaDataSQL(tableNames);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(indexMetaDataSQL)) {
             preparedStatement.setString(1, schema);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

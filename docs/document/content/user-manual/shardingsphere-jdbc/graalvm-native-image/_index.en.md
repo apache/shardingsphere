@@ -51,7 +51,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>1.1.3</version>
+                <version>1.1.12</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>
@@ -80,7 +80,7 @@ A more convenient configuration for testing third-party dependencies might look 
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>1.1.3</version>
+                <version>1.1.12</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -119,7 +119,7 @@ and the documentation of GraalVM Native Build Tools shall prevail.
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '1.1.3'
+   id 'org.graalvm.buildtools.native' version '1.1.12'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
@@ -130,12 +130,12 @@ A more convenient configuration for testing third-party dependencies might look 
 
 ```groovy
 plugins {
-   id 'org.graalvm.buildtools.native' version '1.1.3'
+   id 'org.graalvm.buildtools.native' version '1.1.12'
 }
 dependencies {
    implementation 'org.apache.shardingsphere:shardingsphere-jdbc:${shardingsphere.version}'
    implementation 'org.apache.shardingsphere:shardingsphere-infra-reachability-metadata:${shardingsphere.version}'
-   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '1.1.3', classifier: 'repository', ext: 'zip')
+   implementation(group: 'org.graalvm.buildtools', name: 'graalvm-reachability-metadata', version: '1.1.12', classifier: 'repository', ext: 'zip')
 }
 graalvmNative {
    binaries {
@@ -303,7 +303,7 @@ For Maven, possible configurations are,
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>1.1.3</version>
+                <version>1.1.12</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>
@@ -390,7 +390,7 @@ For Maven, possible configurations are,
             <plugin>
                 <groupId>org.graalvm.buildtools</groupId>
                 <artifactId>native-maven-plugin</artifactId>
-                <version>1.1.3</version>
+                <version>1.1.12</version>
                 <extensions>true</extensions>
                 <configuration>
                     <buildArgs>

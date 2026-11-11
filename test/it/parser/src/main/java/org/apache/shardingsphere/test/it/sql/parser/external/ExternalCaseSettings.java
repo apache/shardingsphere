@@ -45,6 +45,13 @@ public @interface ExternalCaseSettings {
     String caseURL();
     
     /**
+     * Get test case file name pattern.
+     *
+     * @return test case file name pattern
+     */
+    String caseRegex() default "";
+    
+    /**
      * Get test case result URL.
      *
      * @return test case result URL

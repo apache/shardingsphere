@@ -27,7 +27,7 @@ It generates shadow rule DistSQL only. It does not create shadow databases or ph
 - Confirm cleanup plans include evidence that the target algorithm is unused.
 - Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
 
-For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](/en/user-manual/shardingsphere-mcp/features/plugin-workflow/).
 
 ## Limitations
 

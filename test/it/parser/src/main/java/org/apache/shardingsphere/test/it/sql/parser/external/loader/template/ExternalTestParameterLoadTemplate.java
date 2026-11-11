@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.external.loader.template;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
 
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,6 +27,15 @@ import java.util.List;
  * External test parameter load template.
  */
 public interface ExternalTestParameterLoadTemplate {
+    
+    /**
+     * Get charset used to read test and result files.
+     *
+     * @return content charset
+     */
+    default Charset getContentCharset() {
+        return Charset.defaultCharset();
+    }
     
     /**
      * Load test parameters.

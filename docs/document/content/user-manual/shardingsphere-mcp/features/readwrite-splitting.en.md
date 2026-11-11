@@ -27,7 +27,7 @@ It generates readwrite-splitting DistSQL only. It does not generate storage unit
 - `RANDOM` and `ROUND_ROBIN` do not require load-balance properties. `WEIGHT` requires one property per read storage unit.
 - Confirm the returned `plan_id`, `resources_to_read`, `next_actions`, and `distsql_artifacts` before applying the workflow.
 
-For the general review flow of rule changes, see [Rule Change Flow](../plugin-workflow/).
+For the general review flow of rule changes, see [Rule Change Flow](/en/user-manual/shardingsphere-mcp/features/plugin-workflow/).
 
 ## Limitations
 

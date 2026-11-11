@@ -13,7 +13,7 @@ This page explains how to connect Codex to an already running ShardingSphere-MCP
 
 ## Prerequisites
 
-- Start the HTTP MCP Server by following [Quick Start](../../quick-start/).
+- Start the HTTP MCP Server by following [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/).
 - Codex CLI or the Codex IDE extension is available.
 - The Codex environment can reach `http://127.0.0.1:18088/mcp`, or the actual MCP Server address you configured.
 
@@ -59,7 +59,7 @@ Invocation succeeds when:
 ## Notes
 
 - This page only covers connecting Codex to an already running HTTP MCP Server. It does not cover starting a local `STDIO` process from Codex.
-- See the [Capability Catalog](../../capabilities/) for the supported task surface and usage boundaries.
+- See the [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/) for the supported task surface and usage boundaries.
 - When SQL execution or rule changes are involved, review the preview content before confirming execution.
 - If you want to integrate ShardingSphere-MCP through the OpenAI API or the ChatGPT product UI, use the platform and API integration pages instead of reusing the steps on this page.
 
@@ -67,11 +67,11 @@ Invocation succeeds when:
 
 ### Related documents
 
-- [Quick Start](../../quick-start/)
-- [Capability Catalog](../../capabilities/)
-- [Configuration](../../configuration/)
-- [OpenAI Responses API](../openai-responses-api/)
-- [ChatGPT Developer Mode](../chatgpt-developer-mode/)
+- [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/)
+- [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/)
+- [Configuration](/en/user-manual/shardingsphere-mcp/configuration/)
+- [OpenAI Responses API](/en/user-manual/shardingsphere-mcp/client-integration/openai-responses-api/)
+- [ChatGPT Developer Mode](/en/user-manual/shardingsphere-mcp/client-integration/chatgpt-developer-mode/)
 
 ### Official references
 

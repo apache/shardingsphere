@@ -617,11 +617,11 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         result.setAutoIncrement(isAutoIncrement);
-        if (null != ctx.fieldDefinition().dataType().charsetWithOptBinary()) {
-            result.setCharsetName(ctx.fieldDefinition().dataType().charsetWithOptBinary().charsetName().textOrIdentifier().identifier().IDENTIFIER_().getText());
+        if (null != ctx.fieldDefinition().dataType().charsetWithOptBinary() && null != ctx.fieldDefinition().dataType().charsetWithOptBinary().charsetName()) {
+            result.setCharsetName(new IdentifierValue(ctx.fieldDefinition().dataType().charsetWithOptBinary().charsetName().getStart().getText()).getValue());
         }
         ctx.fieldDefinition().columnAttribute().stream().filter(each -> null != each.collateClause()).findFirst()
-                .ifPresent(optional -> result.setCollateName(optional.collateClause().collationName().textOrIdentifier().identifier().IDENTIFIER_().getText()));
+                .ifPresent(optional -> result.setCollateName(new IdentifierValue(optional.collateClause().collationName().getStart().getText()).getValue()));
         return result;
     }
     

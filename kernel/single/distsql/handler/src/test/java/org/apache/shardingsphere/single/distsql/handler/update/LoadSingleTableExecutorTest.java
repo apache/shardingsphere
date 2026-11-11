@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
@@ -234,9 +234,7 @@ class LoadSingleTableExecutorTest {
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
         when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
         when(dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()).thenReturn(schemaAvailable);
-        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
-            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
-        });
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
     }
     
     private static Stream<Arguments> assertCheckBeforeUpdateWithPreValidationFailureArguments() {

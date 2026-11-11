@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * LLM chat client.
@@ -80,16 +79,16 @@ public final class LLMChatModelClient {
      * @param messages messages
      * @param tools tools
      * @param toolChoice tool choice
-     * @param jsonResponse json response
+     * @param responseFormat response format
      * @return LLM chat completion
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      * @throws IllegalStateException model completion response is invalid
      */
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
-                                      final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
+                                      final String toolChoice, final Map<String, Object> responseFormat) throws IOException, InterruptedException {
         HttpResponse<String> response = sendCompletionRequest(
-                createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
+                createCompletionRequestPayload(messages, tools, toolChoice, responseFormat, COMPLETION_MAX_TOKENS), config.getRequestTimeoutSeconds());
         if (200 != response.statusCode()) {
             throw new IllegalStateException(String.format("Model completion request failed with status %d%s.", response.statusCode(), createErrorCodeSuffix(response.body())));
         }
@@ -102,7 +101,7 @@ public final class LLMChatModelClient {
     }
     
     private Map<String, Object> createCompletionRequestPayload(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
-                                                               final String toolChoice, final boolean jsonResponse, final int maxTokens) {
+                                                               final String toolChoice, final Map<String, Object> responseFormat, final int maxTokens) {
         Map<String, Object> requestPayload = new LinkedHashMap<>(16, 1F);
         requestPayload.put("model", config.getModelName());
         requestPayload.put("messages", createMessages(messages));
@@ -117,8 +116,8 @@ public final class LLMChatModelClient {
         if (!toolChoice.isEmpty()) {
             requestPayload.put("tool_choice", toolChoice);
         }
-        if (jsonResponse) {
-            requestPayload.put("response_format", Map.of("type", "json_object"));
+        if (!responseFormat.isEmpty()) {
+            requestPayload.put("response_format", responseFormat);
         }
         return requestPayload;
     }
@@ -144,7 +143,7 @@ public final class LLMChatModelClient {
     
     HttpResponse<String> sendReadinessCompletionRequest(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                                         final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
-        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse, READINESS_MAX_TOKENS),
+        return sendCompletionRequest(createCompletionRequestPayload(messages, tools, toolChoice, jsonResponse ? Map.of("type", "json_object") : Map.of(), READINESS_MAX_TOKENS),
                 Math.min(config.getRequestTimeoutSeconds(), config.getReadyTimeoutSeconds()));
     }
     
@@ -196,8 +195,7 @@ public final class LLMChatModelClient {
     }
     
     private List<Map<String, Object>> createToolCalls(final List<LLMToolCall> toolCalls) {
-        return toolCalls.stream()
-                .map(each -> Map.of("id", each.getId(), "type", "function", "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson()))).collect(Collectors.toList());
+        return toolCalls.stream().map(each -> Map.of("id", each.getId(), "type", "function", "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson()))).toList();
     }
     
     private List<LLMToolCall> createToolCalls(final Object rawValue) {
@@ -233,7 +231,7 @@ public final class LLMChatModelClient {
     
     private Map<String, Object> parseJsonObject(final String responseBody, final String errorMessage) {
         try {
-            return JsonEngine.unmarshal(responseBody, new JsonTypeReference<Map<String, Object>>() {
+            return JsonEngine.unmarshal(responseBody, new JsonTypeReference<>() {
             });
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {

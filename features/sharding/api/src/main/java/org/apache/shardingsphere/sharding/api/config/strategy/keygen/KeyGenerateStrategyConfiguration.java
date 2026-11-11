@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * Key generate strategy configuration.
 */
@@ -27,7 +29,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class KeyGenerateStrategyConfiguration {
     
+    @NotBlank
     private final String column;
     
+    @NotBlank
     private final String keyGeneratorName;
 }

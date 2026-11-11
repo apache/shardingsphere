@@ -67,8 +67,9 @@ class MD5AssistedEncryptAlgorithmTest {
     void assertToConfiguration() {
         AlgorithmConfiguration actual = encryptAlgorithm.toConfiguration();
         assertThat(actual.getType(), is("MD5"));
-        assertThat(actual.getProps().size(), is(1));
+        assertThat(actual.getProps().size(), is(2));
         assertThat(actual.getProps().getProperty("salt"), is(""));
+        assertThat(actual.getProps().getProperty("md5-encoder"), is("HEX"));
     }
     
     @Test

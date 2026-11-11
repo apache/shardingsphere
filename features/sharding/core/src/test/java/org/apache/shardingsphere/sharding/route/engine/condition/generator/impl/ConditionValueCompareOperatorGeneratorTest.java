@@ -31,10 +31,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -84,31 +89,11 @@ class ConditionValueCompareOperatorGeneratorTest {
         assertTrue(((ListShardingConditionValue<Integer>) shardingConditionValue.get()).getValues().contains(value));
     }
     
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndGreaterThanOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), ">", null);
-        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
-    }
-    
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndGreaterThanOrEqualOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), ">=", null);
-        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
-    }
-    
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndLessThanOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), "<", null);
-        assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
-    }
-    
-    @Test
-    void assertGenerateEmptyConditionValueWithBinaryOperatorPrefixAndLessThanOrEqualOperator() {
-        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0,
-                new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"), new LiteralExpressionSegment(0, 0, "100"), "<=", null);
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {">", ">=", "<", "<="})
+    void assertGenerateWithBinaryOperatorPrefixAndRangeOperator(final String operator) {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, new UnaryOperationExpression(0, 0, mock(ColumnSegment.class), "BINARY", "BINARY id"),
+                new LiteralExpressionSegment(0, 0, "100"), operator, null);
         assertFalse(generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
     }
     
@@ -145,6 +130,16 @@ class ConditionValueCompareOperatorGeneratorTest {
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, null), "<", null);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
         assertFalse(shardingConditionValue.isPresent());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("rightColumnComparisonArguments")
+    void assertGenerateConditionValueWithRightColumn(final String name, final String operator, final Range<Integer> expectedRange) {
+        BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), mock(ColumnSegment.class), operator, null);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(((RangeShardingConditionValue<Integer>) actual.get()).getValueRange(), is(expectedRange));
     }
     
     @SuppressWarnings("unchecked")
@@ -185,7 +180,7 @@ class ConditionValueCompareOperatorGeneratorTest {
     
     @Test
     void assertGenerateConditionValueWithoutNowExpression() {
-        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new CommonExpressionSegment(0, 0, "value"), "=", null);
+        BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new CommonExpressionSegment(0, 0, "value", Collections.emptyList()), "=", null);
         assertFalse(generator.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class)).isPresent());
     }
     
@@ -222,5 +217,13 @@ class ConditionValueCompareOperatorGeneratorTest {
         BinaryOperationExpression predicate = new BinaryOperationExpression(0, 0, left, right, "=", "order_id = ?");
         Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), mock(TimestampServiceRule.class));
         assertFalse(actual.isPresent());
+    }
+    
+    private static Stream<Arguments> rightColumnComparisonArguments() {
+        return Stream.of(
+                Arguments.of("less than", "<", Range.greaterThan(1)),
+                Arguments.of("at most", "<=", Range.atLeast(1)),
+                Arguments.of("greater than", ">", Range.lessThan(1)),
+                Arguments.of("at least", ">=", Range.atMost(1)));
     }
 }

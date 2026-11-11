@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatem
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HandlerStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ImportStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IndexHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LeadLagInfoContext;
@@ -39,6 +40,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowI
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.MySQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -62,6 +65,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataSta
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,7 +108,17 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        MySQLLoadDataStatement result = new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setIgnore(!ctx.IGNORE().isEmpty() && ctx.IGNORE(0).getSymbol().getTokenIndex() < ctx.INTO().getSymbol().getTokenIndex());
+        result.setReplace(null != ctx.REPLACE());
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (IdentifierValue) visit(each)));
+            }
+            result.setPartitionDefinition(new PartitionDefinitionSegment(ctx.partitionNames().start.getStartIndex(), ctx.partitionNames().stop.getStopIndex(),
+                    result.getTable(), result.getPartitions()));
+        }
+        return result;
     }
     
     @Override
@@ -178,7 +192,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
             result.setOrderBySegment((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.frameClause()) {
-            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText()));
+            result.setFrameClause(new CommonExpressionSegment(ctx.frameClause().start.getStartIndex(), ctx.frameClause().stop.getStopIndex(), ctx.frameClause().getText(), Collections.emptyList()));
         }
         if (null != ctx.identifier()) {
             result.setWindowName(new IdentifierValue(ctx.identifier().getText()));
@@ -209,7 +223,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         // MARIADB CHANGED BEGIN
         if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.MEDIAN()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-            appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
+            appendWindowFunctionLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
         }
         // MARIADB CHANGED END
         if (null != ctx.NTH_VALUE()) {
@@ -220,7 +234,7 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         return result;
     }
     
-    private void appendLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
+    private void appendWindowFunctionLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
         if (null == ctx) {
             return;
         }

@@ -4,7 +4,7 @@ weight = 9
 +++
 
 This page is for developers who build custom MCP integrations, debug protocol requests, or troubleshoot client adaptation issues.
-For normal usage, see [Quick Start](../quick-start/), [Client Integration](../client-integration/), and [Capability Catalog](../capabilities/).
+For normal usage, see [Quick Start](/en/user-manual/shardingsphere-mcp/quick-start/), [Client Integration](/en/user-manual/shardingsphere-mcp/client-integration/), and [Capability Catalog](/en/user-manual/shardingsphere-mcp/capabilities/).
 
 ## Generic Client Configuration Examples
 

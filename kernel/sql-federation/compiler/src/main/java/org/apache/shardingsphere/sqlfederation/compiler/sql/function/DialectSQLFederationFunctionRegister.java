@@ -21,6 +21,9 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Dialect SQL federation function register.
  */
@@ -34,4 +37,15 @@ public interface DialectSQLFederationFunctionRegister extends DatabaseTypedSPI {
      * @param schemaName schema name
      */
     void registerFunction(SchemaPlus schemaPlus, String schemaName);
+    
+    /**
+     * Get names of functions that are unsupported by SQL Federation.
+     *
+     * <p>Function names are matched case-insensitively.</p>
+     *
+     * @return names of functions that are unsupported by SQL Federation
+     */
+    default Collection<String> getUnsupportedFunctionNames() {
+        return Collections.emptyList();
+    }
 }

@@ -271,7 +271,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             int startIndex = currentOfClause.CURRENT().getSymbol().getStartIndex();
             int stopIndex = currentOfClause.cursorName().stop.getStopIndex();
             result.where(new WhereSegment(currentOfClause.getStart().getStartIndex(), currentOfClause.getStop().getStopIndex(),
-                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)))));
+                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)), Collections.emptyList())));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
@@ -350,7 +350,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             SubqueryExpressionSegment value = new SubqueryExpressionSegment(subquerySegment);
             return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
         }
-        CommonExpressionSegment value = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText());
+        CommonExpressionSegment value = new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.DEFAULT().getText(), Collections.emptyList());
         return new ColumnAssignmentSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnSegments, value);
     }
     
@@ -528,7 +528,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             int startIndex = currentOfClause.CURRENT().getSymbol().getStartIndex();
             int stopIndex = currentOfClause.cursorName().stop.getStopIndex();
             result.where(new WhereSegment(currentOfClause.getStart().getStartIndex(), currentOfClause.getStop().getStopIndex(),
-                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)))));
+                    new CommonExpressionSegment(startIndex, stopIndex, currentOfClause.start.getInputStream().getText(new Interval(startIndex, stopIndex)), Collections.emptyList())));
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
@@ -675,7 +675,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitDmlTableClause(final DmlTableClauseContext ctx) {
         if (null != ctx.AT_() && null != ctx.dbLink()) {
-            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().name().getText())));
+            SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.tableName().name().start.getStartIndex(), ctx.tableName().name().stop.getStopIndex(),
+                    new IdentifierValue(ctx.tableName().name().getText())));
             if (null != ctx.tableName().owner()) {
                 result.setOwner(
                         new OwnerSegment(ctx.tableName().owner().start.getStartIndex(), ctx.tableName().owner().stop.getStopIndex(), (IdentifierValue) visit(ctx.tableName().owner().identifier())));
@@ -751,7 +752,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitAssignmentValue(final AssignmentValueContext ctx) {
         ExprContext expr = ctx.expr();
-        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
+        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList()) : visit(expr);
     }
     
     @Override
@@ -762,9 +763,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             result = createSelectCombineClause(ctx, left);
         } else {
             result = null == ctx.queryBlock() ? (SelectStatement) visit(ctx.parenthesisSelectSubquery()) : (SelectStatement) visit(ctx.queryBlock());
+            if (null != ctx.withClause()) {
+                SelectStatement previous = result;
+                result = createSelectStatementBuilder(previous).with((WithSegment) visit(ctx.withClause())).build();
+                result.addParameterMarkers(previous.getParameterMarkers());
+                result.getVariableNames().addAll(previous.getVariableNames());
+                result.getComments().addAll(previous.getComments());
+            }
         }
         if (null != ctx.orderByClause()) {
+            SelectStatement previous = result;
             result = createSelectStatementBuilder(result).orderBy((OrderBySegment) visit(ctx.orderByClause())).build();
+            result.addParameterMarkers(previous.getParameterMarkers());
+            result.getVariableNames().addAll(previous.getVariableNames());
+            result.getComments().addAll(previous.getComments());
         }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
@@ -783,9 +795,19 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             combineType = CombineType.MINUS;
         }
         SelectStatement right = (SelectStatement) visit(ctx.selectSubquery(1));
+        OrderBySegment orderBy = null;
+        if (null != ctx.selectSubquery(1).orderByClause()) {
+            orderBy = right.getOrderBy().orElse(null);
+            SelectStatement previous = right;
+            right = createSelectStatementBuilder(previous).orderBy(null).build();
+            right.addParameterMarkers(previous.getParameterMarkers());
+            right.getVariableNames().addAll(previous.getVariableNames());
+            right.getComments().addAll(previous.getComments());
+        }
         SelectStatement result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getProjections()).from(left.getFrom().orElse(null)).with(left.getWith().orElse(null))
                 .combine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
                         createSubquerySegment(ctx.selectSubquery(1), right)))
+                .orderBy(orderBy)
                 .build();
         result.addParameterMarkers(left.getParameterMarkers());
         result.addParameterMarkers(right.getParameterMarkers());
@@ -990,7 +1012,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 SubquerySegment subquery = new SubquerySegment(each.selectSubquery().start.getStartIndex(), each.selectSubquery().stop.getStopIndex(), (SelectStatement) visit(each),
                         getOriginalText(each));
                 CommonTableExpressionSegment commonTableExpression = new CommonTableExpressionSegment(each.start.getStartIndex(), each.stop.getStopIndex(),
-                        (AliasSegment) visit(each.queryName().alias()), subquery);
+                        (AliasSegment) visit(each.queryName().alias()), subquery, null);
                 addCommonTableExpressionColumns(commonTableExpression, each);
                 commonTableExpressions.add(commonTableExpression);
             }
@@ -1505,6 +1527,11 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         TableSegment result;
         if (null != ctx.queryTableExprSampleClause()) {
             result = (SimpleTableSegment) visit(ctx.queryTableExprSampleClause().queryTableExprTableClause().tableName());
+            if (null != ctx.queryTableExprSampleClause().queryTableExprTableClause().AT_()
+                    && null != ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink()) {
+                ((SimpleTableSegment) result).setAt(new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().AT_().getText()));
+                ((SimpleTableSegment) result).setDbLink(new IdentifierValue(ctx.queryTableExprSampleClause().queryTableExprTableClause().dbLink().getText()));
+            }
         } else if (null != ctx.lateralClause()) {
             SelectStatement subquery = (SelectStatement) visit(ctx.lateralClause().selectSubquery());
             SubquerySegment subquerySegment = new SubquerySegment(ctx.lateralClause().selectSubquery().start.getStartIndex(), ctx.lateralClause().selectSubquery().stop.getStopIndex(), subquery,
@@ -1811,7 +1838,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             return new SubqueryExpressionSegment(subquerySegment);
         }
         ExprContext expr = ctx.expr();
-        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText()) : visit(expr);
+        return null == expr ? new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText(), Collections.emptyList()) : visit(expr);
     }
     
     @Override

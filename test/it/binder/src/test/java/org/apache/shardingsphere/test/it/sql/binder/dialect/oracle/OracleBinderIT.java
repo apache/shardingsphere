@@ -17,19 +17,27 @@
 
 package org.apache.shardingsphere.test.it.sql.binder.dialect.oracle;
 
+import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderIT;
 import org.apache.shardingsphere.test.it.sql.binder.SQLBinderITSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SQLBinderITSettings("Oracle")
 class OracleBinderIT extends SQLBinderIT {
@@ -64,5 +72,43 @@ class OracleBinderIT extends SQLBinderIT {
         ColumnSegmentBoundInfo actual = ((ColumnProjectionSegment) actualProjection).getColumn().getColumnBoundInfo();
         assertThat(actual.getOriginalTable().getValue(), is(expectedTable));
         assertThat(actual.getOriginalColumn().getValue(), is(expectedColumn));
+    }
+    
+    @Test
+    void assertBindDottedDatabaseLink() {
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", "SELECT 1 FROM foo_table@foo_link.example.com");
+        SimpleTableSegment actualTable = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(actualTable.getDbLink().get().getValue(), is("foo_link.example.com"));
+        assertThat(actualTable.getAt().get().getValue(), is("@"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTypeAttributeStatements")
+    void assertBindWithTypeAttribute(final String name, final String sql) {
+        SQLStatement actual = bindSQLStatement("Oracle", sql);
+        assertTrue(new CommonSQLStatementContext(actual).getTablesContext().getTableNames().isEmpty());
+    }
+    
+    private static Stream<Arguments> getTypeAttributeStatements() {
+        return Stream.of(
+                Arguments.of("BlockWithLocalRecordFieldTypeAttribute", "DECLARE TYPE foo_rec IS RECORD (order_id NUMBER); t_order foo_rec; foo_copy t_order.order_id%TYPE; BEGIN NULL; END;"),
+                Arguments.of("BlockWithLocalCursorRowtypeAttribute", "DECLARE CURSOR foo_cursor IS SELECT 1 foo_id FROM dual; TYPE foo_ref IS REF CURSOR RETURN foo_cursor%ROWTYPE; BEGIN NULL; END;"),
+                Arguments.of("PackageWithLocalRecordFieldTypeAttribute",
+                        "CREATE PACKAGE foo_pkg AS TYPE foo_rec IS RECORD (foo_id NUMBER); foo_record foo_rec; foo_copy foo_pkg.foo_record.foo_id%TYPE; END;"),
+                Arguments.of("PackageWithSchemaQualifiedCursorRowtypeAttribute",
+                        "CREATE PACKAGE foo_schema.foo_pkg AS TYPE foo_rec IS RECORD (foo_id NUMBER); CURSOR foo_cursor RETURN foo_rec;"
+                                + " TYPE foo_ref IS REF CURSOR RETURN foo_schema.foo_pkg.foo_cursor%ROWTYPE; END;"),
+                Arguments.of("PackageWithNestedLocalCursorRowtypeAttribute",
+                        "CREATE PACKAGE BODY foo_pkg AS PROCEDURE foo_proc IS CURSOR foo_cursor IS SELECT 1 foo_id FROM dual;"
+                                + " TYPE foo_ref IS REF CURSOR RETURN foo_pkg.foo_proc.foo_cursor%ROWTYPE; BEGIN NULL; END; END;"),
+                Arguments.of("BlockWithNestedLocalCursorRowtypeAttribute",
+                        "<<foo_block>> DECLARE PROCEDURE foo_proc IS CURSOR foo_cursor IS SELECT 1 foo_id FROM dual;"
+                                + " TYPE foo_ref IS REF CURSOR RETURN foo_block.foo_proc.foo_cursor%ROWTYPE; BEGIN NULL; END; BEGIN NULL; END;"),
+                Arguments.of("PackageWithSchemaQualifiedScalarTypeAttribute", "CREATE PACKAGE foo_schema.foo_pkg AS foo_var NUMBER; foo_copy foo_schema.foo_pkg.foo_var%TYPE; END;"),
+                Arguments.of("PackageWithNestedScalarTypeAttribute",
+                        "CREATE PACKAGE BODY foo_pkg AS PROCEDURE foo_proc IS foo_var NUMBER; foo_copy foo_pkg.foo_proc.foo_var%TYPE; BEGIN NULL; END; END;"),
+                Arguments.of("FunctionWithSchemaQualifiedCursorRowtypeAttribute",
+                        "CREATE FUNCTION foo_schema.foo_func RETURN NUMBER AS CURSOR foo_cursor IS SELECT 1 foo_id FROM dual;"
+                                + " TYPE foo_ref IS REF CURSOR RETURN foo_schema.foo_func.foo_cursor%ROWTYPE; BEGIN RETURN 1; END;"));
     }
 }

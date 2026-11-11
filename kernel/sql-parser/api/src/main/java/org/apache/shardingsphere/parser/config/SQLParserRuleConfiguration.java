@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 /**
  * SQL parser rule configuration.
  */
@@ -29,7 +32,11 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 @Getter
 public final class SQLParserRuleConfiguration implements GlobalRuleConfiguration {
     
+    @NotNull
+    @Valid
     private final CacheOption parseTreeCache;
     
+    @NotNull
+    @Valid
     private final CacheOption sqlStatementCache;
 }

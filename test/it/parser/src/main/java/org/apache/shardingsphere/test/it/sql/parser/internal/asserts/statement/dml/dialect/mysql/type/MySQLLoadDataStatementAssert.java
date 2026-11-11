@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Load data statement assert for MySQL.
@@ -53,6 +54,7 @@ public final class MySQLLoadDataStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         assertLocal(assertContext, actual, expected);
+        assertDuplicateHandling(assertContext, actual, expected);
         assertFileName(assertContext, actual, expected);
         assertTable(assertContext, actual, expected);
         assertPartitions(assertContext, actual, expected);
@@ -66,6 +68,19 @@ public final class MySQLLoadDataStatementAssert {
     
     private static void assertLocal(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
         assertThat(assertContext.getText("LOCAL flag does not match: "), actual.isLocal(), is(null != expected.getLocal() && expected.getLocal()));
+    }
+    
+    private static void assertDuplicateHandling(final SQLCaseAssertContext context, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
+        if (Boolean.TRUE.equals(expected.getIgnore())) {
+            assertTrue(actual.isIgnore(), context.getText("IGNORE flag does not match: "));
+        } else {
+            assertFalse(actual.isIgnore(), context.getText("IGNORE flag does not match: "));
+        }
+        if (Boolean.TRUE.equals(expected.getReplace())) {
+            assertTrue(actual.isReplace(), context.getText("REPLACE flag does not match: "));
+        } else {
+            assertFalse(actual.isReplace(), context.getText("REPLACE flag does not match: "));
+        }
     }
     
     private static void assertFileName(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
@@ -85,6 +100,11 @@ public final class MySQLLoadDataStatementAssert {
     }
     
     private static void assertPartitions(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
+        if (null != expected.getPartitionStartIndex()) {
+            assertTrue(actual.getPartitionDefinition().isPresent(), assertContext.getText("Partition definition should exist: "));
+            assertThat(actual.getPartitionDefinition().get().getStartIndex(), is(expected.getPartitionStartIndex()));
+            assertThat(actual.getPartitionDefinition().get().getStopIndex(), is(expected.getPartitionStopIndex()));
+        }
         if (!expected.getPartitions().isEmpty()) {
             assertThat(assertContext.getText("Partitions size does not match: "), actual.getPartitions().size(), is(expected.getPartitions().size()));
             int count = 0;

@@ -265,7 +265,7 @@ continueStatement
 
 cursorForLoopStatement
     : FOR record IN
-    (cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)?
+    (cursor (LP_ actualCursorParameter (COMMA_ actualCursorParameter)* RP_)?
     | LP_ select RP_
     )
     LOOP plsqlStatements END LOOP label? SEMI_
@@ -367,7 +367,7 @@ cursorIterationControl
     ;
 
 dynamicSql
-    : EXECUTE IMMEDIATE dynamicSqlStmt (USING IN? (bindArgument COMMA_?)* )?
+    : EXECUTE IMMEDIATE dynamicSqlStmt (USING IN? bindArgument (COMMA_ bindArgument)*)?
     ;
 
 cursorObject
@@ -375,7 +375,7 @@ cursorObject
     ;
 
 forallStatement
-    : FORALL index=name IN boundsClause (SAVE EXCEPTIONS)? dmlStatement SEMI_
+    : FORALL index=name IN boundsClause (SAVE EXCEPTIONS)? dmlStatement
     ;
 
 boundsClause
@@ -393,7 +393,8 @@ upperBound
     ;
 
 dmlStatement
-    : insert | update | delete | merge | dynamicSqlStmt
+    : (insert | update | delete | merge) SEMI_
+    | executeImmediateStatement
     ;
 
 dynamicSqlStmt
@@ -418,7 +419,7 @@ nullStatement
     ;
 
 openStatement
-    : OPEN cursor (LP_ actualCursorParameter (COMMA_? actualCursorParameter)* RP_)? SEMI_
+    : OPEN cursor (LP_ actualCursorParameter (COMMA_ actualCursorParameter)* RP_)? SEMI_
     ;
 
 cursor
@@ -446,7 +447,7 @@ cursorVariable
     ;
 
 plsqlUsingClause
-    : USING (IN | OUT | IN OUT)? bindArgument (COMMA_? (IN | OUT | IN OUT)? bindArgument)*
+    : USING (IN | OUT | IN OUT)? bindArgument (COMMA_ (IN | OUT | IN OUT)? bindArgument)*
     ;
 
 bindArgument
@@ -462,7 +463,7 @@ plsqlBlock
     ;
 
 procedureCall
-    : (packageName DOT_)? procedureName (LP_ (procedureCallParameter (COMMA_ procedureCallParameter)*)? RP_)? SEMI_
+    : (packageName DOT_)? procedureName (AT_ dbLink)? (LP_ (procedureCallParameter (COMMA_ procedureCallParameter)*)? RP_)? SEMI_
     ;
 
 procedureCallParameter
@@ -581,11 +582,16 @@ itemDeclaration
 collectionVariableDecl
     : variableName
       (
-      typeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
-      | typeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
+      collectionTypeName (ASSIGNMENT_OPERATOR_ (qualifiedExpression | functionCall | variableName))?
+      | collectionTypeName (ASSIGNMENT_OPERATOR_  (collectionConstructor | variableName))?
       | typeName MOD_ TYPE
       )
       SEMI_
+    ;
+
+collectionTypeName
+    : typeName
+    | schemaName DOT_ owner DOT_ name
     ;
 
 qualifiedExpression
@@ -593,7 +599,7 @@ qualifiedExpression
     ;
 
 aggregate
-    : positionalChoiceList? explicitChoiceList?
+    : (positionalChoiceList (COMMA_ explicitChoiceList)? | explicitChoiceList)?
     ;
 
 explicitChoiceList
@@ -645,10 +651,10 @@ typeDefinition
     ;
 
 recordTypeDefinition
-    : TYPE typeName IS RECORD  LP_ fieldDefinition (COMMA_ fieldDefinition)* RP_ SEMI_
+    : TYPE typeName IS RECORD LP_ recordFieldDefinition (COMMA_ recordFieldDefinition)* RP_ SEMI_
     ;
 
-fieldDefinition
+recordFieldDefinition
     : typeName dataType ((NOT NULL)? (ASSIGNMENT_OPERATOR_ | DEFAULT) expr)?
     ;
 

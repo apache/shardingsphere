@@ -69,11 +69,15 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -85,6 +89,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -313,22 +318,15 @@ class PostgreSQLAuthenticationEngineTest {
         assertTrue(actual.isFinished());
     }
     
-    @Test
-    void assertStartupUsesDefaultClientEncoding() throws ReflectiveOperationException {
-        assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, null);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getClientEncodings")
+    void assertStartupNormalizesClientEncoding(final String name, @Nullable final String clientEncoding) throws ReflectiveOperationException {
+        assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, clientEncoding);
         verify(charsetAttribute).set(StandardCharsets.UTF_8);
     }
     
-    @Test
-    void assertStartupNormalizesUtf8DashAlias() throws ReflectiveOperationException {
-        assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, "UTF-8");
-        verify(charsetAttribute).set(StandardCharsets.UTF_8);
-    }
-    
-    @Test
-    void assertStartupNormalizesUnicodeAlias() throws ReflectiveOperationException {
-        assertAuthenticateAndClientEncodingParameterStatus(USERNAME, DATABASE_NAME, "UNICODE");
-        verify(charsetAttribute).set(StandardCharsets.UTF_8);
+    private static Stream<Arguments> getClientEncodings() {
+        return Stream.of(Arguments.of("default encoding", null), Arguments.of("UTF-8 alias", "UTF-8"), Arguments.of("UNICODE alias", "UNICODE"));
     }
     
     @Test

@@ -212,4 +212,14 @@
             <sql-statement start-index="184" stop-index="359" statement-class-simple-name="SelectStatement" />
         </sql-statements>
     </create-function>
+    <create-function sql-case-id="create_function_if_not_exists_mysql" />
+    <create-function sql-case-id="create_function_return_expression_pg" />
+    <create-function sql-case-id="create_function_return_subquery_pg" />
+    <create-function sql-case-id="create_function_atomic_empty_pg" />
+    <create-function sql-case-id="create_function_atomic_return_pg" />
+    <create-function sql-case-id="create_function_atomic_select_pg" />
+    <create-function sql-case-id="create_function_atomic_dml_pg" />
+    <create-function sql-case-id="create_function_atomic_merge_pg" />
+    <create-function sql-case-id="create_function_atomic_table_pg" />
+    <create-function sql-case-id="create_function_body_string_control_pg" />
 </sql-parser-test-cases>

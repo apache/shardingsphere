@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class MySQLShardingLogicTablesMergedResult extends MemoryMergedResult<Sha
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
-                Optional<ShardingTable> shardingTable = rule.findShardingTableByActualTable(actualTableName);
+                Optional<ShardingTable> shardingTable = findShardingTable(rule, sqlStatementContext, actualTableName);
                 if (shardingTable.isPresent()) {
                     String logicTableName = shardingTable.get().getLogicTable();
                     memoryResultSetRow.setCell(1, logicTableName);
@@ -64,6 +65,11 @@ public class MySQLShardingLogicTablesMergedResult extends MemoryMergedResult<Sha
             }
         }
         return new LinkedList<>(result.values());
+    }
+    
+    private Optional<ShardingTable> findShardingTable(final ShardingRule rule, final SQLStatementContext sqlStatementContext, final String actualTableName) {
+        Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        return tableNames.isEmpty() ? rule.findShardingTableByActualTable(actualTableName) : rule.findShardingTable(tableNames.iterator().next());
     }
     
     protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName, final ShardingSphereTable table, final ShardingRule rule) {

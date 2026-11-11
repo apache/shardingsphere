@@ -1458,4 +1458,375 @@
             <delete />
         </merge-items>
     </merge>
+
+    <merge sql-case-id="merge_by_source_parameters_postgresql_regression" parameters="1, 2, 3">
+        <target>
+            <simple-table name="foo" start-index="11" stop-index="13" />
+        </target>
+        <source>
+            <simple-table name="bar" start-index="21" stop-index="23" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="28" stop-index="37">
+                <left>
+                    <column name="id" start-index="28" stop-index="33">
+                        <owner name="foo" start-index="28" stop-index="30" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <parameter-marker-expression parameter-index="0" start-index="37" stop-index="37" />
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items start-index="39" stop-index="102">
+            <expr>
+                <binary-operation-expression start-index="70" stop-index="79">
+                    <left>
+                        <column name="id" start-index="70" stop-index="75">
+                            <owner name="foo" start-index="70" stop-index="72" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="79" stop-index="79" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+            <update>
+                <set start-index="93" stop-index="102">
+                    <assignment start-index="97" stop-index="102">
+                        <column name="id" start-index="97" stop-index="98" />
+                        <assignment-value>
+                            <parameter-marker-expression parameter-index="2" start-index="102" stop-index="102" />
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+    </merge>
+    <merge sql-case-id="merge_by_target_parameters_postgresql_regression" parameters="1, 2">
+        <target>
+            <simple-table name="foo" start-index="11" stop-index="13" />
+        </target>
+        <source>
+            <simple-table name="bar" start-index="21" stop-index="23" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="28" stop-index="37">
+                <left>
+                    <column name="id" start-index="28" stop-index="33">
+                        <owner name="foo" start-index="28" stop-index="30" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <parameter-marker-expression parameter-index="0" start-index="37" stop-index="37" />
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items start-index="39" stop-index="92">
+            <insert>
+                <columns start-index="78" stop-index="81">
+                    <column name="id" start-index="79" stop-index="80" />
+                </columns>
+                <values>
+                    <value>
+                        <assignment-value>
+                            <parameter-marker-expression parameter-index="1" start-index="91" stop-index="91" />
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
+    <merge sql-case-id="merge_not_matched_source_delete_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED BY SOURCE THEN DELETE" start-index="36" stop-index="73">
+            <delete />
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_not_matched_source_update_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED BY SOURCE AND t.id &gt; 0 THEN UPDATE SET v = 1" start-index="36" stop-index="96">
+            <expr>
+                <binary-operation-expression start-index="67" stop-index="74">
+                    <left>
+                        <column name="id" start-index="67" stop-index="70">
+                            <owner name="t" start-index="67" stop-index="67" />
+                        </column>
+                    </left>
+                    <operator>&gt;</operator>
+                    <right>
+                        <literal-expression value="0" start-index="74" stop-index="74" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+            <update>
+                <set start-index="88" stop-index="96">
+                    <assignment start-index="92" stop-index="96">
+                        <column name="v" start-index="92" stop-index="92" />
+                        <assignment-value>
+                            <literal-expression value="1" start-index="96" stop-index="96" />
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_not_matched_source_nothing_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED BY SOURCE THEN DO NOTHING" start-index="36" stop-index="77">
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_not_matched_target_insert_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED BY TARGET THEN INSERT (id) VALUES (s.id)" start-index="36" stop-index="92">
+            <insert>
+                <columns start-index="75" stop-index="78">
+                    <column name="id" start-index="76" stop-index="77" />
+                </columns>
+                <values>
+                    <value start-index="87" stop-index="92">
+                        <assignment-value>
+                            <column name="id" start-index="88" stop-index="91">
+                                <owner name="s" start-index="88" stop-index="88" />
+                            </column>
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_not_matched_target_nothing_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED BY TARGET THEN DO NOTHING" start-index="36" stop-index="77">
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_mixed_match_modes_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN MATCHED THEN UPDATE SET v = 1" start-index="36" stop-index="69">
+            <update>
+                <set start-index="61" stop-index="69">
+                    <assignment start-index="65" stop-index="69">
+                        <column name="v" start-index="65" stop-index="65" />
+                        <assignment-value>
+                            <literal-expression value="1" start-index="69" stop-index="69" />
+                        </assignment-value>
+                    </assignment>
+                </set>
+            </update>
+        </merge-items>
+        <merge-items text="WHEN NOT MATCHED BY SOURCE THEN DELETE" start-index="71" stop-index="108">
+            <delete />
+        </merge-items>
+        <merge-items text="WHEN NOT MATCHED BY TARGET THEN INSERT (id) VALUES (s.id)" start-index="110" stop-index="166">
+            <insert>
+                <columns start-index="149" stop-index="152">
+                    <column name="id" start-index="150" stop-index="151" />
+                </columns>
+                <values>
+                    <value start-index="161" stop-index="166">
+                        <assignment-value>
+                            <column name="id" start-index="162" stop-index="165">
+                                <owner name="s" start-index="162" stop-index="162" />
+                            </column>
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_not_matched_insert_control_pg">
+        <target>
+            <simple-table name="t" start-index="11" stop-index="11" />
+        </target>
+        <source>
+            <simple-table name="s" start-index="19" stop-index="19" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="24" stop-index="34">
+                <left>
+                    <column name="id" start-index="24" stop-index="27">
+                        <owner name="t" start-index="24" stop-index="24" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="31" stop-index="34">
+                        <owner name="s" start-index="31" stop-index="31" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED THEN INSERT (id) VALUES (s.id)" start-index="36" stop-index="82">
+            <insert>
+                <columns start-index="65" stop-index="68">
+                    <column name="id" start-index="66" stop-index="67" />
+                </columns>
+                <values>
+                    <value start-index="77" stop-index="82">
+                        <assignment-value>
+                            <column name="id" start-index="78" stop-index="81">
+                                <owner name="s" start-index="78" stop-index="78" />
+                            </column>
+                        </assignment-value>
+                    </value>
+                </values>
+            </insert>
+        </merge-items>
+    </merge>
+
+    <merge sql-case-id="merge_source_target_identifiers_pg">
+        <target>
+            <simple-table name="target" start-index="11" stop-index="16" />
+        </target>
+        <source>
+            <simple-table name="source" start-index="24" stop-index="29" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="34" stop-index="54">
+                <left>
+                    <column name="id" start-index="34" stop-index="42">
+                        <owner name="target" start-index="34" stop-index="39" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="46" stop-index="54">
+                        <owner name="source" start-index="46" stop-index="51" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <merge-items text="WHEN NOT MATCHED BY SOURCE THEN DELETE" start-index="56" stop-index="93">
+            <delete />
+        </merge-items>
+    </merge>
 </sql-parser-test-cases>

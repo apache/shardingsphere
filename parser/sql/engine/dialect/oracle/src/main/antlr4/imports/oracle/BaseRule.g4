@@ -108,7 +108,7 @@ materializedViewName
     ;
 
 columnName
-    : (owner? DOT_)? name (DOT_ nestedItem)*
+    : (owner? DOT_)? name (DOT_ nestedItem)* (AT_ dbLink)?
     ;
 
 objectName
@@ -145,6 +145,7 @@ rollbackSegmentName
 
 typeName
     : (owner DOT_)? name
+    | schemaName DOT_ owner DOT_ name
     ;
 
 indexTypeName
@@ -406,9 +407,9 @@ exprList
     ;
 
 expr
-    : expr andOperator expr
+    : notOperator expr
+    | expr andOperator expr
     | expr orOperator expr
-    | notOperator expr
     | LP_ expr RP_
     | booleanPrimary
     | expr datetimeExpr
@@ -448,14 +449,12 @@ comparisonOperator
     ;
 
 predicate
-    : bitExpr NOT? IN subquery
-    | PRIOR predicate
-    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_
-    | bitExpr NOT? IN LP_ expr (COMMA_ expr)* RP_ AND predicate
-    | bitExpr NOT? IN bitExpr
-    | bitExpr NOT? BETWEEN bitExpr AND predicate
-    | bitExpr NOT? (LIKE | LIKEC | LIKE2 | LIKE4) simpleExpr (ESCAPE simpleExpr)?
-    | bitExpr
+    : PRIOR predicate
+    | bitExpr (NOT? (
+        IN (subquery | LP_ expr (COMMA_ expr)* RP_ | bitExpr)
+        | BETWEEN bitExpr AND predicate
+        | (LIKE | LIKEC | LIKE2 | LIKE4) simpleExpr (ESCAPE simpleExpr)?
+    ))?
     ;
 
 bitExpr
@@ -672,7 +671,7 @@ extractFunction
     ;
 
 regularFunction
-    : (owner DOT_)* regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : (owner DOT_)* regularFunctionName (AT_ dbLink)? LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
     ;
 
 regularFunctionName
@@ -1163,7 +1162,7 @@ scnValue
     ;
 
 timestampValue
-    : LP_? expr+ RP_?
+    : expr
     ;
 
 scnTimestampExpr

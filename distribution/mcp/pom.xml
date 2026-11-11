@@ -120,11 +120,7 @@
                                     <targetPath>bin</targetPath>
                                 </resource>
                                 <resource>
-                                    <directory>${project.basedir}/../..</directory>
-                                    <includes>
-                                        <include>LICENSE</include>
-                                        <include>NOTICE</include>
-                                    </includes>
+                                    <directory>${project.basedir}/src/main/release-docs</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -205,11 +201,6 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                     <scope>runtime</scope>
@@ -285,11 +276,6 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
                     <groupId>org.postgresql</groupId>
                     <artifactId>postgresql</artifactId>
                     <scope>runtime</scope>
@@ -297,11 +283,6 @@
                 <dependency>
                     <groupId>org.opengauss</groupId>
                     <artifactId>opengauss-jdbc</artifactId>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.mariadb.jdbc</groupId>
-                    <artifactId>mariadb-java-client</artifactId>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
@@ -345,11 +326,6 @@
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-database-connector-mysql</artifactId>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.mysql</groupId>
-                    <artifactId>mysql-connector-j</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
@@ -464,11 +440,6 @@
                     <groupId>org.apache.shardingsphere</groupId>
                     <artifactId>shardingsphere-database-connector-mariadb</artifactId>
                     <version>${project.version}</version>
-                    <scope>runtime</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.mariadb.jdbc</groupId>
-                    <artifactId>mariadb-java-client</artifactId>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

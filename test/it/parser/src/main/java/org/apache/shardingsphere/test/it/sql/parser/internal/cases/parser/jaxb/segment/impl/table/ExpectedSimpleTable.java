@@ -37,6 +37,18 @@ public final class ExpectedSimpleTable extends AbstractExpectedIdentifierSQLSegm
     @XmlAttribute
     private String alias;
     
+    @XmlAttribute(name = "db-link")
+    private String dbLink;
+    
+    @XmlAttribute
+    private String at;
+    
+    @XmlAttribute(name = "table-name-start-index")
+    private Integer tableNameStartIndex;
+    
+    @XmlAttribute(name = "table-name-stop-index")
+    private Integer tableNameStopIndex;
+    
     @XmlElement
     private ExpectedOwner owner;
     

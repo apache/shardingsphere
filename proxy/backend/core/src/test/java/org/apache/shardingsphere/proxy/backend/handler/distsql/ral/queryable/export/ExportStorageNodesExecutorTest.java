@@ -21,7 +21,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.export.ExportStorageNodesExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.spi.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
@@ -107,7 +108,8 @@ class ExportStorageNodesExecutorTest {
     
     @Test
     void assertExecuteWithWrongDatabaseName() {
-        assertThrows(IllegalArgumentException.class, () -> executor.getRows(new ExportStorageNodesStatement("foo", null), mockEmptyContextManager()));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> executor.getRows(new ExportStorageNodesStatement("foo", null), mockEmptyContextManager()));
+        assertThat(actual.getMessage(), is("database foo is not existed"));
     }
     
     @Test
@@ -143,6 +145,16 @@ class ExportStorageNodesExecutorTest {
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));
+    }
+    
+    @Test
+    void assertExecuteWhenDatabaseDropped() {
+        prepareNormalDatabase();
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("normal_db")).thenReturn(database, null);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement("normal_db", null), contextManager);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getCell(3), is(loadExpectedRow()));
     }
     
     @Test

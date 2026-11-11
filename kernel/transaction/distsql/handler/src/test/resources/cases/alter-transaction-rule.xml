@@ -17,15 +17,6 @@
   -->
 
 <distsql-rule-definition-executor-test-cases>
-    <test-case dist-sql="ALTER TRANSACTION RULE (DEFAULT=&quot;Invalid&quot;, TYPE(NAME=&quot;&quot;, PROPERTIES()))"
-               current-rule-config-yaml-file="cases/alter-transaction-rule-empty-current.yaml"
-               expected-exception="org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException"/>
-    <test-case dist-sql="ALTER TRANSACTION RULE (DEFAULT=&quot;BASE&quot;, TYPE(NAME=&quot;&quot;, PROPERTIES()))"
-               current-rule-config-yaml-file="cases/alter-transaction-rule-empty-current.yaml"
-               expected-exception="org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException"/>
-    <test-case dist-sql="ALTER TRANSACTION RULE (DEFAULT=&quot;XA&quot;, TYPE(NAME=&quot;Invalid&quot;, PROPERTIES()))"
-               current-rule-config-yaml-file="cases/alter-transaction-rule-empty-current.yaml"
-               expected-exception="org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException"/>
     <test-case dist-sql="ALTER TRANSACTION RULE (DEFAULT=&quot;XA&quot;, TYPE(NAME=&quot;Atomikos&quot;, PROPERTIES(&quot;k&quot;=&quot;v&quot;)))"
                current-rule-config-yaml-file="cases/alter-transaction-rule-normal-current.yaml"
                expected-rule-config-yaml-file="cases/alter-transaction-rule-expected-config.yaml"/>

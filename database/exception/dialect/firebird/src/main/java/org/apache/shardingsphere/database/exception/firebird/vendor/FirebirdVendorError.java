@@ -52,6 +52,8 @@ public enum FirebirdVendorError implements VendorError {
     
     LOGIN_FAILED(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login, ""),
     
+    LOGIN_ERROR(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, ISCConstants.isc_login_error, ""),
+    
     CHARSET_NOT_FOUND(FirebirdState.CHARSET_NOT_FOUND, ISCConstants.isc_charset_not_found, "CHARACTER SET %s is not defined"),
     
     INVALID_STATEMENT_HANDLE(FirebirdState.INVALID_STATEMENT_HANDLE, ISCConstants.isc_bad_stmt_handle, ""),
@@ -72,7 +74,9 @@ public enum FirebirdVendorError implements VendorError {
     
     INVALID_SEGSTR_ID(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_id, "invalid BLOB ID"),
     
-    CANNOT_UPDATE_OLD_BLOB(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_cannot_update_old_blob, "cannot update old BLOB");
+    CANNOT_UPDATE_OLD_BLOB(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_cannot_update_old_blob, "cannot update old BLOB"),
+    
+    INVALID_SEGSTR_TYPE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_type, "invalid BLOB type for operation");
     
     private final SQLState sqlState;
     

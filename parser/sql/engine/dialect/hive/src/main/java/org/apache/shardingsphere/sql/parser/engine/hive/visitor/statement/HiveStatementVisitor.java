@@ -77,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -91,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.St
 import org.apache.shardingsphere.sql.parser.statement.core.value.parametermarker.ParameterMarkerValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -504,7 +506,12 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             return new UnaryOperationExpression(startIndex, stopIndex, expression, operator, getOriginalText(ctx));
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
-            return visit(ctx.expr(0));
+            ASTNode result = visit(ctx.expr(0));
+            if (null == ctx.ROW() && result instanceof ColumnSegment) {
+                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
+                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
+            }
+            return result;
         }
         if (null != ctx.OR_()) {
             ExpressionSegment left = (ExpressionSegment) visit(ctx.simpleExpr(0));
@@ -546,7 +553,7 @@ public abstract class HiveStatementVisitor extends HiveStatementBaseVisitor<ASTN
             visit(each);
         }
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text);
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), text, Collections.emptyList());
     }
     
     @Override

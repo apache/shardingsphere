@@ -171,12 +171,12 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
             fillNamePrivilegeObjects(result, objectType, ctx.nameList());
         }
         NameContext name = ctx.name();
-        addPrivilegeObject(result, objectType, name, Collections.singletonList(new IdentifierValue(name.getText())));
+        addPrivilegeObject(result, objectType, name, Collections.singletonList(createIdentifierValue(name.getText())));
     }
     
     private List<IdentifierValue> getAnyNameIdentifiers(final AnyNameContext ctx) {
         List<IdentifierValue> result = new LinkedList<>();
-        result.add(new IdentifierValue(ctx.colId().getText()));
+        result.add(createIdentifierValue(ctx.colId().getText()));
         if (null != ctx.attrs()) {
             fillAttrsIdentifiers(result, ctx.attrs());
         }
@@ -187,7 +187,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
         if (null != ctx.attrs()) {
             fillAttrsIdentifiers(result, ctx.attrs());
         }
-        result.add(new IdentifierValue(ctx.attrName().getText()));
+        result.add(createIdentifierValue(ctx.attrName().getText()));
     }
     
     private List<IdentifierValue> getFunctionIdentifiers(final FunctionWithArgtypesContext ctx) {
@@ -198,7 +198,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
         if (null != ctx.typeFuncNameKeyword()) {
             result.add(new IdentifierValue(ctx.typeFuncNameKeyword().getText()));
         } else {
-            result.add(new IdentifierValue(ctx.colId().getText()));
+            result.add(createIdentifierValue(ctx.colId().getText()));
             fillIndirectionIdentifiers(result, ctx.indirection());
         }
         return result;
@@ -207,14 +207,14 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     private List<IdentifierValue> getFunctionIdentifiers(final FuncNameContext ctx) {
         List<IdentifierValue> result = new LinkedList<>();
         if (null == ctx.typeFunctionName()) {
-            result.add(new IdentifierValue(ctx.colId().getText()));
+            result.add(createIdentifierValue(ctx.colId().getText()));
             fillIndirectionIdentifiers(result, ctx.indirection());
             return result;
         }
         if (null != ctx.owner()) {
-            result.add(new IdentifierValue(ctx.owner().getText()));
+            result.add(createIdentifierValue(ctx.owner().getText()));
         }
-        result.add(new IdentifierValue(ctx.typeFunctionName().getText()));
+        result.add(createIdentifierValue(ctx.typeFunctionName().getText()));
         return result;
     }
     
@@ -226,7 +226,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
             fillIndirectionIdentifiers(result, ctx.indirection());
         }
         if (null != ctx.indirectionEl().attrName()) {
-            result.add(new IdentifierValue(ctx.indirectionEl().attrName().getText()));
+            result.add(createIdentifierValue(ctx.indirectionEl().attrName().getText()));
         }
     }
     
@@ -252,7 +252,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
             identifiers.add(new IdentifierValue("*"));
         } else if (null != ctx.schemaName()) {
             identifiers.add((IdentifierValue) visit(ctx.schemaName()));
-            identifiers.add(new IdentifierValue(ctx.routineName().getText()));
+            identifiers.add(createIdentifierValue(ctx.routineName().getText()));
         } else {
             identifiers.add(new IdentifierValue("*"));
             if (null != ctx.DOT_ASTERISK_()) {

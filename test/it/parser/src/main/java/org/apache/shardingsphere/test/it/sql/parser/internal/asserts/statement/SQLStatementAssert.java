@@ -47,6 +47,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rql.RQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.RULStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.tcl.TCLStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.CommonSQLStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -75,6 +76,9 @@ public final class SQLStatementAssert {
             assertThat(assertContext.getText("Parameter markers size assertion error: "), actual.getParameterMarkers().size(), is(expected.getParameterMarkerCount()));
         }
         CommentAssert.assertComment(assertContext, actual, expected);
+        if (expected instanceof CommonSQLStatementTestCase) {
+            assertThat(assertContext.getText("Common SQL statement type assertion error: "), actual.getClass(), is(SQLStatement.class));
+        }
         if (actual instanceof DMLStatement) {
             DMLStatementAssert.assertIs(assertContext, (DMLStatement) actual, expected);
         } else if (actual instanceof DDLStatement) {

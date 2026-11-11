@@ -114,6 +114,41 @@ class SelectStatementConverterTest {
         assertThat(new SelectStatementConverter().convert(selectStatement), isA(SqlSelect.class));
     }
     
+    @Test
+    void assertConvertImplicitRowCountWithoutOffset() {
+        LimitSegment limit = new LimitSegment(0, 10, null, null);
+        limit.setImplicitRowCount(true);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(limit).build();
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> new SelectStatementConverter().convert(selectStatement));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count in SQL Federation."));
+    }
+    
+    @Test
+    void assertConvertImplicitRowCountAndOffset() {
+        LimitSegment limit = new LimitSegment(0, 20, new NumberLiteralLimitValueSegment(0, 10, 2L), null);
+        limit.setImplicitRowCount(true);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(limit).build();
+        UnsupportedSQLOperationException actualException = assertThrows(UnsupportedSQLOperationException.class, () -> new SelectStatementConverter().convert(selectStatement));
+        assertThat(actualException.getMessage(), is("Unsupported SQL operation: Implicit FETCH row count in SQL Federation."));
+    }
+    
+    @Test
+    void assertConvertOffsetWithoutRowCount() {
+        LimitSegment limit = new LimitSegment(0, 20, new NumberLiteralLimitValueSegment(0, 10, 2L), null);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(limit).build();
+        SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
+        assertThat(actual.offset.toString(), is("2"));
+        assertNull(actual.fetch);
+    }
+    
+    @Test
+    void assertConvertUnlimitedRowCount() {
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).limit(new LimitSegment(0, 10, null, null)).build();
+        SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
+        assertNull(actual.offset);
+        assertNull(actual.fetch);
+    }
+    
     private SelectStatement createBaseSelect(final boolean withWithSegment, final boolean distinct) {
         return createBaseSelect(databaseType, withWithSegment, distinct, null, null, null, null);
     }

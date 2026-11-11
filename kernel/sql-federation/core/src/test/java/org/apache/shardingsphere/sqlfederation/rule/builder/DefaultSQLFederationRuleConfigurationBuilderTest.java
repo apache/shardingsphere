@@ -29,6 +29,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class DefaultSQLFederationRuleConfigurationBuilderTest {
     
@@ -38,7 +39,7 @@ class DefaultSQLFederationRuleConfigurationBuilderTest {
         Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> builders = OrderedSPILoader.getServices(
                 DefaultGlobalRuleConfigurationBuilder.class, Collections.singleton(new SQLFederationRuleBuilder()));
         SQLFederationRuleConfiguration actual = (SQLFederationRuleConfiguration) builders.values().iterator().next().build();
-        assertFalse(actual.isSqlFederationEnabled());
+        assertNull(actual.getProviderType());
         assertFalse(actual.isAllQueryUseSQLFederation());
         assertThat(actual.getExecutionPlanCache(), is(DefaultSQLFederationRuleConfigurationBuilder.DEFAULT_EXECUTION_PLAN_CACHE_OPTION));
     }

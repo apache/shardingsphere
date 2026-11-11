@@ -33,15 +33,11 @@ import java.util.List;
 @Getter
 public final class FirebirdAcceptPacket extends FirebirdPacket {
     
-    private static final int BATCH_SEND = 3;
-    
     private static final int COMPRESS = 0x100;
     
     private static final int LAZY_SEND = 5;
     
     private static final int MASK = 0xFF;
-    
-    private static final int OUT_OF_BAND = 4;
     
     private FirebirdCommandPacketType opCode;
     
@@ -52,9 +48,9 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
     public FirebirdAcceptPacket(final List<FirebirdProtocol> userProtocols) {
         opCode = FirebirdCommandPacketType.ACCEPT;
         protocol = userProtocols.remove(0);
-        for (FirebirdProtocol protocol : userProtocols) {
-            if (FirebirdArchType.isValid(protocol.getArch()) && protocol.getWeight() >= this.protocol.getWeight()) {
-                this.protocol = protocol;
+        for (FirebirdProtocol each : userProtocols) {
+            if (FirebirdArchType.isValid(each.getArch()) && each.getWeight() >= protocol.getWeight()) {
+                protocol = each;
             }
         }
     }

@@ -27,10 +27,10 @@ import java.util.Map;
 /**
  * MCP prompt guidance metadata validator.
  */
-public final class MCPPromptGuidanceMetaValidator implements ConstraintValidator<MCPPromptGuidanceMeta, Map<String, Object>> {
+public final class MCPPromptGuidanceMetaValidator implements ConstraintValidator<MCPPromptGuidanceMeta, Map<?, ?>> {
     
     @Override
-    public boolean isValid(final Map<String, Object> value, final ConstraintValidatorContext context) {
+    public boolean isValid(final Map<?, ?> value, final ConstraintValidatorContext context) {
         if (null == value) {
             return true;
         }

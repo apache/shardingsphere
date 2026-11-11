@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.Simpl
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 
@@ -41,7 +42,14 @@ public final class MySQLLoadDataStatementBinder implements SQLStatementBinder<My
     
     private MySQLLoadDataStatement copy(final MySQLLoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
         MySQLLoadDataStatement result = new MySQLLoadDataStatement(sqlStatement.getDatabaseType(), boundTableSegment);
+        result.setStopIndex(sqlStatement.getStopIndex());
+        result.setColumnListStartIndex(sqlStatement.getColumnListStartIndex());
+        result.setColumnListStopIndex(sqlStatement.getColumnListStopIndex());
         result.setLocal(sqlStatement.isLocal());
+        result.setIgnore(sqlStatement.isIgnore());
+        result.setReplace(sqlStatement.isReplace());
+        sqlStatement.getPartitionDefinition().ifPresent(each -> result.setPartitionDefinition(new PartitionDefinitionSegment(each.getStartIndex(), each.getStopIndex(),
+                boundTableSegment, result.getPartitions())));
         result.setFileName(sqlStatement.getFileName());
         result.getPartitions().addAll(sqlStatement.getPartitions());
         sqlStatement.getColumnSeparator().ifPresent(result::setColumnSeparator);

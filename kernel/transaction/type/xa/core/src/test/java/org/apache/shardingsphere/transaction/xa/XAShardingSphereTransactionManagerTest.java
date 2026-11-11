@@ -28,6 +28,8 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionData
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -133,6 +135,17 @@ class XAShardingSphereTransactionManagerTest {
         assertTrue(xaTransactionManager.isInTransaction());
         xaTransactionManager.rollback();
         assertFalse(xaTransactionManager.isInTransaction());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"Atomikos, true", "atomikos, true", "MISSING, false"})
+    void assertContainsProviderType(final String providerType, final boolean expected) {
+        assertThat(xaTransactionManager.containsProviderType(providerType), is(expected));
+    }
+    
+    @Test
+    void assertContainsDefaultProviderType() {
+        assertTrue(xaTransactionManager.containsProviderType(null));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

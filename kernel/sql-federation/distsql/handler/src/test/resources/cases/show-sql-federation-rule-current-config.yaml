@@ -17,7 +17,6 @@
 
 rules:
   - !SQL_FEDERATION
-    sqlFederationEnabled: false
     allQueryUseSQLFederation: false
     executionPlanCache:
       initialCapacity: 2000

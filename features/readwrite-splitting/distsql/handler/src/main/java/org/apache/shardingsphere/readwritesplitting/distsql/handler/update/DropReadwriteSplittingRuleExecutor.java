@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.distsql.handler.executor.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.type.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;

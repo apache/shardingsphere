@@ -19,9 +19,13 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.Setter;
+import org.firebirdsql.gds.ng.tz.TimeZoneMapping;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
  * Firebird date and time utility class.
@@ -65,13 +69,8 @@ public final class FirebirdDateTimeUtils {
     }
     
     public FirebirdDateTimeUtils() {
-        year = 0;
         month = 1;
         day = 1;
-        hour = 0;
-        minute = 0;
-        second = 0;
-        fractions = 0;
     }
     
     /**
@@ -104,10 +103,7 @@ public final class FirebirdDateTimeUtils {
     }
     
     private int convertDate(final int c, final int ya, final int cpMonth) {
-        return 146097 * c / 4
-                + 1461 * ya / 4
-                + (153 * cpMonth + 2) / 5
-                + day + 1721119 - 2400001;
+        return 146097 * c / 4 + 1461 * ya / 4 + (153 * cpMonth + 2) / 5 + day + 1721119 - 2400001;
     }
     
     /**
@@ -123,20 +119,22 @@ public final class FirebirdDateTimeUtils {
         day = sqlDate / 4;
         sqlDate = (4 * day + 3) / 1461;
         day = 4 * day + 3 - 1461 * sqlDate;
-        day = (day + 5) / 5;
+        day = (day + 4) / 4;
         month = (5 * day - 3) / 153;
         day = 5 * day - 3 - 153 * month;
         day = (day + 5) / 5;
         year = 100 * century + sqlDate;
-        month += 3;
+        if (month < 10) {
+            month += 3;
+        } else {
+            month -= 9;
+            year += 1;
+        }
         return this;
     }
     
     public int getEncodedTime() {
-        return hour * FRACTIONS_PER_HOUR
-                + minute * FRACTIONS_PER_MINUTE
-                + second * FRACTIONS_PER_SECOND
-                + fractions;
+        return hour * FRACTIONS_PER_HOUR + minute * FRACTIONS_PER_MINUTE + second * FRACTIONS_PER_SECOND + fractions;
     }
     
     /**
@@ -162,7 +160,7 @@ public final class FirebirdDateTimeUtils {
      * @return timestamp representation of the current date-time fields
      */
     public Timestamp asTimestamp() {
-        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractions));
+        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractions * NANOSECONDS_PER_FRACTION));
     }
     
     /**
@@ -176,13 +174,13 @@ public final class FirebirdDateTimeUtils {
     }
     
     /**
-     * Convert encoded time value to {@link Timestamp}.
+     * Convert encoded time value to {@link LocalTime}.
      *
      * @param encodedTime encoded time as integer
-     * @return timestamp representation of the encoded time
+     * @return local time representation of the encoded time
      */
-    public static Timestamp getTime(final int encodedTime) {
-        return new FirebirdDateTimeUtils().setTime(encodedTime).asTimestamp();
+    public static LocalTime getTime(final int encodedTime) {
+        return LocalTime.ofNanoOfDay((long) encodedTime * NANOSECONDS_PER_FRACTION);
     }
     
     /**
@@ -197,15 +195,16 @@ public final class FirebirdDateTimeUtils {
     }
     
     /**
-     * Convert encoded date and time values with offset to {@link Timestamp}.
+     * Convert encoded UTC date and time values with a Firebird time zone ID to {@link OffsetDateTime}.
      *
-     * @param encodedDate encoded date as integer
-     * @param encodedTime encoded time as integer
-     * @param offset offset value in minutes or seconds (pending implementation details)
-     * @return timestamp representation of the encoded date and time with offset
+     * @param encodedDate encoded UTC date as integer
+     * @param encodedTime encoded UTC time as integer
+     * @param encodedTimeZone Firebird time zone ID
+     * @return date and time with the offset for the encoded time zone
      */
-    public static Timestamp getDateTimeWithOffset(final int encodedDate, final int encodedTime, final int offset) {
-        // TODO add time zone support
-        return new FirebirdDateTimeUtils().setDate(encodedDate).setTime(encodedTime).asTimestamp();
+    public static OffsetDateTime getDateTimeWithOffset(final int encodedDate, final int encodedTime, final int encodedTimeZone) {
+        FirebirdDateTimeUtils dateTime = new FirebirdDateTimeUtils().setDate(encodedDate).setTime(encodedTime);
+        return LocalDateTime.of(dateTime.year, dateTime.month, dateTime.day, dateTime.hour, dateTime.minute, dateTime.second, dateTime.fractions * NANOSECONDS_PER_FRACTION).toInstant(ZoneOffset.UTC)
+                .atZone(TimeZoneMapping.getInstance().timeZoneById(encodedTimeZone)).toOffsetDateTime();
     }
 }

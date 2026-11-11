@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.capability.resource;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -25,6 +26,8 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.capability.resource.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.exception.MCPInvalidRequestException;
@@ -37,7 +40,11 @@ import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 import org.apache.shardingsphere.mcp.support.protocol.payload.MCPMapPayload;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
@@ -50,17 +57,19 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(value = "org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory", suppressOutput = true)
 class MCPResourceSpecificationFactoryTest {
     
     @Test
@@ -155,12 +164,13 @@ class MCPResourceSpecificationFactoryTest {
     }
     
     @Test
-    void assertReadResourceSanitizesRuntimeFailure() {
+    void assertReadResourceSanitizesRuntimeFailure(final LogCaptureAssertion logCaptureAssertion) {
         MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://runtime-error", "runtime-error", "Runtime Error", "Read runtime error.", "application/json",
                 MCPResourceAnnotations.EMPTY, Map.of());
         try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
             mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
-            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://runtime-error"))).thenThrow(new RuntimeException("runtime failure"));
+            RuntimeException expectedException = new RuntimeException("runtime failure");
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://runtime-error"))).thenThrow(expectedException);
             SyncResourceSpecification actualSpecification = findResourceSpecification(
                     new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications(), "shardingsphere://runtime-error");
             McpError actual = assertThrows(McpError.class,
@@ -168,6 +178,36 @@ class MCPResourceSpecificationFactoryTest {
             assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
             assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
             assertFalse(String.valueOf(actual.getJsonRpcError().data()).contains("runtime failure"));
+            logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
+        }
+    }
+    
+    @Test
+    void assertReadResourceSanitizesSerializationFailure(final LogCaptureAssertion logCaptureAssertion) {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://foo", "foo", "Foo", "Read foo.", "application/json", MCPResourceAnnotations.EMPTY, Map.of());
+        Map<String, Object> payload = Map.of("foo_field", "foo_value");
+        IllegalStateException expectedCause = new IllegalStateException("foo_sensitive_detail");
+        JsonException expectedException = mock(JsonException.class);
+        when(expectedException.getMessage()).thenReturn("foo_sensitive_detail");
+        when(expectedException.getCause()).thenReturn(expectedCause);
+        try (
+                MockedStatic<ResourceDefinitionRegistry> mockedRegistry = mockStatic(ResourceDefinitionRegistry.class);
+                MockedStatic<JsonEngine> mockedJsonEngine = mockStatic(JsonEngine.class)) {
+            mockedRegistry.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mockedRegistry.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://foo")))
+                    .thenReturn(Optional.of(new MCPMapPayload(payload)));
+            mockedJsonEngine.when(() -> JsonEngine.marshal(payload)).thenThrow(expectedException);
+            SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceSpecifications().getFirst();
+            McpError actual = assertThrows(McpError.class, () -> actualSpecification.readHandler().apply(createExchange(), new ReadResourceRequest("shardingsphere://foo")));
+            assertThat(actual.getJsonRpcError().code(), is(McpSchema.ErrorCodes.INTERNAL_ERROR));
+            assertThat(actual.getJsonRpcError().message(), is("Service is temporarily unavailable."));
+            Map<?, ?> actualData = (Map<?, ?>) actual.getJsonRpcError().data();
+            assertThat(actualData.get("error_id"), isA(String.class));
+            assertThat(actualData, is(Map.of("response_mode", "recovery", "summary", "Service is temporarily unavailable.", "error_id", actualData.get("error_id"))));
+            logCaptureAssertion.assertErrorLog(actualException -> {
+                assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException));
+                assertThat(((ThrowableProxy) actualException).getThrowable().getCause(), sameInstance(expectedCause));
+            });
         }
     }
     
@@ -183,6 +223,25 @@ class MCPResourceSpecificationFactoryTest {
         assertNotNull(actualSpecification.readHandler());
     }
     
+    @Test
+    void assertCreateResourceTemplateSpecificationsWithAnnotations() {
+        MCPResourceDescriptor descriptor = new MCPResourceDescriptor("shardingsphere://foo/{database}", "foo_resource", "Foo Resource", "Foo description.", "application/json",
+                new MCPResourceAnnotations(List.of("user"), 0.6D, "2025-01-01T00:00:00Z"), Map.of("foo_key", "foo_value"));
+        try (MockedStatic<ResourceDefinitionRegistry> mocked = mockStatic(ResourceDefinitionRegistry.class)) {
+            mocked.when(ResourceDefinitionRegistry::getSupportedResourceDescriptors).thenReturn(List.of(descriptor));
+            mocked.when(() -> ResourceDefinitionRegistry.dispatch(any(MCPFeatureRuntimeRequestContext.class), eq("shardingsphere://foo/foo_db")))
+                    .thenReturn(Optional.of(new MCPMapPayload(Map.of("foo_field", "foo_value"))));
+            SyncResourceTemplateSpecification actualSpecification = new MCPResourceSpecificationFactory(createRuntimeContext()).createResourceTemplateSpecifications().getFirst();
+            assertThat(actualSpecification.resourceTemplate().annotations().priority(), is(0.6D));
+            assertThat(actualSpecification.resourceTemplate().meta(), is(Map.of("foo_key", "foo_value")));
+            ReadResourceResult actual = actualSpecification.readHandler().apply(createExchange(), new ReadResourceRequest("shardingsphere://foo/foo_db"));
+            assertThat(actual.contents().getFirst().uri(), is("shardingsphere://foo/foo_db"));
+            ArgumentCaptor<MCPFeatureRuntimeRequestContext> requestContextCaptor = ArgumentCaptor.forClass(MCPFeatureRuntimeRequestContext.class);
+            mocked.verify(() -> ResourceDefinitionRegistry.dispatch(requestContextCaptor.capture(), eq("shardingsphere://foo/foo_db")));
+            assertThat(requestContextCaptor.getValue().getSessionIdentity().getSessionId(), is("session-1"));
+        }
+    }
+    
     private SyncResourceSpecification findResourceSpecification(final Collection<SyncResourceSpecification> specifications, final String uri) {
         return specifications.stream().filter(each -> uri.equals(each.resource().uri())).findFirst().orElseThrow();
     }
@@ -190,9 +249,7 @@ class MCPResourceSpecificationFactoryTest {
     private MCPRuntimeContext createRuntimeContext() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession(new MCPSessionIdentity("session-1", "", "", Map.of()));
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
-        when(databaseCapabilityProvider.provide(anyString())).thenReturn(Optional.empty());
-        return new MCPRuntimeContext(sessionManager, databaseCapabilityProvider, MCPTransportType.HTTP);
+        return new MCPRuntimeContext(sessionManager, mock(MCPDatabaseCapabilityProvider.class), MCPTransportType.HTTP);
     }
     
     private McpSyncServerExchange createExchange() {

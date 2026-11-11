@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="select_keyword" value="SELECT 1 AS desc" db-types="PostgreSQL" />
+    <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as description from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_not_scalar_subquery_postgresql" value="select 1 from t17 as ref_0 where not ((ref_0.c59) &lt; (select ref_1.c36 as c_0 from t23 as ref_1 join t22 as ref_2 on(ref_1.colocated_key = ref_2.colocated_key)))" db-types="PostgreSQL" />
     <sql-case id="select_values_derived_table_aliases_postgresql" value="SELECT * FROM (VALUES ('k1', 'v1', 1)) AS t(pk, col_a, col_a_type)" db-types="PostgreSQL" />
     <sql-case id="select_with_comment" value="/*FORCE_IMCI_NODES*/ select /*+ SET_VAR(cost_threshold_for_imci=0) */ * from t_order" db-types="MySQL" />
@@ -161,6 +163,8 @@
     <sql-case id="select_current_date_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE()" db-types="MySQL" />
     <sql-case id="select_current_time_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME" db-types="MySQL" />
     <sql-case id="select_current_time_function_with_complete_regular_function" value="SELECT * FROM t_order WHERE time = CURRENT_TIME()" db-types="MySQL" />
+    <sql-case id="select_oracle_model_nested_addition" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] + (s[3] + 1))" db-types="Oracle" />
+    <sql-case id="select_oracle_model_division" value="SELECT s FROM foo_table MODEL DIMENSION BY (d) MEASURES (s) RULES (s[1] = s[2] / 2)" db-types="Oracle" />
     <sql-case id="select_with_model_partition_dimension" value="SELECT country, prod, year, s FROM sales_view_ref MODEL PARTITION BY (country) DIMENSION BY (prod, year) MEASURES (sale s) IGNORE NAV UNIQUE DIMENSION RULES UPSERT SEQUENTIAL ORDER (s[prod='Mouse Pad', year=2001] = s['Mouse Pad', 1999] + s['Mouse Pad', 2000],
     s['Standard Mouse', 2002] = s['Standard Mouse', 2001]) ORDER BY country, prod, year" db-types="Oracle" />
     <sql-case id="select_with_model_dimension" value="SELECT country, year, sale, csum FROM (SELECT country, year, SUM(sale) sale FROM sales_view_ref GROUP BY country, year) MODEL DIMENSION BY (country, year) MEASURES (sale, 0 csum) RULES (csum[any, any] = SUM(sale) OVER (PARTITION BY country ORDER BY year ROWS UNBOUNDED PRECEDING)) ORDER BY country, year" db-types="Oracle" />
@@ -330,6 +334,7 @@
     <sql-case id="select_with_substring_function" value="SELECT ProductID, Name, ProductNumber FROM [Production].[Product] WHERE SUBSTRING(ProductNumber, 0, 4) =  'HN-'" db-types="SQLServer"/>
     <sql-case id="select_with_not_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS NOT DISTINCT FROM NULL" db-types="SQLServer"/>
     <sql-case id="select_with_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17;" db-types="SQLServer"/>
+    <sql-case id="select_with_distinct_from_and" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17 AND order_id = 1" db-types="SQLServer"/>
     <sql-case id="select_with_contains_function" value="SELECT product_id FROM products WHERE CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;') AND product_cost &lt; 200" db-types="SQLServer"/>
     <sql-case id="select_with_default_schema" value="SELECT has_backup_checksums, database_name, * FROM msdb..backupset" db-types="SQLServer"/>
     <sql-case id="select_from_dbms_table" value="select * from table(dbms_xplan.display);" db-types="Oracle"/>
@@ -445,12 +450,15 @@
     <sql-case id="select_having_firebird" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Firebird"/>
     <sql-case id="select_function_table_firebird" value="SELECT * FROM foo(1)" db-types="Firebird"/>
     <sql-case id="select_cast_int_firebird" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_string_literal_projection_firebird" value="SELECT 'x', order_id FROM t_order" db-types="Firebird"/>
     <sql-case id="select_gen_id_with_identifier_firebird" value="SELECT GEN_ID(seq, 1) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_gen_id_with_parameters_firebird" value="SELECT GEN_ID(?, ?) FROM t_order" db-types="Firebird" case-types="Placeholder"/>
     <sql-case id="select_variable_default_firebird" value="SELECT DEFAULT FROM t_order" db-types="Firebird"/>
     <sql-case id="select_parenthesized_column_firebird" value="SELECT (user_id) FROM t_order" db-types="Firebird"/>
     <sql-case id="select_schema_table_firebird" value="SELECT * FROM schema1.t_order" db-types="Firebird"/>
     <sql-case id="select_where_and_like_firebird" value="SELECT * FROM t_order WHERE user_id = 1 AND status LIKE 'A%'" db-types="Firebird"/>
+    <sql-case id="select_where_like_escape_backslash_firebird" value="SELECT * FROM t_order WHERE status LIKE 'a\_b' ESCAPE '\'" db-types="Firebird"/>
+    <sql-case id="select_where_backslash_literal_firebird" value="SELECT * FROM t_order WHERE status = 'C:\dir\'" db-types="Firebird"/>
     <sql-case id="select_safe_eq_firebird" value="SELECT 1 &lt;=&gt; 1" db-types="Firebird"/>
     <sql-case id="select_in_list_firebird" value="SELECT * FROM t_order WHERE id IN (1,2)" db-types="Firebird"/>
     <sql-case id="select_not_in_list_firebird" value="SELECT * FROM t_order WHERE id NOT IN (1,2)" db-types="Firebird"/>
@@ -461,6 +469,9 @@
     <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
     <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
     <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
+    <sql-case id="select_adjacent_string_literals_firebird" value="SELECT 'a' 'b' FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_string_literal_with_introducer_firebird" value="SELECT _utf8'abc' FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_hexadecimal_literal_with_introducer_firebird" value="SELECT _utf8 X'616263' FROM t_order" db-types="Firebird"/>
     <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
     <sql-case id="select_where_is_true_sql92" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="SQL92" />
     <sql-case id="select_where_is_false_sql92" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="SQL92" />
@@ -583,4 +594,75 @@
     <sql-case id="select_gen_uuid_function_firebird" value="SELECT GEN_UUID() FROM RDB$DATABASE;" db-types="Firebird" />
     <sql-case id="select_in_with_owner_column_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN o.order_id" db-types="Oracle" />
     <sql-case id="select_in_with_function_rhs_oracle" value="SELECT * FROM t_order o WHERE o.user_id IN NVL(o.order_id, 0)" db-types="Oracle" />
+    <sql-case id="select_parenthesized_column_alias" value="SELECT (c.password) PASSWORD FROM t_account c" db-types="Oracle,PostgreSQL,openGauss,SQLServer,Hive" />
+    <sql-case id="select_routine_keywords_identifier_pg" value="SELECT atomic, return FROM atomic AS return" db-types="PostgreSQL" />
+    <sql-case id="select_cast_tsvector_name_pg" value="SELECT 'foo'::tsvector" db-types="PostgreSQL" />
+    <sql-case id="select_cast_tsquery_name_pg" value="SELECT 'foo'::tsquery" db-types="PostgreSQL" />
+    <sql-case id="select_cast_varbit_name_pg" value="SELECT '0101'::varbit" db-types="PostgreSQL" />
+    <sql-case id="select_cast_inet_name_pg" value="SELECT '127.0.0.1'::inet" db-types="PostgreSQL" />
+    <sql-case id="select_cast_cidr_name_pg" value="SELECT '127.0.0.0/8'::cidr" db-types="PostgreSQL" />
+    <sql-case id="select_cast_macaddr_name_pg" value="SELECT '08:00:2b:01:02:03'::macaddr" db-types="PostgreSQL" />
+    <sql-case id="select_cast_macaddr8_name_pg" value="SELECT '08:00:2b:01:02:03:04:05'::macaddr8" db-types="PostgreSQL" />
+    <sql-case id="select_cast_line_name_pg" value="SELECT '{1,2,3}'::line" db-types="PostgreSQL" />
+    <sql-case id="select_tsvector_function_name_pg" value="SELECT tsvector('foo')" db-types="PostgreSQL" />
+    <sql-case id="select_tsquery_function_name_pg" value="SELECT tsquery('foo')" db-types="PostgreSQL" />
+    <sql-case id="select_type_keyword_columns_pg" value="SELECT tsvector, tsquery, varbit, inet, cidr, macaddr, macaddr8, line FROM foo" db-types="PostgreSQL" />
+    <sql-case id="select_where_is_not_distinct_from_firebird" value="SELECT order_id FROM t_order WHERE status IS NOT DISTINCT FROM ?" db-types="Firebird" />
+    <sql-case id="select_where_starting_with_firebird" value="SELECT order_id FROM t_order WHERE status STARTING WITH ?" db-types="Firebird" />
+    <sql-case id="select_where_similar_to_escape_firebird" value="SELECT order_id FROM t_order WHERE status SIMILAR TO ? ESCAPE ?" db-types="Firebird" />
+    <sql-case id="select_where_is_distinct_from_and_equal_firebird" value="SELECT order_id FROM t_order WHERE status IS DISTINCT FROM ? AND order_id = ?" db-types="Firebird" />
+    <sql-case id="select_with_schema_database_link_and_alias_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW x" db-types="Oracle" />
+    <sql-case id="select_with_dotted_database_link_oracle" value="SELECT * FROM userinfo.subs_rateplan@PJZW.EXAMPLE.COM x" db-types="Oracle" />
+
+    <sql-case id="select_cte_search_depth_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) SEARCH DEPTH FIRST BY a SET seq SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_breadth_pg" value="WITH RECURSIVE t(a,b) AS (SELECT 1,2) SEARCH BREADTH FIRST BY a,b SET seq SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_cycle_default_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) CYCLE a SET marked USING path SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_cycle_values_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) CYCLE a SET marked TO 'Y' DEFAULT 'N' USING path SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) SEARCH DEPTH FIRST BY a SET seq CYCLE a SET marked TO TRUE DEFAULT FALSE USING path SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_quoted_pg" value="WITH RECURSIVE t(a) AS (SELECT 1) SEARCH BREADTH FIRST BY a SET &quot;seq&quot; CYCLE a SET &quot;marked&quot; USING &quot;path&quot; SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_inferred_columns_pg" value="WITH RECURSIVE t AS (SELECT 1 AS a) SEARCH DEPTH FIRST BY a SET seq SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_parameter_pg" value="WITH RECURSIVE t(a) AS (SELECT $1) SEARCH BREADTH FIRST BY a SET seq CYCLE a SET marked USING path SELECT * FROM t" db-types="PostgreSQL" case-types="Placeholder" />
+
+    <sql-case id="select_cte_search_cycle_keywords_pg" value="SELECT breadth, depth FROM breadth AS depth" db-types="PostgreSQL" />
+
+    <sql-case id="select_cte_search_cycle_old_control_pg" value="WITH t(a) AS (SELECT 1) SELECT * FROM t" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_first_implicit_pg" value="SELECT 1 FETCH FIRST ROW ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_next_implicit_pg" value="SELECT 1 FETCH NEXT ROWS ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_ties_implicit_pg" value="SELECT 1 ORDER BY 1 FETCH FIRST ROWS WITH TIES" db-types="PostgreSQL" />
+
+    <sql-case id="select_offset_fetch_implicit_pg" value="SELECT 1 OFFSET 2 ROWS FETCH FIRST ROW ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_offset_implicit_pg" value="SELECT 1 FETCH NEXT ROW ONLY OFFSET 2 ROWS" db-types="PostgreSQL" />
+
+    <sql-case id="select_fetch_implicit_offset_parameter_pg" value="SELECT 1 OFFSET $1 ROWS FETCH NEXT ROWS ONLY" db-types="PostgreSQL" case-types="Placeholder" />
+
+    <sql-case id="select_fetch_explicit_control_pg" value="SELECT 1 FETCH FIRST 3 ROWS ONLY" db-types="PostgreSQL" />
+
+    <sql-case id="select_limit_offset_fetch_control_pg" value="SELECT 1 LIMIT 3 OFFSET 2" db-types="PostgreSQL" />
+    <sql-case id="select_key_alias_with_as_firebird" value="SELECT order_id AS KEY FROM t_order" db-types="Firebird" />
+    <sql-case id="select_text_alias_with_as_firebird" value="SELECT order_id AS TEXT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_comment_alias_with_as_firebird" value="SELECT order_id AS COMMENT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_key_alias_without_as_firebird" value="SELECT order_id KEY FROM t_order" db-types="Firebird" />
+    <sql-case id="select_text_alias_without_as_firebird" value="SELECT order_id TEXT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_comment_alias_without_as_firebird" value="SELECT order_id COMMENT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_operator_prefix_aliases_pg" value="SELECT ~~a, !~~a, ~~*a, !~~*a, &amp;&amp;a, ~*a, !~a, !~*a FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_fixed_generic_operator_symbols_pg" value="SELECT a == b, a &lt;=&gt; b FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_operator_backtick_pg" value="SELECT a ` b, `a FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_prefix_alias_parameter_precedence_pg" value="SELECT ~~$1 + $2" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_json_arrayagg_function_table_pg" value="SELECT * FROM JSON_ARRAYAGG(1 RETURNING json) AS agg" db-types="PostgreSQL" />
+    <sql-case id="select_prefix_alias_between_pg" value="SELECT 1 BETWEEN ~~$1 + $2 AND 3" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_fixed_operator_left_associative_pg" value="SELECT `1 ` 2, &lt;=&gt;1 &lt;=&gt; 2" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_fixed_operator_between_left_associative_pg" value="SELECT 0 BETWEEN `1 ` 2 AND 3, 0 BETWEEN &lt;=&gt;1 &lt;=&gt; 2 AND 3" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_mixed_symbolic_operator_precedence_pg" value="SELECT $1 &amp;&amp; $2 &lt;=&gt; $3, $4 &lt;=&gt; $5 &amp; $6, $7 ~~ $8 &lt;=&gt; $9, @ $10 @ $11" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_mixed_symbolic_operator_between_pg" value="SELECT 0 BETWEEN $1 &amp;&amp; $2 &lt;=&gt; $3 AND 4" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

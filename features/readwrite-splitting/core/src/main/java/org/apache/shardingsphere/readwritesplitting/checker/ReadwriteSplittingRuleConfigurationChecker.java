@@ -18,11 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.external.sql.identifier.SQLExceptionIdentifier;
 import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -65,7 +62,6 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements Databas
                 continue;
             }
             LoadBalanceAlgorithm loadBalancer = loadBalancers.get(each.getLoadBalancerName());
-            ShardingSpherePreconditions.checkNotNull(loadBalancer, () -> new UnregisteredAlgorithmException("Load balancer", each.getLoadBalancerName(), new SQLExceptionIdentifier(databaseName)));
             loadBalancer.check(databaseName, getActualDataSourceNames(each.getReadDataSourceNames()));
         }
     }
@@ -74,9 +70,7 @@ public final class ReadwriteSplittingRuleConfigurationChecker implements Databas
     public Collection<String> getRequiredDataSourceNames(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceGroupRuleConfiguration each : ruleConfig.getDataSourceGroups()) {
-            if (null != each.getWriteDataSourceName()) {
-                result.addAll(getActualDataSourceNames(Collections.singleton(each.getWriteDataSourceName())));
-            }
+            result.addAll(getActualDataSourceNames(Collections.singleton(each.getWriteDataSourceName())));
             result.addAll(getActualDataSourceNames(each.getReadDataSourceNames()));
         }
         return result;

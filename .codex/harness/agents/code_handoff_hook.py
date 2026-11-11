@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Require an explicit review handoff after Codex changes implementation files."""
+"""Require an explicit review handoff after Codex changes repository deliverables."""
 
 from __future__ import annotations
 
@@ -29,13 +29,13 @@ import sys
 import tempfile
 from typing import Any
 
-PROSE_SUFFIXES = frozenset({".adoc", ".md", ".rst"})
-PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:Add|Delete|Update) File: (.+)$", re.MULTILINE)
-FIELD_PATTERN = r"^[ \t]*(?:[-*][ \t]+)?(?:#{{1,6}}[ \t]+)?(?:\*\*)?{label}:[ \t]*(.*?)(?:\*\*)?[ \t]*$"
-BOLD_FIELD_PATTERN = r"^[ \t]*(?:[-*][ \t]+)?\*\*{label}:[ \t]*(.*?)\*\*[ \t]*$"
-FORMAL_REVIEW_PATTERN = re.compile(r"^```markdown\s*$\n(.*?)^```\s*$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
-TEXT_BLOCK_PATTERN = re.compile(r"^```text\s*$\n(.*?)^```\s*$", re.IGNORECASE | re.MULTILINE | re.DOTALL)
-SHELL_TOOL_NAMES = frozenset({"Bash", "exec_command", "write_stdin"})
+PATCH_FILE_PATTERN = re.compile(r"^\*\*\* (?:(?:Add|Delete|Update) File|Move to): (.+)$", re.MULTILINE)
+FIELD_PATTERN = r"(?P<emphasis>\*\*)?{label}:(?(emphasis)(?:\*\*)?)[ \t]*(?P<value>.*?)"
+FIELD_PREFIX_PATTERN = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:#{1,6}[ \t]+)?")
+FENCE_PATTERN = re.compile(r"(?:`{3,}[^`]*|~{3,}.*)")
+FENCE_OPEN_PATTERN = re.compile(r"^ {0,3}(?P<fence>`{3,}|~{3,})(?P<info>.*)$")
+SNAPSHOT_TOOL_NAMES = frozenset({"Bash", "apply_patch", "exec_command", "write_stdin"})
+COMMIT_EXEMPT_SUFFIXES = frozenset({".adoc", ".md", ".rst"})
 PASSING_RESULT = "Mergeable"
 PAUSED_RESULTS = frozenset({"Not Mergeable", "Review Incomplete"})
 
@@ -47,26 +47,27 @@ def process_event(event: dict[str, Any], state_directory: Path) -> dict[str, str
         _record_pre_tool_state(event, state_directory)
         return {}
     if "PostToolUse" == event_name:
-        _record_implementation_change(event, state_directory)
+        _record_tool_change(event, state_directory)
         return {}
     if "Stop" != event_name:
         return {}
     marker_path = _marker_path(event, state_directory)
+    message = event.get("last_assistant_message")
     if not marker_path.exists():
         return {}
-    message = event.get("last_assistant_message")
-    passing_failures = validate_handoff(message)
+    require_commit = _pending_requires_commit(marker_path)
+    passing_failures = validate_handoff(message, require_commit=require_commit)
     if not passing_failures:
         marker_path.unlink()
         return {}
     paused_failures = validate_paused_handoff(message)
     if not paused_failures:
         return {}
-    return {"decision": "block", "reason": _continuation_reason(passing_failures, paused_failures)}
+    return {"decision": "block", "reason": _continuation_reason(passing_failures, paused_failures, require_commit)}
 
 
 def _record_pre_tool_state(event: dict[str, Any], state_directory: Path) -> None:
-    if event.get("tool_name") not in SHELL_TOOL_NAMES:
+    if event.get("tool_name") not in SNAPSHOT_TOOL_NAMES:
         return
     snapshot_path = _snapshot_path(event, state_directory)
     snapshot_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -74,26 +75,9 @@ def _record_pre_tool_state(event: dict[str, Any], state_directory: Path) -> None
     snapshot_path.write_text(json.dumps(snapshot, sort_keys=True), encoding="utf-8")
 
 
-def _record_implementation_change(event: dict[str, Any], state_directory: Path) -> None:
-    tool_name = event.get("tool_name")
-    if tool_name in SHELL_TOOL_NAMES:
-        _record_shell_change(event, state_directory)
+def _record_tool_change(event: dict[str, Any], state_directory: Path) -> None:
+    if event.get("tool_name") not in SNAPSHOT_TOOL_NAMES:
         return
-    if "apply_patch" != tool_name:
-        return
-    tool_input = event.get("tool_input")
-    patch = None
-    if isinstance(tool_input, dict):
-        patch = tool_input.get("command") or tool_input.get("patch")
-    if not isinstance(patch, str):
-        _mark_pending(event, state_directory)
-        return
-    if not _changes_implementation_file(patch):
-        return
-    _mark_pending(event, state_directory)
-
-
-def _record_shell_change(event: dict[str, Any], state_directory: Path) -> None:
     snapshot_path = _snapshot_path(event, state_directory)
     try:
         before = json.loads(snapshot_path.read_text(encoding="utf-8"))
@@ -111,23 +95,30 @@ def _record_shell_change(event: dict[str, Any], state_directory: Path) -> None:
     if not isinstance(before_files, dict) or not isinstance(after_files, dict):
         _mark_pending(event, state_directory)
         return
+    for path in before_files.keys() - after_files.keys():
+        after_files[path] = _path_digest(Path(path))
     changed_paths = {
         each for each in before_files.keys() | after_files.keys()
         if before_files.get(each) != after_files.get(each)
     }
-    if any(Path(each).suffix.lower() not in PROSE_SUFFIXES for each in changed_paths):
-        _mark_pending(event, state_directory)
+    if changed_paths:
+        _mark_pending(event, state_directory, require_commit=_requires_commit_message(changed_paths))
 
 
-def _mark_pending(event: dict[str, Any], state_directory: Path) -> None:
+def _requires_commit_message(paths: set[str]) -> bool:
+    return any(Path(path).suffix.lower() not in COMMIT_EXEMPT_SUFFIXES for path in paths)
+
+
+def _mark_pending(event: dict[str, Any], state_directory: Path, require_commit: bool = True) -> None:
     marker_path = _marker_path(event, state_directory)
     marker_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    marker_path.touch(exist_ok=True)
+    require_commit = require_commit or (marker_path.exists() and _pending_requires_commit(marker_path))
+    marker_path.write_text(json.dumps({"require_commit": require_commit}), encoding="utf-8")
 
 
-def _changes_implementation_file(patch: str) -> bool:
-    paths = PATCH_FILE_PATTERN.findall(patch)
-    return not paths or any(Path(each).suffix.lower() not in PROSE_SUFFIXES for each in paths)
+def _pending_requires_commit(marker_path: Path) -> bool:
+    content = marker_path.read_text(encoding="utf-8")
+    return not content or json.loads(content)["require_commit"]
 
 
 def _marker_path(event: dict[str, Any], state_directory: Path) -> Path:
@@ -149,24 +140,86 @@ def _snapshot_path(event: dict[str, Any], state_directory: Path) -> Path:
 
 def _repository_snapshot(event: dict[str, Any]) -> dict[str, Any] | None:
     cwd = event.get("cwd")
+    base_directory = Path(cwd) if isinstance(cwd, str) and cwd else None
     tool_input = event.get("tool_input")
-    if not isinstance(cwd, str) or not cwd:
-        cwd = tool_input.get("workdir") if isinstance(tool_input, dict) else None
-    if not isinstance(cwd, str) or not cwd:
-        cwd = os.getcwd()
-    root_result = _run_git(Path(cwd), "rev-parse", "--show-toplevel")
+    workdir = tool_input.get("workdir") if isinstance(tool_input, dict) else None
+    if isinstance(workdir, str) and workdir:
+        directory = Path(workdir)
+        if not directory.is_absolute():
+            directory = (base_directory or Path(os.getcwd())) / directory
+    else:
+        directory = base_directory or Path(os.getcwd())
+    root_result = _run_git(directory, "rev-parse", "--show-toplevel")
     if root_result is None:
+        selected = directory.resolve()
+        if any((parent / ".git").exists() for parent in (selected, *selected.parents)):
+            return None
+    if root_result is None and base_directory is not None and directory != base_directory:
+        root_result = _run_git(base_directory, "rev-parse", "--show-toplevel")
+    root = None
+    files = {}
+    if root_result is not None:
+        line_ending = b"\r\n" if os.name == "nt" and root_result.endswith(b"\r\n") else b"\n"
+        root = Path(root_result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape")).resolve()
+        status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
+        if status is None:
+            return None
+        files = {str(root / path): _path_digest(root / path) for path in _status_entries(status)}
+    if "apply_patch" == event.get("tool_name") and isinstance(tool_input, dict):
+        patch = tool_input.get("command") or tool_input.get("patch")
+        if isinstance(patch, str):
+            targets = set()
+            for path in PATCH_FILE_PATTERN.findall(patch):
+                target = Path(path)
+                if not target.is_absolute():
+                    target = directory / target
+                target = target.parent.resolve() / target.name
+                targets.add(target)
+                if target.is_symlink():
+                    targets.add(target.resolve())
+            listed_paths = _git_listed_paths(targets, root)
+            if listed_paths is None:
+                return None
+            for target in listed_paths:
+                files[str(target)] = _path_digest(target)
+    return {"root": str(root) if root is not None else None, "files": files}
+
+
+def _git_listed_paths(paths: set[Path], root: Path | None) -> set[Path] | None:
+    roots = {root: root} if root is not None else {}
+    try:
+        repositories = {_path_git_root(path, roots) for path in paths}
+    except RuntimeError:
         return None
-    root = Path(root_result.decode("utf-8", errors="surrogateescape").strip())
-    status = _run_git(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
-    if status is None:
-        return None
-    entries = _status_entries(status)
-    files = {
-        path: f"{state}:{_path_digest(root / path)}"
-        for path, state in entries.items()
-    }
-    return {"root": str(root.resolve()), "files": files}
+    repositories.discard(None)
+    listed = set()
+    for repository in repositories:
+        result = _run_git(repository, "ls-files", "--cached", "--others", "--exclude-standard", "--full-name", "-z")
+        if result is None:
+            return None
+        listed_paths = (repository / os.fsdecode(path) for path in result.split(b"\0") if path)
+        listed.update(paths.intersection(listed_paths))
+    return listed
+
+
+def _path_git_root(path: Path, roots: dict[Path, Path | None]) -> Path | None:
+    pending = []
+    for directory in path.parents:
+        if directory in roots:
+            root = roots[directory]
+            break
+        pending.append(directory)
+        if (directory / ".git").exists():
+            result = _run_git(directory, "rev-parse", "--show-toplevel")
+            if result is None:
+                raise RuntimeError("Unable to inspect declared Git repository")
+            line_ending = b"\r\n" if os.name == "nt" and result.endswith(b"\r\n") else b"\n"
+            root = Path(result.removesuffix(line_ending).decode("utf-8", errors="surrogateescape")).resolve()
+            break
+    else:
+        root = None
+    roots.update(dict.fromkeys(pending, root))
+    return root
 
 
 def _run_git(cwd: Path, *arguments: str) -> bytes | None:
@@ -214,75 +267,93 @@ def _path_digest(path: Path) -> str:
     return hashlib.sha256(f"{mode}:".encode("ascii") + value).hexdigest()
 
 
-def validate_handoff(message: Any) -> list[str]:
-    """Return every missing or invalid successful code handoff element."""
-    failures = _validate_formal_review(message, frozenset({PASSING_RESULT}))
-    text_blocks = TEXT_BLOCK_PATTERN.findall(message) if isinstance(message, str) else []
-    if not any(_field_value(each, "Commit Message") for each in text_blocks):
-        failures.append("Commit Message")
+def validate_handoff(message: Any, require_commit: bool = True) -> list[str]:
+    """Return every missing or invalid successful handoff element."""
+    failures = _validate_handoff_evidence(message, frozenset({PASSING_RESULT}), require_review=True)
+    if not isinstance(message, str):
+        return failures
+    statuses = _field_values(message, "Task Status")
+    results = _field_values(message, "Review Result")
+    legacy_passing_review = not statuses and results == [PASSING_RESULT]
+    if ["Completed"] != statuses and not legacy_passing_review:
+        failures.append("exactly one Task Status: Completed or legacy Review Result: Mergeable")
+    if require_commit and not _field_value(message, "Commit Message"):
+        failures.append("nonempty Commit Message")
     return failures
 
 
 def validate_paused_handoff(message: Any) -> list[str]:
     """Return every missing or invalid user-blocked handoff element."""
-    failures = _validate_formal_review(message, PAUSED_RESULTS)
+    failures = _validate_handoff_evidence(message, PAUSED_RESULTS | {PASSING_RESULT})
     if not isinstance(message, str):
         return failures
-    text_blocks = TEXT_BLOCK_PATTERN.findall(message)
-    handoff = next((each for each in text_blocks if _field_value(each, "Task Status")), "")
-    if "Awaiting User" != _field_value(handoff, "Task Status"):
-        failures.append("Task Status: Awaiting User")
-    if not _field_value(handoff, "Required User Action"):
+    statuses = _field_values(message, "Task Status")
+    if ["Awaiting User"] != statuses:
+        failures.append("exactly one Task Status: Awaiting User")
+    if not _field_value(message, "Required User Action"):
         failures.append("Required User Action")
-    if _field_value(message, "Commit Message"):
+    if _field_values(message, "Commit Message"):
         failures.append("Commit Message must be omitted while awaiting the user")
     return failures
 
 
-def _validate_formal_review(message: Any, allowed_results: frozenset[str]) -> list[str]:
+def _validate_handoff_evidence(message: Any, allowed_results: frozenset[str], require_review: bool = False) -> list[str]:
     if not isinstance(message, str) or not message.strip():
-        return ["fenced markdown Formal Review"]
-    blocks = FORMAL_REVIEW_PATTERN.findall(message)
-    formal_blocks = [each for each in blocks if "### Result" in each]
-    if 1 != len(formal_blocks):
-        return ["exactly one fenced markdown Formal Review"]
-    review = formal_blocks[0]
+        return ["nonempty handoff"]
     failures = []
-    results = _review_results(review)
-    if 1 != len(results) or results[0][0] not in allowed_results or not results[0][1]:
-        failures.append("exactly one bold allowed Review Result")
-        return failures
-    result = results[0][0]
-    required_sections = ["### Result", "### Coverage"]
-    if PASSING_RESULT == result:
-        required_sections.append("### Evidence")
-    elif "Not Mergeable" == result:
-        required_sections.append("### Blocking Issues")
-        feedback_mode = _field_value(review, "Feedback Mode")
-        if feedback_mode not in {"Change Request", "Needs Discussion"}:
-            failures.append("Feedback Mode")
-        blocking_issues = _bold_field_value(review, "Blocking Issues")
-        if not blocking_issues.isdigit() or 0 == int(blocking_issues):
-            failures.append("positive bold Blocking Issues count")
-    else:
-        required_sections.extend(("### Verified Facts", "### Required Evidence"))
-    failures.extend(each for each in required_sections if not _section_content(review, each))
-    result_content = _section_content(review, "### Result")
-    if not any("review result:" not in each.casefold() for each in result_content.splitlines()):
-        failures.append("concise Result reason")
+    results = _field_values(message, "Review Result")
+    if results and (len(results) != 1 or results[0] not in allowed_results):
+        failures.append("exactly one allowed Review Result when declared")
+    if require_review and not results:
+        failures.append("exactly one Review Result: Mergeable")
+    reports = _markdown_review_reports(message)
+    if results and len(reports) != 1:
+        failures.append("one complete review report in a markdown-labelled fenced block")
+    if require_review and len(reports) == 1:
+        for section in ("Result", "Evidence", "Coverage"):
+            if not _section_content(reports[0], f"### {section}"):
+                failures.append(f"review {section}")
+        if _field_values(reports[0], "Commit Message"):
+            failures.append("Commit Message must be separate from the review report")
+    if not require_review and not _field_value(message, "Evidence") and not _section_content(message, "### Evidence"):
+        failures.append("Evidence")
     return failures
 
 
-def _review_results(review: str) -> list[tuple[str, bool]]:
-    result: list[tuple[str, bool]] = []
-    for line in review.splitlines():
-        stripped = line.strip()
-        if stripped.startswith(("- ", "* ")):
-            stripped = stripped[2:].strip()
-        is_bold = stripped.startswith("**") and stripped.endswith("**")
-        normalized = stripped.strip("*").strip()
-        if normalized.lower().startswith("review result:"):
-            result.append((normalized.split(":", 1)[1].strip(), is_bold))
+def _markdown_review_reports(message: str) -> list[str]:
+    result = []
+    fence = ""
+    language = ""
+    content = []
+    for line in message.splitlines():
+        if fence:
+            if re.fullmatch(rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line):
+                report = "\n".join(content)
+                if language == "markdown" and _field_values(report, "Review Result"):
+                    result.append(report)
+                fence = ""
+            else:
+                content.append(line)
+            continue
+        opening = FENCE_OPEN_PATTERN.fullmatch(line)
+        if opening and not (opening.group("fence").startswith("`") and "`" in opening.group("info")):
+            fence = opening.group("fence")
+            language = opening.group("info").strip()
+            content = []
+    return result
+
+
+def _field_values(message: str, label: str) -> list[str]:
+    result: list[str] = []
+    pattern = re.compile(FIELD_PATTERN.format(label=re.escape(label)), re.IGNORECASE)
+    for line in message.splitlines():
+        normalized = FIELD_PREFIX_PATTERN.sub("", line, count=1).strip()
+        emphasis_size = len(normalized) - len(normalized.lstrip("*"))
+        if emphasis_size and normalized.endswith("*" * emphasis_size):
+            normalized = normalized[emphasis_size:-emphasis_size].strip()
+        match = pattern.fullmatch(normalized)
+        if match:
+            result.append(match.group("value").strip())
     return result
 
 
@@ -296,32 +367,27 @@ def _section_content(review: str, heading: str) -> str:
     for line in lines[start:]:
         if line.strip().startswith("### "):
             break
-        if line.strip():
+        if line.strip() and not FENCE_PATTERN.fullmatch(line.strip()):
             content.append(line.strip())
     return "\n".join(content)
 
 
 def _field_value(message: str, label: str) -> str:
-    pattern = re.compile(FIELD_PATTERN.format(label=re.escape(label)), re.IGNORECASE | re.MULTILINE)
-    match = pattern.search(message)
-    return match.group(1).strip() if match else ""
+    values = _field_values(message, label)
+    value = values[0] if values else ""
+    return "" if FENCE_PATTERN.fullmatch(value) else value
 
 
-def _bold_field_value(message: str, label: str) -> str:
-    pattern = re.compile(BOLD_FIELD_PATTERN.format(label=re.escape(label)), re.IGNORECASE | re.MULTILINE)
-    match = pattern.search(message)
-    return match.group(1).strip() if match else ""
-
-
-def _continuation_reason(passing_failures: list[str], paused_failures: list[str]) -> str:
+def _continuation_reason(passing_failures: list[str], paused_failures: list[str], require_commit: bool) -> str:
     passing = ", ".join(passing_failures)
     paused = ", ".join(paused_failures)
+    commit_requirement = " with a nonempty Commit Message" if require_commit else ""
     return (
-        "The code-writing task cannot stop successfully without the latest passing $review-pr Formal Review. "
+        f"The file-writing task has an unresolved handoff. Report Task Status: Completed{commit_requirement} after required checks and full review. "
         f"Passing handoff failures: {passing}. "
-        "Fix safe in-scope findings, rerun invalidated checks, and repeat Formal Review until Mergeable. "
-        "If an exact user decision, authority, or unavailable evidence blocks continuation, return the complete non-passing "
-        f"Formal Review with Task Status: Awaiting User and Required User Action; pause failures: {paused}."
+        "Completion requires one actual Review Result: Mergeable report in a markdown-labelled fenced block with Result, Evidence and Coverage. "
+        "If an exact user decision, authority, or unavailable evidence blocks continuation, report "
+        f"Task Status: Awaiting User with Evidence and Required User Action; pause failures: {paused}."
     )
 
 

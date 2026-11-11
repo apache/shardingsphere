@@ -39,4 +39,15 @@ public interface DialectQueryBehaviorProvider extends DatabaseTypedSPI {
     default Optional<String> getFallbackOrderByWhenNoPrimaryKey() {
         return Optional.empty();
     }
+    
+    /**
+     * Get delete all rows SQL template when TRUNCATE TABLE is unsupported.
+     *
+     * <p>Template contains one "%s" placeholder for the quoted table name, for example: "DELETE FROM %s". Empty means TRUNCATE TABLE.</p>
+     *
+     * @return optional delete all rows SQL template
+     */
+    default Optional<String> getDeleteAllRowsSQLTemplate() {
+        return Optional.empty();
+    }
 }

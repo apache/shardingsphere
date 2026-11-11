@@ -92,16 +92,16 @@ class SQLExecutionPayloadTest {
     
     @ParameterizedTest(name = "{0}")
     @CsvSource({
-            "TRANSACTION_CONTROL, BEGIN, Transaction started.",
-            "TRANSACTION_CONTROL, START TRANSACTION, Transaction started.",
-            "TRANSACTION_CONTROL, COMMIT, Transaction committed.",
-            "TRANSACTION_CONTROL, ROLLBACK, Transaction rolled back.",
-            "SAVEPOINT, SAVEPOINT, Savepoint created.",
-            "SAVEPOINT, ROLLBACK TO SAVEPOINT, Savepoint rolled back.",
-            "SAVEPOINT, RELEASE SAVEPOINT, Savepoint released.",
-            "DDL, CREATE, Statement executed."
+            "begin, TRANSACTION_CONTROL, BEGIN, Transaction started.",
+            "start transaction, TRANSACTION_CONTROL, START TRANSACTION, Transaction started.",
+            "commit, TRANSACTION_CONTROL, COMMIT, Transaction committed.",
+            "rollback, TRANSACTION_CONTROL, ROLLBACK, Transaction rolled back.",
+            "savepoint, SAVEPOINT, SAVEPOINT, Savepoint created.",
+            "rollback to savepoint, SAVEPOINT, ROLLBACK TO SAVEPOINT, Savepoint rolled back.",
+            "release savepoint, SAVEPOINT, RELEASE SAVEPOINT, Savepoint released.",
+            "create, DDL, CREATE, Statement executed."
     })
-    void assertStatementAcknowledgement(final SupportedMCPStatement statementClass, final String statementType, final String expectedSummary) {
+    void assertStatementAcknowledgement(final String name, final SupportedMCPStatement statementClass, final String statementType, final String expectedSummary) {
         Map<String, Object> actual = SQLExecutionPayload.executed(SQLExecutionResult.statementAck(
                 statementClass, statementType, 100, 0, statementType)).toPayload();
         assertThat(actual.get("summary"), is(expectedSummary));

@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader.type;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,12 +41,14 @@ import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 class ColumnMetaDataLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -91,12 +97,14 @@ class ColumnMetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadWhenThrowsSQLException() throws SQLException {
+    void assertLoadWhenThrowsSQLException(final LogCaptureAssertion logCaptureAssertion) throws SQLException {
         when(columnResultSet.next()).thenReturn(true, false);
         when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
         when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
         when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER);
-        when(connection.createStatement().executeQuery(anyString())).thenThrow(SQLException.class);
+        SQLException expectedException = new SQLException();
+        when(connection.createStatement().executeQuery(anyString())).thenThrow(expectedException);
         assertThrows(SQLException.class, () -> ColumnMetaDataLoader.load(connection, "tbl", databaseType));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
 }

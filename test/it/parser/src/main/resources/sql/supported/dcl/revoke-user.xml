@@ -159,4 +159,16 @@
     <sql-case id="revoke_create_role_privilege_doris" value="REVOKE CREATE ROLE ON *.* FROM user1" db-types="Doris" />
     <sql-case id="revoke_drop_role_privilege_doris" value="REVOKE DROP ROLE ON *.* FROM user1" db-types="Doris" />
     <sql-case id="revoke_select_sql92" value="REVOKE SELECT (order_id) ON t_order FROM user1" db-types="SQL92" />
+    <sql-case id="revoke_maintain_pg" value="REVOKE MAINTAIN ON t FROM r" db-types="PostgreSQL" />
+    <sql-case id="revoke_granted_by_pg" value="REVOKE SELECT ON t FROM r GRANTED BY grantor" db-types="PostgreSQL" />
+    <sql-case id="revoke_role_inherit_pg" value="REVOKE INHERIT OPTION FOR r1 FROM r2" db-types="PostgreSQL" />
+    <sql-case id="revoke_role_set_grantor_pg" value="REVOKE SET OPTION FOR r1 FROM r2 GRANTED BY r3 CASCADE" db-types="PostgreSQL" />
+    <sql-case id="revoke_role_admin_option_control_pg" value="REVOKE ADMIN OPTION FOR r1 FROM r2" db-types="PostgreSQL" />
+    <sql-case id="revoke_object_grant_option_control_pg" value="REVOKE GRANT OPTION FOR SELECT ON t FROM r2" db-types="PostgreSQL" />
+    <sql-case id="revoke_maintain_on_table_postgresql" value="REVOKE MAINTAIN ON foo_schema.foo FROM foo_role" db-types="PostgreSQL" />
+    <sql-case id="revoke_privileges_granted_by_role_postgresql" value="REVOKE SELECT, UPDATE ON foo FROM foo_role GRANTED BY foo_owner CASCADE" db-types="PostgreSQL" />
+    <sql-case id="revoke_grant_option_granted_by_postgresql" value="REVOKE GRANT OPTION FOR SELECT ON foo FROM foo_role GRANTED BY CURRENT_USER RESTRICT" db-types="PostgreSQL" />
+    <sql-case id="revoke_role_admin_option_for_postgresql" value="REVOKE ADMIN OPTION FOR foo_reader FROM foo_user GRANTED BY foo_owner" db-types="PostgreSQL" />
+    <sql-case id="revoke_role_inherit_option_for_postgresql" value="REVOKE INHERIT OPTION FOR foo_reader FROM foo_user" db-types="PostgreSQL" />
+    <sql-case id="revoke_role_set_option_for_postgresql" value="REVOKE SET OPTION FOR foo_reader FROM foo_user GRANTED BY CURRENT_ROLE CASCADE" db-types="PostgreSQL" />
 </sql-cases>

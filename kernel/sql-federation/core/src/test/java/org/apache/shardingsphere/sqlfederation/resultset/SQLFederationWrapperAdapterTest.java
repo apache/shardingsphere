@@ -40,7 +40,8 @@ class SQLFederationWrapperAdapterTest {
     @Test
     void assertUnwrapFailure() {
         SQLFeatureNotSupportedException ex = assertThrows(SQLFeatureNotSupportedException.class, () -> fixture.unwrap(Comparable.class));
-        assertThat(ex.getMessage(), is("`org.apache.shardingsphere.sqlfederation.resultset.SQLFederationWrapperAdapterTest$WrapperFixture` cannot be unwrapped as `java.lang.Comparable`"));
+        assertThat(ex.getMessage(),
+                is("`org.apache.shardingsphere.sqlfederation.resultset.SQLFederationWrapperAdapterTest$WrapperFixture` cannot be unwrapped as `java.lang.Comparable`"));
     }
     
     @Test

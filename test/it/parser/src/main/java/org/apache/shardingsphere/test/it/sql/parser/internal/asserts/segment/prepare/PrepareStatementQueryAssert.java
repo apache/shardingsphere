@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.DeleteStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.InsertStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.MergeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.UpdateStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.query.ExpectedPrepareStatementQuery;
@@ -49,6 +50,7 @@ public final class PrepareStatementQueryAssert {
         assertInsert(assertContext, actual, expected);
         assertUpdate(assertContext, actual, expected);
         assertDelete(assertContext, actual, expected);
+        assertMerge(assertContext, actual, expected);
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
@@ -85,6 +87,15 @@ public final class PrepareStatementQueryAssert {
         } else {
             assertTrue(actual.getDelete().isPresent(), assertContext.getText("Actual delete statement should exist."));
             DeleteStatementAssert.assertIs(assertContext, actual.getDelete().get(), expected.getDeleteClause());
+        }
+    }
+    
+    private static void assertMerge(final SQLCaseAssertContext assertContext, final PrepareStatementQuerySegment actual, final ExpectedPrepareStatementQuery expected) {
+        if (null == expected.getMergeClause()) {
+            assertFalse(actual.getMerge().isPresent(), assertContext.getText("Actual merge statement should not exist."));
+        } else {
+            assertTrue(actual.getMerge().isPresent(), assertContext.getText("Actual merge statement should exist."));
+            MergeStatementAssert.assertIs(assertContext, actual.getMerge().get(), expected.getMergeClause());
         }
     }
 }

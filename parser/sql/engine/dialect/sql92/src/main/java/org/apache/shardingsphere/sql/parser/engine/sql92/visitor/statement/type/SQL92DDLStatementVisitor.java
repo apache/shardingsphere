@@ -116,8 +116,8 @@ public final class SQL92DDLStatementVisitor extends SQL92StatementVisitor implem
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.dataTypeOption().stream().anyMatch(each -> null != each.primaryKey());
-        // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.dataTypeOption().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull, getText(ctx));
         for (DataTypeOptionContext each : ctx.dataTypeOption()) {
             if (null != each.referenceDefinition()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referenceDefinition().tableName()));

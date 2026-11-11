@@ -20,6 +20,10 @@ package org.apache.shardingsphere.sqlfederation.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 /**
  * SQL federation rule configuration.
@@ -28,9 +32,16 @@ import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration
 @Getter
 public final class SQLFederationRuleConfiguration implements GlobalRuleConfiguration {
     
-    private final boolean sqlFederationEnabled;
-    
     private final boolean allQueryUseSQLFederation;
     
+    @NotNull
+    @Valid
     private final SQLFederationCacheOption executionPlanCache;
+    
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sqlfederation.spi.SQLFederationProvider")
+    private final String providerType;
+    
+    public SQLFederationRuleConfiguration(final boolean allQueryUseSQLFederation, final SQLFederationCacheOption executionPlanCache) {
+        this(allQueryUseSQLFederation, executionPlanCache, null);
+    }
 }

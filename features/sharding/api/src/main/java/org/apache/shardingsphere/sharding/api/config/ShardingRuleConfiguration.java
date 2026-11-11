@@ -24,52 +24,82 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.constraint.spi.SPITypeExists;
+import org.apache.shardingsphere.infra.config.rule.validator.group.RuleConfigurationTypeValidationGroup;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.validator.ValidShardingRuleConfiguration;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Sharding rule configuration.
  */
 @Getter
 @Setter
+@ValidShardingRuleConfiguration(groups = RuleConfigurationTypeValidationGroup.class)
 public final class ShardingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
-    private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
+    @NotNull
+    @Valid
+    private Collection<@NotNull ShardingTableRuleConfiguration> tables = new LinkedList<>();
     
-    private Collection<ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
+    @NotNull
+    @Valid
+    private Collection<@NotNull ShardingAutoTableRuleConfiguration> autoTables = new LinkedList<>();
     
-    private Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = new LinkedList<>();
+    @NotNull
+    @Valid
+    private Collection<@NotNull ShardingTableReferenceRuleConfiguration> bindingTableGroups = new LinkedList<>();
     
+    @Valid
     private ShardingStrategyConfiguration defaultDatabaseShardingStrategy;
     
+    @Valid
     private ShardingStrategyConfiguration defaultTableShardingStrategy;
     
+    @Valid
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
+    @Valid
     private ShardingAuditStrategyConfiguration defaultAuditStrategy;
     
     private String defaultShardingColumn;
     
-    private Map<String, KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
+    @NotNull
+    @Valid
+    private Map<@NotBlank String, @NotNull KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
     
-    private Map<String, AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    @NotNull
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
+    private Map<@NotBlank String, @NotNull AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    private Map<String, AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    @NotNull
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
+    private Map<@NotBlank String, @NotNull AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, AlgorithmConfiguration> auditors = new LinkedHashMap<>();
+    @NotNull
+    @Valid
+    @SPITypeExists(spiClassName = "org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm", groups = RuleConfigurationTypeValidationGroup.class)
+    private Map<@NotBlank String, @NotNull AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     @Override
     public Collection<String> getLogicTableNames() {
-        return new CaseInsensitiveSet<>(tables.stream().map(ShardingTableRuleConfiguration::getLogicTable).collect(Collectors.toList()));
+        Collection<String> result = new CaseInsensitiveSet<>(tables.size() + autoTables.size());
+        tables.forEach(each -> result.add(each.getLogicTable()));
+        autoTables.forEach(each -> result.add(each.getLogicTable()));
+        return result;
     }
 }

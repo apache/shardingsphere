@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
@@ -26,15 +27,22 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.session.MCPSessionIdentity;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.MCPTransportSecurityException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.ShardingSphereServerTransportSecurityValidator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,10 +52,12 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,6 +74,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -73,9 +84,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(LogCaptureExtension.class)
+@LogCaptureSettings(suppressOutput = true)
 class StreamableHttpMCPServletTest {
-    
-    private static final String ACCEPT = "application/json, text/event-stream";
     
     private MockedConstruction<HttpServletStreamableServerTransportProvider> mockedDelegates;
     
@@ -191,8 +202,6 @@ class StreamableHttpMCPServletTest {
     void assertServiceSetUtf8Encoding(final String name, final String requestMethod) throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn(requestMethod);
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
-        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn(null);
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
         actual.service(request, response);
@@ -202,17 +211,19 @@ class StreamableHttpMCPServletTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("requestMethods")
-    void assertServiceHandleUncommittedException(final String name, final String requestMethod) throws IOException {
+    void assertServiceHandleUncommittedException(final String name, final String requestMethod, final LogCaptureAssertion logCaptureAssertion) throws IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn(requestMethod);
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
         when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
         HttpServletResponse response = mock(HttpServletResponse.class);
-        doThrow(new IOException("foo_failure")).when(response).getWriter();
+        IOException expectedException = new IOException("foo_failure");
+        doThrow(expectedException).when(response).getWriter();
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
         assertDoesNotThrow(() -> actual.service(request, response));
         verify(response).reset();
         verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -244,7 +255,6 @@ class StreamableHttpMCPServletTest {
     void assertServiceGetWithoutAcceptHeaderAndUtf8Encoding() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
         actual.service(request, response);
@@ -261,11 +271,27 @@ class StreamableHttpMCPServletTest {
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
         when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
+        StringWriter actualResponseBody = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(actualResponseBody));
         createServlet(mock(MCPSessionManager.class)).service(request, response);
         verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response).setContentType("application/json");
+        assertTransportSecurityError(actualResponseBody, "Origin is not allowed by MCP HTTP transport policy.");
         verify(response, never()).sendError(HttpServletResponse.SC_BAD_REQUEST, "Accept must include text/event-stream.");
         verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    private void assertTransportSecurityError(final StringWriter responseBody, final String expectedMessage) {
+        Map<?, ?> actual = JsonEngine.unmarshal(responseBody.toString(), Map.class);
+        assertThat(actual.keySet(), is(Set.of("jsonrpc", "error")));
+        assertThat(actual.get("jsonrpc"), is(McpSchema.JSONRPC_VERSION));
+        Map<?, ?> actualError = (Map<?, ?>) actual.get("error");
+        assertThat(actualError.keySet(), is(Set.of("code", "message", "data")));
+        assertThat(actualError.get("code"), is(McpSchema.ErrorCodes.INVALID_PARAMS));
+        assertThat(actualError.get("message"), is(expectedMessage));
+        Map<?, ?> actualData = (Map<?, ?>) actualError.get("data");
+        assertThat(actualData.get("summary"), is(expectedMessage));
+        assertThat(actualData.get("response_mode"), is("recovery"));
     }
     
     @Test
@@ -289,7 +315,6 @@ class StreamableHttpMCPServletTest {
     void assertRejectEventStreamGetWithUnknownSession() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn("text/event-stream");
         when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("unknown-session");
         HttpServletResponse response = mock(HttpServletResponse.class);
         createServlet(new MCPSessionManager(Map.of())).service(request, response);
@@ -302,7 +327,6 @@ class StreamableHttpMCPServletTest {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
@@ -328,7 +352,6 @@ class StreamableHttpMCPServletTest {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenAnswer(ignored -> Collections.enumeration(List.of("X-Test-Subject", "X-Test-Source", "X-Test-ATTR-Region")));
         when(request.getHeader("X-Test-Subject")).thenReturn("subject");
         when(request.getHeader("X-Test-Source")).thenReturn("gateway");
@@ -353,7 +376,6 @@ class StreamableHttpMCPServletTest {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -367,19 +389,21 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServicePostRollbackSessionWhenDelegateFails() throws ServletException, IOException {
+    void assertServicePostRollbackSessionWhenDelegateFails(final LogCaptureAssertion logCaptureAssertion) throws ServletException, IOException {
         MCPSessionManager sessionManager = new MCPSessionManager(Map.of());
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(sessionManager);
+        ServletException expectedException = new ServletException("foo_failure");
         doAnswer(invocation -> {
             ((HttpServletResponse) invocation.getArgument(1)).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
-            throw new ServletException("foo_failure");
+            throw expectedException;
         }).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         assertDoesNotThrow(() -> actual.service(request, response));
         assertFalse(sessionManager.hasSession("session-id"));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -387,10 +411,8 @@ class StreamableHttpMCPServletTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
         when(request.getContentType()).thenReturn("application/json; charset=UTF-8");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
         actual.service(request, response);
         verify(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
@@ -412,14 +434,37 @@ class StreamableHttpMCPServletTest {
     void assertServicePostRejectsOriginBeforeContentType() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getContentType()).thenReturn("text/plain");
         when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of("Origin")));
         when(request.getHeaders("Origin")).thenReturn(Collections.enumeration(List.of("https://example.com")));
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(response.getWriter()).thenReturn(mock(PrintWriter.class));
+        StringWriter actualResponseBody = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(actualResponseBody));
         createServlet(mock(MCPSessionManager.class)).service(request, response);
         verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response).setContentType("application/json");
+        assertTransportSecurityError(actualResponseBody, "Origin is not allowed by MCP HTTP transport policy.");
+        verify(request, never()).getContentType();
         verify(response, never()).sendError(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, "Content-Type must be application/json.");
+        verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+    }
+    
+    @Test
+    void assertServiceTransportSecurityErrorEscaping() throws ServletException, IOException {
+        String expectedMessage = "foo_\"quoted\"\\path\nmessage";
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StringWriter actualResponseBody = new StringWriter();
+        when(response.getWriter()).thenReturn(new PrintWriter(actualResponseBody));
+        try (
+                MockedConstruction<ShardingSphereServerTransportSecurityValidator> ignored = mockConstruction(ShardingSphereServerTransportSecurityValidator.class,
+                        (mock, context) -> doThrow(new MCPTransportSecurityException(403, expectedMessage, MCPTransportSecurityException.CATEGORY_ORIGIN_NOT_ALLOWED)).when(mock)
+                                .validateHeaders(anyMap()))) {
+            createServlet(mock(MCPSessionManager.class)).service(request, response);
+        }
+        verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
+        verify(response).setContentType("application/json");
+        assertTransportSecurityError(actualResponseBody, expectedMessage);
         verify(getDelegate(), never()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
     }
     
@@ -427,7 +472,6 @@ class StreamableHttpMCPServletTest {
     void assertServicePostWithNegotiatedProtocolHeader() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
@@ -444,7 +488,6 @@ class StreamableHttpMCPServletTest {
     void assertServicePostWithSessionHeaderAdded() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(response.getStatus()).thenReturn(HttpServletResponse.SC_OK);
@@ -462,7 +505,6 @@ class StreamableHttpMCPServletTest {
     void assertServicePostWithoutSessionHeader() throws ServletException, IOException {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("POST");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(mock(MCPSessionManager.class));
@@ -486,7 +528,6 @@ class StreamableHttpMCPServletTest {
         sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("DELETE");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -503,7 +544,6 @@ class StreamableHttpMCPServletTest {
         sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("DELETE");
-        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
         when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -514,7 +554,7 @@ class StreamableHttpMCPServletTest {
     }
     
     @Test
-    void assertServiceDeletePreserveSessionWhenDelegateFails() throws ServletException, IOException {
+    void assertServiceDeletePreserveSessionWhenDelegateFails(final LogCaptureAssertion logCaptureAssertion) throws ServletException, IOException {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession(new MCPSessionIdentity("session-id", "", "", Map.of()));
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -523,9 +563,11 @@ class StreamableHttpMCPServletTest {
         when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
         HttpServletResponse response = mock(HttpServletResponse.class);
         StreamableHttpMCPServlet actual = createServlet(sessionManager);
-        doThrow(new ServletException("foo_failure")).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        ServletException expectedException = new ServletException("foo_failure");
+        doThrow(expectedException).when(getDelegate()).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
         assertDoesNotThrow(() -> actual.service(request, response));
         assertTrue(sessionManager.hasSession("session-id"));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(expectedException)));
     }
     
     @Test
@@ -550,7 +592,6 @@ class StreamableHttpMCPServletTest {
         try {
             HttpServletRequest request = mock(HttpServletRequest.class);
             when(request.getMethod()).thenReturn("POST");
-            when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(ACCEPT);
             when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
             HttpServletResponse response = mock(HttpServletResponse.class);
             StreamableHttpMCPServlet actual = createServlet(new MCPSessionManager(Map.of()));
@@ -587,7 +628,6 @@ class StreamableHttpMCPServletTest {
         StreamableHttpMCPServlet actual = createServlet(new MCPSessionManager(Map.of()));
         actual.closeGracefully().block();
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getMethod()).thenReturn("POST");
         HttpServletResponse response = mock(HttpServletResponse.class);
         actual.service(request, response);
         verify(response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, "Server is shutting down");

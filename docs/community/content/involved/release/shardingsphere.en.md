@@ -623,7 +623,7 @@ Edit release version and release notes, select `Set as the latest release`, clic
 After the GitHub release is published:
 
 - wait for the `Release - MCP` workflow to finish successfully
-- confirm [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) contains `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
+- confirm [GitHub Packages](https://github.com/orgs/apache/packages?repo_name=shardingsphere) contains `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
 - confirm the official MCP Registry returns the published metadata:
 
 ```shell
@@ -654,7 +654,7 @@ Refer to [Release Download Pages for Projects](https://infra.apache.org/release-
 
 Refer to commit:
 Update the version number of document files, including index.html, indexzh.html, learning.html, legacy.html, and legacyzh.html under the shardingsphere-doc repository to the current version. [Reference commit](https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430)
-Update language.html(docs/document/themes/hugo-theme-learn/layouts/partials/language.html) under the shardingsphere repository and add the current version number for navigation. [Reference commit](https://github.com/apache/shardingsphere/pull/29017/files)
+Update language.html(.github/website/shardingsphere/document/layouts/partials/language.html) under the shardingsphere-doc repository and add the current version number for navigation. [Reference commit](https://github.com/apache/shardingsphere/pull/29017/files)
 
 ### 7. Update Example Version
 

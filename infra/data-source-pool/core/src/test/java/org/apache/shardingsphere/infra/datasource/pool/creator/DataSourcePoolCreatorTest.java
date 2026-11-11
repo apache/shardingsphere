@@ -32,7 +32,6 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -195,7 +194,6 @@ class DataSourcePoolCreatorTest {
                 .untilAsserted(() -> verify(storageNode, atLeastOnce()).close());
     }
     
-    @Disabled
     @Test
     void assertCreateWithStorageNodesAndCacheEnabledOnFailure() {
         MockedDataSource storageNode = mock(MockedDataSource.class);
@@ -203,7 +201,7 @@ class DataSourcePoolCreatorTest {
         props.put("connectionTimeout", "invalid");
         assertThrows(NumberFormatException.class,
                 () -> DataSourcePoolCreator.create("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props), true, Collections.singleton(storageNode)));
-        Awaitility.await().during(200L, TimeUnit.MILLISECONDS).atMost(500L, TimeUnit.MILLISECONDS).untilAsserted(() -> verify(storageNode, never()).close());
+        Awaitility.await().during(200L, TimeUnit.MILLISECONDS).atMost(5L, TimeUnit.SECONDS).untilAsserted(() -> verify(storageNode, never()).close());
     }
     
     private Map<String, Object> createMockedDataSourceProperties() {

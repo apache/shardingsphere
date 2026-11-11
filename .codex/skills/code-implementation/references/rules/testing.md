@@ -17,13 +17,18 @@
 
 # Testing Rules
 
+- Apply the test-value guidance in `CODE_OF_CONDUCT.md` before planning coverage.
 - For Maven source trees, only code under `src/main/**` may be the subject of a new or updated test.
 - Never create or update a test to cover code under `src/test/**`.
 - A change confined to `src/test/**` still requires applicable compilation and test execution, but it does not require additional test coverage.
 - Test behavior owned by the production class: computation, decisions, validation, transformation, state transitions, error handling, or external contracts.
 - Each test must fail for a realistic regression that matters.
+- Before adding or expanding a test or fixture, identify the distinct production regression it protects and inspect existing coverage for the missing behavior.
+- Do not add a proposed case whose necessity is unproved.
+- Establish test inputs and expected results from confirmed requirements, maintained contracts, or evidence independent of the candidate implementation.
+- Candidate output, existing fixtures, regenerated baselines, and passing tests do not establish correctness by themselves.
 - Do not add tests that only prove behavior owned by Java, Lombok, Mockito, a third-party parser, a collection library, a framework, or another collaborator, or that lock in private implementation shape.
-- Test a pass-through, constant, accessor, delegation, wiring path, or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.
+- Test a wiring path or contract literal only when it expresses documented behavior owned by the production type or a public or externally visible contract that no broader behavior test protects.
 - Never add a test solely to increase a coverage number or duplicate an existing scenario unless it covers a new branch, input class, edge case, contract, calculation path, or failure mode.
 - Never add tests whose subject is another test case, a test class or method, test fixture, mock helper, test utility, or other test-only code. Test only the production behavior that the test-only code supports.
 - Do not test a collaborator-owned rule through the current class. Isolate the collaborator result at the nearest stable boundary and test the rule in its owner. Mock external or heavy dependencies and collaborator-owned decisions; use real simple values when they are stable and do not introduce cross-layer behavior. Cross-layer behavior belongs in an explicitly scoped integration, contract, or E2E test.
@@ -34,6 +39,14 @@
 - Every new public production type that owns behavior or a public or externally visible contract requires direct focused tests, except exception types covered by `Exception Tests`. Broad workflow tests do not replace them unless they explicitly exercise that type's public behavior or external contract.
 - When a coverage target is stated, list every branch or path before coding and map each required branch or path to at least one planned scenario. Each additional case must protect a distinct branch, input class, edge case, contract, calculation path, or failure mode; one scenario may protect multiple paths. Update the map when production code changes and verify the final target with JaCoCo. Obtain explicit user authorization before lowering the stated coverage target.
 - If coverage exposes unreachable production code, apply the artifact-removal and contract-impact gate before classifying it as removable. If the required production change is outside the frozen boundary, report the exact blocker and request that scope instead of adding a redundant test.
+
+## SQL Test Inputs
+
+- Before writing a positive SQL fixture, verify the complete SQL form against official documentation or version-matched native database sources for every declared database and relevant version and compatibility mode.
+- Check type modifiers, clause combinations, and any required object or compatibility prerequisites rather than isolated keywords.
+- If that evidence is missing, obtain it or use an input supported by that evidence before adding the positive fixture.
+- For an unchanged-behavior refactor, a pre-change baseline may establish expected parser or AST behavior under the preserved contract; it does not establish native SQL validity.
+- Keep intentional rejection cases and fixtures for an explicitly accepted ShardingSphere compatibility contract distinct from examples claimed to be valid in the native database, and verify each expected result against its own contract.
 
 ## Exception Tests
 

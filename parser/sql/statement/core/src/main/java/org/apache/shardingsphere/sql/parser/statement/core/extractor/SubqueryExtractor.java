@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -33,7 +35,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -49,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
@@ -98,8 +104,40 @@ public final class SubqueryExtractor {
         }
     }
     
+    /**
+     * Extract subquery segments from an insert statement, excluding its INSERT SELECT source.
+     *
+     * @param insertStatement insert statement
+     * @param needRecursive whether to include nested subqueries
+     * @return subquery segments
+     */
+    public static Collection<SubquerySegment> extractSubquerySegments(final InsertStatement insertStatement, final boolean needRecursive) {
+        List<SubquerySegment> result = new LinkedList<>();
+        insertStatement.getWith().ifPresent(with -> extractSubquerySegmentsFromCTEs(result, with.getCommonTableExpressions(), needRecursive));
+        extractSubquerySegmentsFromValuesSegment(result, insertStatement.getValues(), needRecursive);
+        insertStatement.getSetAssignment().ifPresent(optional -> extractSubquerySegmentsFromSetAssignment(result, optional.getAssignments(), needRecursive));
+        insertStatement.getOnDuplicateKeyColumns().ifPresent(optional -> extractSubquerySegmentsFromSetAssignment(result, optional.getColumns(), needRecursive));
+        insertStatement.getReturning().ifPresent(returning -> extractSubquerySegmentsFromProjections(result, returning.getProjections(), needRecursive));
+        return result;
+    }
+    
+    private static void extractSubquerySegmentsFromValuesSegment(final List<SubquerySegment> result, final Collection<InsertValuesSegment> values, final boolean needRecursive) {
+        for (InsertValuesSegment each : values) {
+            each.getValues().forEach(expression -> extractSubquerySegmentsFromExpression(result, expression, SubqueryType.INSERT_VALUES, needRecursive));
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromSetAssignment(final List<SubquerySegment> result, final Collection<ColumnAssignmentSegment> assignments, final boolean needRecursive) {
+        for (ColumnAssignmentSegment each : assignments) {
+            extractSubquerySegmentsFromExpression(result, each.getValue(), null, needRecursive);
+        }
+    }
+    
     private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment, final boolean needRecursive) {
         for (CommonTableExpressionSegment each : withSegment) {
+            if (null != each.getDataModification()) {
+                continue;
+            }
             SubquerySegment subquery = each.getSubquery();
             subquery.setSelect(subquery.getSelect().withSubqueryType(SubqueryType.WITH));
             result.add(subquery);
@@ -210,6 +248,9 @@ public final class SubqueryExtractor {
         if (expressionSegment instanceof ListExpression) {
             ((ListExpression) expressionSegment).getItems().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
         }
+        if (expressionSegment instanceof RowExpression) {
+            ((RowExpression) expressionSegment).getItems().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
+        }
         if (expressionSegment instanceof BinaryOperationExpression) {
             extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getLeft(), subqueryType, needRecursive);
             extractSubquerySegmentsFromExpression(result, ((BinaryOperationExpression) expressionSegment).getRight(), subqueryType, needRecursive);
@@ -235,17 +276,21 @@ public final class SubqueryExtractor {
             extractSubquerySegmentsFromCaseWhenExpression(result, (CaseWhenExpression) expressionSegment, SubqueryType.FUNCTION, needRecursive);
         }
         if (expressionSegment instanceof CollateExpression) {
+            ((CollateExpression) expressionSegment).getExpr().ifPresent(expr -> extractSubquerySegmentsFromExpression(result, expr, subqueryType, needRecursive));
             extractSubquerySegmentsFromExpression(result, ((CollateExpression) expressionSegment).getCollateName(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof DatetimeExpression) {
             extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getLeft(), subqueryType, needRecursive);
             extractSubquerySegmentsFromExpression(result, ((DatetimeExpression) expressionSegment).getRight(), subqueryType, needRecursive);
         }
-        if (expressionSegment instanceof NotExpression) {
-            extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
-        }
         if (expressionSegment instanceof TypeCastExpression) {
             extractSubquerySegmentsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
+        }
+        if (expressionSegment instanceof UnaryOperationExpression) {
+            extractSubquerySegmentsFromExpression(result, ((UnaryOperationExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
+        }
+        if (expressionSegment instanceof CommonExpressionSegment) {
+            ((CommonExpressionSegment) expressionSegment).getChildren().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
         }
     }
     

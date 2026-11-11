@@ -24,7 +24,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +37,7 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +53,6 @@ class FirebirdCreateBlobCommandExecutorTest {
     
     @BeforeEach
     void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
@@ -62,7 +61,6 @@ class FirebirdCreateBlobCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
@@ -77,5 +75,13 @@ class FirebirdCreateBlobCommandExecutorTest {
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(1L));
+    }
+    
+    @Test
+    void assertExecuteWithStreamBlob() {
+        when(packet.isStreamBlob()).thenReturn(true);
+        FirebirdCreateBlobCommandExecutor executor = new FirebirdCreateBlobCommandExecutor(packet, connectionSession);
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) executor.execute().iterator().next();
+        assertTrue(FirebirdBlobWriteCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getId()));
     }
 }

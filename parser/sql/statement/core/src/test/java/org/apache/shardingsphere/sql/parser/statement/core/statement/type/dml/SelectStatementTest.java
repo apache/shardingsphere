@@ -26,17 +26,19 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class SelectStatementTest {
     
     @Test
     void assertWithSubqueryType() {
-        SelectStatement selectStatement = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(0, 0)).build();
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(0, 0)).intoVariables(true).build();
         FunctionSegment transformSegment = new FunctionSegment(0, 0, "TRANSFORM", "TRANSFORM(user_id)");
         selectStatement.getTransformSegments().add(transformSegment);
         SelectStatement actual = selectStatement.withSubqueryType(SubqueryType.TABLE);
         assertThat(actual.getSubqueryType().orElse(null), is(SubqueryType.TABLE));
+        assertTrue(actual.isIntoVariables());
         assertThat(actual.getTransformSegments(), contains(transformSegment));
     }
 }

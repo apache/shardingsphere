@@ -33,6 +33,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,6 +65,13 @@ class PostgreSQLPgClassTableStatisticsCollectorTest {
         when(metaData.getDatabase("foo_db").getSchema("public")).thenReturn(null);
         Collection<Map<String, Object>> actual = collector.collect("foo_db", "pg_catalog", "pg_class", metaData);
         assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertCollectWithDatabaseNotExists() {
+        when(metaData.getDatabase("foo_db")).thenReturn(null);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> collector.collect("foo_db", "pg_catalog", "pg_class", metaData));
+        assertThat(actual.getMessage(), is("Database 'foo_db' does not exist."));
     }
     
     @Test

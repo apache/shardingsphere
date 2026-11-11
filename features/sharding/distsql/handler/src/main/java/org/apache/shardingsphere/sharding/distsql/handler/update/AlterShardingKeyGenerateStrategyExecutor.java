@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.Setter;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleAlterExecutor;
-import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.distsql.handler.executor.required.DistSQLExecutorCurrentRuleRequired;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.rule.database.type.DatabaseRuleAlterExecutor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
@@ -65,9 +65,9 @@ public final class AlterShardingKeyGenerateStrategyExecutor
     private void checkDuplicateGeneratedKeyGenerator(final AlterShardingKeyGenerateStrategyStatement sqlStatement) {
         String keyGeneratorName = ShardingKeyGenerateStrategyStatementConverter.getKeyGeneratorName(sqlStatement.getName(), sqlStatement.getKeyGenerateStrategySegment());
         String currentKeyGeneratorName = rule.getConfiguration().getKeyGenerateStrategies().get(sqlStatement.getName()).getKeyGeneratorName();
-        boolean containsSameNameKeyGenerator = rule.getConfiguration().getKeyGenerators().containsKey(sqlStatement.getName());
+        boolean containsSameNameKeyGenerator = rule.getConfiguration().getKeyGenerators().containsKey(keyGeneratorName);
         ShardingSpherePreconditions.checkState(!containsSameNameKeyGenerator || keyGeneratorName.equals(currentKeyGeneratorName),
-                () -> new DuplicateRuleException("key generator", database.getName(), Collections.singleton(sqlStatement.getName())));
+                () -> new DuplicateRuleException("key generator", database.getName(), Collections.singleton(keyGeneratorName)));
     }
     
     private void checkReferencedKeyGenerator(final String keyGeneratorName) {

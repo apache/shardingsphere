@@ -69,8 +69,7 @@ class FirebirdAttachPacketTest {
     
     @Test
     void assertWrite() {
-        FirebirdAttachPacket packet = createPacket();
-        assertDoesNotThrow(() -> packet.write(payload));
+        assertDoesNotThrow(() -> createPacket().write(payload));
     }
     
     private FirebirdAttachPacket createPacket() {

@@ -40,7 +40,7 @@ sqlTranslator:
 * [联邦查询](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-federation/)
 ```yaml
 sqlFederation:
-  sqlFederationEnabled: true
+  providerType: CALCITE
   allQueryUseSQLFederation: false
   executionPlanCache:
     initialCapacity: 2000

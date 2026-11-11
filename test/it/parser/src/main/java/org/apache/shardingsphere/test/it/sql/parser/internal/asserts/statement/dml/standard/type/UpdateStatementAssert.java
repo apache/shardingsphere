@@ -57,6 +57,9 @@ public final class UpdateStatementAssert {
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final UpdateStatement actual, final UpdateStatementTestCase expected) {
+        if (null != expected.getIgnore()) {
+            assertTrue(actual.isIgnore() == expected.getIgnore(), assertContext.getText("IGNORE flag does not match: "));
+        }
         assertTable(assertContext, actual, expected);
         assertSetClause(assertContext, actual, expected);
         assertFromClause(assertContext, actual, expected);

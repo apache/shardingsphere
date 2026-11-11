@@ -21,6 +21,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.validation.constraints.Positive;
+
 /**
  * SQL federation cache option.
  */
@@ -29,8 +31,10 @@ import lombok.RequiredArgsConstructor;
 @EqualsAndHashCode
 public final class SQLFederationCacheOption {
     
+    @Positive
     private final int initialCapacity;
     
+    @Positive
     private final long maximumSize;
     
     @Override

@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -28,7 +30,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 import build_review_inventory as inventory
-import review_common as common
+import resolve_review_scope as common
 
 
 class BuildReviewInventoryTest(unittest.TestCase):
@@ -64,24 +66,18 @@ class BuildReviewInventoryTest(unittest.TestCase):
         self.assertEqual("AGENTS.md", actual["changed_files_by_category"]["docs"][0]["path"])
         resolve_candidate_changes.assert_called_once_with(Path("/repo"), "merge-base", "candidate.txt")
 
-    def test_resolve_candidate_changes_includes_untracked_files(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            candidate_file = Path(temp_dir) / "candidate.txt"
-            candidate_file.write_text("AGENTS.md\n.codex/new.toml\n", encoding="utf-8")
-            with patch.object(common, "run_git", side_effect=["M\tAGENTS.md\n", ".codex/new.toml\n"]) as run_git:
-                actual = common.resolve_candidate_changes(Path("/repo"), "baseline", str(candidate_file))
-        self.assertEqual([common.ChangedFile(status="M", path="AGENTS.md"),
-                          common.ChangedFile(status="A", path=".codex/new.toml")], actual)
-        literal_paths = [":(literal)AGENTS.md", ":(literal).codex/new.toml"]
-        run_git.assert_any_call(["diff", "--name-status", "baseline", "--", *literal_paths], Path("/repo"))
-        run_git.assert_any_call(["ls-files", "--others", "--exclude-standard", "--", *literal_paths], Path("/repo"), allow_empty=True)
-
-    def test_resolve_candidate_changes_rejects_unchanged_paths(self):
-        with tempfile.TemporaryDirectory() as temp_dir:
-            candidate_file = Path(temp_dir) / "candidate.txt"
-            candidate_file.write_text("AGENTS.md\n", encoding="utf-8")
-            with patch.object(common, "run_git", side_effect=["", ""]), self.assertRaisesRegex(RuntimeError, "not changed"):
-                common.resolve_candidate_changes(Path("/repo"), "baseline", str(candidate_file))
+    def test_default_review_commands_leave_no_repository_bytecode(self):
+        for script_name in ("build_review_inventory.py", "manage_review_ledger.py"):
+            with self.subTest(script=script_name), tempfile.TemporaryDirectory() as temp_dir:
+                scripts = Path(temp_dir) / ".codex/skills/review-pr/scripts"
+                scripts.mkdir(parents=True)
+                for name in (script_name, "resolve_review_scope.py"):
+                    (scripts / name).write_bytes((SCRIPTS_DIR / name).read_bytes())
+                environment = {key: value for key, value in os.environ.items() if key not in {"PYTHONDONTWRITEBYTECODE", "PYTHONPYCACHEPREFIX"}}
+                process = subprocess.run([sys.executable, str(scripts / script_name), "--help"], cwd=temp_dir, env=environment,
+                                         text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, timeout=20)
+                self.assertIn("usage:", process.stdout)
+                self.assertEqual([], list(scripts.rglob("__pycache__")))
 
 
 if __name__ == "__main__":

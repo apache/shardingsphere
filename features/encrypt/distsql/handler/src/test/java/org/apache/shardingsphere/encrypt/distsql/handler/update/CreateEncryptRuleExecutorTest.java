@@ -27,7 +27,6 @@ import org.apache.shardingsphere.encrypt.distsql.statement.CreateEncryptRuleStat
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
@@ -64,15 +63,9 @@ class CreateEncryptRuleExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithoutToBeCreatedEncryptors() {
+    void assertExecuteUpdateWithInvalidEncryptorType() {
         assertThrows(ServiceProviderNotFoundException.class,
                 () -> new DistSQLUpdateExecuteEngine(createSQLStatement("INVALID_TYPE"), "foo_db", mockContextManager(mock(EncryptRule.class)), null).executeUpdate());
-    }
-    
-    @Test
-    void assertExecuteUpdateWithConflictedColumnNames() {
-        assertThrows(InvalidRuleConfigurationException.class,
-                () -> new DistSQLUpdateExecuteEngine(createConflictColumnNameSQLStatement(), "foo_db", mockContextManager(mock(EncryptRule.class)), null).executeUpdate());
     }
     
     @Test
@@ -126,15 +119,6 @@ class CreateEncryptRuleExecutorTest {
         EncryptRuleSegment userRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment));
         EncryptRuleSegment orderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
         return new CreateEncryptRuleStatement(false, Arrays.asList(userRuleSegment, orderRuleSegment));
-    }
-    
-    private CreateEncryptRuleStatement createConflictColumnNameSQLStatement() {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id",
-                new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("MD5", new Properties())),
-                new EncryptColumnItemSegment("user_id", new AlgorithmSegment("test", new Properties())),
-                new EncryptColumnItemSegment("like_column", new AlgorithmSegment("test", new Properties())));
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
-        return new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
     }
     
     private boolean assertIfNotExistsRuleConfiguration(final EncryptRuleConfiguration actual) {

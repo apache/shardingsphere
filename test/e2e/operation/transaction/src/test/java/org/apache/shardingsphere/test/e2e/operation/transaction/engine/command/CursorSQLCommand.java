@@ -50,7 +50,7 @@ public final class CursorSQLCommand {
     private CursorSQL broadcastAndSingleTablesCursor;
     
     @XmlElement(name = "broadcast-and-single-tables-cursor2")
-    private String broadcastAndSingleTablesCursor2;
+    private CursorSQL broadcastAndSingleTablesCursor2;
     
     @XmlElement(name = "view-cursor")
     private CursorSQL viewCursor;

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.netty;
 
+import ch.qos.logback.classic.spi.ThrowableProxy;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -48,6 +49,9 @@ import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecuto
 import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -70,6 +74,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -83,7 +88,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
+@LogCaptureSettings(suppressOutput = true)
 @StaticMockSettings({ProxyContext.class, ProcessRegistry.class})
 class FrontendChannelInboundHandlerTest {
     
@@ -174,7 +180,7 @@ class FrontendChannelInboundHandlerTest {
     }
     
     @Test
-    void assertChannelReadNotAuthenticatedAndExceptionOccur() throws Exception {
+    void assertChannelReadNotAuthenticatedAndExceptionOccur(final LogCaptureAssertion logCaptureAssertion) throws Exception {
         channel.register();
         RuntimeException cause = new RuntimeException("assertChannelReadNotAuthenticatedAndExceptionOccur");
         doThrow(cause).when(authenticationEngine).authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class));
@@ -182,12 +188,14 @@ class FrontendChannelInboundHandlerTest {
         when(frontendEngine.getCommandExecuteEngine().getErrorPacket(cause)).thenReturn(expectedPacket);
         channel.writeInbound(Unpooled.EMPTY_BUFFER);
         assertThat(channel.readOutbound(), is(expectedPacket));
+        logCaptureAssertion.assertErrorLog(actualException -> assertThat(((ThrowableProxy) actualException).getThrowable(), sameInstance(cause)));
     }
     
     @Test
-    void assertChannelInactiveWithUnexpectedException() throws Exception {
+    void assertChannelInactiveWithUnexpectedException(final LogCaptureAssertion logCaptureAssertion) throws Exception {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
-        when(databaseConnectionManager.closeAllResources()).thenReturn(Collections.singleton(new SQLException("assertChannelInactiveWithUnexpectedException")));
+        SQLException expectedException = new SQLException("assertChannelInactiveWithUnexpectedException");
+        when(databaseConnectionManager.closeAllResources()).thenReturn(Collections.singleton(expectedException));
         setDatabaseConnectionManager(databaseConnectionManager);
         ProcessEngine processEngine = mock(ProcessEngine.class);
         setProcessEngine(processEngine);
@@ -209,6 +217,10 @@ class FrontendChannelInboundHandlerTest {
             verify(frontendEngine).release(connectionSession);
         }
         executorService.shutdownNow();
+        logCaptureAssertion.assertErrorLog(actualException -> {
+            SQLException actualSQLException = (SQLException) ((ThrowableProxy) actualException).getThrowable();
+            assertThat(actualSQLException.getNextException(), sameInstance(expectedException));
+        });
     }
     
     @Test

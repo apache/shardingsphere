@@ -47,6 +47,36 @@ import static org.mockito.Mockito.when;
 class MCPJdbcTransactionResourceManagerTest {
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("commitCleanupFailureCases")
+    void assertCommitTransactionWithCleanupFailure(final String name, final boolean resetFailure, final boolean closeFailure, final String expectedMessage,
+                                                   final int expectedSuppressed) throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(databaseConfig.openConnection("foo_db")).thenReturn(connection);
+        MCPJdbcTransactionResourceManager manager = new MCPJdbcTransactionResourceManager(Map.of("foo_db", databaseConfig));
+        manager.beginTransaction("foo_session", "foo_db");
+        if (resetFailure) {
+            doThrow(new SQLException("reset failed")).when(connection).setAutoCommit(true);
+        }
+        if (closeFailure) {
+            doThrow(new SQLException("close failed")).when(connection).close();
+        }
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> manager.commitTransaction("foo_session"));
+        assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getCause().getSuppressed().length, is(expectedSuppressed));
+        assertTrue(manager.findTransactionConnection("foo_session", "foo_db").isEmpty());
+        verify(connection).commit();
+        verify(connection).close();
+    }
+    
+    private static Stream<Arguments> commitCleanupFailureCases() {
+        return Stream.of(
+                Arguments.of("reset failure", true, false, "reset failed", 0),
+                Arguments.of("close failure", false, true, "close failed", 0),
+                Arguments.of("reset and close failure", true, true, "reset failed", 1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("assertFindTransactionConnectionCases")
     void assertFindTransactionConnection(final String name,
                                          final String activeDatabaseName, final String databaseName, final boolean expectedPresent, final String expectedMessage) throws SQLException {

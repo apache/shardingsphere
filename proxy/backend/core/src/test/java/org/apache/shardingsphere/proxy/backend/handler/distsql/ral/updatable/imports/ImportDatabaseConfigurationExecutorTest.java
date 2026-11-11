@@ -19,7 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.im
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.ImportDatabaseConfigurationExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDatabaseConfigurationSwapper;
+import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -27,11 +29,11 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
-import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -41,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 
 import javax.sql.DataSource;
 import java.net.URL;
@@ -52,8 +55,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ImportDatabaseConfigurationExecutorTest {
@@ -81,6 +87,19 @@ class ImportDatabaseConfigurationExecutorTest {
     }
     
     @Test
+    void assertImportWhenRuleConversionFails() {
+        ContextManager contextManager = mock(ContextManager.class);
+        URL url = ImportDatabaseConfigurationExecutorTest.class.getResource("/conf/import/database-sharding.yaml");
+        assertNotNull(url);
+        try (
+                MockedConstruction<YamlDatabaseConfigurationSwapper> ignored = mockConstruction(YamlDatabaseConfigurationSwapper.class,
+                        (mock, context) -> when(mock.swapRuleConfigurations(anyCollection())).thenThrow(IllegalStateException.class))) {
+            assertThrows(IllegalStateException.class, () -> executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), contextManager));
+        }
+        verifyNoInteractions(contextManager);
+    }
+    
+    @Test
     void assertImportFileNotFound() {
         assertThrows(FileIOException.class, () -> executor.executeUpdate(new ImportDatabaseConfigurationStatement("/__not_exist__/database-configuration.yaml"), mock(ContextManager.class)));
     }
@@ -99,7 +118,7 @@ class ImportDatabaseConfigurationExecutorTest {
         return Stream.of(
                 Arguments.of("missing database name", "sharding_db", "/conf/import/database-empty-database-name.yaml", MissingRequiredDatabaseException.class),
                 Arguments.of("duplicated logic table", "sharding_db", "/conf/import/database-duplicated-logic-table.yaml", DuplicateRuleException.class),
-                Arguments.of("invalid algorithm", "sharding_db", "/conf/import/database-invalid-algorithm.yaml", ServiceProviderNotFoundException.class));
+                Arguments.of("invalid algorithm", "sharding_db", "/conf/import/database-invalid-algorithm.yaml", InvalidRuleConfigurationException.class));
     }
     
     private void assertExecute(final ContextManager contextManager, final String filePath) {

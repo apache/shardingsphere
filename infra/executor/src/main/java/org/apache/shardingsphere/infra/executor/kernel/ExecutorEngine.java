@@ -37,7 +37,6 @@ import java.util.concurrent.Future;
 /**
  * Executor engine.
  */
-@HighFrequencyInvocation
 @Getter
 public final class ExecutorEngine implements AutoCloseable {
     
@@ -69,6 +68,7 @@ public final class ExecutorEngine implements AutoCloseable {
      * @return execute result
      * @throws SQLException throw if execute failure
      */
+    @HighFrequencyInvocation
     public <I, O> List<O> execute(final ExecutionGroupContext<I> executionGroupContext,
                                   final ExecutorCallback<I, O> firstCallback, final ExecutorCallback<I, O> callback, final boolean serial) throws SQLException {
         if (executionGroupContext.getInputGroups().isEmpty()) {

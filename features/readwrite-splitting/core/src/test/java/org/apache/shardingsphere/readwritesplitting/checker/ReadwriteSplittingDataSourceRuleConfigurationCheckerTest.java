@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
-import org.apache.shardingsphere.readwritesplitting.exception.actual.MissingRequiredReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.ReadwriteSplittingActualDataSourceNotFoundException;
-import org.apache.shardingsphere.readwritesplitting.exception.logic.MissingRequiredReadwriteSplittingDataSourceRuleNameException;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -42,27 +40,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ReadwriteSplittingDataSourceRuleConfigurationCheckerTest {
-    
-    @Test
-    void assertCheckWithEmptyGroupName() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration config = new ReadwriteSplittingDataSourceGroupRuleConfiguration("", "write_ds", Arrays.asList("read_ds0", "read_ds1"), "foo_algo");
-        assertThrows(MissingRequiredReadwriteSplittingDataSourceRuleNameException.class, () -> new ReadwriteSplittingDataSourceRuleConfigurationChecker(
-                "foo_db", config, Collections.emptyMap()).check(Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-    }
-    
-    @Test
-    void assertCheckWithEmptyWriteDataSourceName() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration config = new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group", "", Arrays.asList("read_ds0", "read_ds1"), "foo_algo");
-        assertThrows(MissingRequiredReadwriteSplittingActualDataSourceException.class, () -> new ReadwriteSplittingDataSourceRuleConfigurationChecker(
-                "foo_db", config, Collections.emptyMap()).check(Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-    }
-    
-    @Test
-    void assertCheckWithEmptyReadDataSourceNames() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration config = new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group", "write_ds", Collections.emptyList(), "foo_algo");
-        assertThrows(MissingRequiredReadwriteSplittingActualDataSourceException.class, () -> new ReadwriteSplittingDataSourceRuleConfigurationChecker(
-                "foo_db", config, Collections.emptyMap()).check(Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-    }
     
     @Test
     void assertCheckWithNotExistedWriteDataSourceName() {

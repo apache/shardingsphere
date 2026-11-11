@@ -23,6 +23,9 @@ Specialized repository Skills compose with this Skill when they write code. Thei
 ## Workflow
 
 1. Apply the pre-write gates in `AGENTS.md` and freeze `file -> allowed change intent -> unmet acceptance criterion`. Infer clearly authorized paths without asking the user to repeat the request; expand only with exact additional path and intent authorization.
+   Before selecting an implementation, distinguish original user requirements, maintained project contracts, author design choices and unverified assumptions in the existing task record, and trace every hard constraint to its original source.
+   Approval to implement a proposal preserves the approved choice but does not establish that its version pin was an original requirement or that the pin is necessary; retain the constraints and tradeoffs the user actually confirmed with their sources.
+   For a new local override, compatibility exception or parallel mechanism, record the verified reason direct reuse cannot meet the accepted requirements.
 2. Map every planned production and test change to one unsatisfied acceptance criterion and identify the supported existing paths that the change can affect.
 3. Classify functional and performance risk before the first relevant write. Preserve supported behavior outside the exact requested change; when the full non-regression reference is triggered, capture its required baseline before editing.
 4. Implement the smallest clear change under the implementation rules, and apply the testing rules when their trigger above matches.

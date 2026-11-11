@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.config.global;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.validator.RuleConfigurationValidator;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlGlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -78,6 +79,7 @@ public final class GlobalRulePersistService {
      * @param globalRuleConfigs global rule configurations
      */
     public void persist(final Collection<RuleConfiguration> globalRuleConfigs) {
+        RuleConfigurationValidator.validate(globalRuleConfigs);
         for (YamlRuleConfiguration each : yamlSwapperEngine.swapToYamlRuleConfigurations(globalRuleConfigs)) {
             persistTuple(tupleSwapperEngine.swapToTuple((YamlGlobalRuleConfiguration) each));
         }

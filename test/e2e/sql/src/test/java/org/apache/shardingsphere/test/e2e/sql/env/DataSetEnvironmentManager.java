@@ -22,6 +22,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sqlbatch.DialectSQLBatchOption;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicy;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierNormalizeEngine;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -38,6 +42,7 @@ import org.apache.shardingsphere.test.e2e.sql.cases.dataset.metadata.DataSetMeta
 import org.apache.shardingsphere.test.e2e.sql.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValue;
 import org.apache.shardingsphere.test.e2e.sql.cases.value.SQLValueGroup;
+import org.apache.shardingsphere.test.e2e.sql.framework.metadata.DialectQueryBehaviorProvider;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,6 +51,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -77,6 +83,8 @@ public final class DataSetEnvironmentManager {
     private static final Map<String, String> INSERT_SQL_CACHE = new ConcurrentHashMap<>();
     
     private static final Map<String, String> TRUNCATE_SQL_CACHE = new ConcurrentHashMap<>();
+    
+    private final Map<DataSource, IdentifierCasePolicy> tableIdentifierPolicies = new HashMap<>();
     
     private final String dataSetFile;
     
@@ -193,23 +201,27 @@ public final class DataSetEnvironmentManager {
     private List<Callable<Void>> createDeleteTasks(final ResetPlan resetPlan) throws SQLException {
         List<Callable<Void>> result = new LinkedList<>();
         for (Entry<String, Collection<String>> entry : resetPlan.getTableNamesByDataSourceName().entrySet()) {
-            DatabaseType databaseType = getDatabaseType(entry.getKey(), dataSourceMap.get(entry.getKey()));
+            DataSource dataSource = dataSourceMap.get(entry.getKey());
+            DatabaseType databaseType = getDatabaseType(entry.getKey(), dataSource);
+            IdentifierCasePolicy tableIdentifierPolicy = tableIdentifierPolicies.computeIfAbsent(dataSource,
+                    unused -> IdentifierNormalizeEngine.resolvePolicy(databaseType, dataSource, IdentifierScope.TABLE));
             Collection<String> truncateSQLs = new LinkedList<>();
             for (String each : entry.getValue()) {
-                truncateSQLs.add(getTruncateSQL(each, databaseType));
+                truncateSQLs.add(getTruncateSQL(IdentifierNormalizeEngine.normalize(tableIdentifierPolicy, each), databaseType));
             }
-            result.add(new DeleteTask(dataSourceMap.get(entry.getKey()), truncateSQLs));
+            result.add(new DeleteTask(dataSource, truncateSQLs));
         }
         return result;
     }
     
     private String getTruncateSQL(final String tableName, final DatabaseType databaseType) {
-        return TRUNCATE_SQL_CACHE.computeIfAbsent(databaseType.getType() + ':' + tableName, unused -> String.format("TRUNCATE TABLE %s", getQuotedTableName(tableName, databaseType)));
+        return TRUNCATE_SQL_CACHE.computeIfAbsent(databaseType.getType() + ':' + tableName, unused -> String.format(DatabaseTypedSPILoader.findService(DialectQueryBehaviorProvider.class, databaseType)
+                .flatMap(DialectQueryBehaviorProvider::getDeleteAllRowsSQLTemplate).orElse("TRUNCATE TABLE %s"), getQuotedTableName(tableName, databaseType)));
     }
     
     private static String getQuotedTableName(final String tableName, final DatabaseType databaseType) {
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
-        return databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter().wrap(databaseTypeRegistry.formatIdentifierPattern(tableName));
+        return databaseTypeRegistry.getDialectDatabaseMetaData().getQuoteCharacter().wrap(tableName);
     }
     
     private ResetPlan getResetPlan(final Collection<String> tableNames) {

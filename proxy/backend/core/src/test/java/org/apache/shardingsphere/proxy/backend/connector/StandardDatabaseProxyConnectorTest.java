@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.EmptyRuleException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -50,10 +51,12 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
@@ -82,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
@@ -120,12 +124,15 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -436,6 +443,47 @@ class StandardDatabaseProxyConnectorTest {
         }
     }
     
+    @ParameterizedTest(name = "{0}, Federation enabled: {1}, SELECT: {2}")
+    @MethodSource("getMixedStorageExecutions")
+    void assertExecuteWithMixedStorageTypes(final JDBCDriverType driverType, final boolean federationEnabled, final boolean select) throws SQLException {
+        ShardingSphereDatabase database = mockDatabase();
+        StorageUnit mysqlStorageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        StorageUnit postgresqlStorageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(mysqlStorageUnit.getStorageType().getType()).thenReturn("MySQL");
+        when(postgresqlStorageUnit.getStorageType().getType()).thenReturn("PostgreSQL");
+        when(database.getResourceMetaData().getStorageUnits().get("foo_mysql")).thenReturn(mysqlStorageUnit);
+        when(database.getResourceMetaData().getStorageUnits().get("foo_postgresql")).thenReturn(postgresqlStorageUnit);
+        SQLStatementContext sqlStatementContext =
+                createSQLStatementContext(select ? SelectStatement.builder().databaseType(databaseType).build() : new AnalyzeTableStatement(databaseType, Collections.emptyList()));
+        QueryContext queryContext = createQueryContext(sqlStatementContext, database);
+        ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
+        when(proxySQLExecutor.getSqlFederationEngine().isSQLFederationEnabled()).thenReturn(federationEnabled);
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(driverType, queryContext);
+        setField(engine, "proxySQLExecutor", proxySQLExecutor);
+        ExecutionContext executionContext = new ExecutionContext(queryContext, Arrays.asList(
+                new ExecutionUnit("foo_mysql", new SQLUnit("SELECT id FROM foo_table", Collections.emptyList())),
+                new ExecutionUnit("foo_postgresql", new SQLUnit("SELECT id FROM foo_table", Collections.emptyList()))), new RouteContext());
+        try (
+                MockedConstruction<KernelProcessor> ignored = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(), any(), any())).thenReturn(executionContext))) {
+            assertThrows(SQLException.class, engine::execute);
+            verify(proxySQLExecutor, never()).execute(any());
+            verify(proxySQLExecutor, never()).checkExecutePrerequisites(any());
+        }
+    }
+    
+    private static Stream<Arguments> getMixedStorageExecutions() {
+        return Stream.of(
+                Arguments.of(JDBCDriverType.STATEMENT, false, true),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, false, true),
+                Arguments.of(JDBCDriverType.STATEMENT, true, true),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, true, true),
+                Arguments.of(JDBCDriverType.STATEMENT, false, false),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, false, false),
+                Arguments.of(JDBCDriverType.STATEMENT, true, false),
+                Arguments.of(JDBCDriverType.PREPARED_STATEMENT, true, false));
+    }
+    
     @Test
     void assertExecuteWithFederationEnabledAndNoRefresh() throws SQLException {
         SQLStatementContext sqlStatementContext = createSQLStatementContext(new SQLStatement(databaseType));
@@ -703,13 +751,16 @@ class StandardDatabaseProxyConnectorTest {
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of(transactionType));
         when(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()).thenReturn(inTransaction);
         SQLStatementContext sqlStatementContext = createSQLStatementContext(sqlStatement);
-        QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
+        ShardingSphereDatabase database = mockDatabase();
+        when(database.getResourceMetaData().getStorageUnits().get("foo_ds").getStorageType()).thenReturn(databaseType);
+        QueryContext queryContext = createQueryContext(sqlStatementContext, database);
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, queryContext);
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
         ExecutionContext executionContext = mock(ExecutionContext.class);
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(executionContext.getExecutionUnits()).thenReturn(IntStream.range(0, executionUnitCount).mapToObj(index -> mock(ExecutionUnit.class)).collect(Collectors.toList()));
+        when(executionContext.getExecutionUnits()).thenReturn(IntStream.range(0, executionUnitCount)
+                .mapToObj(index -> new ExecutionUnit("foo_ds", new SQLUnit("SELECT id FROM foo_table", Collections.emptyList()))).collect(Collectors.toList()));
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         try (
                 MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
@@ -752,6 +803,31 @@ class StandardDatabaseProxyConnectorTest {
         verify(resultSet).close();
         verify(statement).cancel();
         verify(statement).close();
+    }
+    
+    @Test
+    void assertCloseWithClosedStatement() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        when(statement.isClosed()).thenReturn(true);
+        doThrow(new SQLException("Statement is closed")).when(statement).cancel();
+        engine.add(statement);
+        engine.close();
+        verify(statement, never()).cancel();
+        verify(statement).close();
+    }
+    
+    @Test
+    void assertCloseWithStatementClosedCheckFailure() throws SQLException {
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(createSQLStatementContext(new SQLStatement(databaseType)), mockDatabase()));
+        when(statement.isClosed()).thenThrow(new SQLException("Statement state"));
+        SQLException expected = new SQLException("Statement");
+        doThrow(expected).when(statement).close();
+        engine.add(statement);
+        SQLException actual = assertThrows(SQLException.class, engine::close);
+        verify(statement).cancel();
+        verify(statement).close();
+        assertThat(actual.getNextException(), sameInstance(expected));
+        assertNull(actual.getNextException().getNextException());
     }
     
     @Test
