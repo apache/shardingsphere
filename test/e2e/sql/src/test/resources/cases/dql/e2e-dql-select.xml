@@ -195,8 +195,8 @@
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
-    <test-case sql="SELECT order_id AS KEY, status AS TEXT, remark AS COMMENT FROM t_order WHERE user_id = ? AND order_id = ?" db-types="Firebird" scenario-types="db"
-               scenario-comments="Test Firebird non-reserved keywords KEY, TEXT and COMMENT as column aliases.">
+    <test-case sql="SELECT order_id AS KEY, status AS TEXT, remark AS REMARK_TEXT FROM t_order WHERE user_id = ? AND order_id = ?" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test Firebird non-reserved keywords KEY and TEXT as column aliases.">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     
