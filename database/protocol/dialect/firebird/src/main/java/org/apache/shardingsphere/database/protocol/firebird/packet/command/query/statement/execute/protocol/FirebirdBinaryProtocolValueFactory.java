@@ -129,6 +129,7 @@ public final class FirebirdBinaryProtocolValueFactory {
     private static void setBlobBinaryProtocolValue() {
         FirebirdBlobBinaryProtocolValue binaryProtocolValue = new FirebirdBlobBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.BLOB, binaryProtocolValue);
+        BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT, binaryProtocolValue);
     }
     
     /**

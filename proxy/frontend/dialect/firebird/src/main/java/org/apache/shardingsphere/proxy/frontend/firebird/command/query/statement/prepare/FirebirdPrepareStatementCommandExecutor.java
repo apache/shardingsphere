@@ -24,11 +24,14 @@ import org.apache.shardingsphere.database.connector.firebird.metadata.data.Fireb
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdReturnBinaryColumn;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.type.FirebirdFunctionType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -104,6 +107,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
@@ -249,15 +253,19 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 String tableName = ((ColumnProjection) each).getOriginalTable().getValue();
                 ShardingSphereTable table = getTable(tableName.isEmpty() ? getTableNames(sqlStatementContext).iterator().next() : tableName, database, schema);
                 ShardingSphereColumn column = table.getColumn(((ColumnProjection) each).getOriginalColumn().getValue());
-                processColumn(describeColumns, requestedItems, table, column, ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
+                processColumn(describeColumns, requestedItems, table.getName(), column.getName(), new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType())),
+                        ((ColumnProjection) each).getOwner().orElse(null), each.getAlias().orElse(null), ++columnCount);
             } else if (each instanceof ExpressionProjection) {
-                processExpressionProjection((ExpressionProjection) each, describeColumns, requestedItems, ++columnCount);
+                processExpressionProjection((ExpressionProjection) each, schema, describeColumns, requestedItems, ++columnCount);
             } else if (each instanceof AggregationProjection) {
                 String functionName = ((AggregationProjection) each).getType().name();
-                processCustomColumn(null, functionName, each.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, ++columnCount);
+                processColumn(describeColumns, requestedItems, null, functionName,
+                        FirebirdFunctionType.getReturnType(functionName, schema, ((AggregationProjection) each).getAggregationSegment().getParameters()), null, each.getAlias().orElse(null),
+                        ++columnCount);
             } else if (each instanceof SubqueryProjection) {
                 SubqueryProjection subquery = (SubqueryProjection) each;
-                processCustomColumn(null, subquery.getColumnName(), subquery.getAlias().orElse(null), Types.INTEGER, describeColumns, requestedItems, ++columnCount);
+                processColumn(describeColumns, requestedItems, null, subquery.getColumnName(), new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.LONG), null, subquery.getAlias().orElse(null),
+                        ++columnCount);
             }
         }
     }
@@ -367,10 +375,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         for (ColumnSegment columnSegment : affectedColumns) {
             ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
+            processColumn(describeColumns, requestedItems, table.getName(), column.getName(), new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType())),
+                    columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
         }
         for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
-            processCustomColumn(null, null, null, 12, describeColumns, requestedItems, ++columnCount);
+            processColumn(describeColumns, requestedItems, null, null, new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.VARYING), null, null, ++columnCount);
         }
     }
     
@@ -387,7 +396,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             ShardingSphereTable table = getTable(tableName, database, schema);
             for (String columnName : affectedColumns) {
                 ShardingSphereColumn column = table.getColumn(columnName);
-                processColumn(describeColumns, requestedItems, table, column, null, null, ++columnCount);
+                processColumn(describeColumns, requestedItems, table.getName(), column.getName(), new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType())), null,
+                        null, ++columnCount);
             }
         }
     }
@@ -460,47 +470,23 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
+    private void processExpressionProjection(final ExpressionProjection expr, final ShardingSphereSchema schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                             final Collection<FirebirdSQLInfoPacketType> requestedItems,
                                              final int columnCount) {
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
             String functionName = ((FunctionSegment) exprSegment).getFunctionName();
-            processCustomColumn(null, functionName, expr.getAlias().orElse(null), getFunctionType(functionName), describeColumns, requestedItems, columnCount);
+            processColumn(describeColumns, requestedItems, null, functionName, FirebirdFunctionType.getReturnType(functionName, schema, ((FunctionSegment) exprSegment).getParameters()),
+                    null, expr.getAlias().orElse(null), columnCount);
         } else if (exprSegment instanceof BinaryOperationExpression) {
             String operationName = getOperationName(((BinaryOperationExpression) exprSegment).getOperator());
             int operationType = getOperationType(((BinaryOperationExpression) exprSegment).getOperator());
-            processCustomColumn(null, operationName, expr.getAlias().orElse(null), operationType, describeColumns, requestedItems, columnCount);
+            processColumn(describeColumns, requestedItems, null, operationName, new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJDBCType(operationType)), null,
+                    expr.getAlias().orElse(null), columnCount);
         } else if (exprSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) exprSegment).getLiterals();
-            int type = Types.NULL;
-            if (value instanceof String) {
-                type = Types.VARCHAR;
-            } else if (value instanceof Integer) {
-                type = Types.INTEGER;
-            } else if (value instanceof Long) {
-                type = Types.BIGINT;
-            } else if (value instanceof Number) {
-                type = Types.NUMERIC;
-            }
-            processLiteralColumn(value, expr.getAlias().orElse(null), type, describeColumns, requestedItems, columnCount);
-        }
-    }
-    
-    private int getFunctionType(final String functionName) {
-        // TODO add proper coalesce and other conditional functions return types
-        switch (functionName.toLowerCase(Locale.ENGLISH)) {
-            case "substring":
-            case "current_role":
-            case "current_user":
-            case "coalesce":
-                return Types.VARCHAR;
-            case "gen_id":
-            case "count":
-                return Types.BIGINT;
-            case "current_timestamp":
-                return Types.TIMESTAMP;
-            default:
-                return Types.INTEGER;
+            processColumn(describeColumns, requestedItems, null, "CONSTANT", new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.valueOfJavaType(value)), null, expr.getAlias().orElse(null),
+                    columnCount);
         }
     }
     
@@ -527,67 +513,53 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return text.codePointCount(0, text.length());
     }
     
-    private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
-                                     final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
-        ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, true, true, false, false);
-        processColumn(describeColumns, requestedItems, table, column, null, columnAlias, columnCount);
-    }
-    
-    private void processColumn(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final ShardingSphereTable table,
-                               final ShardingSphereColumn column, final IdentifierValue tableAlias, final IdentifierValue columnAlias, final int idx) {
-        String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
-        String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
+    private void processColumn(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final String tableName,
+                               final String columnName, final FirebirdReturnBinaryColumn columnType, final IdentifierValue tableAlias, final IdentifierValue columnAlias, final int idx) {
+        String tableAliasString = null == tableAlias ? tableName : tableAlias.getValue();
+        String columnAliasString = null == columnAlias ? columnName : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        boolean blobColumn = isBlobColumn(table, column);
-        Integer blobSubtype = blobColumn ? resolveBlobSubtype(table, column) : null;
-        Integer columnLength = blobColumn ? null : resolveColumnLength(table, column);
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobColumn, blobSubtype));
+        boolean blobColumn = isBlobColumn(tableName, columnName, columnType.getType());
+        Integer blobSubtype = resolveBlobSubtype(tableName, columnName, blobColumn);
+        Integer columnLength = blobColumn ? null : resolveColumnLength(tableName, columnName, columnType.getType());
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, tableName, columnName, blobColumn ? new FirebirdReturnBinaryColumn(FirebirdBinaryColumnType.BLOB) : columnType,
+                tableAliasString, columnAliasString,
+                owner, columnLength, blobSubtype));
     }
     
-    private boolean isBlobColumn(final ShardingSphereTable table, final ShardingSphereColumn column) {
-        if (null == table || null == column) {
+    private boolean isBlobColumn(final String tableName, final String columnName, final FirebirdBinaryColumnType columnType) {
+        if (null == tableName || null == columnName) {
             return false;
         }
-        if (null != table.getName() && FirebirdBlobInfoRegistry.isBlobColumn(connectionSession.getCurrentDatabaseName(), getActualTableName(table.getName()), column.getName())) {
+        if (FirebirdBlobInfoRegistry.isBlobColumn(connectionSession.getCurrentDatabaseName(), tableName, columnName)) {
             return true;
         }
-        return Types.BLOB == column.getDataType();
+        return FirebirdBinaryColumnType.BLOB == columnType
+                || FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT == columnType;
     }
     
-    @HighFrequencyInvocation
-    private String getActualTableName(final String logicTableName) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getCurrentDatabaseName());
-        for (DataNodeRuleAttribute each : database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            Optional<String> actualTableName = each.findFirstActualTable(logicTableName);
-            if (actualTableName.isPresent()) {
-                return actualTableName.get();
-            }
+    private Integer resolveBlobSubtype(final String tableName, final String columnName, final boolean blobColumn) {
+        if (!blobColumn) {
+            return null;
         }
-        return logicTableName;
-    }
-    
-    private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column) {
-        OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(connectionSession.getCurrentDatabaseName(), getActualTableName(table.getName()), column.getName());
+        OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(connectionSession.getCurrentDatabaseName(), tableName, columnName);
         return subtype.isPresent() ? subtype.getAsInt() : null;
     }
     
-    private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
-        if (null == table || null == column || !isDynamicLengthType(column.getDataType())) {
+    private Integer resolveColumnLength(final String tableName, final String columnName, final FirebirdBinaryColumnType columnType) {
+        if (null == tableName || null == columnName || !isDynamicLengthType(columnType)) {
             return null;
         }
-        OptionalInt columnSize = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
+        OptionalInt columnSize = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), tableName, columnName);
         return columnSize.isPresent() ? columnSize.getAsInt() : null;
     }
     
-    private boolean isDynamicLengthType(final int dataType) {
-        switch (dataType) {
-            case Types.CHAR:
-            case Types.NCHAR:
-            case Types.VARCHAR:
-            case Types.NVARCHAR:
-            case Types.LONGVARCHAR:
-            case Types.LONGNVARCHAR:
+    private boolean isDynamicLengthType(final FirebirdBinaryColumnType columnType) {
+        switch (columnType) {
+            case BLOB_SUBTYPE_TEXT:
+            case TEXT:
+            case VARYING:
+            case LEGACY_TEXT:
+            case LEGACY_VARYING:
                 return true;
             default:
                 return false;

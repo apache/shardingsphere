@@ -123,7 +123,8 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         Collection<Long> result = new LinkedList<>();
         int paramCount = Math.min(parameterTypes.size(), params.size());
         for (int i = 0; i < paramCount; i++) {
-            if (parameterTypes.get(i) != FirebirdBinaryColumnType.BLOB) {
+            if (parameterTypes.get(i) != FirebirdBinaryColumnType.BLOB
+                    && parameterTypes.get(i) != FirebirdBinaryColumnType.BLOB_SUBTYPE_TEXT) {
                 continue;
             }
             Object paramValue = params.get(i);
@@ -156,6 +157,6 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     }
     
     private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
-        return new FirebirdSQLResponsePacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+        return new FirebirdSQLResponsePacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData(), packet.getReturnColumns()));
     }
 }
