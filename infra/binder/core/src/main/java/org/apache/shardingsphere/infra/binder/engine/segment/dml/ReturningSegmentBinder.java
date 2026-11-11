@@ -26,11 +26,15 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+
+import java.util.Optional;
 
 /**
  * Returning projection binder.
@@ -66,10 +70,11 @@ public final class ReturningSegmentBinder {
         }
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = tableContexts;
         for (ProjectionSegment each : segment.getProjections().getProjections()) {
-            if (!(each instanceof ShorthandProjectionSegment) || !((ShorthandProjectionSegment) each).getOwner().isPresent()) {
+            Optional<OwnerSegment> ownerSegment = findOwner(each);
+            if (!ownerSegment.isPresent()) {
                 continue;
             }
-            String owner = ((ShorthandProjectionSegment) each).getOwner().get().getIdentifier().getValue();
+            String owner = ownerSegment.get().getIdentifier().getValue();
             if (!isReturningRowAlias(owner, segment) || result.containsKey(CaseInsensitiveString.of(owner))) {
                 continue;
             }
@@ -81,6 +86,16 @@ public final class ReturningSegmentBinder {
             result.putAll(CaseInsensitiveString.of(owner), tableContexts.get(CaseInsensitiveString.of(targetName)));
         }
         return result;
+    }
+    
+    private static Optional<OwnerSegment> findOwner(final ProjectionSegment projection) {
+        if (projection instanceof ShorthandProjectionSegment) {
+            return ((ShorthandProjectionSegment) projection).getOwner();
+        }
+        if (projection instanceof ColumnProjectionSegment) {
+            return ((ColumnProjectionSegment) projection).getColumn().getOwner();
+        }
+        return Optional.empty();
     }
     
     private static boolean isReturningRowAlias(final String owner, final ReturningSegment segment) {
