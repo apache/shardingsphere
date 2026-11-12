@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -43,6 +45,10 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     private final Map<CacheKey, Statement> cachedStatements = new ConcurrentHashMap<>();
     
     private final ForceExecuteTemplate<Statement> forceExecuteTemplate = new ForceExecuteTemplate<>();
+    
+    @Getter
+    @Setter
+    private int queryTimeout;
     
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
