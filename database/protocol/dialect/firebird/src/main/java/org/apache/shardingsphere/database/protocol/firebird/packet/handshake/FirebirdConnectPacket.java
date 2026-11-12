@@ -41,6 +41,8 @@ import java.util.TreeMap;
 @Getter
 public final class FirebirdConnectPacket extends FirebirdPacket {
     
+    private static final int PROTOCOL_LENGTH = 20;
+    
     private final FirebirdCommandPacketType opCode;
     
     private final int connectVersion;
@@ -117,5 +119,20 @@ public final class FirebirdConnectPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
+    }
+    
+    /**
+     * Get length of packet.
+     *
+     * @param payload Firebird packet payload
+     * @return length of packet
+     */
+    public static int getLength(final FirebirdPacketPayload payload) {
+        int length = 16;
+        length += payload.getBufferLength(length);
+        int protocolsCount = payload.getByteBuf().getInt(length);
+        length += 4;
+        length += payload.getBufferLength(length);
+        return length + protocolsCount * PROTOCOL_LENGTH;
     }
 }
