@@ -662,4 +662,16 @@
     <sql-case id="select_fixed_operator_between_left_associative_pg" value="SELECT 0 BETWEEN `1 ` 2 AND 3, 0 BETWEEN &lt;=&gt;1 &lt;=&gt; 2 AND 3" db-types="PostgreSQL" case-types="Literal" />
     <sql-case id="select_mixed_symbolic_operator_precedence_pg" value="SELECT $1 &amp;&amp; $2 &lt;=&gt; $3, $4 &lt;=&gt; $5 &amp; $6, $7 ~~ $8 &lt;=&gt; $9, @ $10 @ $11" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="select_mixed_symbolic_operator_between_pg" value="SELECT 0 BETWEEN $1 &amp;&amp; $2 &lt;=&gt; $3 AND 4" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_parenthesized_column_simple_oracle" value="SELECT (foo_id) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_qualified_oracle" value="SELECT (t.foo_id) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_nested_oracle" value="SELECT ((foo_id)) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_deep_nested_oracle" value="SELECT (((foo_id))) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_quoted_oracle" value='SELECT ("foo_id") FROM foo_tbl t' db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_spaced_oracle" value="SELECT ( foo_id ) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_full_width_compatibility_oracle" value="SELECT （foo_id） FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_unparenthesized_oracle" value="SELECT foo_id FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_calculation_oracle" value="SELECT (foo_id + 1) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_literal_oracle" value="SELECT (1) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_function_oracle" value="SELECT (ABS(foo_id)) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_list_oracle" value="SELECT foo_id FROM foo_tbl WHERE (foo_id, bar_id) = ((1, 2))" db-types="Oracle" case-types="LITERAL" />
 </sql-cases>
