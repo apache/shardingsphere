@@ -26,6 +26,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
@@ -208,6 +209,26 @@ class FirebirdPacketCodecEngineTest {
         assertTrue(out.isEmpty());
         assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.PREPARE_STATEMENT));
         assertThat(getPendingMessages().size(), is(1));
+    }
+    
+    @Test
+    void assertDecodeConnectSplitAcrossReads() {
+        ByteBuf connect = Unpooled.buffer();
+        connect.writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        connect.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        connect.writeInt(1).writeInt(0);
+        connect.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
+        int expectedLength = connect.readableBytes();
+        List<Object> firstOut = new LinkedList<>();
+        codecEngine.decode(context, connect.readRetainedSlice(16), firstOut);
+        assertTrue(firstOut.isEmpty());
+        assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.CONNECT));
+        List<Object> secondOut = new LinkedList<>();
+        codecEngine.decode(context, connect.readRetainedSlice(connect.readableBytes()), secondOut);
+        assertThat(secondOut.size(), is(1));
+        assertThat(((ByteBuf) secondOut.get(0)).readableBytes(), is(expectedLength));
+        assertNull(getPendingPacketType());
+        assertTrue(getPendingMessages().isEmpty());
     }
     
     @Test

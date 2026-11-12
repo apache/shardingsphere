@@ -115,6 +115,8 @@ class FirebirdCommandPacketFactoryTest {
     
     private static Stream<Arguments> expectedLengthArguments() {
         return Stream.of(
+                Arguments.of("connect", FirebirdCommandPacketType.CONNECT, 20),
+                Arguments.of("attach", FirebirdCommandPacketType.ATTACH, 8),
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, 16),
                 Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, 16),
                 Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, 16),
