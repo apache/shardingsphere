@@ -60,6 +60,8 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     private int maxRows;
     
+    private int queryTimeout;
+    
     private boolean closeOnCompletion;
     
     private boolean closed;
@@ -166,12 +168,14 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     @Override
     public final int getQueryTimeout() throws SQLException {
-        return getRoutedStatements().isEmpty() ? 0 : getRoutedStatements().iterator().next().getQueryTimeout();
+        return getRoutedStatements().isEmpty() ? queryTimeout : getRoutedStatements().iterator().next().getQueryTimeout();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setQueryTimeout(final int seconds) throws SQLException {
+        ShardingSpherePreconditions.checkState(seconds >= 0, () -> new SQLException("Query timeout must be a value greater than or equal to 0."));
+        queryTimeout = seconds;
         getMethodInvocationRecorder().record("setQueryTimeout", statement -> statement.setQueryTimeout(seconds));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setQueryTimeout(seconds));
     }

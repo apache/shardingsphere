@@ -226,6 +226,15 @@ class StatementAdapterTest {
     }
     
     @Test
+    void assertGetQueryTimeoutAfterSettingBeforeExecution() throws SQLException {
+        ShardingSphereStatement statement = mockShardingSphereStatement();
+        statement.setQueryTimeout(3);
+        assertThat(statement.getQueryTimeout(), is(3));
+        statement.setQueryTimeout(0);
+        assertThat(statement.getQueryTimeout(), is(0));
+    }
+    
+    @Test
     void assertGetQueryTimeoutWithRoutedStatements() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getQueryTimeout()).thenReturn(10);
@@ -239,6 +248,14 @@ class StatementAdapterTest {
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setQueryTimeout(10);
         verify(statement).setQueryTimeout(10);
+    }
+    
+    @Test
+    void assertSetNegativeQueryTimeoutBeforeExecution() throws SQLException {
+        ShardingSphereStatement statement = mockShardingSphereStatement();
+        statement.setQueryTimeout(3);
+        assertThrows(SQLException.class, () -> statement.setQueryTimeout(-1));
+        assertThat(statement.getQueryTimeout(), is(3));
     }
     
     @Test
