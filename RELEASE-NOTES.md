@@ -95,6 +95,7 @@
 1. Proxy: Fix MySQL COM_QUERY binary string literal corruption - [#39433](https://github.com/apache/shardingsphere/pull/39433)
 1. Proxy: Add error handling for unknown or closed BLOB handles and ids in Firebird - [#39773](https://github.com/apache/shardingsphere/pull/39773)
 1. Proxy: Preserve the SQL error code in Firebird invalid batch message length responses - [#40408](https://github.com/apache/shardingsphere/issues/40408)
+1. Proxy: Send Firebird batch parameter version error arguments as numbers - [#40418](https://github.com/apache/shardingsphere/issues/40418)
 1. Proxy: Fix startup failure when storage units set `dataSourceClassName` to `com.zaxxer.hikari.HikariDataSource` - [#40303](https://github.com/apache/shardingsphere/issues/40303)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. JDBC & Proxy: Reject ordinary pushdown SELECT statements routed to different storage database types - [#40385](https://github.com/apache/shardingsphere/pull/40385)

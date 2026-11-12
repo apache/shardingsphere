@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.core.exception.syntax.databa
 import org.apache.shardingsphere.database.exception.core.exception.syntax.sql.DialectSQLParsingException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.database.exception.core.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdSQLException;
 import org.apache.shardingsphere.database.exception.firebird.exception.connection.LoginErrorException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
@@ -52,6 +53,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,6 +73,7 @@ class FirebirdDialectExceptionMapperTest {
         assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
         assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
         assertThat(actual.getMessage(), is(String.format(vendorError.getReason(), messageArgs)));
+        assertThat(((FirebirdSQLException) actual).getMessageArguments(), is(Arrays.asList(messageArgs)));
     }
     
     @Test
