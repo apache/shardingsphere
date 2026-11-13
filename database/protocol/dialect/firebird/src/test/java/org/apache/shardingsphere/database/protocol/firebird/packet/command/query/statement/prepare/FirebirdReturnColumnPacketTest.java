@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -86,8 +87,8 @@ class FirebirdReturnColumnPacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteSubTypeArguments")
-    void assertWriteSubType(final String name, final boolean blobColumn, final Integer blobSubType, final int expectedSubType) {
-        createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SUB_TYPE), Types.INTEGER, null, blobColumn, blobSubType).write(payload);
+    void assertWriteSubType(final String name, final int dataType, final boolean blobColumn, final Integer blobSubType, final int expectedSubType) {
+        createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SUB_TYPE), dataType, null, blobColumn, blobSubType).write(payload);
         verify(payload).writeInt4LE(expectedSubType);
     }
     
@@ -117,8 +118,11 @@ class FirebirdReturnColumnPacketTest {
     
     private static Stream<Arguments> assertWriteSubTypeArguments() {
         return Stream.of(
-                Arguments.of("blob_with_subtype", true, 7, 7),
-                Arguments.of("blob_without_subtype", true, null, FirebirdBinaryColumnType.BLOB.getSubtype()),
-                Arguments.of("long_default_subtype", false, null, FirebirdBinaryColumnType.LONG.getSubtype()));
+                Arguments.of("blob_with_subtype", Types.INTEGER, true, 7, 7),
+                Arguments.of("blob_without_subtype", Types.INTEGER, true, null, FirebirdBinaryColumnType.BLOB.getSubtype()),
+                Arguments.of("long_default_subtype", Types.INTEGER, false, null, FirebirdBinaryColumnType.LONG.getSubtype()),
+                Arguments.of("varchar_default_subtype", Types.VARCHAR, false, null, FirebirdBinaryColumnType.VARYING.getSubtype()),
+                Arguments.of("binary_octets_subtype", Types.BINARY, false, null, ISCConstants.CS_BINARY),
+                Arguments.of("varbinary_octets_subtype", Types.VARBINARY, false, null, ISCConstants.CS_BINARY));
     }
 }
