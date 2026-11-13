@@ -46,7 +46,17 @@ public enum FirebirdState implements SQLState {
     
     BATCH_PARAMETERS_REQUIRED("07001"),
     
-    SQLDA_ERROR("07002");
+    SQLDA_ERROR("07002"),
+    
+    BATCH_WITHOUT_BLOBS("07001"),
+    
+    TRANSLITERATION_FAILED("22018"),
+    
+    STRING_TRUNCATION("22001"),
+    
+    CONVERSION_ERROR("22018"),
+    
+    NUMERIC_OUT_OF_RANGE("22003");
     
     private final String value;
 }

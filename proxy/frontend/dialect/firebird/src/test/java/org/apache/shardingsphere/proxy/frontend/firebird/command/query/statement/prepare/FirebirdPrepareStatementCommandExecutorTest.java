@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdReturnColumnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
@@ -77,6 +78,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -362,6 +364,25 @@ class FirebirdPrepareStatementCommandExecutorTest {
         actualReturnPacket.getDescribeSelect().get(1).write(numberPayload);
         verify(numberPayload).writeBytes("CONSTANT".getBytes(StandardCharsets.UTF_8));
         verify(numberPayload).writeBytes("one".getBytes(StandardCharsets.UTF_8));
+    }
+    
+    @Test
+    void assertDescribeBind() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) VALUES (?, ?)");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(
+                FirebirdSQLInfoPacketType.STMT_TYPE,
+                FirebirdSQLInfoPacketType.BIND,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.DESCRIBE_END,
+                FirebirdSQLInfoPacketType.DESCRIBE_END);
+        Collection<DatabasePacket> actual = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData();
+        List<FirebirdReturnColumnPacket> actualParameterColumns = connectionSession.getServerPreparedStatementRegistry().<FirebirdServerPreparedStatement>getPreparedStatement(1).getParameterColumns();
+        assertThat(actualParameterColumns, is(actualReturnPacket.getDescribeBind()));
+        assertThat(actualParameterColumns.get(0).getColumnType(), is(FirebirdBinaryColumnType.LONG));
+        assertThat(actualParameterColumns.get(1).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
     }
     
     @Test
