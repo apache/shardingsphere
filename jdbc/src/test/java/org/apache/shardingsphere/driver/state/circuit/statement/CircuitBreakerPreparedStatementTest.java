@@ -41,6 +41,8 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("resource")
 class CircuitBreakerPreparedStatementTest {
@@ -191,10 +193,26 @@ class CircuitBreakerPreparedStatementTest {
     }
     
     @Test
-    void assertGetQueryTimeout() throws SQLException {
+    void assertGetQueryTimeoutAfterSetting() throws SQLException {
         CircuitBreakerPreparedStatement statement = new CircuitBreakerPreparedStatement();
         statement.setQueryTimeout(1);
+        assertThat(statement.getQueryTimeout(), is(1));
+    }
+    
+    @Test
+    void assertGetQueryTimeoutAfterReset() throws SQLException {
+        CircuitBreakerPreparedStatement statement = new CircuitBreakerPreparedStatement();
+        statement.setQueryTimeout(1);
+        statement.setQueryTimeout(0);
         assertThat(statement.getQueryTimeout(), is(0));
+    }
+    
+    @Test
+    void assertSetQueryTimeoutWithNegativeValue() throws SQLException {
+        CircuitBreakerPreparedStatement statement = new CircuitBreakerPreparedStatement();
+        statement.setQueryTimeout(1);
+        assertThrows(SQLException.class, () -> statement.setQueryTimeout(-1));
+        assertThat(statement.getQueryTimeout(), is(1));
     }
     
     @Test
@@ -323,8 +341,10 @@ class CircuitBreakerPreparedStatementTest {
     }
     
     @Test
-    void assertGetStatementManager() {
-        assertNull(new CircuitBreakerPreparedStatement().getStatementManager());
+    void assertClose() throws SQLException {
+        CircuitBreakerPreparedStatement statement = new CircuitBreakerPreparedStatement();
+        statement.close();
+        assertTrue(statement.isClosed());
     }
     
     @Test
