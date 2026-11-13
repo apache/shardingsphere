@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.driver.state.circuit.statement;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
@@ -45,6 +47,9 @@ import java.util.Collections;
  * Circuit breaker preparedStatement.
  */
 public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOperationPreparedStatement {
+    
+    @Getter(AccessLevel.PROTECTED)
+    private final StatementManager statementManager = new StatementManager();
     
     @Override
     public void setNull(final int parameterIndex, final int sqlType) {
@@ -271,11 +276,6 @@ public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOp
     @Override
     protected Collection<? extends Statement> getRoutedStatements() {
         return Collections.emptyList();
-    }
-    
-    @Override
-    protected StatementManager getStatementManager() {
-        return null;
     }
     
     @Override
