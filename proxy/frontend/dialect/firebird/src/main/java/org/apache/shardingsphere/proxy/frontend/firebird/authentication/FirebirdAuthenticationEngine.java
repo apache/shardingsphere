@@ -24,6 +24,7 @@ import org.apache.shardingsphere.authentication.AuthenticatorType;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.exception.core.exception.connection.AccessDeniedException;
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
@@ -50,6 +51,9 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
+import org.firebirdsql.encodings.EncodingDefinition;
+import org.firebirdsql.encodings.EncodingFactory;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -120,8 +124,11 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     
     private AuthenticationResult processAttach(final ChannelHandlerContext context, final FirebirdPacketPayload payload, final AuthorityRule rule) {
         FirebirdAttachPacket attachPacket = new FirebirdAttachPacket(payload);
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseAttachCharset(attachPacket.getEncoding()));
+        Charset charset = parseAttachCharset(attachPacket.getEncoding());
+        int attachmentCharsetId = parseAttachmentCharsetId(attachPacket.getEncoding(), charset);
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charset);
         login(currentAuthResult.getDatabase(), currentAuthResult.getUsername(), attachPacket, rule);
+        context.channel().attr(FirebirdConstant.ATTACHMENT_CHARSET_ID).set(attachmentCharsetId);
         context.writeAndFlush(new FirebirdGenericResponsePacket());
         return AuthenticationResultBuilder.finished(currentAuthResult.getUsername(), "", currentAuthResult.getDatabase(), currentAuthResult.getConnectionAttributes());
     }
@@ -135,6 +142,19 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         } catch (final IllegalArgumentException ex) {
             throw new InvalidParameterValueException("lc_ctype", encoding);
         }
+    }
+    
+    private int parseAttachmentCharsetId(@Nullable final String encoding, final Charset charset) {
+        String charsetName = null == encoding ? "NONE" : encoding.trim();
+        if (QuoteCharacter.SINGLE_QUOTE.isWrapped(charsetName) || QuoteCharacter.QUOTE.isWrapped(charsetName)) {
+            charsetName = charsetName.substring(1, charsetName.length() - 1);
+        }
+        EncodingDefinition definition = EncodingFactory.getPlatformDefault().getEncodingDefinitionByFirebirdName("BINARY".equalsIgnoreCase(charsetName) ? "OCTETS" : charsetName);
+        if (null == definition) {
+            definition = EncodingFactory.getPlatformDefault().getEncodingDefinitionByCharset(charset);
+        }
+        ShardingSpherePreconditions.checkNotNull(definition, () -> new InvalidParameterValueException("lc_ctype", encoding));
+        return definition.getFirebirdCharacterSetId();
     }
     
     private void login(final String databaseName, final String username, final FirebirdAttachPacket attachPacket, final AuthorityRule rule) {

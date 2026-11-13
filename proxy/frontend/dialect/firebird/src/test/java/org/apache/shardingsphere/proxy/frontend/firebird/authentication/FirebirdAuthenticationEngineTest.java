@@ -57,6 +57,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -265,8 +266,9 @@ class FirebirdAuthenticationEngineTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    @Test
-    void assertAuthenticateAttachWithUnknownCharset() {
+    @ParameterizedTest(name = "unsupported charset {0}")
+    @ValueSource(strings = {"FOO_CHARSET", "UTF-16", "UTF-32"})
+    void assertAuthenticateAttachWithUnknownCharset(final String encoding) {
         AuthorityRule rule = mock(AuthorityRule.class);
         mockProxyContext(rule, true);
         Attribute<Charset> charsetAttr = mock(Attribute.class);
@@ -276,7 +278,7 @@ class FirebirdAuthenticationEngineTest {
         FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.ATTACH);
         try (
                 MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class,
-                        (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn("FOO_CHARSET"))) {
+                        (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn(encoding))) {
             assertThrows(InvalidParameterValueException.class, () -> authenticationEngine.authenticate(context, payload));
         }
         verify(charsetAttr, never()).set(any());
@@ -284,8 +286,9 @@ class FirebirdAuthenticationEngineTest {
     
     @SuppressWarnings("rawtypes")
     @SneakyThrows(ReflectiveOperationException.class)
-    @Test
-    void assertAuthenticateAttachWithoutEncoding() {
+    @ParameterizedTest(name = "charset {0}")
+    @MethodSource("attachmentCharsets")
+    void assertAuthenticateAttachWithCharset(final String encoding, final int expectedCharsetId) {
         AuthorityRule rule = mock(AuthorityRule.class);
         ShardingSphereUser user = new ShardingSphereUser("root", "pwd", "");
         when(rule.findUser(any(Grantee.class))).thenReturn(Optional.of(user));
@@ -298,13 +301,14 @@ class FirebirdAuthenticationEngineTest {
         FirebirdAuthenticator authenticator = mock(FirebirdAuthenticator.class);
         when(authenticator.authenticate(any(), any())).thenReturn(true);
         try (
-                MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn(null));
+                MockedConstruction<FirebirdAttachPacket> ignored = mockConstruction(FirebirdAttachPacket.class, (attachPacket, construction) -> when(attachPacket.getEncoding()).thenReturn(encoding));
                 MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class,
                         (factory, construction) -> when(factory.newInstance(user)).thenReturn(authenticator))) {
             AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
             assertTrue(actual.isFinished());
         }
-        verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet("NONE"));
+        verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet(null == encoding ? "NONE" : encoding));
+        verify(context.channel().attr(FirebirdConstant.ATTACHMENT_CHARSET_ID)).set(expectedCharsetId);
     }
     
     @Test
@@ -397,6 +401,20 @@ class FirebirdAuthenticationEngineTest {
                 Arguments.of("defaultSrp256", "", FirebirdAuthenticationMethod.SRP),
                 Arguments.of("configuredSrp256", "SRP256", FirebirdAuthenticationMethod.SRP),
                 Arguments.of("configuredSrp512", "SRP512", FirebirdAuthenticationMethod.SRP256));
+    }
+    
+    private static Stream<Arguments> attachmentCharsets() {
+        return Stream.of(
+                Arguments.of(null, 0),
+                Arguments.of("NONE", 0),
+                Arguments.of("UTF8", 4),
+                Arguments.of("UNICODE_FSS", 3),
+                Arguments.of("WIN1251", 52),
+                Arguments.of("OCTETS", 1),
+                Arguments.of("binary", 1),
+                Arguments.of("'utf8'", 4),
+                Arguments.of("\"WIN1251\"", 52),
+                Arguments.of("UTF-8", 4));
     }
     
     private static Stream<Arguments> attachArguments() {

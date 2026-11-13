@@ -89,7 +89,7 @@ public final class FirebirdCommandExecutorFactory {
     public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
         switch (commandPacketType) {
             case INFO_DATABASE:
-                return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket);
+                return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
             case INFO_BLOB:
                 return new FirebirdBlobInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
             case TRANSACTION:

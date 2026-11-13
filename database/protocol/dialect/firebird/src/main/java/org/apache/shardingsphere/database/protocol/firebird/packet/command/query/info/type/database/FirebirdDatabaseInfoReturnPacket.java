@@ -59,20 +59,31 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     
     private final List<FirebirdInfoPacketType> infoItems;
     
+    private final int attachmentCharsetId;
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         for (FirebirdInfoPacketType type : infoItems) {
+            if (FirebirdCommonInfoPacketType.END == type) {
+                break;
+            }
             if (type.isCommon()) {
                 FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
             } else {
                 parseDatabaseInfo(payload, (FirebirdDatabaseInfoPacketType) type);
             }
         }
+        FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.END);
     }
     
     private void parseDatabaseInfo(final FirebirdPacketPayload data, final FirebirdDatabaseInfoPacketType type) {
         // TODO implement other request types handle
         switch (type) {
+            case ATT_CHARSET:
+                data.writeInt1(type.getCode());
+                data.writeInt2LE(4);
+                data.writeInt4LE(attachmentCharsetId);
+                break;
             case DB_SQL_DIALECT:
                 data.writeInt1(type.getCode());
                 data.writeInt2LE(1);
