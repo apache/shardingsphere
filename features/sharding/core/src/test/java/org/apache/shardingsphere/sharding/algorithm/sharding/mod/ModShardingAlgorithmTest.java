@@ -34,6 +34,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -143,13 +144,15 @@ class ModShardingAlgorithmTest {
     }
     
     private Stream<Arguments> assertPreciseDoShardingArguments() {
+        ModShardingAlgorithm nonPowerOfTwoShardingCountAlgorithm = (ModShardingAlgorithm) TypedSPILoader.getService(
+                ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "7")));
+        Collection<String> nonPowerOfTwoTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6");
         return Stream.of(
                 Arguments.of("int sharding value", defaultAlgorithm, Arrays.asList(
                         "t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
                         "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"), 17, "t_order_1"),
-                Arguments.of("string bigint sharding value", defaultAlgorithm, Arrays.asList(
-                        "t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
-                        "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"), "12345678910111213141516", "t_order_12"),
+                Arguments.of("string bigint sharding value", nonPowerOfTwoShardingCountAlgorithm, nonPowerOfTwoTargetNames, "12345678910111213141516", "t_order_6"),
+                Arguments.of("big integer sharding value", nonPowerOfTwoShardingCountAlgorithm, nonPowerOfTwoTargetNames, new BigInteger("12345678910111213141516"), "t_order_6"),
                 Arguments.of("string bigint sharding value with zero padding", zeroPaddingAlgorithm, Arrays.asList(
                         "t_order_08", "t_order_09", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
                         "t_order_00", "t_order_01", "t_order_02", "t_order_03", "t_order_04", "t_order_05", "t_order_06", "t_order_07"), "12345678910111213141516", "t_order_07"),

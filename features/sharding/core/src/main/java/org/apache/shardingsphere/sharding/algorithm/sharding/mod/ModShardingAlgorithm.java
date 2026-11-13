@@ -143,6 +143,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     }
     
     private BigInteger getBigInteger(final Comparable<?> value) {
+        if (value instanceof BigInteger) {
+            return (BigInteger) value;
+        }
         return value instanceof Number ? BigInteger.valueOf(((Number) value).longValue()) : new BigInteger(value.toString());
     }
     
