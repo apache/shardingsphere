@@ -18,11 +18,17 @@
 package org.apache.shardingsphere.database.protocol.firebird.payload;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,6 +67,18 @@ class FirebirdPacketPayloadTest {
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt2(), is(1));
     }
     
+    @ParameterizedTest
+    @ValueSource(shorts = {0, 1, 258, -1, Short.MIN_VALUE, Short.MAX_VALUE})
+    void assertReadInt2Signed(final short value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Short.BYTES).order(ByteOrder.BIG_ENDIAN).putShort(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt2Signed(), is((int) value));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
+    }
+    
     @Test
     void assertWriteInt2() {
         new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt2(1);
@@ -71,6 +89,18 @@ class FirebirdPacketPayloadTest {
     void assertReadInt2LE() {
         when(byteBuf.readUnsignedShortLE()).thenReturn(1);
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt2LE(), is(1));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(shorts = {0, 1, 258, -1, Short.MIN_VALUE, Short.MAX_VALUE})
+    void assertReadInt2SignedLE(final short value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Short.BYTES).order(ByteOrder.LITTLE_ENDIAN).putShort(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt2SignedLE(), is((int) value));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
     }
     
     @Test
@@ -85,10 +115,34 @@ class FirebirdPacketPayloadTest {
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt4(), is(1));
     }
     
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 0x01020304, -1, Integer.MIN_VALUE, Integer.MAX_VALUE})
+    void assertReadInt4LE(final int value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt4LE(), is(value));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
+    }
+    
     @Test
     void assertReadInt4Unsigned() {
         when(byteBuf.readUnsignedInt()).thenReturn(1L);
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt4Unsigned(), is(1L));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 0x01020304, -1, Integer.MIN_VALUE, Integer.MAX_VALUE})
+    void assertReadInt4UnsignedLE(final int value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Integer.BYTES).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt4UnsignedLE(), is(Integer.toUnsignedLong(value)));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
     }
     
     @Test
@@ -115,10 +169,60 @@ class FirebirdPacketPayloadTest {
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readInt8(), is(1L));
     }
     
+    @ParameterizedTest
+    @ValueSource(longs = {0L, 1L, 0x0102030405060708L, -1L, Long.MIN_VALUE, Long.MAX_VALUE})
+    void assertReadInt8LE(final long value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt8LE(), is(value));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
+    }
+    
+    @ParameterizedTest
+    @ValueSource(longs = {0L, 1L, 0x0102030405060708L, -1L, Long.MIN_VALUE, Long.MAX_VALUE})
+    void assertReadInt8Unsigned(final long value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Long.BYTES).order(ByteOrder.BIG_ENDIAN).putLong(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt8Unsigned(), is(new BigInteger(Long.toUnsignedString(value))));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
+    }
+    
+    @ParameterizedTest
+    @ValueSource(longs = {0L, 1L, 0x0102030405060708L, -1L, Long.MIN_VALUE, Long.MAX_VALUE})
+    void assertReadInt8UnsignedLE(final long value) {
+        ByteBuf input = Unpooled.wrappedBuffer(ByteBuffer.allocate(Long.BYTES).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array());
+        try {
+            assertThat(new FirebirdPacketPayload(input, StandardCharsets.UTF_8).readInt8UnsignedLE(), is(new BigInteger(Long.toUnsignedString(value))));
+            assertThat(input.readableBytes(), is(0));
+        } finally {
+            input.release();
+        }
+    }
+    
     @Test
     void assertWriteInt8() {
         new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt8(1L);
         verify(byteBuf).writeLong(1L);
+    }
+    
+    @Test
+    void assertWriteInt8LE() {
+        ByteBuf actual = Unpooled.buffer();
+        try {
+            new FirebirdPacketPayload(actual, StandardCharsets.UTF_8).writeInt8LE(0x0102030405060708L);
+            assertThat(actual.readableBytes(), is(8));
+            byte[] actualBytes = new byte[8];
+            actual.readBytes(actualBytes);
+            assertThat(actualBytes, is(new byte[]{8, 7, 6, 5, 4, 3, 2, 1}));
+        } finally {
+            actual.release();
+        }
     }
     
     @Test
