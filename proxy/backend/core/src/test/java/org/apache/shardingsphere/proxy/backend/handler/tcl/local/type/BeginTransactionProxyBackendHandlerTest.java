@@ -127,7 +127,7 @@ class BeginTransactionProxyBackendHandlerTest {
     private DialectDatabaseMetaData mockDialectDatabaseMetaData(final boolean supportAutoCommitInNestedTransaction, final String defaultSchema) {
         DialectDatabaseMetaData result = mock(DialectDatabaseMetaData.class);
         DialectTransactionOption transactionOption = new DialectTransactionOption(
-                false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, supportAutoCommitInNestedTransaction, false, true, false, false, Collections.emptyList());
+                false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, supportAutoCommitInNestedTransaction, false, true, false, false, false, Collections.emptyList());
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
         when(schemaOption.getDefaultSchema()).thenReturn(Optional.ofNullable(defaultSchema));
         when(result.getTransactionOption()).thenReturn(transactionOption);

@@ -48,24 +48,45 @@ public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaD
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        ShardingSphereTable loadedTable = metaDataLoader.loadCreatedTable(database, logicDataSourceName, schemaName, sqlStatement.getTable().getTableName().getIdentifier(), props,
-                createRevisionCandidateSchemas(database, schemaName, sqlStatement));
+        IdentifierValue tableName = sqlStatement.getTable().getTableName().getIdentifier();
+        ShardingSphereTable loadedTable = metaDataLoader.loadCreatedTable(database, logicDataSourceName, schemaName, tableName, props,
+                createRevisionCandidateSchemas(database, schemaName, tableName, createRevisionCandidateIndexes(sqlStatement)));
         metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
     }
     
-    private Collection<ShardingSphereSchema> createRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName, final CreateTableStatement sqlStatement) {
-        Collection<ShardingSphereIndex> indexes = createRevisionCandidateIndexes(sqlStatement);
-        if (indexes.isEmpty()) {
+    /**
+     * Create revision candidate schemas carrying the logical index names a CREATE TABLE statement declared.
+     *
+     * <p>A storage-imposed identifier-length limit can shorten a long index name when the table is actually created. Including
+     * the statement's own, unshortened names as a revision candidate lets the loader recover the logical name instead of
+     * persisting the shortened physical one.</p>
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param tableIdentifierValue identifier value of the table the indexes belong to
+     * @param revisionCandidateIndexes index-name candidates declared by the statement that created the table
+     * @return revision candidate schemas
+     */
+    public static Collection<ShardingSphereSchema> createRevisionCandidateSchemas(final ShardingSphereDatabase database, final String schemaName,
+                                                                                  final IdentifierValue tableIdentifierValue,
+                                                                                  final Collection<ShardingSphereIndex> revisionCandidateIndexes) {
+        if (revisionCandidateIndexes.isEmpty()) {
             return database.getAllSchemas();
         }
         Collection<ShardingSphereSchema> result = new LinkedList<>(database.getAllSchemas());
-        String tableName = TableRefreshUtils.getTableLoadCandidateName(database, sqlStatement.getTable().getTableName().getIdentifier());
+        String tableName = TableRefreshUtils.getTableLoadCandidateName(database, tableIdentifierValue);
         result.add(new ShardingSphereSchema(schemaName, database.getProtocolType(),
-                Collections.singleton(new ShardingSphereTable(tableName, Collections.emptyList(), indexes, Collections.emptyList())), Collections.emptyList()));
+                Collections.singleton(new ShardingSphereTable(tableName, Collections.emptyList(), revisionCandidateIndexes, Collections.emptyList())), Collections.emptyList()));
         return result;
     }
     
-    private Collection<ShardingSphereIndex> createRevisionCandidateIndexes(final CreateTableStatement sqlStatement) {
+    /**
+     * Create index-name candidates declared by a CREATE TABLE statement, for revision-candidate schema construction.
+     *
+     * @param sqlStatement create table statement
+     * @return index-name candidates
+     */
+    public static Collection<ShardingSphereIndex> createRevisionCandidateIndexes(final CreateTableStatement sqlStatement) {
         Collection<ShardingSphereIndex> result = new LinkedList<>();
         for (ConstraintDefinitionSegment each : sqlStatement.getConstraintDefinitions()) {
             if (!each.getIndexName().isPresent()) {

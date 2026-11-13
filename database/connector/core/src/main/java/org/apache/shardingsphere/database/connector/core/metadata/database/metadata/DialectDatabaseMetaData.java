@@ -135,7 +135,7 @@ public interface DialectDatabaseMetaData extends DatabaseTypedSPI {
      * @return transaction option
      */
     default DialectTransactionOption getTransactionOption() {
-        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false, Collections.emptyList());
+        return new DialectTransactionOption(false, DDLCommitPolicy.NO_ADDITIONAL_COMMIT, false, false, true, false, false, false, Collections.emptyList());
     }
     
     /**
