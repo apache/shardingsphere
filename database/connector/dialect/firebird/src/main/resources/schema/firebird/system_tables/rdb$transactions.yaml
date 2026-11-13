@@ -19,7 +19,7 @@ name: RDB$TRANSACTIONS
 columns:
   RDB$TRANSACTION_ID:
     caseSensitive: false
-    dataType: 4
+    dataType: -5
     generated: false
     name: RDB$TRANSACTION_ID
     primaryKey: false
