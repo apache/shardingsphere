@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -380,6 +383,15 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         executor.execute();
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(1));
+    }
+    
+    @Test
+    void assertExecuteWithSignExtendedStatementHandle() throws Exception {
+        ByteBuf byteBuf = Unpooled.buffer().writeInt(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue()).writeInt(1).writeInt(0xFFFF8001).writeInt(3).writeInt(8)
+                .writeBytes("SELECT 1".getBytes(StandardCharsets.UTF_8)).writeInt(1).writeByte(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()).writeZero(3).writeInt(100);
+        FirebirdPrepareStatementPacket prepareStatementPacket = new FirebirdPrepareStatementPacket(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8));
+        new FirebirdPrepareStatementCommandExecutor(prepareStatementPacket, connectionSession).execute();
+        assertThat(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(0x8001).getSql(), is("SELECT 1"));
     }
     
     @Test

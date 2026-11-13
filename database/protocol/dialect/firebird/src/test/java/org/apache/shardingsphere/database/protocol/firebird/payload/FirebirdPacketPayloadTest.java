@@ -98,6 +98,18 @@ class FirebirdPacketPayloadTest {
     }
     
     @Test
+    void assertReadObjectHandle() {
+        when(byteBuf.readInt()).thenReturn(0x10001);
+        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readObjectHandle(), is(0x10001));
+    }
+    
+    @Test
+    void assertReadObjectHandleWithSignExtendedHandle() {
+        when(byteBuf.readInt()).thenReturn(0xFFFF8001);
+        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readObjectHandle(), is(0x8001));
+    }
+    
+    @Test
     void assertWriteInt4() {
         new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).writeInt4(1);
         verify(byteBuf).writeInt(1);

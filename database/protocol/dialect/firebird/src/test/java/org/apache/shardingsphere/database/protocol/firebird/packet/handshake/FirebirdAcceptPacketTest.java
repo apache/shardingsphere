@@ -42,6 +42,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -70,6 +72,16 @@ class FirebirdAcceptPacketTest {
         assertThat(packet.getAcceptDataPacket().getPlugin(), is(FirebirdAuthenticationMethod.SRP));
         assertThat(packet.getAcceptDataPacket().getAuthenticated(), is(7));
         assertThat(packet.getAcceptDataPacket().getKeys(), is("keys"));
+    }
+    
+    @Test
+    void assertIsLazySend() {
+        assertTrue(new FirebirdAcceptPacket(new LinkedList<>(Collections.singletonList(createProtocol(FirebirdArchType.ARCH_GENERIC, 0x107, 1)))).isLazySend());
+    }
+    
+    @Test
+    void assertIsLazySendWithBatchSend() {
+        assertFalse(new FirebirdAcceptPacket(new LinkedList<>(Collections.singletonList(createProtocol(FirebirdArchType.ARCH_GENERIC, 3, 1)))).isLazySend());
     }
     
     @Test

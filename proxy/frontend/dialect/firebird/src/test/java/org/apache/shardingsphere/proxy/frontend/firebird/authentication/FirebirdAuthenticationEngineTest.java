@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.variable.charset.FirebirdCharacterSets;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -89,7 +90,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({
-        ConnectionIdGenerator.class, FirebirdConnectionResourceManager.class, ProxyContext.class
+        ConnectionIdGenerator.class, FirebirdConnectionResourceManager.class, ProxyContext.class, FirebirdLastObjectRegistry.class
 })
 class FirebirdAuthenticationEngineTest {
     
@@ -101,6 +102,9 @@ class FirebirdAuthenticationEngineTest {
     
     @Mock
     private FirebirdConnectionResourceManager connectionResourceManager;
+    
+    @Mock
+    private FirebirdLastObjectRegistry lastObjectRegistry;
     
     private final FirebirdAuthenticationEngine authenticationEngine = new FirebirdAuthenticationEngine();
     
@@ -305,6 +309,29 @@ class FirebirdAuthenticationEngineTest {
             assertTrue(actual.isFinished());
         }
         verify(charsetAttr).set(FirebirdCharacterSets.findCharacterSet("NONE"));
+    }
+    
+    @Test
+    void assertAuthenticateConnectWithLazySend() {
+        AuthorityRule rule = mock(AuthorityRule.class);
+        ShardingSphereUser user = new ShardingSphereUser("root", "pwd", "");
+        when(rule.findUser(any(Grantee.class))).thenReturn(Optional.of(user));
+        when(rule.getAuthenticatorType(user)).thenReturn("LEGACY_AUTH");
+        mockProxyContext(rule, true);
+        when(FirebirdLastObjectRegistry.getInstance()).thenReturn(lastObjectRegistry);
+        FirebirdProtocol protocol = mock(FirebirdProtocol.class);
+        when(protocol.getVersion()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        when(protocol.getMaxType()).thenReturn(5);
+        List<FirebirdProtocol> userProtocols = new ArrayList<>(Collections.singletonList(protocol));
+        FirebirdPacketPayload payload = mockFirebirdPayload(FirebirdCommandPacketType.CONNECT);
+        try (MockedConstruction<FirebirdConnectPacket> ignored = mockConstruction(FirebirdConnectPacket.class, (mockConnect, construction) -> {
+            when(mockConnect.getUserProtocols()).thenReturn(userProtocols);
+            when(mockConnect.getLogin()).thenReturn("root");
+            when(mockConnect.getPlugin()).thenReturn(FirebirdAuthenticationMethod.LEGACY_AUTH);
+        })) {
+            authenticationEngine.authenticate(context, payload);
+        }
+        verify(lastObjectRegistry).registerLazySendConnection(0);
     }
     
     @Test

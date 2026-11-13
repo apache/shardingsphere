@@ -31,7 +31,7 @@ class FirebirdBatchCancelCommandPacketTest {
     @Test
     void assertConstructor() {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readInt4()).thenReturn(3);
+        when(payload.readObjectHandle()).thenReturn(3);
         FirebirdBatchCancelCommandPacket actualPacket = new FirebirdBatchCancelCommandPacket(payload);
         assertThat(actualPacket.getStatementHandle(), is(3));
         verify(payload).skipReserved(4);

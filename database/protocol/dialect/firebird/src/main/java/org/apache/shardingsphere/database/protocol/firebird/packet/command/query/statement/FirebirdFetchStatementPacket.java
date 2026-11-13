@@ -40,7 +40,7 @@ public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
     
     public FirebirdFetchStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementId = payload.readInt4();
+        statementId = payload.readObjectHandle();
         parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
         message = payload.readInt4();
         fetchSize = payload.readInt4();

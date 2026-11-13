@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchStatementManager;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
@@ -79,5 +80,6 @@ public final class FirebirdConnectionResourceManager {
         FirebirdBlobBinaryProtocolValue.unregisterConnection(connectionId);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionId);
         FirebirdBatchStatementManager.getInstance().unregisterConnection(connectionId);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(connectionId);
     }
 }
