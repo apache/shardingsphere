@@ -476,7 +476,7 @@ blobSubTypeName
     ;
 
 blobSubTypeNumber
-    : NUMBER_
+    : MINUS_? NUMBER_
     ;
 
 dataTypeLength
