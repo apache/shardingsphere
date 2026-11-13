@@ -29,6 +29,7 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -187,6 +188,13 @@ class CircuitBreakerPreparedStatementTest {
     @Test
     void assertSetObjectWithScale() {
         assertDoesNotThrow(() -> new CircuitBreakerPreparedStatement().setObject(1, new Object(), 0, 0));
+    }
+    
+    @Test
+    void assertGetQueryTimeout() throws SQLException {
+        CircuitBreakerPreparedStatement statement = new CircuitBreakerPreparedStatement();
+        statement.setQueryTimeout(1);
+        assertThat(statement.getQueryTimeout(), is(0));
     }
     
     @Test
