@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule.checker;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.google.common.base.Splitter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReference
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateBindingTableException;
 import org.apache.shardingsphere.sharding.exception.metadata.DuplicateShardingActualDataNodeException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
 import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNotFoundException;
@@ -71,6 +73,7 @@ public class ShardingRuleChecker {
     
     private void checkBindingTableConfiguration(final ShardingRuleConfiguration ruleConfig) {
         checkBindingTablesNumericSuffix(ruleConfig.getBindingTableGroups(), shardingRule.getShardingTables());
+        checkDuplicatedBindingTables(ruleConfig.getBindingTableGroups());
         BindingTableCheckedConfiguration checkedConfig =
                 new BindingTableCheckedConfiguration(shardingRule.getDataSourceNames(), shardingRule.getShardingAlgorithms(), ruleConfig.getShardingAlgorithms(), ruleConfig.getBindingTableGroups(),
                         shardingRule.getDefaultDatabaseShardingStrategyConfig(), shardingRule.getDefaultTableShardingStrategyConfig(), shardingRule.getDefaultShardingColumn());
@@ -104,6 +107,17 @@ public class ShardingRuleChecker {
             }
         }
         return true;
+    }
+    
+    private void checkDuplicatedBindingTables(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups) {
+        Map<String, String> groupNames = new CaseInsensitiveMap<>();
+        for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
+            for (String logicTable : Splitter.on(",").trimResults().splitToList(each.getReference())) {
+                String previousGroupName = groupNames.putIfAbsent(logicTable, each.getName());
+                ShardingSpherePreconditions.checkState(null == previousGroupName,
+                        () -> new DuplicateBindingTableException(logicTable, previousGroupName, each.getName()));
+            }
+        }
     }
     
     /**

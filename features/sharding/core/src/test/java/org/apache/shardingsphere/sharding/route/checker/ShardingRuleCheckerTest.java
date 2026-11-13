@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReference
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.exception.metadata.DuplicateBindingTableException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
@@ -37,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -85,6 +87,54 @@ class ShardingRuleCheckerTest {
                 shardingRule.getDefaultShardingColumn());
         ShardingRuleChecker checker = new ShardingRuleChecker(shardingRule);
         assertTrue(checker.isValidBindingTableConfiguration(shardingRule.getShardingTables(), checkedConfig));
+    }
+    
+    @Test
+    void assertCreateShardingRuleWithDuplicatedBindingTableGroups() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_order", "ds_${0..7}.t_order"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_order_item", "ds_${0..7}.t_order_item"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_product", "ds_${0..7}.t_product"));
+        shardingRuleConfig.getShardingAlgorithms().put("mod_hash",
+                new AlgorithmConfiguration("MOD.HASH.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "8"))));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_group_1", "t_order,t_order_item"));
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_group_2", "t_order_item,t_product"));
+        assertThrows(DuplicateBindingTableException.class,
+                () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCreateShardingRuleWithDuplicatedBindingTableGroupsInDifferentCases() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_order", "ds_${0..7}.t_order"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_order_item", "ds_${0..7}.t_order_item"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_product", "ds_${0..7}.t_product"));
+        shardingRuleConfig.getShardingAlgorithms().put("mod_hash",
+                new AlgorithmConfiguration("MOD.HASH.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "8"))));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_group_1", "t_order,t_order_item"));
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_group_2", "T_ORDER,t_product"));
+        assertThrows(DuplicateBindingTableException.class,
+                () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS), Collections.emptyList()));
+    }
+    
+    @Test
+    void assertCreateShardingRuleWithDisjointBindingTableGroups() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_order", "ds_${0..7}.t_order"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_order_item", "ds_${0..7}.t_order_item"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_product", "ds_${0..7}.t_product"));
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("t_product_detail", "ds_${0..7}.t_product_detail"));
+        shardingRuleConfig.getShardingAlgorithms().put("mod_hash",
+                new AlgorithmConfiguration("MOD.HASH.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "8"))));
+        shardingRuleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_group_1", "t_order,t_order_item"));
+        shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo_group_2", "t_product,t_product_detail"));
+        new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS), Collections.emptyList());
     }
     
     private ShardingTableRuleConfiguration createTableRuleConfigurationWithInlineAlgorithm(final String tableName, final String actualDataNodes,
