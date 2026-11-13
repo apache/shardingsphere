@@ -163,7 +163,11 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitStringLiterals(final StringLiteralsContext ctx) {
-        return new StringLiteralValue(ctx.STRING_().stream().map(each -> new StringLiteralValue(each.getText())).collect(Collectors.toList()));
+        return new StringLiteralValue(ctx.STRING_().stream().map(each -> new StringLiteralValue(getSingleQuotedText(each.getText()))).collect(Collectors.toList()));
+    }
+    
+    private String getSingleQuotedText(final String text) {
+        return '\'' == text.charAt(0) ? text : "'" + text.substring(3, text.length() - 2) + "'";
     }
     
     @Override
