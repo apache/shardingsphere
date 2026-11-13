@@ -42,11 +42,11 @@
         <assertion parameters="1000:int, 1100:int, 11:int, init:String" expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY i.item_id" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -89,11 +89,11 @@
     </test-case>
 
     <!-- Test single, broadcast and sharding join begin -->
-    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_category c ON p.category_id = c.category_id WHERE p.product_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_product p INNER JOIN t_product_category c ON p.category_id = c.category_id WHERE p.product_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
 
-    <test-case sql="SELECT * FROM t_product_category c INNER JOIN t_order_item i ON c.category_id = i.product_id WHERE i.product_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,dbtbl_with_readwrite_splitting">
+    <test-case sql="SELECT * FROM t_product_category c INNER JOIN t_order_item i ON c.category_id = i.product_id WHERE i.product_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,dbtbl_with_readwrite_splitting">
         <assertion parameters="1:int" expected-data-source-name="read_dataset" />
     </test-case>
     <!-- Test single, broadcast and sharding join end -->
@@ -117,11 +117,11 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>-->
     
-    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select join statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '%18'" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator percentage wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select join statement when use encrypt feature.">
+    <test-case sql="SELECT * FROM t_merchant m1 INNER JOIN t_merchant m2 ON m1.merchant_id = m2.merchant_id WHERE m2.business_code LIKE '_1000018'" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt" scenario-comments="Test single table's LIKE operator underscore wildcard in select join statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in select join statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
@@ -129,7 +129,7 @@
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT * FROM t_order o LEFT JOIN t_order_item m ON o.order_id = m.order_id AND o.user_id = m.user_id order by o.order_id, m.item_id" db-types="MySQL,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

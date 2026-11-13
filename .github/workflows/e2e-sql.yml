@@ -84,6 +84,7 @@ jobs:
           FILTER_MODE_CORE: ${{ steps.filter.outputs.mode_core }}
           FILTER_DATABASE_MYSQL: ${{ steps.filter.outputs.database_mysql }}
           FILTER_DATABASE_POSTGRESQL: ${{ steps.filter.outputs.database_postgresql }}
+          FILTER_DATABASE_FIREBIRD: ${{ steps.filter.outputs.database_firebird }}
           FILTER_FEATURE_SHARDING: ${{ steps.filter.outputs.feature_sharding }}
           FILTER_FEATURE_ENCRYPT: ${{ steps.filter.outputs.feature_encrypt }}
           FILTER_FEATURE_READWRITE_SPLITTING: ${{ steps.filter.outputs.feature_readwrite_splitting }}
@@ -105,6 +106,7 @@ jobs:
             --arg mode_core              "$FILTER_MODE_CORE" \
             --arg database_mysql         "$FILTER_DATABASE_MYSQL" \
             --arg database_postgresql    "$FILTER_DATABASE_POSTGRESQL" \
+            --arg database_firebird      "$FILTER_DATABASE_FIREBIRD" \
             --arg feature_sharding       "$FILTER_FEATURE_SHARDING" \
             --arg feature_encrypt        "$FILTER_FEATURE_ENCRYPT" \
             --arg feature_readwrite_splitting "$FILTER_FEATURE_READWRITE_SPLITTING" \

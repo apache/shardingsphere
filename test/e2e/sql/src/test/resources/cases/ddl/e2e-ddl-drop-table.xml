@@ -23,7 +23,7 @@
         </assertion>
     </test-case>
 
-    <test-case sql="DROP TABLE t_broadcast_table_for_ddl" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="DROP TABLE t_broadcast_table_for_ddl" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="drop_broadcast_table.xml">
             <initial-sql sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" affected-table="t_broadcast_table_for_ddl" />
         </assertion>
