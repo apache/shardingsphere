@@ -112,10 +112,7 @@ public final class PostgreSQLDALStatementVisitor extends PostgreSQLStatementVisi
         if (null != ctx.varList()) {
             return ctx.varList().getText();
         }
-        if (null != ctx.DEFAULT()) {
-            return ctx.DEFAULT().getText();
-        }
-        return null;
+        return null == ctx.DEFAULT() ? ctx.NULL().getText() : ctx.DEFAULT().getText();
     }
     
     @Override

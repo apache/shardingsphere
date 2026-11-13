@@ -110,4 +110,6 @@
     <sql-case id="alter_database_set_transaction_quota" value="ALTER DATABASE prod_db SET TRANSACTION QUOTA 1000" db-types="Doris" />
     <sql-case id="alter_database_rename_doris" value="ALTER DATABASE old_db RENAME new_db" db-types="Doris" />
     <sql-case id="alter_database_set_properties" value="ALTER DATABASE example_db SET PROPERTIES (&quot;key1&quot; = &quot;value1&quot;, &quot;key2&quot; = &quot;value2&quot;)" db-types="Doris" />
+    <sql-case id="alter_database_search_path_default_pg" value="ALTER DATABASE d SET search_path = DEFAULT" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="alter_database_search_path_null_pg" value="ALTER DATABASE d SET search_path = NULL" db-types="PostgreSQL" case-types="Literal" />
 </sql-cases>

@@ -31,4 +31,6 @@
     <sql-case id="alter_foreign_data_wrapper_options_option_nonexistent" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (nonexistent &apos;fdw&apos;);" db-types="PostgreSQL" />
     <sql-case id="alter_foreign_data_wrapper_owner" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role;" db-types="PostgreSQL" />
     <sql-case id="alter_foreign_data_wrapper_with_validator" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR bar;" db-types="PostgreSQL" />
+    <sql-case id="alter_fdw_connection_pg" value="ALTER FOREIGN DATA WRAPPER fdw CONNECTION conn" db-types="PostgreSQL" />
+    <sql-case id="alter_fdw_no_connection_pg" value="ALTER FOREIGN DATA WRAPPER fdw NO CONNECTION" db-types="PostgreSQL" />
 </sql-cases>

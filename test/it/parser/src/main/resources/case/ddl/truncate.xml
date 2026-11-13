@@ -149,4 +149,13 @@
         <table name="tbl" start-index="15" stop-index="17" />
         <partition name="p1" start-index="29" stop-index="30" />
     </truncate>
+    <truncate sql-case-id="truncate_multiple_only_pg">
+        <table name="t" start-index="14" stop-index="14" />
+        <table name="u" start-index="22" stop-index="22" />
+    </truncate>
+
+    <truncate sql-case-id="truncate_parenthesized_only_pg">
+        <table name="t" start-index="15" stop-index="15" />
+        <table name="u" start-index="19" stop-index="19" />
+    </truncate>
 </sql-parser-test-cases>

@@ -113,4 +113,7 @@
         <property start-index="42" stop-index="58" key="key1" value="value1" />
         <property start-index="61" stop-index="77" key="key2" value="value2" />
     </alter-database>
+    <alter-database sql-case-id="alter_database_search_path_default_pg" />
+
+    <alter-database sql-case-id="alter_database_search_path_null_pg" />
 </sql-parser-test-cases>
