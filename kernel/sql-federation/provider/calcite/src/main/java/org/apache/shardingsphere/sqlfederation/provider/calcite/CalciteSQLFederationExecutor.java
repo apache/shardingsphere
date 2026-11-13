@@ -26,7 +26,7 @@ import org.apache.calcite.plan.Convention;
 import org.apache.calcite.plan.RelOptUtil;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlExplainLevel;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -136,7 +136,7 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
                     ? ((ExplainStatementContext) queryContext.getSqlStatementContext()).getExplainableSQLStatementContext()
                     : queryContext.getSqlStatementContext();
             CompilerContext compilerContext = provider.getCompilerContext();
-            SQLFederationRelConverter converter = new SQLFederationRelConverter(compilerContext, getSchemaPath(sqlStatementContext),
+            SQLFederationRelConverter converter = new SQLFederationRelConverter(compilerContext, getSchemaPaths(sqlStatementContext),
                     sqlStatementContext.getSqlStatement().getDatabaseType(), processor.getConvention());
             schemaPlus = converter.getSchemaPlus();
             processor.prepare(prepareEngine, queryCallback, currentDatabaseName, currentSchemaName, federationContext, compilerContext, schemaPlus);
@@ -190,15 +190,18 @@ public final class CalciteSQLFederationExecutor implements SQLFederationExecutor
         }
     }
     
-    private List<String> getSchemaPath(final SQLStatementContext sqlStatementContext) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData();
+    private List<List<String>> getSchemaPaths(final SQLStatementContext sqlStatementContext) {
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getSchemaOption();
         // TODO set default schema according to search path result
-        if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-            return sqlStatementContext.getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
+        if (schemaOption.getDefaultSchema().isPresent()) {
+            return Collections.singletonList(sqlStatementContext.getTablesContext().getSimpleTables().stream().anyMatch(each -> each.getOwner().isPresent())
                     ? Collections.singletonList(currentDatabaseName)
-                    : Arrays.asList(currentDatabaseName, currentSchemaName);
+                    : Arrays.asList(currentDatabaseName, currentSchemaName));
         }
-        return Collections.singletonList(currentDatabaseName);
+        Optional<String> defaultSystemSchema = schemaOption.getDefaultSystemSchema();
+        return defaultSystemSchema.isPresent() && !schemaOption.isSystemSchemaPreferredOverCurrentSchema()
+                ? Arrays.asList(Collections.singletonList(currentDatabaseName), Arrays.asList(currentDatabaseName, defaultSystemSchema.get()))
+                : Collections.singletonList(Collections.singletonList(currentDatabaseName));
     }
     
     private SQLFederationExecutionPlan compileQuery(final SQLFederationRelConverter converter, final String databaseName, final String schemaName, final SQLFederationContext federationContext,

@@ -60,7 +60,7 @@ class SQLFederationRelConverterTest {
         calciteSchema = CalciteSchema.createRootSchema(true);
         CompilerContext compilerContext = new CompilerContext(sqlParserRule, calciteSchema, new CalciteConnectionConfigImpl(new Properties()), Collections.singleton(SqlStdOperatorTable.instance()));
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-        converter = new SQLFederationRelConverter(compilerContext, Collections.singletonList("public"), databaseType, EnumerableConvention.INSTANCE);
+        converter = new SQLFederationRelConverter(compilerContext, Collections.singletonList(Collections.singletonList("public")), databaseType, EnumerableConvention.INSTANCE);
         sqlNode = SqlParser.create("SELECT 1").parseQuery();
     }
     

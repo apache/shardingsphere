@@ -221,6 +221,44 @@ class SQLFederationProcessorTest {
     
     @SuppressWarnings("unchecked")
     @Test
+    void assertPrepareWithTableInSubSchema() {
+        SQLFederationContext federationContext = createFederationContext(true, new TableSegmentBoundInfo(new IdentifierValue(databaseName), new IdentifierValue("SYS")));
+        SQLFederationTable federationTable = mock(SQLFederationTable.class);
+        SchemaPlus rootSchema = mockSchemaTreeWithSubSchemaTable(databaseName, "SYS", federationTable);
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.empty());
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
+                    DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
+                    when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
+                    when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
+                })) {
+            processor.prepare(mock(), mock(), databaseName, schemaName, federationContext, mock(CompilerContext.class), rootSchema);
+            verify(federationTable).setScanImplementor(any());
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertReleaseWithTableInSubSchema() {
+        SQLFederationContext federationContext = createFederationContext(true, new TableSegmentBoundInfo(new IdentifierValue(databaseName), new IdentifierValue("SYS")));
+        SQLFederationTable federationTable = mock(SQLFederationTable.class);
+        SchemaPlus rootSchema = mockSchemaTreeWithSubSchemaTable(databaseName, "SYS", federationTable);
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.empty());
+        try (
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (constructed, context) -> {
+                    DialectDatabaseMetaData dialectMeta = mock(DialectDatabaseMetaData.class);
+                    when(dialectMeta.getSchemaOption()).thenReturn(schemaOption);
+                    when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectMeta);
+                })) {
+            processor.release(databaseName, schemaName, federationContext.getQueryContext(), rootSchema);
+            verify(federationTable).clearScanImplementor();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
     void assertExecutePlanWithEmptyParameters() {
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = mock(DriverExecutionPrepareEngine.class);
         JDBCExecutorCallback<? extends ExecuteResult> callback = mock(JDBCExecutorCallback.class);
@@ -504,6 +542,21 @@ class SQLFederationProcessorTest {
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
+    private SchemaPlus mockSchemaTreeWithSubSchemaTable(final String databaseName, final String subSchemaName, final Table table) {
+        SchemaPlus subSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
+        when(subSchema.tables().get(any())).thenReturn(table);
+        Lookup subSchemas = mock(Lookup.class);
+        when(subSchemas.get(subSchemaName)).thenReturn(subSchema);
+        SchemaPlus databaseSchema = mock(SchemaPlus.class);
+        when(databaseSchema.tables()).thenReturn(mock(Lookup.class));
+        when(databaseSchema.subSchemas()).thenReturn(subSchemas);
+        Lookup rootSchemas = mock(Lookup.class);
+        when(rootSchemas.get(databaseName)).thenReturn(databaseSchema);
+        SchemaPlus result = mock(SchemaPlus.class);
+        when(result.subSchemas()).thenReturn(rootSchemas);
+        return result;
+    }
+    
     private SchemaPlus mockSchemaTreeWithTable(final String databaseName, final String schemaName, final Table table) {
         SchemaPlus logicSchema = mock(SchemaPlus.class, RETURNS_DEEP_STUBS);
         when(logicSchema.tables().get(any())).thenReturn(table);
