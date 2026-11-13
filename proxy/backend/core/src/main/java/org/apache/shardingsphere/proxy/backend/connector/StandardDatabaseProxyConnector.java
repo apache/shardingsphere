@@ -372,12 +372,39 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         result.addAll(closeResultSets());
         result.addAll(closeStatements());
         closeSQLFederationEngine().ifPresent(result::add);
-        if (result.isEmpty()) {
+        throwIfNotEmpty(result);
+    }
+    
+    @Override
+    public void cancel() throws SQLException {
+        Collection<SQLException> result = new LinkedList<>();
+        result.addAll(closeResultSets());
+        result.addAll(cancelStatements());
+        throwIfNotEmpty(result);
+    }
+    
+    private void throwIfNotEmpty(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
             return;
         }
         SQLException ex = new SQLException();
-        result.forEach(ex::setNextException);
+        exceptions.forEach(ex::setNextException);
         throw ex;
+    }
+    
+    private Collection<SQLException> cancelStatements() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Statement each : cachedStatements) {
+            if (isCachedPreparedStatement(each) || isClosed(each)) {
+                continue;
+            }
+            try {
+                each.cancel();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
     }
     
     private Collection<SQLException> closeResultSets() {
