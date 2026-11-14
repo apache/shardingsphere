@@ -21,6 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.ForwardingMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
@@ -62,40 +64,43 @@ public final class ScopedTableSegmentBinderContexts extends ForwardingMultimap<C
     /**
      * Get table segment binder contexts of the nearest scope which declares the owner.
      *
-     * <p>When the owner is qualified, only a scope which declares the owner table in the qualified database or schema is taken into account.</p>
+     * <p>When the owner is qualified, only a scope which declares the owner table in the qualified schema for dialects with schema support,
+     * or in the qualified database otherwise, is taken into account.</p>
      *
      * @param owner owner
+     * @param databaseType database type
      * @return table segment binder contexts
      */
-    public Collection<TableSegmentBinderContext> getNearestScopeTableBinderContexts(final OwnerSegment owner) {
+    public Collection<TableSegmentBinderContext> getNearestScopeTableBinderContexts(final OwnerSegment owner, final DatabaseType databaseType) {
         CaseInsensitiveString tableName = CaseInsensitiveString.of(owner.getIdentifier().getValue());
         for (int i = scopeTableBinderContexts.size() - 1; i >= 0; i--) {
             Collection<TableSegmentBinderContext> result = scopeTableBinderContexts.get(i).get(tableName);
-            if (!result.isEmpty() && isDeclaredBy(result, owner)) {
+            if (!result.isEmpty() && isDeclaredBy(result, owner, databaseType)) {
                 return result;
             }
         }
         return Collections.emptyList();
     }
     
-    private boolean isDeclaredBy(final Collection<TableSegmentBinderContext> ownerTableBinderContexts, final OwnerSegment owner) {
+    private boolean isDeclaredBy(final Collection<TableSegmentBinderContext> ownerTableBinderContexts, final OwnerSegment owner, final DatabaseType databaseType) {
         if (!owner.getOwner().isPresent()) {
             return true;
         }
         String qualifier = owner.getOwner().get().getIdentifier().getValue();
+        boolean schemaQualified = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
         for (TableSegmentBinderContext each : ownerTableBinderContexts) {
-            if (isQualifiedBy(each, qualifier)) {
+            if (isQualifiedBy(each, qualifier, schemaQualified)) {
                 return true;
             }
         }
         return false;
     }
     
-    private boolean isQualifiedBy(final TableSegmentBinderContext tableBinderContext, final String qualifier) {
+    private boolean isQualifiedBy(final TableSegmentBinderContext tableBinderContext, final String qualifier, final boolean schemaQualified) {
         for (ProjectionSegment each : tableBinderContext.getProjectionSegments()) {
             if (each instanceof ColumnProjectionSegment) {
                 ColumnSegmentBoundInfo columnBoundInfo = ((ColumnProjectionSegment) each).getColumn().getColumnBoundInfo();
-                return qualifier.equalsIgnoreCase(columnBoundInfo.getOriginalDatabase().getValue()) || qualifier.equalsIgnoreCase(columnBoundInfo.getOriginalSchema().getValue());
+                return qualifier.equalsIgnoreCase(schemaQualified ? columnBoundInfo.getOriginalSchema().getValue() : columnBoundInfo.getOriginalDatabase().getValue());
             }
         }
         return false;

@@ -542,6 +542,49 @@ class SelectStatementBinderTest {
     }
     
     @Test
+    void assertBindWithNestedExistsSubqueryReferencingSchemaQualifiedOuterTableNamedAsDatabase() {
+        ColumnSegment innerColumn = createOwnerColumnSegment("t_order", "status");
+        innerColumn.getOwner().get().setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db")));
+        ProjectionsSegment innerProjections = new ProjectionsSegment(0, 0);
+        innerProjections.getProjections().add(new ColumnProjectionSegment(innerColumn));
+        DatabaseType postgresqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        SelectStatement innerSelect = SelectStatement.builder().databaseType(postgresqlDatabaseType).projections(innerProjections).from(createOwnerSimpleTableSegment("public", "t_user")).build();
+        ProjectionsSegment middleProjections = new ProjectionsSegment(0, 0);
+        middleProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement middleSelect = SelectStatement.builder().databaseType(postgresqlDatabaseType).projections(middleProjections).from(createOwnerSimpleTableSegment("public", "t_order"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, innerSelect, "")))).build();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(postgresqlDatabaseType).projections(projections).from(createOwnerSimpleTableSegment("foo_db", "t_order"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, middleSelect, "")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaDataWithPublicSchema(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualMiddleSelect = ((ExistsSubqueryExpression) actual.getWhere().get().getExpr()).getSubquery().getSelect();
+        SelectStatement actualInnerSelect = ((ExistsSubqueryExpression) actualMiddleSelect.getWhere().get().getExpr()).getSubquery().getSelect();
+        ColumnSegment actualColumn = getFirstProjectionColumn(actualInnerSelect);
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    private ShardingSphereMetaData mockMetaDataWithPublicSchema() {
+        ShardingSphereMetaData result = mockMetaData();
+        ShardingSphereSchema publicSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue publicSchemaName = new IdentifierValue("public");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        IdentifierValue tUser = new IdentifierValue("t_user");
+        when(publicSchema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)));
+        when(publicSchema.getTable(tUser).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)));
+        when(publicSchema.containsTable(tOrder)).thenReturn(true);
+        when(publicSchema.containsTable(tUser)).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(publicSchemaName)).thenReturn(publicSchema);
+        when(result.getDatabase(fooDatabase).containsSchema(publicSchemaName)).thenReturn(true);
+        return result;
+    }
+    
+    @Test
     void assertBindWithSameNameAsPhysicalTable() {
         ProjectionsSegment withProjections = new ProjectionsSegment(0, 0);
         withProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));

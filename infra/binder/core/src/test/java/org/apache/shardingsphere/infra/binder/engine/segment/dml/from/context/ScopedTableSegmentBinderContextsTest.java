@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -39,6 +41,10 @@ import static org.mockito.Mockito.when;
 
 class ScopedTableSegmentBinderContextsTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType postgresqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Test
     void assertGetNearestScopeTableBinderContextsWithShadowingCurrentScope() {
         TableSegmentBinderContext outerTableBinderContext = mock(TableSegmentBinderContext.class);
@@ -50,7 +56,7 @@ class ScopedTableSegmentBinderContextsTest {
         currentTableBinderContexts.put(CaseInsensitiveString.of("foo_alias"), fooTableBinderContext);
         currentTableBinderContexts.put(CaseInsensitiveString.of("foo_alias"), barTableBinderContext);
         ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(outerTableBinderContexts, currentTableBinderContexts);
-        assertThat(actual.getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("foo_alias"))), contains(fooTableBinderContext, barTableBinderContext));
+        assertThat(actual.getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("foo_alias")), databaseType), contains(fooTableBinderContext, barTableBinderContext));
         assertThat(actual.get(CaseInsensitiveString.of("foo_alias")), contains(outerTableBinderContext, fooTableBinderContext, barTableBinderContext));
     }
     
@@ -62,7 +68,7 @@ class ScopedTableSegmentBinderContextsTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = LinkedHashMultimap.create();
         currentTableBinderContexts.put(CaseInsensitiveString.of("bar_alias"), mock(TableSegmentBinderContext.class));
         ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(outerTableBinderContexts, currentTableBinderContexts);
-        assertThat(actual.getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("foo_alias"))), contains(outerTableBinderContext));
+        assertThat(actual.getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("foo_alias")), databaseType), contains(outerTableBinderContext));
     }
     
     @Test
@@ -76,7 +82,7 @@ class ScopedTableSegmentBinderContextsTest {
         currentTableBinderContexts.put(CaseInsensitiveString.of("bar_alias"), mock(TableSegmentBinderContext.class));
         ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(new ScopedTableSegmentBinderContexts(fartherTableBinderContexts, nearerTableBinderContexts),
                 currentTableBinderContexts);
-        assertThat(actual.getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("foo_alias"))), contains(nearerTableBinderContext));
+        assertThat(actual.getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("foo_alias")), databaseType), contains(nearerTableBinderContext));
     }
     
     @Test
@@ -87,7 +93,7 @@ class ScopedTableSegmentBinderContextsTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> nearerTableBinderContexts = LinkedHashMultimap.create();
         nearerTableBinderContexts.put(CaseInsensitiveString.of("t_order"), mockTableBinderContext("bar_db", "bar_db"));
         ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(fartherTableBinderContexts, nearerTableBinderContexts);
-        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("foo_db", "t_order")), contains(fooTableBinderContext));
+        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("foo_db", "t_order"), databaseType), contains(fooTableBinderContext));
     }
     
     private TableSegmentBinderContext mockTableBinderContext(final String databaseName, final String schemaName) {
@@ -114,7 +120,7 @@ class ScopedTableSegmentBinderContextsTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> nearerTableBinderContexts = LinkedHashMultimap.create();
         nearerTableBinderContexts.put(CaseInsensitiveString.of("t_order"), nearerTableBinderContext);
         ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(fartherTableBinderContexts, nearerTableBinderContexts);
-        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("foo_db", "t_order")), contains(nearerTableBinderContext));
+        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("foo_db", "t_order"), databaseType), contains(nearerTableBinderContext));
     }
     
     @Test
@@ -125,6 +131,17 @@ class ScopedTableSegmentBinderContextsTest {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> nearerTableBinderContexts = LinkedHashMultimap.create();
         nearerTableBinderContexts.put(CaseInsensitiveString.of("t_order"), mockTableBinderContext("foo_db", "foo_schema"));
         ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(fartherTableBinderContexts, nearerTableBinderContexts);
-        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("public", "t_order")), contains(publicTableBinderContext));
+        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("public", "t_order"), postgresqlDatabaseType), contains(publicTableBinderContext));
+    }
+    
+    @Test
+    void assertGetNearestScopeTableBinderContextsWithSchemaQualifiedOwnerNamedAsDatabase() {
+        TableSegmentBinderContext fooSchemaTableBinderContext = mockTableBinderContext("foo_db", "foo_db");
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> fartherTableBinderContexts = LinkedHashMultimap.create();
+        fartherTableBinderContexts.put(CaseInsensitiveString.of("t_order"), fooSchemaTableBinderContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> nearerTableBinderContexts = LinkedHashMultimap.create();
+        nearerTableBinderContexts.put(CaseInsensitiveString.of("t_order"), mockTableBinderContext("foo_db", "public"));
+        ScopedTableSegmentBinderContexts actual = new ScopedTableSegmentBinderContexts(fartherTableBinderContexts, nearerTableBinderContexts);
+        assertThat(actual.getNearestScopeTableBinderContexts(createQualifiedOwnerSegment("foo_db", "t_order"), postgresqlDatabaseType), contains(fooSchemaTableBinderContext));
     }
 }

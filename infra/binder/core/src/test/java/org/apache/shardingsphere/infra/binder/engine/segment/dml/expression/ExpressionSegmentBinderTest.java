@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ExistsSubqueryExpressionBinder;
@@ -113,7 +114,8 @@ class ExpressionSegmentBinderTest {
         ExistsSubqueryExpression segment = new ExistsSubqueryExpression(0, 10, subquerySegment);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         assertThat(ExpressionSegmentBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts), is(boundSegment));
-        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("t"))), contains(currentTableBinderContext));
+        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("t")), mock(DatabaseType.class)),
+                contains(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
     }
     
@@ -139,7 +141,8 @@ class ExpressionSegmentBinderTest {
         SubqueryExpressionSegment actual = (SubqueryExpressionSegment) ExpressionSegmentBinder.bind(
                 segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
         assertThat(actual.getSubquery(), is(boundSubquerySegment));
-        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("t"))), contains(currentTableBinderContext));
+        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("t")), mock(DatabaseType.class)),
+                contains(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
     }
     
