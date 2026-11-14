@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -31,14 +32,17 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -50,9 +54,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -327,6 +333,255 @@ class SelectStatementBinderTest {
         BinaryOperationExpression actualSubqueryWhere = (BinaryOperationExpression) actualSubquerySelect.getWhere().get().getExpr();
         assertThat(actualSubqueryProjection.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
         assertThat(((ColumnSegment) actualSubqueryWhere.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithQuantifySubqueryReferencingShadowedOuterAlias() {
+        ColumnSegment quantifyColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        quantifyColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("x")));
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(quantifyColumn));
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        BinaryOperationExpression existsWhereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ALL"), "=", "user_id = ALL (SELECT x.user_id, status FROM t_user)");
+        ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
+        existsProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(existsProjections).from(createAliasedSimpleTableSegment("t_user", "x"))
+                .where(new WhereSegment(0, 0, existsWhereExpression)).build();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(createAliasedSimpleTableSegment("t_order", "x"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualExistsSelect = ((ExistsSubqueryExpression) actual.getWhere().get().getExpr()).getSubquery().getSelect();
+        QuantifySubqueryExpression actualQuantifyExpression = (QuantifySubqueryExpression) ((BinaryOperationExpression) actualExistsSelect.getWhere().get().getExpr()).getRight();
+        List<ProjectionSegment> actualQuantifyProjections = new ArrayList<>(actualQuantifyExpression.getSubquery().getSelect().getProjections().getProjections());
+        assertThat(((ColumnProjectionSegment) actualQuantifyProjections.get(0)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(((ColumnProjectionSegment) actualQuantifyProjections.get(1)).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindWithQuantifySubqueryReferencingColumnMissingFromShadowingOuterAlias() {
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(createOwnerColumnSegment("x", "status")));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        BinaryOperationExpression existsWhereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ALL"), "=", "user_id = ALL (SELECT x.status FROM t_user)");
+        ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
+        existsProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(existsProjections).from(createAliasedSimpleTableSegment("t_user", "x"))
+                .where(new WhereSegment(0, 0, existsWhereExpression)).build();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(createAliasedSimpleTableSegment("t_order", "x"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement);
+        assertThrows(ColumnNotFoundException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), "")))).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualInnerSelect = ((ExistsSubqueryExpression) getBoundQuantifySelectStatement(actual).getWhere().get().getExpr()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    private ProjectionsSegment createUserIdProjections() {
+        ProjectionsSegment result = new ProjectionsSegment(0, 0);
+        result.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        return result;
+    }
+    
+    private SelectStatement createOuterAliasColumnSelectStatement(final String columnName) {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(createOwnerColumnSegment("x", columnName)));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from(createAliasedSimpleTableSegment("t_user", "i")).build();
+    }
+    
+    private SelectStatement createShadowingOuterAliasSelectStatement(final SelectStatement quantifySelect) {
+        BinaryOperationExpression existsWhereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ALL"), "=", "user_id = ALL (SELECT ...)");
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "x"))
+                .where(new WhereSegment(0, 0, existsWhereExpression)).build();
+        return SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_order", "x"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+    }
+    
+    private SelectStatement getBoundQuantifySelectStatement(final SelectStatement boundSelectStatement) {
+        SelectStatement boundExistsSelect = ((ExistsSubqueryExpression) boundSelectStatement.getWhere().get().getExpr()).getSubquery().getSelect();
+        return ((QuantifySubqueryExpression) ((BinaryOperationExpression) boundExistsSelect.getWhere().get().getExpr()).getRight()).getSubquery().getSelect();
+    }
+    
+    private ColumnSegment getFirstProjectionColumn(final SelectStatement boundSelectStatement) {
+        return ((ColumnProjectionSegment) boundSelectStatement.getProjections().getProjections().iterator().next()).getColumn();
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryInsideQuantifySubqueryReferencingColumnMissingFromShadowingOuterAlias() {
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("status"), "")))).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement);
+        assertThrows(ColumnNotFoundException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
+    }
+    
+    @Test
+    void assertBindWithScalarSubqueryInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        BinaryOperationExpression whereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("user_id")),
+                new SubqueryExpressionSegment(new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), "")), "=", "user_id = (SELECT x.user_id FROM t_user i)");
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .where(new WhereSegment(0, 0, whereExpression)).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        BinaryOperationExpression actualWhereExpression = (BinaryOperationExpression) getBoundQuantifySelectStatement(actual).getWhere().get().getExpr();
+        SelectStatement actualInnerSelect = ((SubqueryExpressionSegment) actualWhereExpression.getRight()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithSubqueryProjectionInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), ""), "(SELECT x.user_id FROM t_user i)"));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections).from(createAliasedSimpleTableSegment("t_user", "q")).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SubqueryProjectionSegment actualProjection = (SubqueryProjectionSegment) getBoundQuantifySelectStatement(actual).getProjections().getProjections().iterator().next();
+        assertThat(getFirstProjectionColumn(actualProjection.getSubquery().getSelect()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithHavingExistsSubqueryInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(createAliasedSimpleTableSegment("t_user", "q"))
+                .having(new HavingSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), "")))).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualInnerSelect = ((ExistsSubqueryExpression) getBoundQuantifySelectStatement(actual).getHaving().get().getExpr()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithDerivedTableInsideQuantifySubqueryReferencingShadowedOuterAlias() {
+        SubqueryTableSegment derivedTable = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createOuterAliasColumnSelectStatement("user_id"), ""));
+        derivedTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("q")));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(createUserIdProjections()).from(derivedTable).build();
+        SelectStatement selectStatement = createShadowingOuterAliasSelectStatement(quantifySelect);
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualInnerSelect = ((SubqueryTableSegment) getBoundQuantifySelectStatement(actual).getFrom().get()).getSubquery().getSelect();
+        assertThat(getFirstProjectionColumn(actualInnerSelect).getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryReferencingSharedColumnOfSameNameTablesInOuterScope() {
+        ColumnSegment existsColumn = createOwnerColumnSegment("t_order", "order_id");
+        existsColumn.getOwner().get().setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db")));
+        ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
+        existsProjections.getProjections().add(new ColumnProjectionSegment(existsColumn));
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(existsProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setLeft(createOwnerSimpleTableSegment("foo_db", "t_order"));
+        joinTableSegment.setRight(createOwnerSimpleTableSegment("bar_db", "t_order"));
+        joinTableSegment.setJoinType(JoinType.COMMA.name());
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(joinTableSegment)
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mockMetaDataWithBarDatabase(), "foo_db", new HintValueContext(), selectStatement);
+        assertThrows(AmbiguousColumnException.class, () -> new SelectStatementBinder().bind(selectStatement, binderContext));
+    }
+    
+    private SimpleTableSegment createOwnerSimpleTableSegment(final String owner, final String tableName) {
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
+        result.setOwner(new OwnerSegment(0, 0, new IdentifierValue(owner)));
+        return result;
+    }
+    
+    private ShardingSphereMetaData mockMetaDataWithBarDatabase() {
+        ShardingSphereMetaData result = mockMetaData();
+        ShardingSphereSchema barSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue barDatabase = new IdentifierValue("bar_db");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        when(barSchema.getTable(tOrder).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)));
+        when(barSchema.containsTable(tOrder)).thenReturn(true);
+        when(result.containsDatabase(barDatabase)).thenReturn(true);
+        when(result.getDatabase(barDatabase).getSchema(barDatabase)).thenReturn(barSchema);
+        when(result.getDatabase(barDatabase).containsSchema(barDatabase)).thenReturn(true);
+        return result;
+    }
+    
+    @Test
+    void assertBindWithExistsSubqueryInsideQuantifySubqueryReferencingDatabaseQualifiedOuterTable() {
+        ColumnSegment existsColumn = createOwnerColumnSegment("t_order", "status");
+        existsColumn.getOwner().get().setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db")));
+        ProjectionsSegment existsProjections = new ProjectionsSegment(0, 0);
+        existsProjections.getProjections().add(new ColumnProjectionSegment(existsColumn));
+        SelectStatement existsSelect = SelectStatement.builder().databaseType(databaseType).projections(existsProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        ProjectionsSegment quantifyProjections = new ProjectionsSegment(0, 0);
+        quantifyProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        SelectStatement quantifySelect = SelectStatement.builder().databaseType(databaseType).projections(quantifyProjections).from(createOwnerSimpleTableSegment("bar_db", "t_order"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, existsSelect, "")))).build();
+        BinaryOperationExpression whereExpression = new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")),
+                new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, quantifySelect, ""), "ANY"), "=", "order_id = ANY (SELECT ...)");
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(createOwnerSimpleTableSegment("foo_db", "t_order"))
+                .where(new WhereSegment(0, 0, whereExpression)).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaDataWithBarDatabase(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualQuantifySelect = ((QuantifySubqueryExpression) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getRight()).getSubquery().getSelect();
+        SelectStatement actualExistsSelect = ((ExistsSubqueryExpression) actualQuantifySelect.getWhere().get().getExpr()).getSubquery().getSelect();
+        ColumnSegment actualColumn = getFirstProjectionColumn(actualExistsSelect);
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindWithNestedExistsSubqueryReferencingSchemaQualifiedOuterTableNamedAsDatabase() {
+        ColumnSegment innerColumn = createOwnerColumnSegment("t_order", "status");
+        innerColumn.getOwner().get().setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_db")));
+        ProjectionsSegment innerProjections = new ProjectionsSegment(0, 0);
+        innerProjections.getProjections().add(new ColumnProjectionSegment(innerColumn));
+        DatabaseType postgresqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        SelectStatement innerSelect = SelectStatement.builder().databaseType(postgresqlDatabaseType).projections(innerProjections).from(createOwnerSimpleTableSegment("public", "t_user")).build();
+        ProjectionsSegment middleProjections = new ProjectionsSegment(0, 0);
+        middleProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement middleSelect = SelectStatement.builder().databaseType(postgresqlDatabaseType).projections(middleProjections).from(createOwnerSimpleTableSegment("public", "t_order"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, innerSelect, "")))).build();
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(postgresqlDatabaseType).projections(projections).from(createOwnerSimpleTableSegment("foo_db", "t_order"))
+                .where(new WhereSegment(0, 0, new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, middleSelect, "")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaDataWithPublicSchema(), "foo_db", new HintValueContext(), selectStatement));
+        SelectStatement actualMiddleSelect = ((ExistsSubqueryExpression) actual.getWhere().get().getExpr()).getSubquery().getSelect();
+        SelectStatement actualInnerSelect = ((ExistsSubqueryExpression) actualMiddleSelect.getWhere().get().getExpr()).getSubquery().getSelect();
+        ColumnSegment actualColumn = getFirstProjectionColumn(actualInnerSelect);
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    private ShardingSphereMetaData mockMetaDataWithPublicSchema() {
+        ShardingSphereMetaData result = mockMetaData();
+        ShardingSphereSchema publicSchema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue publicSchemaName = new IdentifierValue("public");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        IdentifierValue tUser = new IdentifierValue("t_user");
+        when(publicSchema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)));
+        when(publicSchema.getTable(tUser).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)));
+        when(publicSchema.containsTable(tOrder)).thenReturn(true);
+        when(publicSchema.containsTable(tUser)).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(publicSchemaName)).thenReturn(publicSchema);
+        when(result.getDatabase(fooDatabase).containsSchema(publicSchemaName)).thenReturn(true);
+        return result;
     }
     
     @Test

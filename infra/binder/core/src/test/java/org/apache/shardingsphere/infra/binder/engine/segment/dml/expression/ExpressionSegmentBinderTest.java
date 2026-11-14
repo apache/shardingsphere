@@ -20,20 +20,24 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ExistsSubqueryExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.SubquerySegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -52,7 +56,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
@@ -111,7 +114,8 @@ class ExpressionSegmentBinderTest {
         ExistsSubqueryExpression segment = new ExistsSubqueryExpression(0, 10, subquerySegment);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         assertThat(ExpressionSegmentBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts), is(boundSegment));
-        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("t")), hasItem(currentTableBinderContext));
+        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("t")), mock(DatabaseType.class)),
+                contains(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
     }
     
@@ -137,8 +141,33 @@ class ExpressionSegmentBinderTest {
         SubqueryExpressionSegment actual = (SubqueryExpressionSegment) ExpressionSegmentBinder.bind(
                 segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
         assertThat(actual.getSubquery(), is(boundSubquerySegment));
-        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("t")), hasItem(currentTableBinderContext));
+        assertThat(((ScopedTableSegmentBinderContexts) mergedContexts.get()).getNearestScopeTableBinderContexts(new OwnerSegment(0, 0, new IdentifierValue("t")), mock(DatabaseType.class)),
+                contains(currentTableBinderContext));
         assertThat(mergedContexts.get().get(CaseInsensitiveString.of("u")), contains(retainedOuterTableBinderContext));
+    }
+    
+    @Test
+    void assertBindQuantifySubqueryWithOuterTableContext() {
+        SubquerySegment boundSubquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
+        TableSegmentBinderContext outerTableBinderContext = mock(TableSegmentBinderContext.class);
+        TableSegmentBinderContext currentTableBinderContext = mock(TableSegmentBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        outerTableBinderContexts.put(CaseInsensitiveString.of("o"), outerTableBinderContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("i"), currentTableBinderContext);
+        AtomicReference<Multimap<CaseInsensitiveString, TableSegmentBinderContext>> mergedContexts = new AtomicReference<>();
+        when(SubquerySegmentBinder.bind(any(), any(), any())).thenAnswer(invocation -> {
+            mergedContexts.set(invocation.getArgument(2));
+            return boundSubquerySegment;
+        });
+        SubquerySegment subquerySegment = new SubquerySegment(0, 5, mock(SelectStatement.class), "SELECT 1");
+        QuantifySubqueryExpression segment = new QuantifySubqueryExpression(0, 10, subquerySegment, "ALL");
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        QuantifySubqueryExpression actual = (QuantifySubqueryExpression) ExpressionSegmentBinder.bind(segment, SegmentType.PREDICATE, binderContext, tableBinderContexts, outerTableBinderContexts);
+        assertThat(actual.getSubquery(), sameInstance(boundSubquerySegment));
+        assertThat(actual.getQuantifyOperator(), is("ALL"));
+        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("o")), contains(outerTableBinderContext));
+        assertThat(mergedContexts.get().get(CaseInsensitiveString.of("i")), contains(currentTableBinderContext));
     }
     
     @Test
