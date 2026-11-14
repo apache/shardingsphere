@@ -613,14 +613,20 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
         CollectionValue<ExpressionSegment> result = new CollectionValue<>();
-        if (null != ctx.exprList()) {
-            result.combine((CollectionValue<ExpressionSegment>) visitExprList(ctx.exprList()));
+        for (AExprContext each : extractAExprs(ctx)) {
+            result.getValue().add((ExpressionSegment) visit(each));
         }
-        result.getValue().add((ExpressionSegment) visit(ctx.aExpr()));
+        return result;
+    }
+    
+    private Collection<AExprContext> extractAExprs(final ExprListContext ctx) {
+        LinkedList<AExprContext> result = new LinkedList<>();
+        for (ExprListContext each = ctx; null != each; each = each.exprList()) {
+            result.addFirst(each.aExpr());
+        }
         return result;
     }
     
@@ -903,12 +909,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     private Collection<ExpressionSegment> createInsertValuesSegments(final ExprListContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        if (null != ctx.exprList()) {
-            Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
-            result.addAll(tmpResult);
+        for (AExprContext each : extractAExprs(ctx)) {
+            result.add((ExpressionSegment) visit(each));
         }
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
-        result.add(expr);
         return result;
     }
     
