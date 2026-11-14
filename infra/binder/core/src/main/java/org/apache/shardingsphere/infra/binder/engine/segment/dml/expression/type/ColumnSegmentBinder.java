@@ -218,7 +218,7 @@ public final class ColumnSegmentBinder {
         }
         if (outerTableBinderContexts.containsKey(caseInsensitiveOwner)) {
             return outerTableBinderContexts instanceof ScopedTableSegmentBinderContexts
-                    ? ((ScopedTableSegmentBinderContexts) outerTableBinderContexts).getNearestScopeTableBinderContexts(owner)
+                    ? ((ScopedTableSegmentBinderContexts) outerTableBinderContexts).getNearestScopeTableBinderContexts(owner, binderContext.getSqlStatement().getDatabaseType())
                     : outerTableBinderContexts.get(caseInsensitiveOwner);
         }
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveOwner)) {
