@@ -196,8 +196,7 @@ public final class ProjectionsContext {
         Map<String, Integer> result = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         for (int columnIndex = expandProjections.size(); columnIndex > 0; columnIndex--) {
             Projection projection = expandProjections.get(columnIndex - 1);
-            boolean isInternalDerivedLabel = projection instanceof AggregationDistinctProjection && DerivedColumn.isDerivedColumnName(projection.getColumnLabel());
-            result.put(isInternalDerivedLabel ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
+            result.put(projection.getColumnLabel(), columnIndex);
         }
         return result;
     }

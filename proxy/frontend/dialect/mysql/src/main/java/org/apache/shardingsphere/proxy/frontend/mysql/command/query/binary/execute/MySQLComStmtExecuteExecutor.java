@@ -87,6 +87,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             }
         }
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
+        sqlStatementContext.getTablesContext().checkMetadata();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
         }

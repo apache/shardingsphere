@@ -30,15 +30,19 @@ import org.apache.shardingsphere.infra.metadata.identifier.IdentifierIndex;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +72,10 @@ public final class ShardingSphereTable {
     private IdentifierIndex<ShardingSphereConstraint> constraintIdentifierIndex;
     
     private final TableType type;
+    
+    @Getter(AccessLevel.NONE)
+    @ToString.Exclude
+    private AtomicBoolean bindingsInvalidated = new AtomicBoolean();
     
     /**
      * Construct table with the temporary default identifier context.
@@ -392,4 +400,77 @@ public final class ShardingSphereTable {
         return columns.stream()
                 .collect(Collectors.toMap(ShardingSphereColumn::getName, each -> each, (oldValue, currentValue) -> oldValue, () -> new LinkedHashMap<>(columns.size(), 1F)));
     }
+    
+    /**
+     * Determine whether bindings using this table have been invalidated.
+     *
+     * @return whether a structural change or removal invalidated the bindings
+     */
+    public boolean isBindingInvalidated() {
+        return bindingsInvalidated.get();
+    }
+    
+    void invalidateBindings() {
+        bindingsInvalidated.set(true);
+    }
+    
+    void inheritBindings(final ShardingSphereTable previous) {
+        if (this == previous) {
+            return;
+        }
+        if (hasSameStructure(previous)) {
+            if (!isBindingInvalidated() && !previous.isBindingInvalidated()) {
+                bindingsInvalidated = previous.bindingsInvalidated;
+            }
+        } else {
+            previous.invalidateBindings();
+        }
+    }
+    
+    private boolean hasSameStructure(final ShardingSphereTable previous) {
+        if (!name.equals(previous.name) || type != previous.type) {
+            return false;
+        }
+        return hasSameColumns(previous) && hasSameIndexes(previous) && hasSameConstraints(previous);
+    }
+    
+    private boolean hasSameColumns(final ShardingSphereTable previous) {
+        if (getAllColumns().size() != previous.getAllColumns().size()) {
+            return false;
+        }
+        Iterator<ShardingSphereColumn> previousColumns = previous.getAllColumns().iterator();
+        for (ShardingSphereColumn each : getAllColumns()) {
+            if (!hasSameColumn(each, previousColumns.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean hasSameColumn(final ShardingSphereColumn column, final ShardingSphereColumn previous) {
+        if (!column.getName().equals(previous.getName()) || column.getDataType() != previous.getDataType()
+                || column.isPrimaryKey() != previous.isPrimaryKey() || column.isGenerated() != previous.isGenerated()) {
+            return false;
+        }
+        return column.isCaseSensitive() == previous.isCaseSensitive() && column.isVisible() == previous.isVisible()
+                && column.isUnsigned() == previous.isUnsigned() && column.isNullable() == previous.isNullable();
+    }
+    
+    private boolean hasSameIndexes(final ShardingSphereTable previous) {
+        return getAllIndexes().size() == previous.getAllIndexes().size() && getAllIndexes().stream().allMatch(each -> hasSameIndex(each, previous.getIndex(each.getName())));
+    }
+    
+    private boolean hasSameIndex(final ShardingSphereIndex index, @Nullable final ShardingSphereIndex previous) {
+        return null != previous && index.getName().equals(previous.getName()) && index.isUnique() == previous.isUnique()
+                && new ArrayList<>(index.getColumns()).equals(new ArrayList<>(previous.getColumns()));
+    }
+    
+    private boolean hasSameConstraints(final ShardingSphereTable previous) {
+        return getAllConstraints().size() == previous.getAllConstraints().size() && getAllConstraints().stream().allMatch(each -> hasSameConstraint(each, previous.getConstraint(each.getName())));
+    }
+    
+    private boolean hasSameConstraint(final ShardingSphereConstraint constraint, @Nullable final ShardingSphereConstraint previous) {
+        return null != previous && constraint.getName().equals(previous.getName()) && Objects.equals(constraint.getReferencedTableName(), previous.getReferencedTableName());
+    }
+    
 }

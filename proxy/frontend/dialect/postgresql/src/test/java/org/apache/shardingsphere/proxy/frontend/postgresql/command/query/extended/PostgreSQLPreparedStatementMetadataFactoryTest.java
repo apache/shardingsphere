@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -105,6 +107,20 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     }
     
     @Test
+    void assertLoadWithStaleMetadata() throws SQLException {
+        PreparedStatement expected = prepareJDBCBackendConnection(null);
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        preparedStatement.getSqlStatementContext().getTablesContext().getBoundTables().add(table);
+        ShardingSphereSchema schema = new ShardingSphereSchema("public", databaseType, Collections.singleton(table), Collections.emptyList());
+        ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
+        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS), is(expected));
+        schema.removeTable("foo_tbl");
+        assertThrows(StaleStatementMetadataException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS));
+        verify(databaseConnectionManager).getConnections(any(), nullable(String.class), anyInt(), anyInt(), any());
+    }
+    
+    @Test
     void assertLoadWithSQLException() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
         SQLException expected = new SQLException("expected");
@@ -154,6 +170,7 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=?", false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
         lenient().when(connectionSession.getProtocolType()).thenReturn(databaseType);
         if (withUsedDatabaseName) {

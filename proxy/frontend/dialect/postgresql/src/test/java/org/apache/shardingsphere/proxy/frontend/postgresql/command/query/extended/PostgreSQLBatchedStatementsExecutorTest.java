@@ -21,10 +21,12 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -37,6 +39,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -86,6 +89,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -130,6 +134,39 @@ class PostgreSQLBatchedStatementsExecutorTest {
             inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
             inOrder.verify(preparedStatement).addBatch();
         }
+    }
+    
+    @Test
+    void assertCreateExecutorWithStaleMetadata() {
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        schema.removeTable("t");
+        assertThrows(StaleStatementMetadataException.class, () -> new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, Collections.singletonList(Arrays.asList(1, "foo"))));
+        verifyNoInteractions(connectionSession);
+    }
+    
+    private ShardingSphereSchema createSchema(final InsertStatementContext sqlStatementContext) {
+        ShardingSphereTable table = new ShardingSphereTable("t", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        sqlStatementContext.getTablesContext().getBoundTables().add(table);
+        return new ShardingSphereSchema("public", databaseType, Collections.singleton(table), Collections.emptyList());
+    }
+    
+    @Test
+    void assertExecuteBatchAfterMetadataChanges() {
+        initBackendExecutorContext(mockContextManager(databaseType));
+        InsertStatementContext sqlStatementContext = mockInsertStatementContext();
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", sqlStatementContext, new HintValueContext(),
+                Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
+        List<List<Object>> parameterSets = Collections.singletonList(Arrays.asList(1, "foo"));
+        PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(mockConnectionSession(), postgresqlPreparedStatement, parameterSets);
+        schema.removeTable("t");
+        assertThrows(StaleStatementMetadataException.class, executor::executeBatch);
+        verifyNoInteractions(databaseConnectionManager, backendStatement);
     }
     
     @Test
@@ -236,6 +273,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))).build();
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(insertStatement);
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         return result;
     }
     

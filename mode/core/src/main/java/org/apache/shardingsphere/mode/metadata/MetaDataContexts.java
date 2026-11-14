@@ -63,8 +63,10 @@ public final class MetaDataContexts {
      *
      * @param newMetaDataContexts new meta data contexts
      */
-    public void update(final MetaDataContexts newMetaDataContexts) {
-        metaData.set(newMetaDataContexts.getMetaData());
+    public synchronized void update(final MetaDataContexts newMetaDataContexts) {
+        ShardingSphereMetaData newMetaData = newMetaDataContexts.getMetaData().copyIfBindingsInvalidated();
+        newMetaData.inheritBindings(metaData.get());
+        metaData.set(newMetaData);
         statistics.set(newMetaDataContexts.getStatistics());
     }
     
@@ -75,7 +77,12 @@ public final class MetaDataContexts {
      * @param metaDataPersistFacade meta data persist facade
      */
     public void update(final ShardingSphereMetaData metaData, final MetaDataPersistFacade metaDataPersistFacade) {
-        this.metaData.set(metaData);
-        statistics.set(ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData)));
+        ShardingSphereStatistics refreshedStatistics = ShardingSphereStatisticsFactory.create(metaData, metaDataPersistFacade.getStatisticsService().load(metaData));
+        synchronized (this) {
+            ShardingSphereMetaData newMetaData = metaData.copyIfBindingsInvalidated();
+            newMetaData.inheritBindings(this.metaData.get());
+            this.metaData.set(newMetaData);
+            statistics.set(refreshedStatistics);
+        }
     }
 }

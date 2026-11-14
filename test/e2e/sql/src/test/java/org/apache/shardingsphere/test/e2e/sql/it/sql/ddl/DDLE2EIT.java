@@ -165,8 +165,8 @@ class DDLE2EIT implements SQLE2EIT {
             return;
         }
         for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getInitialSQL().getSql())) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
-                preparedStatement.executeUpdate();
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(each);
             }
             waitSQLCompleted(each, testParam, context);
         }
@@ -185,8 +185,8 @@ class DDLE2EIT implements SQLE2EIT {
             return;
         }
         for (String each : Splitter.on(";").trimResults().omitEmptyStrings().splitToList(context.getAssertion().getDestroySQL().getSql())) {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(each)) {
-                preparedStatement.executeUpdate();
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate(each);
             }
             waitSQLCompleted(each, testParam, context);
         }

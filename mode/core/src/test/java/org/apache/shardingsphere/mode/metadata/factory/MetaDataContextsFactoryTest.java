@@ -72,7 +72,9 @@ import java.util.Properties;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -110,7 +112,7 @@ class MetaDataContextsFactoryTest {
         when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
                 any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
-        when(ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
+        when(ShardingSphereDatabaseFactory.createForRefresh(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class),
                 any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class), anyCollection()))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(5)));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
@@ -202,6 +204,48 @@ class MetaDataContextsFactoryTest {
         ResourceMetaData actualResourceMetaData = actual.getMetaData().getDatabase("foo_db").getResourceMetaData();
         assertTrue(actualResourceMetaData.getDataSources().containsKey(new StorageNode("foo_ds")));
         assertTrue(actualResourceMetaData.getStorageUnits().containsKey("foo_ds"));
+    }
+    
+    @Test
+    void assertCreateBySwitchResourceWithCandidateFailure() {
+        ShardingSphereSchema currentSchema = createSchemaWithTable("foo_schema", "foo_tbl");
+        ShardingSphereTable currentTable = currentSchema.getTable("foo_tbl");
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.singleton(currentSchema),
+                new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                new ConfigurationProperties(new Properties()));
+        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
+        MetaDataContextsFactory factory = new MetaDataContextsFactory(metaDataPersistFacade, mock());
+        IllegalStateException expectedException = new IllegalStateException("global rule failure");
+        when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenThrow(expectedException);
+        SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), createDataSourcePoolPropertiesMap("foo_ds"));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> factory.createBySwitchResource("foo_db", switchingResource, originalMetaDataContexts));
+        assertThat(actual, sameInstance(expectedException));
+        assertFalse(currentTable.isBindingInvalidated());
+        assertThat(originalMetaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl"), sameInstance(currentTable));
+    }
+    
+    @Test
+    void assertCreateByAlterRuleWithCandidateFailure() {
+        ShardingSphereSchema currentSchema = createSchemaWithTable("foo_schema", "foo_tbl");
+        ShardingSphereTable currentTable = currentSchema.getTable("foo_tbl");
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.singleton(currentSchema),
+                new ConfigurationProperties(new Properties()));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                new ConfigurationProperties(new Properties()));
+        MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
+        MetaDataContextsFactory factory = new MetaDataContextsFactory(metaDataPersistFacade, mock());
+        IllegalStateException expectedException = new IllegalStateException("global rule failure");
+        when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenThrow(expectedException);
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> factory.createByAlterRule("foo_db", Collections.singleton(new MockedRuleConfiguration("alter_rule")), originalMetaDataContexts));
+        assertThat(actual, sameInstance(expectedException));
+        assertFalse(currentTable.isBindingInvalidated());
+        assertThat(originalMetaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl"), sameInstance(currentTable));
     }
     
     @Test

@@ -101,6 +101,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private List<DatabasePacket> describePreparedStatement() throws SQLException {
         List<DatabasePacket> result = new ArrayList<>(2);
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getName());
+        preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
         if (preparedStatement.getParameterTypes().stream().anyMatch(each -> PostgreSQLBinaryColumnType.UNSPECIFIED == each) || !preparedStatement.describeRows().isPresent()) {
             tryDescribePreparedStatement(preparedStatement);
         }

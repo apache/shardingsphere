@@ -353,9 +353,11 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private MetaDataContexts createMetaDataContextsWithRebuiltDatabase(final String databaseName, final MetaDataContexts metaDataContexts) {
         ShardingSphereMetaData metaData = metaDataContexts.getMetaData();
+        ShardingSphereDatabase rebuiltDatabase = rebuildDatabaseSchemaIndex(databaseName, metaDataContexts);
+        Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream().filter(each -> !each.getName().equals(databaseName)).collect(Collectors.toList());
+        databases.add(rebuiltDatabase);
         ShardingSphereMetaData clonedMetaData = new ShardingSphereMetaData(
-                metaData.getAllDatabases(), metaData.getGlobalResourceMetaData(), metaData.getGlobalRuleMetaData(), metaData.getProps(), metaData.getProtocolType());
-        clonedMetaData.putDatabase(rebuildDatabaseSchemaIndex(databaseName, metaDataContexts));
+                databases, metaData.getGlobalResourceMetaData(), metaData.getGlobalRuleMetaData(), metaData.getProps(), metaData.getProtocolType());
         return new MetaDataContexts(clonedMetaData, metaDataContexts.getStatistics());
     }
 }

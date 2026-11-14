@@ -18,39 +18,54 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
+import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 import org.apache.shardingsphere.sqlfederation.rule.builder.DefaultSQLFederationRuleConfigurationBuilder;
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -85,6 +100,192 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class ShardingSpherePreparedStatementTest {
+    
+    @ParameterizedTest
+    @Tag("h2")
+    @CsvSource(value = {"AVG(user_id)|AVG_DERIVED_COUNT_0", "AVG(user_id)|avg_derived_sum_0", "AVG(DISTINCT user_id)|AVG_DERIVED_COUNT_0"}, delimiter = '|')
+    void assertAverageWithDerivedAliasCollision(final String aggregation, final String alias) throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_average_alias;MODE=MySQL;DATABASE_TO_UPPER=false");
+        ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+        rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
+        try (
+                Connection backendConnection = createBackendConnection(backend, "CREATE TABLE t_order_0 (order_id INT, user_id INT)", "CREATE TABLE t_order_1 (order_id INT, user_id INT)",
+                        "INSERT INTO t_order_0 VALUES (0, 8)", "INSERT INTO t_order_1 VALUES (1, 10)");
+                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                        Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement("SELECT " + aggregation + ", 100 AS " + alias + " FROM t_order");
+                ResultSet actual = statement.executeQuery()) {
+            assertThat(actual.getMetaData().getColumnCount(), is(2));
+            assertThat(actual.getMetaData().getColumnLabel(2), is(alias));
+            assertTrue(actual.next());
+            assertThat(actual.getDouble(1), is(9D));
+            assertThat(actual.getInt(alias), is(100));
+            assertFalse(actual.next());
+        }
+    }
+    
+    private Connection createBackendConnection(final JdbcDataSource backend, final String... sqlStatements) throws SQLException {
+        Connection result = backend.getConnection();
+        boolean initialized = false;
+        try {
+            try (Statement statement = result.createStatement()) {
+                for (String each : sqlStatements) {
+                    statement.execute(each);
+                }
+            }
+            initialized = true;
+            return result;
+        } finally {
+            if (!initialized) {
+                result.close();
+            }
+        }
+    }
+    
+    @Test
+    @Tag("h2")
+    void assertDistinctAggregationWithExplicitDerivedAlias() throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_distinct_alias;MODE=MySQL;DATABASE_TO_UPPER=false");
+        ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+        rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
+        try (
+                Connection backendConnection = createBackendConnection(backend, "CREATE TABLE t_order_0 (order_id INT, user_id INT)", "CREATE TABLE t_order_1 (order_id INT, user_id INT)",
+                        "INSERT INTO t_order_0 VALUES (0, 8)", "INSERT INTO t_order_1 VALUES (1, 10)");
+                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                        Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement("SELECT COUNT(DISTINCT user_id) AS AGGREGATION_DISTINCT_DERIVED_0 FROM t_order");
+                ResultSet actual = statement.executeQuery()) {
+            assertThat(actual.getMetaData().getColumnCount(), is(1));
+            assertThat(actual.getMetaData().getColumnLabel(1), is("AGGREGATION_DISTINCT_DERIVED_0"));
+            assertTrue(actual.next());
+            assertThat(actual.getInt("AGGREGATION_DISTINCT_DERIVED_0"), is(2));
+            assertFalse(actual.next());
+        }
+    }
+    
+    @ParameterizedTest
+    @Tag("h2")
+    @ValueSource(strings = {"SELECT * FROM t_order", "SELECT * FROM (SELECT * FROM t_order) AS orders", "SELECT (SELECT user_id FROM t_order) AS user_id",
+            "SELECT user_id FROM t_order UNION ALL SELECT user_id FROM t_order", "WITH orders AS (SELECT * FROM t_order) SELECT * FROM orders"})
+    void assertExecuteQueryAfterMetadataRefresh(final String sql) throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_prepared_refresh;MODE=MySQL;DATABASE_TO_UPPER=false");
+        ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+        rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
+        rule.getTables().add(new ShardingTableRuleConfiguration("t_other", "ds.t_other_0"));
+        try (
+                Connection backendConnection = createBackendConnection(backend, "CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)", "INSERT INTO t_order_0 VALUES (0, 8)",
+                        "CREATE TABLE t_other_0 (other_id INT)");
+                Statement backendStatement = backendConnection.createStatement();
+                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                        Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement(sql)) {
+            ContextManager contextManager = ((ShardingSphereConnection) connection).getContextManager();
+            ShardingSphereDatabase database = contextManager.getDatabase("foo_db");
+            contextManager.reloadTable(database, database.getDefaultSchemaName(), "t_order");
+            backendStatement.execute("ALTER TABLE t_other_0 ADD unrelated_value INT");
+            contextManager.reloadTable(database, database.getDefaultSchemaName(), "t_other");
+            try (ResultSet actual = statement.executeQuery()) {
+                int columnCount = actual.getMetaData().getColumnCount();
+                backendStatement.execute("ALTER TABLE t_order_0 ADD added_value INT DEFAULT 99 BEFORE user_id");
+                contextManager.reloadTable(database, database.getDefaultSchemaName(), "t_order");
+                assertThat(actual.getMetaData().getColumnCount(), is(columnCount));
+                assertTrue(actual.next());
+                assertThat(actual.getInt("user_id"), is(8));
+            }
+            SQLException actual = assertThrows(SQLException.class, statement::executeQuery);
+            assertThat(actual.getMessage(), is("Table metadata changed; prepare the statement again."));
+            assertThat(actual.getSQLState(), is("HY000"));
+            assertThat(actual.getErrorCode(), is(10025));
+            try (PreparedStatement newStatement = connection.prepareStatement("SELECT * FROM t_order"); ResultSet actualResultSet = newStatement.executeQuery()) {
+                assertThat(actualResultSet.getMetaData().getColumnCount(), is(3));
+                assertTrue(actualResultSet.next());
+                assertThat(actualResultSet.getInt("user_id"), is(8));
+                assertThat(actualResultSet.getInt("added_value"), is(99));
+            }
+        }
+    }
+    
+    @Test
+    @Tag("h2")
+    void assertRejectUpdatesAfterMetadataRefresh() throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_prepared_update_refresh;MODE=MySQL;DATABASE_TO_UPPER=false");
+        ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+        rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_0"));
+        try (
+                Connection backendConnection = createBackendConnection(backend, "CREATE TABLE t_order_0 (order_id INT PRIMARY KEY, user_id INT)");
+                Statement backendStatement = backendConnection.createStatement();
+                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                        Collections.singletonMap("ds", backend), Collections.singleton(rule), new Properties());
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)")) {
+            statement.setInt(1, 0);
+            statement.setInt(2, 8);
+            statement.addBatch();
+            backendStatement.execute("ALTER TABLE t_order_0 ADD added_value INT");
+            ContextManager contextManager = ((ShardingSphereConnection) connection).getContextManager();
+            ShardingSphereDatabase database = contextManager.getDatabase("foo_db");
+            contextManager.reloadTable(database, database.getDefaultSchemaName(), "t_order");
+            assertThat(assertThrows(SQLException.class, statement::executeUpdate).getErrorCode(), is(10025));
+            assertThat(assertThrows(SQLException.class, statement::execute).getErrorCode(), is(10025));
+            assertThat(assertThrows(SQLException.class, statement::executeBatch).getErrorCode(), is(10025));
+            assertThat(assertThrows(SQLException.class, statement::addBatch).getErrorCode(), is(10025));
+            try (ResultSet actual = backendStatement.executeQuery("SELECT COUNT(*) FROM t_order_0")) {
+                assertTrue(actual.next());
+                assertThat(actual.getInt(1), is(0));
+            }
+        }
+    }
+    
+    @Test
+    @Tag("h2")
+    void assertRejectInconsistentMetadataRefresh() throws SQLException {
+        JdbcDataSource backend = new JdbcDataSource();
+        backend.setURL("jdbc:h2:mem:foo_strict_refresh;MODE=MySQL;DATABASE_TO_UPPER=false");
+        ShardingRuleConfiguration rule = new ShardingRuleConfiguration();
+        rule.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds.t_order_${0..1}"));
+        Properties props = PropertiesBuilder.build(new Property("check-table-metadata-enabled", "false"));
+        try (
+                Connection backendConnection = createBackendConnection(backend, "CREATE TABLE t_order_0 (order_id INT, user_id INT)", "CREATE TABLE t_order_1 (order_id INT, user_id INT)",
+                        "INSERT INTO t_order_0 VALUES (0, 8)", "INSERT INTO t_order_1 VALUES (1, 9)");
+                Statement backendStatement = backendConnection.createStatement();
+                ShardingSphereDataSource dataSource = (ShardingSphereDataSource) ShardingSphereDataSourceFactory.createDataSource("foo_db", new ModeConfiguration("Standalone", null),
+                        Collections.singletonMap("ds", backend), Collections.singleton(rule), props);
+                Connection connection = dataSource.getConnection();
+                PreparedStatement statement = connection.prepareStatement("SELECT user_id FROM t_order ORDER BY user_id")) {
+            ContextManager contextManager = ((ShardingSphereConnection) connection).getContextManager();
+            ShardingSphereDatabase database = contextManager.getDatabase("foo_db");
+            ShardingSphereTable table = database.getSchema(database.getDefaultSchemaName()).getTable("t_order");
+            backendStatement.execute("ALTER TABLE t_order_1 ADD added_value INT DEFAULT 99 BEFORE user_id");
+            assertThrows(RuleAndStorageMetaDataMismatchedException.class, () -> contextManager.reloadTable(database, database.getDefaultSchemaName(), "ds", "t_order"));
+            assertThat(database.getSchema(database.getDefaultSchemaName()).getTable("t_order"), sameInstance(table));
+            assertFalse(table.isBindingInvalidated());
+            try (ResultSet actual = statement.executeQuery()) {
+                assertTrue(actual.next());
+                assertThat(actual.getInt(1), is(8));
+                assertTrue(actual.next());
+                assertThat(actual.getInt(1), is(9));
+            }
+            backendStatement.execute("ALTER TABLE t_order_0 ADD added_value INT DEFAULT 99 BEFORE user_id");
+            contextManager.reloadTable(database, database.getDefaultSchemaName(), "ds", "t_order");
+            assertThat(assertThrows(SQLException.class, statement::executeQuery).getErrorCode(), is(10025));
+            try (PreparedStatement newStatement = connection.prepareStatement("SELECT * FROM t_order ORDER BY user_id"); ResultSet actual = newStatement.executeQuery()) {
+                assertThat(actual.getMetaData().getColumnCount(), is(3));
+                assertTrue(actual.next());
+                assertThat(actual.getInt("user_id"), is(8));
+                assertThat(actual.getInt("added_value"), is(99));
+                assertTrue(actual.next());
+                assertThat(actual.getInt("user_id"), is(9));
+                assertThat(actual.getInt("added_value"), is(99));
+            }
+        }
+    }
     
     @Test
     void assertGetQueryTimeoutBeforeExecution() throws SQLException {

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierIndex;
@@ -162,6 +163,10 @@ public final class ShardingSphereDatabase {
      */
     public void addSchema(final ShardingSphereSchema schema) {
         refreshSchemaIdentifierContext(schema);
+        ShardingSphereSchema previousSchema = getSchema(schema.getName());
+        if (null != previousSchema) {
+            schema.inheritBindings(previousSchema);
+        }
         schemaIndex.put(schema.getName(), schema);
     }
     
@@ -175,6 +180,7 @@ public final class ShardingSphereDatabase {
         if (null == schema) {
             return;
         }
+        schema.invalidateBindings();
         schemaIndex.remove(schema.getName());
     }
     
@@ -323,4 +329,48 @@ public final class ShardingSphereDatabase {
     public Optional<ShardingSphereSchema> findDefaultSchema() {
         return findSchema(new IdentifierValue(getDefaultSchemaIdentifier()));
     }
+    
+    /**
+     * Copy a database containing retired tables without reloading identifier policies.
+     *
+     * @return this database if no table was invalidated, otherwise a database with fresh table bindings
+     */
+    public ShardingSphereDatabase copyIfBindingsInvalidated() {
+        if (getAllSchemas().stream().flatMap(each -> each.getAllTables().stream()).noneMatch(ShardingSphereTable::isBindingInvalidated)) {
+            return this;
+        }
+        Collection<ShardingSphereSchema> schemas = getAllSchemas().stream().map(each -> new ShardingSphereSchema(each.getName(), each.getProtocolType(),
+                each.getAllTables().stream().map(table -> new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType()))
+                        .collect(Collectors.toList()),
+                each.getAllViews())).collect(Collectors.toList());
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, ruleMetaData, schemas, identifierContext);
+    }
+    
+    /**
+     * Preserve bindings for unchanged schemas when replacing this database.
+     *
+     * @param previous previous database
+     */
+    public void inheritBindings(final ShardingSphereDatabase previous) {
+        if (this == previous) {
+            return;
+        }
+        Map<String, ShardingSphereSchema> schemas = createSchemaMap(getAllSchemas());
+        previous.getAllSchemas().forEach(each -> {
+            ShardingSphereSchema schema = schemas.get(each.getName());
+            if (null == schema) {
+                each.invalidateBindings();
+            } else {
+                schema.inheritBindings(each);
+            }
+        });
+    }
+    
+    /**
+     * Invalidate bindings when this database is removed.
+     */
+    public void invalidateBindings() {
+        getAllSchemas().forEach(ShardingSphereSchema::invalidateBindings);
+    }
+    
 }

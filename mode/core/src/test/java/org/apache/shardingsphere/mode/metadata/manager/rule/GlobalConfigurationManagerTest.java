@@ -28,6 +28,10 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
@@ -37,6 +41,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.listener.StatisticsCollectJobCronUpdateListener;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.statistics.StatisticsPersistService;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -44,10 +49,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 
 import java.io.Serializable;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -56,6 +67,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -169,6 +181,46 @@ class GlobalConfigurationManagerTest {
         GlobalConfigurationManager manager = new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class));
         manager.alterProperties(PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_CRON.getKey(), "0/10 * * * * ?")));
         verify(metaDataContexts).update(any(ShardingSphereMetaData.class), any(MetaDataPersistFacade.class));
+    }
+    
+    @Test
+    void assertAlterPropertiesWithConcurrentDatabaseReplacement() throws Exception {
+        ShardingSphereTable previousTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        MetaDataContexts metaDataContexts = new MetaDataContexts(createBindingMetaData(previousTable), new ShardingSphereStatistics());
+        MetaDataPersistFacade persistFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        StatisticsPersistService statisticsPersistService = persistFacade.getStatisticsService();
+        CountDownLatch loadingStatistics = new CountDownLatch(1);
+        CountDownLatch publish = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            loadingStatistics.countDown();
+            assertTrue(publish.await(5L, TimeUnit.SECONDS));
+            return new ShardingSphereStatistics();
+        }).when(statisticsPersistService).load(any(ShardingSphereMetaData.class));
+        GlobalConfigurationManager manager = new GlobalConfigurationManager(metaDataContexts, persistFacade);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            CompletableFuture<Void> alterProperties = CompletableFuture.runAsync(() -> manager.alterProperties(new Properties()), executor);
+            assertTrue(loadingStatistics.await(5L, TimeUnit.SECONDS));
+            ShardingSphereTable changedTable = new ShardingSphereTable("foo_tbl",
+                    Collections.singleton(new ShardingSphereColumn("foo_col", Types.INTEGER, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
+            metaDataContexts.update(new MetaDataContexts(createBindingMetaData(changedTable), new ShardingSphereStatistics()));
+            publish.countDown();
+            alterProperties.get(5L, TimeUnit.SECONDS);
+            assertTrue(previousTable.isBindingInvalidated());
+            assertFalse(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema").getTable("foo_tbl").isBindingInvalidated());
+        } finally {
+            publish.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(5L, TimeUnit.SECONDS));
+        }
+    }
+    
+    private ShardingSphereMetaData createBindingMetaData(final ShardingSphereTable table) {
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList())),
+                new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(Collections.singleton(database),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereMetaData createMetaData(final RuleMetaData globalRuleMetaData, final TemporaryConfigurationProperties temporaryProps) {
