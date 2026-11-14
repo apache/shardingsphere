@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
@@ -120,10 +121,10 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
         }
         // TODO Support connection property character encoding
         if (value instanceof byte[]) {
-            return new InputStreamReader(new ByteArrayInputStream((byte[]) value));
+            return new InputStreamReader(new ByteArrayInputStream((byte[]) value), StandardCharsets.UTF_8);
         }
         if (value instanceof Blob) {
-            return new InputStreamReader(((Blob) value).getBinaryStream());
+            return new InputStreamReader(((Blob) value).getBinaryStream(), StandardCharsets.UTF_8);
         }
         return new StringReader(value.toString());
     }

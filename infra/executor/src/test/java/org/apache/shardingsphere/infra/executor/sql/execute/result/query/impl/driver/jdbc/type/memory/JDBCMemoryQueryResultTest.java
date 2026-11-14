@@ -407,6 +407,15 @@ class JDBCMemoryQueryResultTest {
     }
     
     @Test
+    void assertGetCharacterStreamWithNonAsciiVarBinary() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.VARBINARY);
+        when(resultSet.getBytes(1)).thenReturn(new byte[]{(byte) 0xC3, (byte) 0xA9});
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(CharStreams.toString(queryResult.getCharacterStream(1)), is("é"));
+    }
+    
+    @Test
     void assertGetCharacterStreamWithBlob() throws SQLException, IOException {
         ResultSet resultSet = getMockedResultSet(Types.BLOB);
         Blob blob = mock(Blob.class);
@@ -415,6 +424,17 @@ class JDBCMemoryQueryResultTest {
         JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
         queryResult.next();
         assertThat(CharStreams.toString(queryResult.getCharacterStream(1)), is("foo_value"));
+    }
+    
+    @Test
+    void assertGetCharacterStreamWithNonAsciiBlob() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.BLOB);
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(new ByteArrayInputStream(new byte[]{(byte) 0xC3, (byte) 0xA9}));
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(CharStreams.toString(queryResult.getCharacterStream(1)), is("é"));
     }
     
     @Test
