@@ -70,7 +70,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     }
     
     public boolean isValidStatementHandle() {
-        return statementId != 0xFFFF;
+        return 0xFFFF != statementId && -1 != statementId;
     }
     
     /**
@@ -89,7 +89,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     @Override
     public String getSQL() {
-        return sql;
+         return sql;
     }
     
     @Override

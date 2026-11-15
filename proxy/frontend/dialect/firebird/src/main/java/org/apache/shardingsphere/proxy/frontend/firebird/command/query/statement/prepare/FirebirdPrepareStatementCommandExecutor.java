@@ -160,6 +160,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 case STMT_TYPE:
                     returnPacket.setType(statementType);
                     break;
+                case STMT_FLAGS:
+                    returnPacket.setType(statementType);
+                    returnPacket.setStatementFlagsRequested(true);
+                    break;
                 case SELECT:
                     if (statementType.isSelectDescribable()) {
                         processDescribe(sqlStatementContext, returnPacket.getDescribeSelect(), true);
@@ -175,7 +179,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                     }
                     break;
                 default:
-                    throw new DatabaseProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
+                    throw new DatabaseProtocolException("Unknown statement info request type %d", packet.getCurrentItem().getCode());
             }
         }
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
