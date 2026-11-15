@@ -141,8 +141,7 @@ class FirebirdBatchInfoReturnPacketTest {
         return Stream.of(
                 Arguments.of("smallint_bigint", fields(field(BlrConstants.blr_short, 0), field(BlrConstants.blr_int64, 0)), "00000000000000070000000000000007", 24),
                 Arguments.of("bigint_smallint", fields(field(BlrConstants.blr_int64, 0), field(BlrConstants.blr_short, 0)), "00000000000000000000000700000007", 16),
-                Arguments.of("smallint_int128", fields(field(BlrConstants.blr_short, 0), field(BlrConstants.blr_int128, 0)),
-                        "000000000000000700000000000000000000000000000007", 32),
+                Arguments.of("smallint_int128", fields(field(BlrConstants.blr_short, 0), field(BlrConstants.blr_int128, 0)), "000000000000000700000000000000000000000000000007", 32),
                 Arguments.of("null_smallint_int128", fields(field(BlrConstants.blr_short, 0), field(BlrConstants.blr_int128, 0)), "03000000", 32));
     }
     
