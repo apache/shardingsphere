@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentExceedsBlobException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidClumpletStructureException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.RepeatedBatchBlobIdException;
@@ -126,9 +127,11 @@ public final class FirebirdBatchStatement {
      *
      * @param data packet data starting at the stream portion
      * @param length declared length of the stream portion
+     * @throws BatchTooBigException if appending the portion exceeds the BLOB buffer size
      */
     public void appendBlobStream(final ByteBuf data, final long length) {
         byte[] portion = blobStream.read(data, length);
+        ShardingSpherePreconditions.checkState(blobStreamSize + portion.length <= bufferSize, () -> new BatchTooBigException(statementHandle, blobStreamSize, portion.length, bufferSize));
         blobBuffer.add(portion);
         blobStreamSize += portion.length;
     }
