@@ -50,6 +50,23 @@ class FirebirdBatchStatementTest {
     
     private static final byte[] SEGMENTED_BPB = {1, 3, 1, 0};
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nativeMessageLayoutArguments")
+    void assertCreateWithNativeMessageLayout(final String name, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final int expectedLength) {
+        FirebirdBatchStatement actual = new FirebirdBatchStatement(32, columnDescriptors, 1024L);
+        assertThat(actual.getAlignedMessageLength(), is(expectedLength));
+    }
+    
+    private static Stream<Arguments> nativeMessageLayoutArguments() {
+        return Stream.of(
+                Arguments.of("empty_message", Collections.emptyList(), 0),
+                Arguments.of("smallint", Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.SHORT, 2, 0, 0)), 4),
+                Arguments.of("odd_text_null_indicator", Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.TEXT, 3, 0, 0)), 6),
+                Arguments.of("bigint_trailing_alignment", Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0)), 16),
+                Arguments.of("maximum_alignment_before_last_field",
+                        Arrays.asList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0), new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.SHORT, 2, 0, 10)), 16));
+    }
+    
     @Test
     void assertAddParameterValues() {
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32);
@@ -322,7 +339,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertReset() {
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(100);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(100, Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0)), 1024L);
         batchStatement.addParameterValues(Collections.singletonList("foo"));
         batchStatement.addSize(10L);
         batchStatement.getBlobIds().put(1L, 2L);
@@ -338,6 +355,8 @@ class FirebirdBatchStatementTest {
         assertTrue(batchStatement.getBlobBuffer().isEmpty());
         assertThat(batchStatement.getBlobStreamSize(), is(0L));
         assertThat(otherBatchStatement.getBlobIds(), is(Collections.singletonMap(1L, 3L)));
+        assertThat(batchStatement.getAlignedMessageLength(), is(16));
+        assertThat(otherBatchStatement.getAlignedMessageLength(), is(0));
     }
     
     private static ByteBuf createBlobHeader(final long batchBlobId, final int blobLength, final int bpbLength) {
