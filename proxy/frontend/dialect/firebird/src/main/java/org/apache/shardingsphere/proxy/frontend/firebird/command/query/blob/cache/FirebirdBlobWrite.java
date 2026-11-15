@@ -51,9 +51,9 @@ public final class FirebirdBlobWrite {
     
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
-    private byte[] content;
+    private volatile byte[] content;
     
-    private SoftReference<byte[]> usedContent;
+    private volatile SoftReference<byte[]> usedContent;
     
     private Path backingFile;
     
@@ -61,6 +61,8 @@ public final class FirebirdBlobWrite {
     
     @Getter
     private boolean closed;
+    
+    private volatile boolean released;
     
     /**
      * Append a BLOB data segment.
@@ -88,13 +90,25 @@ public final class FirebirdBlobWrite {
      * @return BLOB data
      */
     @HighFrequencyInvocation
-    @SneakyThrows(IOException.class)
     public Optional<byte[]> getBytes() {
+        if (released) {
+            return Optional.empty();
+        }
         if (!closed) {
             return Optional.of(buffer.toByteArray());
         }
-        if (null != content) {
-            return Optional.of(content);
+        byte[] result = content;
+        if (null != result) {
+            return Optional.of(result);
+        }
+        result = usedContent.get();
+        return null == result ? readUsedContent() : Optional.of(result);
+    }
+    
+    @SneakyThrows(IOException.class)
+    private synchronized Optional<byte[]> readUsedContent() {
+        if (released) {
+            return Optional.empty();
         }
         byte[] result = usedContent.get();
         if (null == result) {
@@ -116,24 +130,32 @@ public final class FirebirdBlobWrite {
     }
     
     @HighFrequencyInvocation
-    @SneakyThrows(IOException.class)
     void markUsed() {
         if (null != content) {
-            if (null == backingFile) {
-                backingFile = Files.createTempFile("shardingsphere-firebird-blob-", ".tmp");
-            }
-            Files.write(backingFile, content);
-            usedContent = new SoftReference<>(content);
-            content = null;
+            storeUsedContent();
         }
+    }
+    
+    @SneakyThrows(IOException.class)
+    private synchronized void storeUsedContent() {
+        if (released || null == content) {
+            return;
+        }
+        if (null == backingFile) {
+            backingFile = Files.createTempFile("shardingsphere-firebird-blob-", ".tmp");
+        }
+        Files.write(backingFile, content);
+        usedContent = new SoftReference<>(content);
+        content = null;
     }
     
     @HighFrequencyInvocation
     @SneakyThrows(IOException.class)
-    void release() {
+    synchronized void release() {
         if (null != backingFile) {
             Files.delete(backingFile);
             backingFile = null;
         }
+        released = true;
     }
 }

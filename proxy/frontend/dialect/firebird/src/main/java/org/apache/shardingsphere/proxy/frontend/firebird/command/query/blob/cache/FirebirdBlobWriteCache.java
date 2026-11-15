@@ -187,18 +187,13 @@ public final class FirebirdBlobWriteCache {
      */
     @HighFrequencyInvocation
     public Optional<byte[]> useBlobData(final int connectionId, final long blobId, final int transactionId) {
-        if (!isAvailable(connectionId, blobId, transactionId)) {
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        if (null == write || !write.isClosed() || write.getTransactionId() != transactionId) {
             return Optional.empty();
         }
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
         Optional<byte[]> result = write.getBytes();
         write.markUsed();
         return result;
-    }
-    
-    private boolean isAvailable(final int connectionId, final long blobId, final int transactionId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
-        return null != write && write.isClosed() && write.getTransactionId() == transactionId;
     }
     
     /**

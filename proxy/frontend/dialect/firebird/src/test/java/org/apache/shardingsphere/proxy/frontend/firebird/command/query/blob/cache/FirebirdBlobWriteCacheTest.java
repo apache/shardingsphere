@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache;
 
 import lombok.SneakyThrows;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -36,6 +38,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
@@ -45,7 +53,9 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
 
 class FirebirdBlobWriteCacheTest {
     
@@ -111,6 +121,148 @@ class FirebirdBlobWriteCacheTest {
         }
         CACHE.unregisterConnection(1);
         assertFalse(Files.exists(actualBackingFile));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"getTransactionId", "createTempFile", "write", "readAllBytes"})
+    void assertUnregisterConnectionDuringBlobAccess(final String methodName) throws Exception {
+        byte[] expectedData = new byte[]{1, 2, 3};
+        registerClosedBlob(1, 11, 21L, 31, expectedData);
+        AtomicReference<Path> actualBackingFile = new AtomicReference<>();
+        if ("readAllBytes".equals(methodName)) {
+            CACHE.useBlobData(1, 21L, 31);
+            actualBackingFile.set(getBackingFile(1, 21L));
+            releaseSoftlyReachableData(getIdCache().get(1).get(21L));
+        }
+        CountDownLatch accessStarted = new CountDownLatch(1);
+        CountDownLatch continueAccess = new CountDownLatch(1);
+        if ("getTransactionId".equals(methodName)) {
+            FirebirdBlobWrite write = spy(getIdCache().get(1).get(21L));
+            getIdCache().get(1).put(21L, write);
+            doAnswer(invocation -> {
+                pauseBlobAccess(accessStarted, continueAccess);
+                return invocation.callRealMethod();
+            }).when(write).getTransactionId();
+        }
+        registerClosedBlob(2, 12, 22L, 32, expectedData);
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        try {
+            Future<Optional<byte[]>> actualData = executor.submit(() -> {
+                try (MockedStatic<Files> ignored = mockConcurrentFileAccess(methodName, accessStarted, continueAccess, actualBackingFile)) {
+                    return CACHE.useBlobData(1, 21L, 31);
+                }
+            });
+            assertTrue(accessStarted.await(5, TimeUnit.SECONDS));
+            AtomicReference<Thread> releasingThread = new AtomicReference<>();
+            Future<?> unregister = executor.submit(() -> {
+                releasingThread.set(Thread.currentThread());
+                CACHE.unregisterConnection(1);
+            });
+            awaitCallCompletionOrWait(unregister, releasingThread);
+            Future<Optional<byte[]>> actualOtherData = executor.submit(() -> CACHE.useBlobData(2, 22L, 32));
+            assertThat(actualOtherData.get(5, TimeUnit.SECONDS).get(), is(expectedData));
+            continueAccess.countDown();
+            actualData.get(5, TimeUnit.SECONDS).ifPresent(actual -> assertThat(actual, is(expectedData)));
+            unregister.get(5, TimeUnit.SECONDS);
+            assertFalse(getIdCache().containsKey(1));
+            assertFalse(getHandleCache().containsKey(1));
+            if (null != actualBackingFile.get()) {
+                assertFalse(Files.exists(actualBackingFile.get()));
+            }
+        } finally {
+            continueAccess.countDown();
+            executor.shutdownNow();
+            try {
+                assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+            } finally {
+                CACHE.unregisterConnection(1);
+                CACHE.unregisterConnection(2);
+                if (null != actualBackingFile.get()) {
+                    Files.deleteIfExists(actualBackingFile.get());
+                }
+            }
+        }
+    }
+    
+    private void registerClosedBlob(final int connectionId, final int blobHandle, final long blobId, final int transactionId, final byte[] data) {
+        CACHE.registerBlob(connectionId, blobHandle, blobId, transactionId, false);
+        CACHE.appendSegment(connectionId, blobHandle, data);
+        CACHE.closeWrite(connectionId, blobHandle);
+    }
+    
+    private void pauseBlobAccess(final CountDownLatch accessStarted, final CountDownLatch continueAccess) throws InterruptedException {
+        accessStarted.countDown();
+        assertTrue(continueAccess.await(5, TimeUnit.SECONDS));
+    }
+    
+    private MockedStatic<Files> mockConcurrentFileAccess(final String methodName, final CountDownLatch accessStarted, final CountDownLatch continueAccess,
+                                                         final AtomicReference<Path> actualBackingFile) {
+        return mockStatic(Files.class, invocation -> {
+            if (methodName.equals(invocation.getMethod().getName())) {
+                pauseBlobAccess(accessStarted, continueAccess);
+            }
+            Object result = invocation.callRealMethod();
+            if ("createTempFile".equals(invocation.getMethod().getName())) {
+                actualBackingFile.set((Path) result);
+            }
+            return result;
+        });
+    }
+    
+    private void awaitCallCompletionOrWait(final Future<?> call, final AtomicReference<Thread> threadReference) {
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> {
+            if (call.isDone()) {
+                return true;
+            }
+            Thread thread = threadReference.get();
+            return null != thread && (Thread.State.BLOCKED == thread.getState() || Thread.State.WAITING == thread.getState() || Thread.State.TIMED_WAITING == thread.getState());
+        });
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"createTempFile", "write", "readAllBytes"})
+    void assertUseBlobDataConcurrently(final String methodName) throws Exception {
+        byte[] expectedData = new byte[]{1, 2, 3};
+        registerClosedBlob(1, 11, 21L, 31, expectedData);
+        AtomicReference<Path> actualBackingFile = new AtomicReference<>();
+        if ("readAllBytes".equals(methodName)) {
+            CACHE.useBlobData(1, 21L, 31);
+            actualBackingFile.set(getBackingFile(1, 21L));
+            releaseSoftlyReachableData(getIdCache().get(1).get(21L));
+        }
+        CountDownLatch accessStarted = new CountDownLatch(1);
+        CountDownLatch continueAccess = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            Future<Optional<byte[]>> actualFirstUse = executor.submit(() -> {
+                try (MockedStatic<Files> ignored = mockConcurrentFileAccess(methodName, accessStarted, continueAccess, actualBackingFile)) {
+                    return CACHE.useBlobData(1, 21L, 31);
+                }
+            });
+            assertTrue(accessStarted.await(5, TimeUnit.SECONDS));
+            AtomicReference<Thread> usingThread = new AtomicReference<>();
+            Future<Optional<byte[]>> actualSecondUse = executor.submit(() -> {
+                usingThread.set(Thread.currentThread());
+                return CACHE.useBlobData(1, 21L, 31);
+            });
+            awaitCallCompletionOrWait(actualSecondUse, usingThread);
+            continueAccess.countDown();
+            byte[] actual = actualFirstUse.get(5, TimeUnit.SECONDS).get();
+            assertThat(actual, is(expectedData));
+            assertThat(actualSecondUse.get(5, TimeUnit.SECONDS).get(), sameInstance(actual));
+            assertThat(Files.readAllBytes(actualBackingFile.get()), is(expectedData));
+        } finally {
+            continueAccess.countDown();
+            executor.shutdownNow();
+            try {
+                assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+            } finally {
+                CACHE.unregisterConnection(1);
+                if (null != actualBackingFile.get()) {
+                    Files.deleteIfExists(actualBackingFile.get());
+                }
+            }
+        }
     }
     
     @Test

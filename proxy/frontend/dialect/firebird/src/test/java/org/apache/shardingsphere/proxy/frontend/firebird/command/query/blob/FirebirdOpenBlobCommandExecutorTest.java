@@ -164,8 +164,8 @@ class FirebirdOpenBlobCommandExecutorTest {
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private void releaseSoftlyReachableData(final long blobId) {
-        Map<Integer, Map<Long, FirebirdBlobWrite>> writes = (Map<Integer, Map<Long, FirebirdBlobWrite>>) Plugins.getMemberAccessor().get(
-                FirebirdBlobWriteCache.class.getDeclaredField("writesById"), FirebirdBlobWriteCache.getInstance());
+        Map<Integer, Map<Long, FirebirdBlobWrite>> writes = (Map<Integer, Map<Long, FirebirdBlobWrite>>) Plugins.getMemberAccessor().get(FirebirdBlobWriteCache.class.getDeclaredField("writesById"),
+                FirebirdBlobWriteCache.getInstance());
         FirebirdBlobWrite write = writes.get(CONNECTION_ID).get(blobId);
         for (Field each : FirebirdBlobWrite.class.getDeclaredFields()) {
             Object value = Plugins.getMemberAccessor().get(each, write);
