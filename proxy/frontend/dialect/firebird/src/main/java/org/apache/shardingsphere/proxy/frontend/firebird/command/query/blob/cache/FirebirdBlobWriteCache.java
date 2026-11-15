@@ -171,22 +171,19 @@ public final class FirebirdBlobWriteCache {
     /**
      * Use data of a closed BLOB write in a statement of transaction.
      *
-     * <p>After the first use the data stays available for reuse in the transaction only until the garbage collector releases it, see {@link FirebirdBlobWrite}.</p>
+     * <p>The data stays available for reuse until the transaction ends.</p>
      *
      * @param connectionId connection id
      * @param blobId blob id
      * @param transactionId transaction id of the statement
-     * @return BLOB data, or empty if the BLOB cannot be used by transaction or its data was released
+     * @return BLOB data, or empty if the BLOB cannot be used by transaction
      */
     @HighFrequencyInvocation
     public Optional<byte[]> useBlobData(final int connectionId, final long blobId, final int transactionId) {
         if (!isAvailable(connectionId, blobId, transactionId)) {
             return Optional.empty();
         }
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
-        Optional<byte[]> result = write.getBytes();
-        write.markUsed();
-        return result;
+        return getIdMap(connectionId).get(blobId).getBytes();
     }
     
     private boolean isAvailable(final int connectionId, final long blobId, final int transactionId) {
@@ -217,6 +214,21 @@ public final class FirebirdBlobWriteCache {
         FirebirdBlobWrite write = getIdMap(connectionId).remove(blobId);
         if (null != write) {
             getHandleMap(connectionId).remove(write.getBlobHandle(), write);
+        }
+    }
+    
+    /**
+     * Remove BLOB writes owned by a completed transaction.
+     *
+     * @param connectionId connection id
+     * @param transactionId transaction id
+     */
+    @HighFrequencyInvocation
+    public void removeTransaction(final int connectionId, final int transactionId) {
+        for (FirebirdBlobWrite each : getIdMap(connectionId).values()) {
+            if (each.getTransactionId() == transactionId) {
+                removeWrite(connectionId, each.getBlobId());
+            }
         }
     }
     

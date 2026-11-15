@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,9 +37,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,6 +61,7 @@ class FirebirdCommitTransactionCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
@@ -63,17 +69,23 @@ class FirebirdCommitTransactionCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
+        FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
     void assertExecute() throws SQLException {
         when(packet.getTransactionId()).thenReturn(1);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 11, 21L, 1, false);
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, 11);
+        FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 21L, 1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class, (mock, context) -> {
         })) {
             Collection<DatabasePacket> actual = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).commit();
+            assertFalse(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, 21L).isPresent());
+            assertFalse(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 1));
         }
     }
     
@@ -81,10 +93,28 @@ class FirebirdCommitTransactionCommandExecutorTest {
     void assertExecuteWithAutoCommit() throws SQLException {
         when(packet.getTransactionId()).thenReturn(1);
         when(connectionSession.isAutoCommit()).thenReturn(true);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 11, 21L, 1, false);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
             Collection<DatabasePacket> actual = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             assertTrue(mocked.constructed().isEmpty());
+            assertFalse(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, 21L).isPresent());
+            assertFalse(FirebirdBlobWriteCache.getInstance().getBlobId(CONNECTION_ID, 11).isPresent());
+        }
+    }
+    
+    @Test
+    void assertExecuteWhenCommitFails() {
+        when(packet.getTransactionId()).thenReturn(1);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 11, 21L, 1, false);
+        FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, 11, new byte[]{1, 2, 3});
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, 11);
+        FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 21L, 1);
+        SQLException expected = new SQLException("foo_commit_failure");
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class, (mock, context) -> doThrow(expected).when(mock).commit())) {
+            assertThat(assertThrows(SQLException.class, () -> new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute()), sameInstance(expected));
+            assertThat(FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 21L, 1).get(), is(new byte[]{1, 2, 3}));
+            assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 1));
         }
     }
     

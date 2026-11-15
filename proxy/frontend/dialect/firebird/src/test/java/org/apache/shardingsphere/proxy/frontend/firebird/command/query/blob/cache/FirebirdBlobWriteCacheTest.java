@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.ref.Reference;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -136,18 +137,24 @@ class FirebirdBlobWriteCacheTest {
     }
     
     @Test
-    void assertUseBlobDataReleasedByGarbageCollector() {
+    void assertUseBlobDataAfterGarbageCollection() {
         CACHE.registerBlob(1, 11, 21L, 31, false);
         CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
         CACHE.closeWrite(1, 11);
         CACHE.useBlobData(1, 21L, 31);
         releaseSoftlyReachableData(getIdCache().get(1).get(21L));
-        assertFalse(CACHE.useBlobData(1, 21L, 31).isPresent());
+        assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(new byte[]{1, 2, 3}));
+        assertThat(CACHE.getBlobData(1, 21L).get(), is(new byte[]{1, 2, 3}));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
+    @SneakyThrows(IllegalAccessException.class)
     private void releaseSoftlyReachableData(final FirebirdBlobWrite write) {
-        ((Reference<?>) Plugins.getMemberAccessor().get(FirebirdBlobWrite.class.getDeclaredField("usedContent"), write)).clear();
+        for (Field each : FirebirdBlobWrite.class.getDeclaredFields()) {
+            Object value = Plugins.getMemberAccessor().get(each, write);
+            if (value instanceof Reference) {
+                ((Reference<?>) value).clear();
+            }
+        }
     }
     
     @Test
@@ -173,6 +180,35 @@ class FirebirdBlobWriteCacheTest {
         CACHE.removeWrite(connectionId, 11L);
         assertTrue(getHandleCache().get(connectionId).isEmpty());
         assertTrue(getIdCache().get(connectionId).isEmpty());
+    }
+    
+    @Test
+    void assertRemoveTransaction() {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        CACHE.useBlobData(1, 21L, 31);
+        CACHE.registerBlob(1, 11, 22L, 32, false);
+        CACHE.registerBlob(1, 12, 23L, 31, false);
+        CACHE.registerBlob(1, 13, 24L, 32, false);
+        CACHE.closeWrite(1, 13);
+        CACHE.registerBlob(2, 12, 21L, 31, false);
+        CACHE.removeTransaction(1, 31);
+        assertFalse(CACHE.getBlobData(1, 21L).isPresent());
+        assertFalse(CACHE.getBlobData(1, 23L).isPresent());
+        assertFalse(CACHE.getBlobId(1, 12).isPresent());
+        assertThat(CACHE.getBlobId(1, 11), is(OptionalLong.of(22L)));
+        assertTrue(CACHE.useBlobData(1, 24L, 32).isPresent());
+        assertTrue(CACHE.getBlobData(2, 21L).isPresent());
+        assertThat(CACHE.getBlobId(2, 12), is(OptionalLong.of(21L)));
+    }
+    
+    @Test
+    void assertRemoveTransactionWithoutWrites() {
+        CACHE.registerConnection(1);
+        CACHE.removeTransaction(1, 31);
+        assertTrue(getHandleCache().get(1).isEmpty());
+        assertTrue(getIdCache().get(1).isEmpty());
     }
     
     @SuppressWarnings("unchecked")

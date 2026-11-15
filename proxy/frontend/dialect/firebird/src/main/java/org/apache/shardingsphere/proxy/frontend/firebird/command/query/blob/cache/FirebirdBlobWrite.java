@@ -22,14 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.io.ByteArrayOutputStream;
-import java.lang.ref.SoftReference;
 import java.util.Optional;
 
 /**
  * Firebird BLOB data written by the client and buffered by the proxy.
  *
- * <p>Firebird keeps the BLOB ID of a temporary BLOB used by a statement valid until the transaction ends, but stores its data in the database instead of memory.
- * That is why the proxy keeps the data of a used BLOB only softly reachable: it stays available for reuse until the garbage collector needs the memory.</p>
+ * <p>Closed BLOB data remains strongly reachable until its transaction ends so statements and open_blob can reuse its ID.</p>
  */
 @RequiredArgsConstructor
 public final class FirebirdBlobWrite {
@@ -49,8 +47,6 @@ public final class FirebirdBlobWrite {
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
     private byte[] content;
-    
-    private SoftReference<byte[]> usedContent;
     
     @Getter
     private boolean closed;
@@ -78,14 +74,11 @@ public final class FirebirdBlobWrite {
      *
      * <p>The data of a closed write is shared by every caller without copying and must not be modified.</p>
      *
-     * @return BLOB data, or empty if the garbage collector released the data of a used write
+     * @return BLOB data
      */
     @HighFrequencyInvocation
     public Optional<byte[]> getBytes() {
-        if (!closed) {
-            return Optional.of(buffer.toByteArray());
-        }
-        return Optional.ofNullable(null == content ? usedContent.get() : content);
+        return Optional.of(closed ? content : buffer.toByteArray());
     }
     
     /**
@@ -96,16 +89,5 @@ public final class FirebirdBlobWrite {
         content = buffer.toByteArray();
         buffer = null;
         closed = true;
-    }
-    
-    /**
-     * Mark this closed BLOB write as used by a statement and keep its data only softly reachable.
-     */
-    @HighFrequencyInvocation
-    void markUsed() {
-        if (null != content) {
-            usedContent = new SoftReference<>(content);
-            content = null;
-        }
     }
 }

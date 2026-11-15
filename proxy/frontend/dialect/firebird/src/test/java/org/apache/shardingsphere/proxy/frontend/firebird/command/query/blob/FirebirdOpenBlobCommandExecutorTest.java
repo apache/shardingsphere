@@ -138,6 +138,22 @@ class FirebirdOpenBlobCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteAfterCreatedBlobIsUsed() {
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, 11, 21L, 31, false);
+        FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, 11, new byte[]{1, 2, 3});
+        FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, 11);
+        FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 21L, 31);
+        when(packet.getBlobId()).thenReturn(21L);
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, actual.getHandle(), 3).get().getData(), is(new byte[]{1, 2, 3}));
+        FirebirdCloseBlobCommandPacket closePacket = mock(FirebirdCloseBlobCommandPacket.class);
+        when(closePacket.getBlobHandle()).thenReturn(actual.getHandle());
+        new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
+        FirebirdGenericResponsePacket actualReopened = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
+        assertThat(FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, actualReopened.getHandle(), 3).get().getData(), is(new byte[]{1, 2, 3}));
+    }
+    
+    @Test
     void assertExecuteWhenCreatedBlobIsNotClosed() {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
