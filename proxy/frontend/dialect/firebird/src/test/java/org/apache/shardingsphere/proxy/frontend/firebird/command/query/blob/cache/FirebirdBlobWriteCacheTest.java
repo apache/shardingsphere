@@ -459,6 +459,13 @@ class FirebirdBlobWriteCacheTest {
     }
     
     @Test
+    void assertRemoveWriteWhenConnectionMissing() {
+        CACHE.removeWrite(1, 21L);
+        assertFalse(getIdCache().containsKey(1));
+        assertFalse(getHandleCache().containsKey(1));
+    }
+    
+    @Test
     void assertRemoveTransaction() {
         CACHE.registerBlob(1, 11, 21L, 31, false);
         CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
@@ -490,6 +497,46 @@ class FirebirdBlobWriteCacheTest {
         CACHE.removeTransaction(1, 31);
         assertTrue(getHandleCache().get(1).isEmpty());
         assertTrue(getIdCache().get(1).isEmpty());
+    }
+    
+    @Test
+    void assertRemoveTransactionWhenConnectionMissing() {
+        CACHE.removeTransaction(1, 31);
+        assertFalse(getIdCache().containsKey(1));
+        assertFalse(getHandleCache().containsKey(1));
+    }
+    
+    @Test
+    void assertRemoveTransactionDuringUnregisterConnection() throws Exception {
+        registerClosedBlob(1, 11, 21L, 31, new byte[]{1, 2, 3});
+        CACHE.useBlobData(1, 21L, 31);
+        Path actualBackingFile = getBackingFile(1, 21L);
+        Map<Long, FirebirdBlobWrite> idMap = spy(getIdCache().get(1));
+        getIdCache().put(1, idMap);
+        CountDownLatch writeCaptured = new CountDownLatch(1);
+        CountDownLatch continueCleanup = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            Object result = invocation.callRealMethod();
+            pauseBlobAccess(writeCaptured, continueCleanup);
+            return result;
+        }).doCallRealMethod().when(idMap).get(21L);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        try {
+            Future<?> actual = executor.submit(() -> CACHE.removeTransaction(1, 31));
+            assertTrue(writeCaptured.await(5, TimeUnit.SECONDS));
+            CACHE.unregisterConnection(1);
+            assertFalse(getIdCache().containsKey(1));
+            assertFalse(getHandleCache().containsKey(1));
+            assertFalse(Files.exists(actualBackingFile));
+            continueCleanup.countDown();
+            actual.get(5, TimeUnit.SECONDS);
+            assertFalse(getIdCache().containsKey(1));
+            assertFalse(getHandleCache().containsKey(1));
+        } finally {
+            continueCleanup.countDown();
+            executor.shutdownNow();
+            assertTrue(executor.awaitTermination(5, TimeUnit.SECONDS));
+        }
     }
     
     @SuppressWarnings("unchecked")

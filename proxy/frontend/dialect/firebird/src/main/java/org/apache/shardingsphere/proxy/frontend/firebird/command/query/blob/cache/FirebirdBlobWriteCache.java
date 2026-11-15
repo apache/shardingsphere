@@ -217,11 +217,18 @@ public final class FirebirdBlobWriteCache {
      */
     @HighFrequencyInvocation
     public void removeWrite(final int connectionId, final long blobId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        Map<Long, FirebirdBlobWrite> idMap = writesById.get(connectionId);
+        if (null == idMap) {
+            return;
+        }
+        FirebirdBlobWrite write = idMap.get(blobId);
         if (null != write) {
             write.release();
-            getIdMap(connectionId).remove(blobId, write);
-            getHandleMap(connectionId).remove(write.getBlobHandle(), write);
+            idMap.remove(blobId, write);
+            Map<Integer, FirebirdBlobWrite> handleMap = writesByHandle.get(connectionId);
+            if (null != handleMap) {
+                handleMap.remove(write.getBlobHandle(), write);
+            }
         }
     }
     
@@ -233,7 +240,11 @@ public final class FirebirdBlobWriteCache {
      */
     @HighFrequencyInvocation
     public void removeTransaction(final int connectionId, final int transactionId) {
-        for (FirebirdBlobWrite each : getIdMap(connectionId).values()) {
+        Map<Long, FirebirdBlobWrite> idMap = writesById.get(connectionId);
+        if (null == idMap) {
+            return;
+        }
+        for (FirebirdBlobWrite each : idMap.values()) {
             if (each.getTransactionId() == transactionId) {
                 removeWrite(connectionId, each.getBlobId());
             }
