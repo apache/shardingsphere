@@ -126,7 +126,7 @@ public final class FirebirdBlobParameterConverter {
         FirebirdBinaryColumnType type = parameter.getColumnType();
         if (FirebirdBinaryColumnType.BLOB == type) {
             Optional<Charset> fieldCharset = findTextBlobCharset(field, parameter);
-            return fieldCharset.isPresent() ? toTextBlob(content, field, fieldCharset.get()) : content;
+            return fieldCharset.isPresent() && getFieldCharsetId(field) != connectionCharsetId ? toTextBlob(content, field, fieldCharset.get()) : content;
         }
         if (isText(type)) {
             return toText(content, field, parameter);
