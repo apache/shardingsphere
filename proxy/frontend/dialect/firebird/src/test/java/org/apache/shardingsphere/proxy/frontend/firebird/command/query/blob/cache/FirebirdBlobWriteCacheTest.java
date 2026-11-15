@@ -20,13 +20,18 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -38,16 +43,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 class FirebirdBlobWriteCacheTest {
     
     private static final FirebirdBlobWriteCache CACHE = FirebirdBlobWriteCache.getInstance();
     
+    @TempDir
+    private Path temporaryDirectory;
+    
     @AfterEach
     void tearDown() {
-        getHandleCache().clear();
-        getIdCache().clear();
+        for (Integer each : getHandleCache().keySet()) {
+            CACHE.unregisterConnection(each);
+        }
+        for (Integer each : getIdCache().keySet()) {
+            CACHE.unregisterConnection(each);
+        }
     }
     
     @Test
@@ -61,6 +75,42 @@ class FirebirdBlobWriteCacheTest {
         CACHE.unregisterConnection(connectionId);
         assertFalse(handleMap.containsKey(connectionId));
         assertFalse(idMap.containsKey(connectionId));
+    }
+    
+    @Test
+    void assertUnregisterConnectionWithUsedBlob() {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        CACHE.useBlobData(1, 21L, 31);
+        Path actualBackingFile = getBackingFile(1, 21L);
+        assertTrue(Files.exists(actualBackingFile));
+        CACHE.unregisterConnection(1);
+        assertFalse(Files.exists(actualBackingFile));
+        assertFalse(getIdCache().containsKey(1));
+        assertFalse(getHandleCache().containsKey(1));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private Path getBackingFile(final int connectionId, final long blobId) {
+        return (Path) Plugins.getMemberAccessor().get(FirebirdBlobWrite.class.getDeclaredField("backingFile"), getIdCache().get(connectionId).get(blobId));
+    }
+    
+    @Test
+    void assertUnregisterConnectionWhenReleaseFails() {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        CACHE.closeWrite(1, 11);
+        CACHE.useBlobData(1, 21L, 31);
+        Path actualBackingFile = getBackingFile(1, 21L);
+        IOException expected = new IOException("foo_delete_failure");
+        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+            mocked.when(() -> Files.delete(actualBackingFile)).thenThrow(expected);
+            assertThat(assertThrows(IOException.class, () -> CACHE.unregisterConnection(1)), sameInstance(expected));
+            assertTrue(getIdCache().get(1).containsKey(21L));
+            assertTrue(getHandleCache().containsKey(1));
+        }
+        CACHE.unregisterConnection(1);
+        assertFalse(Files.exists(actualBackingFile));
     }
     
     @Test
@@ -144,6 +194,7 @@ class FirebirdBlobWriteCacheTest {
         CACHE.useBlobData(1, 21L, 31);
         releaseSoftlyReachableData(getIdCache().get(1).get(21L));
         assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(new byte[]{1, 2, 3}));
+        releaseSoftlyReachableData(getIdCache().get(1).get(21L));
         assertThat(CACHE.getBlobData(1, 21L).get(), is(new byte[]{1, 2, 3}));
     }
     
@@ -158,6 +209,56 @@ class FirebirdBlobWriteCacheTest {
     }
     
     @Test
+    void assertUseBlobDataWhenBackingCreationFails() {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        IOException expected = new IOException("foo_create_failure");
+        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+            mocked.when(() -> Files.createTempFile("shardingsphere-firebird-blob-", ".tmp")).thenThrow(expected);
+            assertThat(assertThrows(IOException.class, () -> CACHE.useBlobData(1, 21L, 31)), sameInstance(expected));
+            assertThat(CACHE.getBlobData(1, 21L).get(), is(new byte[]{1, 2, 3}));
+        }
+        assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(new byte[]{1, 2, 3}));
+    }
+    
+    @Test
+    void assertUseBlobDataWhenBackingWriteFails() throws IOException {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        byte[] expectedData = new byte[]{1, 2, 3};
+        CACHE.appendSegment(1, 11, expectedData);
+        CACHE.closeWrite(1, 11);
+        Path actualBackingFile = Files.createTempFile(temporaryDirectory, "foo_blob", ".tmp");
+        IOException expected = new IOException("foo_write_failure");
+        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+            mocked.when(() -> Files.createTempFile("shardingsphere-firebird-blob-", ".tmp")).thenReturn(actualBackingFile);
+            mocked.when(() -> Files.write(actualBackingFile, expectedData)).thenThrow(expected);
+            assertThat(assertThrows(IOException.class, () -> CACHE.useBlobData(1, 21L, 31)), sameInstance(expected));
+            assertThat(CACHE.getBlobData(1, 21L).get(), is(expectedData));
+            assertThat(getBackingFile(1, 21L), is(actualBackingFile));
+        }
+        assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(expectedData));
+        assertThat(Files.readAllBytes(actualBackingFile), is(expectedData));
+    }
+    
+    @Test
+    void assertUseBlobDataWhenBackingReadFails() {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        CACHE.useBlobData(1, 21L, 31);
+        releaseSoftlyReachableData(getIdCache().get(1).get(21L));
+        Path actualBackingFile = getBackingFile(1, 21L);
+        IOException expected = new IOException("foo_read_failure");
+        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+            mocked.when(() -> Files.readAllBytes(actualBackingFile)).thenThrow(expected);
+            assertThat(assertThrows(IOException.class, () -> CACHE.useBlobData(1, 21L, 31)), sameInstance(expected));
+            assertThat(getBackingFile(1, 21L), is(actualBackingFile));
+        }
+        assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(new byte[]{1, 2, 3}));
+    }
+    
+    @Test
     void assertRemoveWriteDoesNotRemoveReusedHandle() {
         int connectionId = 12;
         int blobHandle = 8;
@@ -165,12 +266,35 @@ class FirebirdBlobWriteCacheTest {
         long expectedBlobId = 10L;
         CACHE.registerConnection(connectionId);
         CACHE.registerBlob(connectionId, blobHandle, oldBlobId, 1, false);
+        CACHE.appendSegment(connectionId, blobHandle, new byte[]{1, 2, 3});
         CACHE.closeWrite(connectionId, blobHandle);
+        CACHE.useBlobData(connectionId, oldBlobId, 1);
+        Path actualBackingFile = getBackingFile(connectionId, oldBlobId);
         CACHE.registerBlob(connectionId, blobHandle, expectedBlobId, 1, false);
         CACHE.removeWrite(connectionId, oldBlobId);
+        assertFalse(Files.exists(actualBackingFile));
         OptionalLong actualBlobId = CACHE.getBlobId(connectionId, blobHandle);
         assertTrue(actualBlobId.isPresent());
         assertThat(actualBlobId.getAsLong(), is(expectedBlobId));
+    }
+    
+    @Test
+    void assertRemoveWriteWhenReleaseFails() {
+        CACHE.registerBlob(1, 11, 21L, 31, false);
+        CACHE.appendSegment(1, 11, new byte[]{1, 2, 3});
+        CACHE.closeWrite(1, 11);
+        CACHE.useBlobData(1, 21L, 31);
+        Path actualBackingFile = getBackingFile(1, 21L);
+        IOException expected = new IOException("foo_delete_failure");
+        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+            mocked.when(() -> Files.delete(actualBackingFile)).thenThrow(expected);
+            assertThat(assertThrows(IOException.class, () -> CACHE.removeWrite(1, 21L)), sameInstance(expected));
+            assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(new byte[]{1, 2, 3}));
+            assertThat(getBackingFile(1, 21L), is(actualBackingFile));
+        }
+        CACHE.removeWrite(1, 21L);
+        assertFalse(Files.exists(actualBackingFile));
+        assertFalse(CACHE.getBlobData(1, 21L).isPresent());
     }
     
     @Test
@@ -192,8 +316,13 @@ class FirebirdBlobWriteCacheTest {
         CACHE.registerBlob(1, 12, 23L, 31, false);
         CACHE.registerBlob(1, 13, 24L, 32, false);
         CACHE.closeWrite(1, 13);
+        CACHE.useBlobData(1, 24L, 32);
         CACHE.registerBlob(2, 12, 21L, 31, false);
+        Path actualCompletedFile = getBackingFile(1, 21L);
+        Path actualOtherTransactionFile = getBackingFile(1, 24L);
         CACHE.removeTransaction(1, 31);
+        assertFalse(Files.exists(actualCompletedFile));
+        assertTrue(Files.exists(actualOtherTransactionFile));
         assertFalse(CACHE.getBlobData(1, 21L).isPresent());
         assertFalse(CACHE.getBlobData(1, 23L).isPresent());
         assertFalse(CACHE.getBlobId(1, 12).isPresent());

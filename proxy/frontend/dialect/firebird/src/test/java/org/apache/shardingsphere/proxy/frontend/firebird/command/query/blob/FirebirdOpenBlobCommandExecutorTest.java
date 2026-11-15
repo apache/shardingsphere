@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache.BlobSegment;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWrite;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
@@ -41,10 +43,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.ref.Reference;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -143,14 +149,30 @@ class FirebirdOpenBlobCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, 11, new byte[]{1, 2, 3});
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, 11);
         FirebirdBlobWriteCache.getInstance().useBlobData(CONNECTION_ID, 21L, 31);
+        releaseSoftlyReachableData(21L);
         when(packet.getBlobId()).thenReturn(21L);
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
         assertThat(FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, actual.getHandle(), 3).get().getData(), is(new byte[]{1, 2, 3}));
         FirebirdCloseBlobCommandPacket closePacket = mock(FirebirdCloseBlobCommandPacket.class);
         when(closePacket.getBlobHandle()).thenReturn(actual.getHandle());
         new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
+        releaseSoftlyReachableData(21L);
         FirebirdGenericResponsePacket actualReopened = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();
         assertThat(FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, actualReopened.getHandle(), 3).get().getData(), is(new byte[]{1, 2, 3}));
+    }
+    
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void releaseSoftlyReachableData(final long blobId) {
+        Map<Integer, Map<Long, FirebirdBlobWrite>> writes = (Map<Integer, Map<Long, FirebirdBlobWrite>>) Plugins.getMemberAccessor().get(
+                FirebirdBlobWriteCache.class.getDeclaredField("writesById"), FirebirdBlobWriteCache.getInstance());
+        FirebirdBlobWrite write = writes.get(CONNECTION_ID).get(blobId);
+        for (Field each : FirebirdBlobWrite.class.getDeclaredFields()) {
+            Object value = Plugins.getMemberAccessor().get(each, write);
+            if (value instanceof Reference) {
+                ((Reference<?>) value).clear();
+            }
+        }
     }
     
     @Test

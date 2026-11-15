@@ -65,7 +65,14 @@ public final class FirebirdBlobWriteCache {
      *
      * @param connectionId connection id
      */
+    @HighFrequencyInvocation
     public void unregisterConnection(final int connectionId) {
+        Map<Long, FirebirdBlobWrite> writes = writesById.get(connectionId);
+        if (null != writes) {
+            for (Long each : writes.keySet()) {
+                removeWrite(connectionId, each);
+            }
+        }
         writesByHandle.remove(connectionId);
         writesById.remove(connectionId);
     }
@@ -183,7 +190,10 @@ public final class FirebirdBlobWriteCache {
         if (!isAvailable(connectionId, blobId, transactionId)) {
             return Optional.empty();
         }
-        return getIdMap(connectionId).get(blobId).getBytes();
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
+        Optional<byte[]> result = write.getBytes();
+        write.markUsed();
+        return result;
     }
     
     private boolean isAvailable(final int connectionId, final long blobId, final int transactionId) {
@@ -210,9 +220,12 @@ public final class FirebirdBlobWriteCache {
      * @param connectionId connection id
      * @param blobId blob id
      */
+    @HighFrequencyInvocation
     public void removeWrite(final int connectionId, final long blobId) {
-        FirebirdBlobWrite write = getIdMap(connectionId).remove(blobId);
+        FirebirdBlobWrite write = getIdMap(connectionId).get(blobId);
         if (null != write) {
+            write.release();
+            getIdMap(connectionId).remove(blobId, write);
             getHandleMap(connectionId).remove(write.getBlobHandle(), write);
         }
     }
