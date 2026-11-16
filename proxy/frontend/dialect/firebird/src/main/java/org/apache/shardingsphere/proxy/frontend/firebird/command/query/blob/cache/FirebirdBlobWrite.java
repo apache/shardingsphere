@@ -19,17 +19,20 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
  * Firebird BLOB data written by the client and buffered by the proxy.
  *
- * <p>Firebird keeps the BLOB ID of a temporary BLOB used by a statement valid until the transaction ends, but stores its data in the database instead of memory.
- * That is why the proxy keeps the data of a used BLOB only softly reachable: it stays available for reuse until the garbage collector needs the memory.</p>
+ * <p>Used BLOB data is backed by a temporary file until its transaction ends so statements and open_blob can reuse its ID independently of garbage collection.</p>
  */
 @RequiredArgsConstructor
 public final class FirebirdBlobWrite {
@@ -48,12 +51,18 @@ public final class FirebirdBlobWrite {
     
     private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     
-    private byte[] content;
+    private volatile byte[] content;
     
-    private SoftReference<byte[]> usedContent;
+    private volatile SoftReference<byte[]> usedContent;
+    
+    private Path backingFile;
+    
+    private int size;
     
     @Getter
     private boolean closed;
+    
+    private volatile boolean released;
     
     /**
      * Append a BLOB data segment.
@@ -70,22 +79,43 @@ public final class FirebirdBlobWrite {
      * @return size of BLOB data in bytes
      */
     public int getSize() {
-        return closed ? content.length : buffer.size();
+        return closed ? size : buffer.size();
     }
     
     /**
      * Get BLOB data.
      *
-     * <p>The data of a closed write is shared by every caller without copying and must not be modified.</p>
+     * <p>Callers must not modify the returned data, which is shared while cached.</p>
      *
-     * @return BLOB data, or empty if the garbage collector released the data of a used write
+     * @return BLOB data
      */
     @HighFrequencyInvocation
     public Optional<byte[]> getBytes() {
+        if (released) {
+            return Optional.empty();
+        }
         if (!closed) {
             return Optional.of(buffer.toByteArray());
         }
-        return Optional.ofNullable(null == content ? usedContent.get() : content);
+        byte[] result = content;
+        if (null != result) {
+            return Optional.of(result);
+        }
+        result = usedContent.get();
+        return null == result ? readUsedContent() : Optional.of(result);
+    }
+    
+    @SneakyThrows(IOException.class)
+    private synchronized Optional<byte[]> readUsedContent() {
+        if (released) {
+            return Optional.empty();
+        }
+        byte[] result = usedContent.get();
+        if (null == result) {
+            result = Files.readAllBytes(backingFile);
+            usedContent = new SoftReference<>(result);
+        }
+        return Optional.of(result);
     }
     
     /**
@@ -94,18 +124,38 @@ public final class FirebirdBlobWrite {
     @HighFrequencyInvocation
     public void markClosed() {
         content = buffer.toByteArray();
+        size = content.length;
         buffer = null;
         closed = true;
     }
     
-    /**
-     * Mark this closed BLOB write as used by a statement and keep its data only softly reachable.
-     */
     @HighFrequencyInvocation
     void markUsed() {
         if (null != content) {
-            usedContent = new SoftReference<>(content);
-            content = null;
+            storeUsedContent();
         }
+    }
+    
+    @SneakyThrows(IOException.class)
+    private synchronized void storeUsedContent() {
+        if (released || null == content) {
+            return;
+        }
+        if (null == backingFile) {
+            backingFile = Files.createTempFile("shardingsphere-firebird-blob-", ".tmp");
+        }
+        Files.write(backingFile, content);
+        usedContent = new SoftReference<>(content);
+        content = null;
+    }
+    
+    @HighFrequencyInvocation
+    @SneakyThrows(IOException.class)
+    synchronized void release() {
+        if (null != backingFile) {
+            Files.delete(backingFile);
+            backingFile = null;
+        }
+        released = true;
     }
 }
