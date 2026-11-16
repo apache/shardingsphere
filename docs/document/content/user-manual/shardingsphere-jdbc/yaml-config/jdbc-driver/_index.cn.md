@@ -16,7 +16,7 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 
 ### URL 配置及配置示例
 
-参考 [已知实现](./known-implementation/_index.cn.md) 。
+参考 [已知实现](./known-implementation/) 。
 
 ## 操作步骤
 

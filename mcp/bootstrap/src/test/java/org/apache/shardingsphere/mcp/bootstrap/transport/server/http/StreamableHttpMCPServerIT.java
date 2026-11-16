@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
 import org.apache.shardingsphere.mcp.api.transport.MCPTransportType;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.SessionAttributionSourceConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
@@ -45,8 +44,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StreamableHttpMCPServerIT {
-    
-    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     
@@ -226,7 +223,7 @@ class StreamableHttpMCPServerIT {
     }
     
     private HttpResponse<String> sendPost(final Map<String, Object> payload, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpoint).POST(HttpRequest.BodyPublishers.ofString(JSON_MAPPER.writeValueAsString(payload)));
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(endpoint).POST(HttpRequest.BodyPublishers.ofString(JsonEngine.marshal(payload)));
         headers.forEach(requestBuilder::header);
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
@@ -268,8 +265,8 @@ class StreamableHttpMCPServerIT {
                 "params", Map.of("uri", "shardingsphere://capabilities"));
     }
     
-    private Map<?, ?> parseBody(final HttpResponse<String> response) throws IOException {
-        return JSON_MAPPER.readValue(normalizeJsonBody(response.body()), Map.class);
+    private Map<?, ?> parseBody(final HttpResponse<String> response) {
+        return JsonEngine.unmarshal(normalizeJsonBody(response.body()), Map.class);
     }
     
     private String normalizeJsonBody(final String responseBody) {
@@ -293,7 +290,7 @@ class StreamableHttpMCPServerIT {
         return hasDataLine ? stringBuilder.toString() : result;
     }
     
-    private Map<?, ?> assertJsonRpcError(final HttpResponse<String> response, final String requestId) throws IOException {
+    private Map<?, ?> assertJsonRpcError(final HttpResponse<String> response, final String requestId) {
         Map<?, ?> actual = parseBody(response);
         assertThat(actual.get("jsonrpc"), is("2.0"));
         assertThat(actual.get("id"), is(requestId));
@@ -303,7 +300,7 @@ class StreamableHttpMCPServerIT {
         return error;
     }
     
-    private String getRecoveryCategory(final HttpResponse<String> response) throws IOException {
+    private String getRecoveryCategory(final HttpResponse<String> response) {
         Map<?, ?> error = (Map<?, ?>) parseBody(response).get("error");
         Map<?, ?> data = (Map<?, ?>) error.get("data");
         return String.valueOf(((Map<?, ?>) data.get("recovery")).get("category"));

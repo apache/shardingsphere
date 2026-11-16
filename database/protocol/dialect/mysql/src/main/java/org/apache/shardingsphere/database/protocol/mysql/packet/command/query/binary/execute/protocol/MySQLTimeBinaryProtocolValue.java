@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -25,6 +26,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 /**
@@ -58,12 +60,14 @@ public final class MySQLTimeBinaryProtocolValue implements MySQLBinaryProtocolVa
     }
     
     @Override
+    @HighFrequencyInvocation
     public void write(final MySQLPacketPayload payload, final Object value) {
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(((Time) value).getTime()), ZoneId.systemDefault());
-        int hours = localDateTime.getHour();
-        int minutes = localDateTime.getMinute();
-        int seconds = localDateTime.getSecond();
-        int nanos = localDateTime.getNano();
+        // TODO Support negative and greater-than-or-equal-to-24-hour MySQL TIME durations.
+        LocalTime time = value instanceof LocalTime ? (LocalTime) value : LocalDateTime.ofInstant(Instant.ofEpochMilli(((Time) value).getTime()), ZoneId.systemDefault()).toLocalTime();
+        int hours = time.getHour();
+        int minutes = time.getMinute();
+        int seconds = time.getSecond();
+        int nanos = time.getNano();
         boolean isTimeAbsent = 0 == hours && 0 == minutes && 0 == seconds;
         boolean isNanosAbsent = 0 == nanos;
         if (isTimeAbsent && isNanosAbsent) {

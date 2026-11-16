@@ -25,8 +25,14 @@ import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
+import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -38,11 +44,17 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -50,7 +62,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 
 import java.sql.SQLException;
@@ -65,8 +79,10 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
@@ -108,6 +124,43 @@ class DistSQLQueryProxyBackendHandlerTest {
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new DistSQLQueryProxyBackendHandler(createSqlStatement(), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), contextManager).execute());
+    }
+    
+    @Test
+    void assertExecutePreviewWithQualifiedTableAndNoDatabase() throws SQLException {
+        DatabaseType mysqlDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
+        when(database.isComplete()).thenReturn(true);
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(database.getDefaultSchemaName()).thenReturn("foo_db");
+        when(database.getSchema(any(IdentifierValue.class))).thenReturn(new ShardingSphereSchema("foo_db", mysqlDatabaseType));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(),
+                new RuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))), new ConfigurationProperties(new Properties()));
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        ConnectionContext connectionContext = new ConnectionContext(Collections::emptyList);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        when(connectionSession.getProtocolType()).thenReturn(mysqlDatabaseType);
+        PreviewStatement sqlStatement = new PreviewStatement("SELECT 1 FROM foo_db.foo_table FOR UPDATE");
+        QueryContext queryContext = new QueryContext(new DistSQLStatementContext(sqlStatement), "PREVIEW " + sqlStatement.getSql(), Collections.emptyList(),
+                new HintValueContext(), connectionContext, metaData);
+        ExecutionUnit executionUnit = new ExecutionUnit("foo_ds", new SQLUnit("SELECT 1 FROM foo_table FOR UPDATE", Collections.emptyList()));
+        ExecutionContext executionContext = new ExecutionContext(mock(QueryContext.class), Collections.singletonList(executionUnit), mock(RouteContext.class));
+        try (
+                MockedConstruction<SQLFederationEngine> ignoredFederationEngine = mockConstruction(SQLFederationEngine.class, (mock, context) -> {
+                    assertThat(context.arguments().get(0), is("foo_db"));
+                    when(mock.decide(any(QueryContext.class), any(RuleMetaData.class))).thenReturn(false);
+                });
+                MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext))) {
+            DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager);
+            handler.execute();
+            assertTrue(handler.next());
+            assertThat(handler.getRowData().getData(), contains("foo_ds", "SELECT 1 FROM foo_table FOR UPDATE"));
+            assertFalse(connectionContext.getCurrentDatabaseName().isPresent());
+            assertFalse(handler.next());
+        }
     }
     
     private Collection<ShardingSphereTable> createTables() {

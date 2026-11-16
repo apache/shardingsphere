@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -171,11 +172,27 @@ public final class InsertStatementContext implements SQLStatementContext, Parame
     
     @Override
     public Collection<WhereSegment> getWhereSegments() {
+        if (getSqlStatement().getWhere().isPresent()) {
+            Collection<WhereSegment> result = new LinkedList<>();
+            if (null != bindingContext.getInsertSelectContext()) {
+                result.addAll(bindingContext.getInsertSelectContext().getSelectStatementContext().getWhereSegments());
+            }
+            getSqlStatement().getWhere().ifPresent(result::add);
+            return result;
+        }
         return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getWhereSegments();
     }
     
     @Override
     public Collection<ColumnSegment> getColumnSegments() {
+        if (getSqlStatement().getWhere().isPresent()) {
+            Collection<ColumnSegment> result = new LinkedList<>();
+            if (null != bindingContext.getInsertSelectContext()) {
+                result.addAll(bindingContext.getInsertSelectContext().getSelectStatementContext().getColumnSegments());
+            }
+            getSqlStatement().getWhere().ifPresent(where -> result.addAll(org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor.extract(where.getExpr())));
+            return result;
+        }
         return null == bindingContext.getInsertSelectContext() ? Collections.emptyList() : bindingContext.getInsertSelectContext().getSelectStatementContext().getColumnSegments();
     }
     

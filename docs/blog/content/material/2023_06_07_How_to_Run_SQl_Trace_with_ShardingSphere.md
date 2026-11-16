@@ -61,7 +61,7 @@ For the convenience of viewing the tracing data, Zipkin or Jaeger is usually use
 
 * Download Proxy from the [official website](https://shardingsphere.apache.org/document/current/en/downloads/) [1]
 * Create `demo_ds_0` and `demo_ds_1` under the MySQL database as the storage unit `ds_0` and `ds_1` .
-* Start Proxy, and connect to Proxy using a MySQL client tool; create logical database `sharding_db`, and register the storage units under this database using DistSQL (Distributed SQL). DistSQL is the specific SQL language for Apache ShardingSphere. It is used in exactly the same way as standard SQL, and is used to provide SQL-level operational capabilities for incremental functions. For details, please refer to the [DistSQL official document](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/) [2]
+* Start Proxy, and connect to Proxy using a MySQL client tool; create logical database `sharding_db`, and register the storage units under this database using DistSQL (Distributed SQL). DistSQL is the specific SQL language for Apache ShardingSphere. It is used in exactly the same way as standard SQL, and is used to provide SQL-level operational capabilities for incremental functions. For details, please refer to the [DistSQL official document](https://shardingsphere.apache.org/document/current/en/user-manual/distsql/) [2]
 
 ![](https://shardingsphere.apache.org/blog/img/2023_06_07_how_to_run_sql_trace_with_shardingsphere2.png)
 
@@ -242,7 +242,7 @@ Finally, you’re welcome to join [ShardingSphere slack channel](https://app.sla
 
 [1][ Download ShardingSphere-Proxy](https://shardingsphere.apache.org/document/current/en/downloads/)
 
-[2][ DistSQL document](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/)
+[2][ DistSQL document](https://shardingsphere.apache.org/document/current/cn/user-manual/distsql/)
 
 [3][ Zipkin official](https://zipkin.io/pages/quickstart.html)
 

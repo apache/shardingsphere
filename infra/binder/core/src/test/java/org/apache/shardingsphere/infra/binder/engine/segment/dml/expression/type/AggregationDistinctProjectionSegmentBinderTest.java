@@ -44,6 +44,22 @@ import static org.mockito.Mockito.when;
 class AggregationDistinctProjectionSegmentBinderTest {
     
     @Test
+    void assertBindWithFilter() {
+        AggregationDistinctProjectionSegment segment = new AggregationDistinctProjectionSegment(0, 45, AggregationType.COUNT, "COUNT(DISTINCT col) FILTER (WHERE condition)", "col", null);
+        ExpressionSegment filter = mock(ExpressionSegment.class);
+        ExpressionSegment expectedFilter = mock(ExpressionSegment.class);
+        segment.setFilter(filter);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        when(ExpressionSegmentBinder.bind(filter, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)).thenReturn(expectedFilter);
+        AggregationDistinctProjectionSegment actual = AggregationDistinctProjectionSegmentBinder.bind(segment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
+        assertThat(actual.getFilter().get(), is(expectedFilter));
+        assertThat(actual.getStartIndex(), is(segment.getStartIndex()));
+        assertThat(actual.getStopIndex(), is(segment.getStopIndex()));
+    }
+    
+    @Test
     void assertBind() {
         AggregationDistinctProjectionSegment segment = new AggregationDistinctProjectionSegment(0, 72, AggregationType.COUNT,
                 "COUNT(DISTINCT product_id) OVER (PARTITION BY order_id)", "product_id", ",");

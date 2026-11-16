@@ -670,7 +670,16 @@ colId
     ;
 
 typeFunctionName
-    : identifier | unreservedWord | typeFuncNameKeyword
+    : rangeTypeName | identifier | unreservedWord | typeFuncNameKeyword
+    ;
+
+rangeTypeName
+    : INT4RANGE
+    | INT8RANGE
+    | NUMRANGE
+    | TSRANGE
+    | TSTZRANGE
+    | DATERANGE
     ;
 
 functionTable
@@ -846,7 +855,26 @@ typeModifiers
     ;
 
 numeric
-    : INT | INTEGER | SMALLINT | BIGINT| REAL | FLOAT optFloat | DOUBLE PRECISION | DECIMAL typeModifiers? | DEC typeModifiers? | NUMERIC typeModifiers? | BOOLEAN | FLOAT8 | FLOAT4 | INT2 | INT4 | INT8
+    : numericTypeName | FLOAT optFloat | fixedPointTypeName typeModifiers? | DEC typeModifiers?
+    ;
+
+numericTypeName
+    : INT
+    | INTEGER
+    | SMALLINT
+    | BIGINT
+    | REAL
+    | BOOLEAN
+    | FLOAT8
+    | FLOAT4
+    | INT2
+    | INT4
+    | INT8
+    | DOUBLE PRECISION
+    ;
+
+fixedPointTypeName
+    : DECIMAL | NUMERIC
     ;
 
 constDatetime
@@ -875,12 +903,14 @@ characterWithoutLength
     ;
 
 characterClause
-    : CHARACTER VARYING?
-    | CHAR VARYING?
+    : characterTypeName VARYING?
     | VARCHAR
-    | NATIONAL CHARACTER VARYING?
-    | NATIONAL CHAR VARYING?
+    | NATIONAL characterTypeName VARYING?
     | NCHAR VARYING?
+    ;
+
+characterTypeName
+    : CHARACTER | CHAR
     ;
 
 optFloat
@@ -1204,10 +1234,17 @@ dataType
     ;
 
 dataTypeName
-    : INT | INT2 | INT4 | INT8 | SMALLINT | INTEGER | BIGINT | DECIMAL | NUMERIC | REAL | FLOAT | FLOAT4 | FLOAT8 | DOUBLE PRECISION | SMALLSERIAL | SERIAL | BIGSERIAL
-    | VARCHAR | CHARACTER | CHAR | TEXT | NAME | BYTEA | TIMESTAMP | DATE | TIME | INTERVAL | BOOLEAN | ENUM | POINT
-    | LINE | LSEG | BOX | PATH | POLYGON | CIRCLE | CIDR | INET | MACADDR | MACADDR8 | BIT | VARBIT | TSVECTOR | TSQUERY | XML
-    | JSON | INT4RANGE | INT8RANGE | NUMRANGE | TSRANGE | TSTZRANGE | DATERANGE | ARRAY | identifier | constDatetime | typeName
+    : numericTypeName
+    | FLOAT
+    | fixedPointTypeName
+    | characterTypeName
+    | VARCHAR
+    | BIT
+    | rangeTypeName
+    | ARRAY
+    | identifier
+    | constDatetime
+    | typeName
     ;
 
 dataTypeLength

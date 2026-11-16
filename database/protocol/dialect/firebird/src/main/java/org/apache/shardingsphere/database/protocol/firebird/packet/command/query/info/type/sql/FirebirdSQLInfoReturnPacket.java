@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.List;
 
@@ -63,13 +64,8 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
     private void parseSQLInfo(final FirebirdPacketPayload payload, final FirebirdSQLInfoPacketType type) {
         // TODO implement other request types handle
-        switch (type) {
-            case RECORDS:
-                processRecords(payload);
-                return;
-            default:
-                throw new DatabaseProtocolException("Unknown database information request type %d", type.getCode());
-        }
+        ShardingSpherePreconditions.checkState(FirebirdSQLInfoPacketType.RECORDS == type, () -> new DatabaseProtocolException("Unknown database information request type %d", type.getCode()));
+        processRecords(payload);
     }
     
     private void processRecords(final FirebirdPacketPayload payload) {

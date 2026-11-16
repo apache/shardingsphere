@@ -78,7 +78,7 @@ feature_broadcast:
 
 feature_distsql:
   - 'features/**/distsql/**/src/main/**'
-  - 'kernel/!(data-pipeline)/distsql/**/src/main/**'
+  - 'kernel/*/distsql/**/src/main/**'
   - 'parser/distsql/**/src/main/**'
 
 feature_sql_federation:

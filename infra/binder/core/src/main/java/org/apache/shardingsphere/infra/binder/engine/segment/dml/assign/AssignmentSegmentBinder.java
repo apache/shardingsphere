@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.assign;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,16 +73,38 @@ public final class AssignmentSegmentBinder {
     public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        return new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
+        OnDuplicateKeyColumnsSegment result = new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
                 .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        segment.getConflictColumns().forEach(each -> result.getConflictColumns().add(
+                ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        return result;
     }
     
     private static ColumnAssignmentSegment bindColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
-                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentTableContexts = getAssignmentTableContexts(binderContext, tableBinderContexts);
+        List<ColumnSegment> boundColumns = new ArrayList<>(columnAssignmentSegment.getColumns().size());
+        for (ColumnSegment each : columnAssignmentSegment.getColumns()) {
+            boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, assignmentTableContexts, outerTableBinderContexts));
+        }
         ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
         return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(), boundColumns, boundValue);
+    }
+    
+    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> getAssignmentTableContexts(final SQLStatementBinderContext binderContext,
+                                                                                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {
+            return tableBinderContexts;
+        }
+        UpdateStatement statement = (UpdateStatement) binderContext.getSqlStatement();
+        if (statement.isTargetTableIsFromAlias() || !statement.getFrom().isPresent() || !(statement.getTable() instanceof SimpleTableSegment)) {
+            return tableBinderContexts;
+        }
+        SimpleTableSegment target = (SimpleTableSegment) statement.getTable();
+        CaseInsensitiveString identifier = CaseInsensitiveString.of(target.getAliasName().orElseGet(() -> target.getTableName().getIdentifier().getValue()));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        result.putAll(identifier, tableBinderContexts.get(identifier));
+        return result;
     }
 }

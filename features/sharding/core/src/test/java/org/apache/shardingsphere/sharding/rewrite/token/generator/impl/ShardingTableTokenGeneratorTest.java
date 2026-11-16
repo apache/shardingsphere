@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteMapper;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -110,5 +113,19 @@ class ShardingTableTokenGeneratorTest {
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(ShardingTableToken.class));
+    }
+    
+    @Test
+    void assertGenerateSQLTokensForExplain() {
+        when(rule.findShardingTable("foo_tbl")).thenReturn(Optional.of(mock()));
+        ExplainStatementContext sqlStatementContext = mock(ExplainStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getSimpleTables()).thenReturn(Collections.singleton(new SimpleTableSegment(new TableNameSegment(27, 33, new IdentifierValue("foo_tbl")))));
+        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
+        assertThat(actual.size(), is(1));
+        ShardingTableToken actualToken = (ShardingTableToken) actual.iterator().next();
+        assertThat(actualToken.getStartIndex(), is(27));
+        assertThat(actualToken.getStopIndex(), is(33));
+        RouteUnit routeUnit = new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_1")));
+        assertThat(actualToken.toString(routeUnit), is("foo_tbl_1"));
     }
 }

@@ -236,6 +236,10 @@ Apply the Completion Gate to every Formal Review and to a discussion reply that 
 
 Use these JSON shapes in local files passed to the arguments, replacing the example values with current evidence and block IDs from the initialized ledger:
 Sources use `rule`, `requirement` or `evidence` roles; `--anchors` takes an anchor-array file shaped like `anchors` below.
+For actual-value naming findings, pass `--rule java-testing.actual-value-naming --applicability <JSON>` with one list entry per affected variable containing `variable`, `operation`, `role`, `declaration`, `operation_call`, and `use`.
+The last three fields are zero-based indices into the finding's existing `anchors`, locating the declaration, tested call, and use or assertion in current candidate code lines; retain the complete test-method context needed to determine their roles.
+Use `actual-value`, `setup`, `expected`, or `unknown` for `role`; confirmation requires complete evidence with `actual-value`, while candidate and withdrawn findings may retain missing or contrary evidence.
+These checks validate the recorded premises and their consistency, not Java semantics; derive applicability from the governing test rule and the complete method.
 
 ```json
 {"focus": "Code Correctness Review", "sources": [{"role": "rule", "origin": "CODE_OF_CONDUCT.md", "path": "CODE_OF_CONDUCT.md"}]}
@@ -315,7 +319,8 @@ logs, or emojis.
 
 Use this format for both public-PR and local-candidate reviews.
 
-Begin the Formal Review with `### Summary` before `### Result`, explaining the problem or goal, actual change mechanism, direction assessment and material limits in two to four concise sentences.
+Begin the Formal Review with `### Summary` before `### Result`, explaining the concrete problem or goal motivating the PR, the affected scenario or impact, the actual change mechanism, the direction assessment and material limits in two to four concise sentences.
+Explain how the mechanism addresses that purpose, and distinguish verified effects from intended benefits that the evidence does not establish.
 Keep a required `### Correction` first, then give the current summary and result using only verified facts.
 
 - `Mergeable`: `### Result` with exactly one `Review Result: Mergeable` line and a concise reason; `### Evidence`; `### Coverage`.
@@ -324,6 +329,14 @@ Keep a required `### Correction` first, then give the current summary and result
 
 For a qualified negative result, use the `Not Mergeable` structure with `Review Status: Not Converged` and `Confirmed Blocking Issues: N` in place of `Blocking Issues: N`.
 State that the findings are a confirmed subset, and report the actual completed and unreviewed coverage, unresolved differences, failed or unavailable checks, and the reason confirmation could not finish.
+
+For each reported issue, prefix its title with `[P0]`, `[P1]`, or `[P2]` according to the proven impact and urgency.
+
+- P0 (urgent): Critical failures requiring immediate action, such as severe data loss, critical security exposure, or widespread core-service outage.
+- P1 (high): Serious failures on supported paths that require prompt correction and do not meet P0.
+- P2 (normal): All other warranted issues, including ordinary or minor defects and violations of applicable coding standards.
+
+Priority expresses impact and urgency; determine proof, blocking status, feedback mode and overall result using the existing review gates.
 
 For each blocking issue include:
 

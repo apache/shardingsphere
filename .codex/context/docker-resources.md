@@ -56,10 +56,11 @@ Apply these rules before direct Docker commands and any build, Maven test, E2E, 
 ## Replacement, Cleanup, and Recovery
 
 - Record the old image ID, if present, before rebuilding.
-- Verify the new image ID after a successful build, and do not delete it when it equals the old ID.
+- Verify the new image ID after a successful build, compare it with any recorded old ID, and do not delete the image if the IDs are equal.
 - Retain the original usable image if the build fails.
-- After a successful replacement, remove the recorded old image only after confirming that it has no other tags, no container dependencies, no other use, and a verified rebuild source.
-- Check all containers, including running and stopped containers, when verifying image dependencies.
+- After successfully replacing `latest` with a different image ID, inspect the recorded old image for cleanup.
+- After a successful replacement, remove the recorded old image once you confirm that it has no other tags, no running or stopped container references, no derived-image dependencies or other use, and a verified rebuild source.
+- After removing the old image from a `latest` replacement, verify that its recorded ID no longer exists and that `latest` still points to the verified new ID.
 - An untagged `<none>:<none>` listing does not prove that an image is unused, and overwriting `latest` does not remove the old image.
 - Apply the same tag, dependency, other-use, and rebuild checks to task-created temporary images, and handle them after build or test success or failure.
 - Keep the standard `latest` image intended for reuse.

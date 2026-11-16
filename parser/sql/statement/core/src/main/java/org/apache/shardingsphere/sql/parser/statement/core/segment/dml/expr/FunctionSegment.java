@@ -51,6 +51,9 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     @Setter
     private WindowItemSegment window;
     
+    @Setter
+    private ExpressionSegment filter;
+    
     /**
      * Get window.
      *
@@ -59,4 +62,15 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     public Optional<WindowItemSegment> getWindow() {
         return Optional.ofNullable(window);
     }
+    
+    /**
+     * Get aggregate filter predicate.
+     *
+     * @return aggregate filter predicate
+     */
+    
+    public Optional<ExpressionSegment> getFilter() {
+        return Optional.ofNullable(filter);
+    }
+    
 }

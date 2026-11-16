@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,6 +82,21 @@ class FirebirdStatusVectorTest {
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_login);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteSqldaError() {
+        FirebirdStatusVector actual = new FirebirdStatusVector(new SQLException("", "07002", ISCConstants.isc_dsql_sqlda_err));
+        actual.write((PacketPayload) payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_sqlerr);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(-804);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_dsql_sqlda_err);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
         verifyNoMoreInteractions(payload);
     }

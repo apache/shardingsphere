@@ -130,6 +130,8 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
     
     private static final class ScriptReader extends BaseErrorListener {
         
+        private static final Pattern COMMAND_NAME_DELIMITER_PATTERN = Pattern.compile("[\\s\\\\]");
+        
         private static final Pattern PSQL_VARIABLE_PATTERN =
                 Pattern.compile(":(?:[A-Za-z_0-9\\x80-\\uFFFF]+|'[A-Za-z_0-9\\x80-\\uFFFF]+'|\"[A-Za-z_0-9\\x80-\\uFFFF]+\"|\\{\\?[A-Za-z_0-9\\x80-\\uFFFF]+\\})");
         
@@ -320,7 +322,6 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             int line = lineAt(offset);
             int end = lineStarts[line] + lines.get(line).length();
             String command = input.getText(Interval.of(offset + 1, end - 1));
-            String name = command.split("\\s|\\\\", 2)[0];
             boolean compoundCommand = command.indexOf('\\') >= 0;
             if (compoundCommand && (!conditionals.isEmpty() || command.contains("\\if"))) {
                 if (conditionalStart >= 0) {
@@ -329,6 +330,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
                 }
                 conditionalReplayEnd = input.size();
             }
+            String name = COMMAND_NAME_DELIMITER_PATTERN.split(command, 2)[0];
             if (offset >= conditionalReplayEnd && readConditional(name, command, offset, end, compoundCommand)) {
                 return true;
             }

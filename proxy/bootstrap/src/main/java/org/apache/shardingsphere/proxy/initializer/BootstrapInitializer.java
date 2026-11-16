@@ -17,23 +17,33 @@
 
 package org.apache.shardingsphere.proxy.initializer;
 
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoadResult;
-import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyConfigurationSwapper;
+import org.apache.shardingsphere.proxy.backend.config.ProxyDatabaseConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.ProxyGlobalConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.version.ShardingSphereProxyVersion;
 
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Bootstrap initializer.
@@ -48,12 +58,23 @@ public final class BootstrapInitializer {
      * @throws SQLException SQL exception
      */
     public void init(final ProxyConfigurationLoadResult loadResult, final int port) throws SQLException {
-        ModeConfiguration modeConfig = null == loadResult.getServerConfiguration().getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(loadResult.getServerConfiguration().getMode());
-        ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(loadResult);
-        ContextManager contextManager = createContextManager(proxyConfig, modeConfig, port);
+        ProxyConfiguration proxyConfig = createProxyConfiguration(loadResult);
+        ContextManager contextManager = createContextManager(proxyConfig, loadResult.getModeConfiguration(), port);
         ProxyContext.init(contextManager);
         BackendExecutorContext.getInstance().init();
         ShardingSphereProxyVersion.setVersion(contextManager);
+    }
+    
+    private ProxyConfiguration createProxyConfiguration(final ProxyConfigurationLoadResult loadResult) {
+        boolean isInstanceConnectionEnabled = (boolean) loadResult.getProperties().getOrDefault(TemporaryConfigurationPropertyKey.INSTANCE_CONNECTION_ENABLED.getKey(), Boolean.FALSE);
+        Map<String, DatabaseConfiguration> databaseConfigs = new LinkedHashMap<>(loadResult.getDatabaseConfigurations().size(), 1F);
+        for (Entry<String, ProxyDatabaseConfiguration> entry : loadResult.getDatabaseConfigurations().entrySet()) {
+            databaseConfigs.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(entry.getValue().getDataSources(), entry.getValue().getRules(), isInstanceConnectionEnabled));
+        }
+        Map<String, DataSourcePoolProperties> globalDataSourceProps = loadResult.getDataSources().entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> DataSourcePoolPropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(DataSourcePoolCreator.create(globalDataSourceProps, true), loadResult.getRules(), loadResult.getProperties());
+        return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
     
     private ContextManager createContextManager(final ProxyConfiguration proxyConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {

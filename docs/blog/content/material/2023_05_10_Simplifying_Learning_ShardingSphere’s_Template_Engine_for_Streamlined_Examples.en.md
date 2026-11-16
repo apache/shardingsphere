@@ -5,7 +5,7 @@ chapter = true
 +++
 
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md1.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md1.jpg)
 
 After years of rapid development, ShardingSphere has grown significantly, offering six core functional modules that cater to various needs. It is also compatible with different registries, such as ZooKeeper and Nacos, allowing for seamless integration. Moreover, it supports distributed transactions and various development frameworks, providing flexibility and convenience.
 
@@ -13,14 +13,12 @@ To ensure a user-friendly experience, we have created an example module that sho
 
 This example system serves as a demonstration of how these components can be effectively combined, along with an abstraction of business logic. Take a look at the illustration of our example system below:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md2.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md2.jpg)Figure 1 — ShardingSphere’s former example directory structure
 
 # Analyzing the Issue
 
 
-Let me start by showing you the structure of Yogiyo’s order service. When order creation, cancellation, or update traffic occurs, the Orderyo application code distributes the write load to four shard clusters based on the `customer_id`. This way, the application only needs the `customer_id` to find the shard cluster it needs to access and perform the operation.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md2.jpeg)Figure 1 — ShardingSphere’s former example directory structure
 
 # Enhancing the Example Module for Improved User Experience
 
@@ -46,7 +44,7 @@ To address these concerns and provide users with an enhanced and intuitive exper
 
 By implementing these improvements, we empower users to easily navigate and understand the examples, while providing the necessary flexibility to adapt ShardingSphere to their specific needs. Figure 2 illustrates the smallest logical unit of the encryption module within this new approach.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md3.jpeg)Figure 2 — Minimum logical unit of the encryption module
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md3.jpg)Figure 2 — Minimum logical unit of the encryption module
 
 
 # Improved Flexibility and Reduced Learning Cost
@@ -57,7 +55,7 @@ Additionally, we have addressed the issue of complex business code by templating
 
 Figure 3 illustrates how these improvements have been implemented:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md4.jpeg)Figure 3 — Public business logic templates
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md4.jpg)Figure 3 — Public business logic templates
 
 
 In the updated approach, the core functional modules’ code logic has been split into smaller, more manageable units. These units can be seamlessly combined based on the user’s choice, allowing for a customized experience.
@@ -68,7 +66,7 @@ With these enhancements, users can effectively navigate the example module, free
 
 Additionally, we have divided the functional features into categories like encryption and decryption, read/write splitting, and database and table separation. The supported configuration types are outlined in detail in Table 1.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md5.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md5.jpg)
 
 
 Based on the configuration types we abstracted, the module names of the sample module code were sorted and redefined to make it easier for users to find and use. This is shown below:
@@ -79,7 +77,7 @@ shardingsphere-${product}-sample/${feature}--${framework}--${mode}--${transactio
 
 In summary, the updated example module leverages the power of the FreeMarker template engine. This approach significantly enhances flexibility by splitting the functional code into minimal logical units, abstracting business templates with business code, and standardizing module names. The result is a highly flexible example module that offers improved organization and usability:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md6.jpeg)Figure 4 — Example generation engine logic structure
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md6.png)Figure 4 — Example generation engine logic structure
 
 
 Each module generated within this framework is a standalone project, allowing for individual testing and independent use. This approach ensures that users can effectively utilize and validate the functionality of each module according to their specific requirements.
@@ -91,14 +89,14 @@ Each module generated within this framework is a standalone project, allowing fo
 
 Navigate to the [ShardingSphere project directory](https://github.com/apache/shardingsphere) and find the `shardingsphere-jdbc-example-generator` module within the corresponding example module. This module contains all the template files and generation logic required for generating examples.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md6.jpeg)Figure 5 — Project structure of the generation engine
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md7.jpg)Figure 5 — Project structure of the generation engine
 
 
 ## 2. Configure the Generation Engine Parameters
 
 The `shardingsphere-jdbc-example-generator` module is a standard Java project. The project's configuration file can be found at `resources/config.yaml`. This file allows users to declare various parameters supported by the generation engine. In addition to the template parameters for specific functions, we have also provided convenient configurations that users can customize according to their needs. The specific parameters and their meanings are outlined in Table 2:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md7.jpeg)
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md8.jpg)
 
 ## 3. Generate the Configuration Module
 
@@ -120,7 +118,7 @@ After configuring the parameters, it’s time to generate the corresponding conf
 
 Once the generation process is triggered, the associated example code will be generated in the configured output directory. Typically, this would be in the `shardingsphere-jdbc-example-generator/target/generated-sources/ directory`. The generated directory structure can be seen in Figure 6 below:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_04_27_How_South_Korea’s_Yogiyo_Improved_Scalability_and_Performance_with_Apache_ShardingSphere.en.md8.jpeg)Figure 6 — Directory structure for generating examples
+![img](https://shardingsphere.apache.org/blog/img/2023_05_10_Simplifying_Learning_ShardingSphere’s_Template_Engine_for_Streamlined_Examples.en.md9.jpg)Figure 6 — Directory structure for generating examples
 
 Within the generated directory, each project module is a standard Maven project. You can directly open it using an IDE like IntelliJ IDEA, and run the project. This will result in a project structure as shown in Figure 7:
 

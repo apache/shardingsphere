@@ -1,5 +1,6 @@
 +++
 title = "分片利器 AutoTable：为用户带来「管家式」分片配置体验"
+translationKey = "Oct_12_6_AutoTable_Your_Butler_Like_Sharding_Configuration_Tool"
 weight = 22
 chapter = true
 +++
@@ -16,7 +17,7 @@ SphereEx 中间件研发工程师，Apache ShardingSphere contributor。目前�
 
 **Sharding**是 Apache ShardingSphere 的核心特性，也是 ShardingSphere 最被人们熟知的一项能力。在过去，用户若需要进行分库分表，一种典型的实施流程（不含数据迁移）如下：
 
-![](https://shardingsphere.apache.org/blog/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
+![](https://shardingsphere.apache.org/blog/img/Blog_22_img_1_sharding_workflow_en.png)
 
 					图1 Sharding 实施流程示意图
 
@@ -182,7 +183,7 @@ https://github.com/apache/shardingsphere/blob/master/shardingsphere-jdbc/shardin
 
 GitHub ID 为 @CatYangWei 的用户第一个发现并提出了关于 AutoTable 相关的问题：
 
-图5![]()
+图5![](https://shardingsphere.apache.org/blog/img/Blog_22_img_4_Rewarded_User_Issue_Snapshot.png)
 
 感谢这位细心的用户，我们将会通过 GitHub 与您联系，并送上社区的精美周边。👏👏👏也欢迎更多的社区小伙伴向我们提出优化建议，帮助社区更好地成长～
 

@@ -24,6 +24,8 @@ import io.modelcontextprotocol.json.schema.JsonSchemaValidator.ValidationRespons
 import io.modelcontextprotocol.json.schema.jackson2.DefaultJsonSchemaValidator;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
 import org.apache.shardingsphere.mcp.api.capability.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.payload.MCPSuccessPayload;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportErrorFactory;
@@ -31,7 +33,6 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperF
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorPayload;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPShardingSphereMetadataKeys;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -71,8 +72,8 @@ final class MCPCallToolResultFactory {
     
     private String toJsonString(final Object value) {
         try {
-            return jsonMapper.writeValueAsString(value);
-        } catch (final IOException ex) {
+            return JsonEngine.marshal(value);
+        } catch (final JsonException ex) {
             throw MCPTransportErrorFactory.createError(ex);
         }
     }
