@@ -227,9 +227,8 @@ class FirebirdFrontendEngineTest {
     }
     
     private ByteBuf buildBatchCreate(final int blrType, final boolean invalidParams) {
-        ByteBuf blr = Unpooled.buffer().writeByte(blrType < 0 ? 99 : BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
-                .writeShortLE(2).writeByte(blrType < 0 ? BlrConstants.blr_long : blrType).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
-                .writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
+        ByteBuf blr = Unpooled.buffer().writeByte(blrType < 0 ? 99 : BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0).writeShortLE(2)
+                .writeByte(blrType < 0 ? BlrConstants.blr_long : blrType).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0).writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
         int blrLength = blr.readableBytes();
         ByteBuf result = Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_CREATE.getValue()).writeInt(BATCH_STATEMENT_HANDLE).writeInt(blrLength).writeBytes(blr)
                 .writeZero((4 - blrLength % 4) % 4).writeInt(BlrConstants.blr_int64 == blrType ? 10 : 6);

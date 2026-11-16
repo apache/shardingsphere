@@ -732,8 +732,7 @@ class FirebirdPacketCodecEngineTest {
     @Test
     void assertDecodeBlobStreamAfterBatchCreate() {
         EmbeddedChannel channel = createBatchChannel();
-        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildBlobStream(32, buildBlobHeader(1L, 20, 0).writeZero(16)), buildBatchCreate(),
-                buildBlobStream(16, buildBlobHeader(2L, 0, 0))));
+        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildBlobStream(32, buildBlobHeader(1L, 20, 0).writeZero(16)), buildBatchCreate(), buildBlobStream(16, buildBlobHeader(2L, 0, 0))));
         ByteBuf actualFirstStream = channel.readInbound();
         ByteBuf actualCreate = channel.readInbound();
         setUpBatchContext();
