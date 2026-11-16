@@ -121,7 +121,7 @@ public final class FirebirdParseBatchBlr {
         if (BlrConstants.blr_varying == blrType || BlrConstants.blr_varying2 == blrType || BlrConstants.blr_short == blrType) {
             return Short.BYTES;
         }
-        if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType) {
+        if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_int128 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType) {
             return Long.BYTES;
         }
         return Integer.BYTES;

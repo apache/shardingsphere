@@ -21,7 +21,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobBufferFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobContinuationBpbException;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidClumpletStructureException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.RepeatedBatchBlobIdException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.firebirdsql.gds.ISCConstants;
@@ -49,7 +49,6 @@ import java.util.Map;
  * Firebird batch statement metadata.
  */
 @HighFrequencyInvocation
-@RequiredArgsConstructor
 @Getter
 public final class FirebirdBatchStatement {
     
@@ -58,6 +57,8 @@ public final class FirebirdBatchStatement {
     private final int statementHandle;
     
     private final List<FirebirdBatchColumnDescriptor> columnDescriptors;
+    
+    private final int alignedMessageLength;
     
     private final long bufferSize;
     
@@ -90,6 +91,47 @@ public final class FirebirdBatchStatement {
     
     public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize) {
         this(statementHandle, columnDescriptors, bufferSize, false, false, false);
+    }
+    
+    public FirebirdBatchStatement(final int statementHandle, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final long bufferSize, final boolean recordCounts, final boolean multiError,
+                                  final boolean blobStreamAllowed) {
+        this.statementHandle = statementHandle;
+        this.columnDescriptors = columnDescriptors;
+        alignedMessageLength = calculateAlignedMessageLength(columnDescriptors);
+        this.bufferSize = bufferSize;
+        this.recordCounts = recordCounts;
+        this.multiError = multiError;
+        this.blobStreamAllowed = blobStreamAllowed;
+    }
+    
+    private static int calculateAlignedMessageLength(final Collection<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        int result = 0;
+        int alignment = Short.BYTES;
+        for (FirebirdBatchColumnDescriptor each : columnDescriptors) {
+            result = (each.getOffset() + each.getLength() + Short.BYTES - 1 & -Short.BYTES) + Short.BYTES;
+            alignment = Math.max(alignment, getMessageAlignment(each.getType()));
+        }
+        return result + alignment - 1 & -alignment;
+    }
+    
+    private static int getMessageAlignment(final FirebirdBinaryColumnType type) {
+        switch (type) {
+            case TEXT:
+            case LEGACY_TEXT:
+            case BOOLEAN:
+                return Byte.BYTES;
+            case VARYING:
+            case LEGACY_VARYING:
+            case SHORT:
+                return Short.BYTES;
+            case INT64:
+            case INT128:
+            case DOUBLE:
+            case D_FLOAT:
+                return Long.BYTES;
+            default:
+                return Integer.BYTES;
+        }
     }
     
     /**
