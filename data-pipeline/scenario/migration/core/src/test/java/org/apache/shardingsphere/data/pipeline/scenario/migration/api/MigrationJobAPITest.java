@@ -286,6 +286,8 @@ class MigrationJobAPITest {
     void assertRollbackNormalizesSchemaAndPreservesActualTable(final String name, final String schemaName, final String expectedSchemaName) throws SQLException {
         String jobId = PipelineJobIdUtils.marshal(new MigrationJobId(contextKey, Collections.emptyList()));
         MigrationJobConfiguration jobConfig = mock(MigrationJobConfiguration.class);
+        when(jobConfig.getTargetDatabaseName()).thenReturn("foo_db");
+        ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
         when(jobConfig.getTargetTableNames()).thenReturn(Collections.singletonList("T_Order"));
         when(jobConfig.getTargetTableSchemaMap()).thenReturn(Collections.singletonMap("T_Order", schemaName));
         Connection connection = mock(Connection.class);
@@ -293,6 +295,7 @@ class MigrationJobAPITest {
         when(connection.createStatement()).thenReturn(statement);
         try (
                 MockedStatic<PipelineAPIFactory> ignoredFactory = mockStatic(PipelineAPIFactory.class, Answers.RETURNS_DEEP_STUBS);
+                MockedStatic<PipelineContextManager> ignoredContext = mockStatic(PipelineContextManager.class);
                 MockedConstruction<PipelineJobConfigurationManager> ignoredManager = mockConstruction(PipelineJobConfigurationManager.class,
                         (mock, context) -> when(mock.getJobConfiguration(jobId)).thenReturn(jobConfig));
                 MockedConstruction<PipelineDataSource> ignoredDataSource = mockConstruction(PipelineDataSource.class, (mock, context) -> {
@@ -301,6 +304,7 @@ class MigrationJobAPITest {
                 });
                 MockedConstruction<PipelinePrepareSQLBuilder> builders = mockConstruction(PipelinePrepareSQLBuilder.class,
                         (mock, context) -> when(mock.buildDropSQL(expectedSchemaName, "T_Order")).thenReturn("DROP TABLE IF EXISTS target_table"))) {
+            when(PipelineContextManager.getContext(contextKey)).thenReturn(contextManager);
             jobAPI.rollback(jobId);
             verify(builders.constructed().get(0)).buildDropSQL(expectedSchemaName, "T_Order");
             verify(statement).execute("DROP TABLE IF EXISTS target_table");
