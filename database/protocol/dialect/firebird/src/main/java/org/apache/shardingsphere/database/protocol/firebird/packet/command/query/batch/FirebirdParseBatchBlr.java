@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.firebirdsql.gds.BlrConstants;
 
@@ -94,6 +95,7 @@ public final class FirebirdParseBatchBlr {
         return blrLength - (buffer.readerIndex() - startReaderIndex);
     }
     
+    @HighFrequencyInvocation
     private static FirebirdParseBatchBlr parseFormat(final ByteBuf buffer) {
         int count = buffer.readUnsignedByte();
         count += buffer.readUnsignedByte() << 8;
@@ -175,7 +177,7 @@ public final class FirebirdParseBatchBlr {
         if (BlrConstants.blr_bool == blrType) {
             return Byte.BYTES;
         }
-        throw new IllegalArgumentException("Unsupported BLR type: " + blrType);
+        throw new IllegalArgumentException(String.format("Unsupported BLR type: %s", blrType));
     }
     
     private static boolean isVarying(final FirebirdBinaryColumnType type) {
@@ -185,7 +187,7 @@ public final class FirebirdParseBatchBlr {
     private static int appendNullIndicator(final ByteBuf buffer, final int offset) {
         int nullType = buffer.readUnsignedByte();
         buffer.skipBytes(1);
-        ShardingSpherePreconditions.checkState(BlrConstants.blr_short == nullType, () -> new IllegalArgumentException("Expected blr_short NULL indicator, got: " + nullType));
+        ShardingSpherePreconditions.checkState(BlrConstants.blr_short == nullType, () -> new IllegalArgumentException(String.format("Expected blr_short NULL indicator, got: %s", nullType)));
         return alignTo(offset, Short.BYTES) + Short.BYTES;
     }
     
