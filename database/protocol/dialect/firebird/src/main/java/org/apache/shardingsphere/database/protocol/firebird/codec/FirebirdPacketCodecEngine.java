@@ -19,8 +19,12 @@ package org.apache.shardingsphere.database.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import io.netty.util.ReferenceCountUtil;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
@@ -34,10 +38,12 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSetBpbCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -61,17 +67,26 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private final Map<Integer, FirebirdBatchBlobStream> batchBlobStreams = new HashMap<>(1, 1F);
     
+    private final BatchCreateHandler batchCreateHandler = new BatchCreateHandler();
+    
     private FirebirdCommandPacketType pendingPacketType;
     
+    private boolean batchCreatePending;
+    
+    @HighFrequencyInvocation
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= MESSAGE_TYPE_LENGTH;
+        return readableBytes >= MESSAGE_TYPE_LENGTH || readableBytes > 0 && (batchCreatePending || !pendingMessages.isEmpty());
     }
     
     @HighFrequencyInvocation
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
         try {
+            if (batchCreatePending) {
+                pendingMessages.add(in.readRetainedSlice(in.readableBytes()));
+                return;
+            }
             if (pendingMessages.isEmpty()) {
                 pendingPacketType = FirebirdCommandPacketType.valueOf(in.getInt(in.readerIndex()));
                 if (FirebirdCommandPacketType.ALLOCATE_STATEMENT == pendingPacketType) {
@@ -149,12 +164,17 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 }
                 return;
             }
-            if (FirebirdCommandPacketType.BATCH_CREATE == commandType && buffer.readableBytes() > packetLength) {
-                rememberBatchFormat(buffer, packetLength, charset);
-            }
             trackBatchBlobStream(buffer, commandType, packetLength, charset);
             pendingPacketType = null;
             out.add(buffer.readRetainedSlice(packetLength));
+            if (FirebirdCommandPacketType.BATCH_CREATE == commandType) {
+                batchCreatePending = true;
+                if (buffer.isReadable()) {
+                    pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
+                }
+                batchCreateHandler.activate(context);
+                return;
+            }
         }
         deferredBatchFormats.clear();
     }
@@ -211,16 +231,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 : null;
     }
     
-    private void rememberBatchFormat(final ByteBuf buffer, final int packetLength, final Charset charset) {
-        FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
-        ByteBuf batchBlr = packet.getBatchBlr();
-        deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes()).getFields());
-    }
-    
     private void trackBatchBlobStream(final ByteBuf buffer, final FirebirdCommandPacketType commandType, final int packetLength, final Charset charset) {
-        if (FirebirdCommandPacketType.BATCH_CREATE == commandType) {
-            batchBlobStreams.put(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH), new FirebirdBatchBlobStream());
-        } else if (FirebirdCommandPacketType.BATCH_SET_BPB == commandType) {
+        if (FirebirdCommandPacketType.BATCH_SET_BPB == commandType) {
             FirebirdBatchSetBpbCommandPacket packet = new FirebirdBatchSetBpbCommandPacket(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex(), packetLength), charset));
             batchBlobStreams.computeIfAbsent(packet.getStatementHandle(), key -> new FirebirdBatchBlobStream()).setDefaultBpb(packet.getBpb());
         }
@@ -230,6 +242,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         pendingMessages.forEach(ByteBuf::release);
         pendingMessages.clear();
         pendingPacketType = null;
+        batchCreatePending = false;
     }
     
     @Override
@@ -252,6 +265,122 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     @Override
     public FirebirdPacketPayload createPacketPayload(final ByteBuf message, final Charset charset) {
         return new FirebirdPacketPayload(message, charset);
+    }
+    
+    /**
+     * Create the lifecycle handler that coordinates batch framing with dispatched CREATE responses.
+     *
+     * @return handler to install before decoding, after inbound flow control and before command dispatch
+     */
+    public ChannelHandler createBatchCreateHandler() {
+        return batchCreateHandler;
+    }
+    
+    private final class BatchCreateHandler extends ChannelInboundHandlerAdapter {
+        
+        @HighFrequencyInvocation
+        private void activate(final ChannelHandlerContext context) {
+            context.pipeline().addAfter(context.pipeline().context(this).name(), "FirebirdBatchCreateResponseHandler", new BatchCreateResponseHandler());
+        }
+        
+        @Override
+        public void channelInactive(final ChannelHandlerContext context) {
+            clear();
+            context.fireChannelInactive();
+        }
+        
+        private void clear() {
+            resetState();
+            deferredBatchFormats.clear();
+            batchBlobStreams.clear();
+        }
+        
+        @Override
+        public void handlerRemoved(final ChannelHandlerContext context) {
+            clear();
+            ChannelHandler responseHandler = context.pipeline().get(BatchCreateResponseHandler.class);
+            if (null != responseHandler) {
+                context.pipeline().remove(responseHandler);
+            }
+        }
+        
+        @HighFrequencyInvocation
+        private void resume(final ChannelHandlerContext context) {
+            if (!batchCreatePending || !context.channel().isActive()) {
+                return;
+            }
+            batchCreatePending = false;
+            if (pendingMessages.isEmpty()) {
+                deferredBatchFormats.clear();
+                return;
+            }
+            ByteBuf[] messages = pendingMessages.toArray(new ByteBuf[pendingMessages.size()]);
+            pendingMessages.clear();
+            for (ByteBuf each : messages) {
+                if (context.channel().isActive()) {
+                    context.pipeline().fireChannelRead(each);
+                } else {
+                    each.release();
+                }
+            }
+            context.pipeline().fireChannelReadComplete();
+        }
+        
+        private final class BatchCreateResponseHandler extends ChannelDuplexHandler {
+            
+            private int statementHandle;
+            
+            private boolean batchAlreadyOpened;
+            
+            private boolean awaitingResponse;
+            
+            @HighFrequencyInvocation
+            @Override
+            public void channelRead(final ChannelHandlerContext context, final Object message) {
+                ByteBuf packet = (ByteBuf) message;
+                if (FirebirdCommandPacketType.BATCH_CREATE.getValue() == packet.getInt(packet.readerIndex())) {
+                    statementHandle = packet.getInt(packet.readerIndex() + MESSAGE_TYPE_LENGTH);
+                    batchAlreadyOpened = null != FirebirdBatchRegistry.getInstance().getBatchStatement(context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get(), statementHandle);
+                    if (!batchAlreadyOpened && !pendingMessages.isEmpty()) {
+                        try {
+                            rememberBatchFormat(packet, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
+                            // CHECKSTYLE:OFF
+                        } catch (final RuntimeException ex) {
+                            // CHECKSTYLE:ON
+                            packet.release();
+                            resetState();
+                            context.writeAndFlush(FirebirdErrorPacketFactory.newInstance(ex)).addListener(ChannelFutureListener.CLOSE);
+                            return;
+                        }
+                    }
+                    awaitingResponse = true;
+                }
+                context.fireChannelRead(message);
+            }
+            
+            private void rememberBatchFormat(final ByteBuf buffer, final Charset charset) {
+                FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(new FirebirdPacketPayload(buffer.duplicate(), charset));
+                ByteBuf batchBlr = packet.getBatchBlr();
+                deferredBatchFormats.put(packet.getStatementHandle(), FirebirdParseBatchBlr.parse(batchBlr, batchBlr.readableBytes()).getFields());
+            }
+            
+            @HighFrequencyInvocation
+            @Override
+            public void write(final ChannelHandlerContext context, final Object message, final ChannelPromise promise) {
+                context.write(message, promise);
+                if (awaitingResponse && message instanceof FirebirdGenericResponsePacket) {
+                    awaitingResponse = false;
+                    if (!context.channel().isActive()) {
+                        return;
+                    }
+                    if (!batchAlreadyOpened && null != FirebirdBatchRegistry.getInstance().getBatchStatement(context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get(), statementHandle)) {
+                        batchBlobStreams.put(statementHandle, new FirebirdBatchBlobStream());
+                    }
+                    context.pipeline().remove(this);
+                    context.executor().execute(() -> resume(context));
+                }
+            }
+        }
     }
     
     /**
