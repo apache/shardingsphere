@@ -79,7 +79,7 @@ class FirebirdBlobParameterConverterTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("textBlobArguments")
-    void assertConvertToTextBlob(final String name, final FirebirdBatchColumnDescriptor field, final byte[] content, final int connectionCharsetId, final String expected) {
+    void assertConvertToTextBlob(final String name, final FirebirdBatchColumnDescriptor field, final byte[] content, final int connectionCharsetId, final Object expected) {
         assertThat(new FirebirdBlobParameterConverter(connectionCharsetId).convert(content, field, createBlobParameter(1)), is(expected));
     }
     
@@ -162,7 +162,10 @@ class FirebirdBlobParameterConverterTest {
     private static Stream<Arguments> textBlobArguments() {
         return Stream.of(
                 Arguments.of("transliterated", createField(1, WIN1251), "Привет".getBytes(WIN1251_CHARSET), UTF8, "Привет"),
-                Arguments.of("connection_charset", createField(1, UTF8), "Привет".getBytes(StandardCharsets.UTF_8), UTF8, "Привет"),
+                Arguments.of("connection_charset", createField(1, UTF8), "Привет".getBytes(StandardCharsets.UTF_8), UTF8, "Привет".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("malformed_connection_charset", createField(1, UTF8), new byte[]{(byte) 0xFF}, UTF8, new byte[]{(byte) 0xFF}),
+                Arguments.of("malformed_dynamic_charset", createField(1, 127), new byte[]{(byte) 0xFF}, UTF8, new byte[]{(byte) 0xFF}),
+                Arguments.of("unmappable_connection_charset", createField(1, WIN1251), new byte[]{(byte) 0x98}, WIN1251, new byte[]{(byte) 0x98}),
                 Arguments.of("without_connection_charset", createField(1, WIN1251), "Привет".getBytes(WIN1251_CHARSET), NONE, "Привет"));
     }
     
