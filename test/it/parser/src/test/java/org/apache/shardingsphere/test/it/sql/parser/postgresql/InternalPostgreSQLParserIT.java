@@ -199,6 +199,17 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getInvalidJsonTablePlans")
+    void assertInvalidJsonTablePlan(final String plan) {
+        String sql = "SELECT * FROM JSON_TABLE('{}', '$' AS root COLUMNS (id INT PATH '$.id') PLAN (" + plan + ")) AS jt";
+        assertThrows(SQLParsingException.class, () -> new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+    }
+    
+    private static Stream<String> getInvalidJsonTablePlans() {
+        return Stream.of("root UNION child CROSS other", "root CROSS child UNION other", "(root)");
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedFilterExpressions")
     void assertUnsupportedFilter(final String expression) {
         String sql = "SELECT " + expression;
@@ -211,9 +222,6 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 "COUNT(*) FILTER (WHERE FALSE)",
                 "COUNT(DISTINCT ?) FILTER (WHERE ?)",
                 "SUM(?) FILTER (WHERE ?) OVER (PARTITION BY ? ORDER BY ? ROWS ? PRECEDING)",
-                "JSON_ARRAYAGG(?) FILTER (WHERE ?)",
-                "JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()",
-                "JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)",
                 "SUM((SELECT ?)) FILTER (WHERE EXISTS (SELECT ?))",
                 "ABS((SELECT SUM(?) FILTER (WHERE ?)))");
     }

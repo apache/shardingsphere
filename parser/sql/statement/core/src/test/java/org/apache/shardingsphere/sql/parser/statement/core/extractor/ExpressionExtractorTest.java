@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -55,10 +56,46 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 
 class ExpressionExtractorTest {
+    
+    @Test
+    void assertGetParameterMarkerExpressionsWithFunctionFilter() {
+        ParameterMarkerExpressionSegment argument = new ParameterMarkerExpressionSegment(0, 0, 0);
+        ParameterMarkerExpressionSegment filter = new ParameterMarkerExpressionSegment(1, 1, 1);
+        FunctionSegment function = new FunctionSegment(0, 1, "JSON_ARRAYAGG", "JSON_ARRAYAGG(?) FILTER (WHERE ?)");
+        function.getParameters().add(argument);
+        function.setFilter(filter);
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(function));
+        assertThat(actual, contains(argument, filter));
+    }
+    
+    @Test
+    void assertExtractColumnsWithFunctionFilter() {
+        ColumnSegment argument = new ColumnSegment(0, 0, new IdentifierValue("foo_argument"));
+        ColumnSegment filter = new ColumnSegment(0, 0, new IdentifierValue("foo_filter"));
+        FunctionSegment function = new FunctionSegment(0, 0, "JSON_ARRAYAGG", "JSON_ARRAYAGG(foo_argument) FILTER (WHERE foo_filter)");
+        function.getParameters().add(argument);
+        function.setFilter(filter);
+        Collection<ColumnSegment> actual = ExpressionExtractor.extractColumns(function, false);
+        assertThat(actual, contains(argument, filter));
+    }
+    
+    @Test
+    void assertGetNestedSubqueryCompareExpressionsWithFunctionFilter() {
+        SubqueryExpressionSegment subquery = new SubqueryExpressionSegment(new SubquerySegment(0, 0, SelectStatement.builder().build(), ""));
+        BinaryOperationExpression filter = new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), subquery, "=", "");
+        FunctionSegment function = new FunctionSegment(0, 0, "JSON_ARRAYAGG", "");
+        function.setFilter(filter);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "", function));
+        SelectStatement select = SelectStatement.builder().projections(projections).build();
+        Collection<ExpressionSegment> actual = ExpressionExtractor.getNestedSubqueryCompareExpressions(select);
+        assertThat(actual, contains(filter));
+    }
     
     @Test
     void assertExtractAndPredicates() {
