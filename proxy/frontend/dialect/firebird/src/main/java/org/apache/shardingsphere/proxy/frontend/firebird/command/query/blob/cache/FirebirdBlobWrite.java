@@ -150,8 +150,7 @@ public final class FirebirdBlobWrite {
     }
     
     @HighFrequencyInvocation
-    @SneakyThrows(IOException.class)
-    synchronized void release() {
+    synchronized void release() throws IOException {
         if (null != backingFile) {
             Files.delete(backingFile);
             backingFile = null;
