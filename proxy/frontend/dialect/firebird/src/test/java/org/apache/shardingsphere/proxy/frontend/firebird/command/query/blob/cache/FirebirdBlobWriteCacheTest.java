@@ -190,6 +190,16 @@ class FirebirdBlobWriteCacheTest {
         CACHE.closeWrite(connectionId, blobHandle);
     }
     
+    @SneakyThrows(IllegalAccessException.class)
+    private void releaseSoftlyReachableData(final FirebirdBlobWrite write) {
+        for (Field each : FirebirdBlobWrite.class.getDeclaredFields()) {
+            Object value = Plugins.getMemberAccessor().get(each, write);
+            if (value instanceof Reference) {
+                ((Reference<?>) value).clear();
+            }
+        }
+    }
+    
     private void pauseBlobAccess(final CountDownLatch accessStarted, final CountDownLatch continueAccess) throws InterruptedException {
         accessStarted.countDown();
         assertTrue(continueAccess.await(5, TimeUnit.SECONDS));
@@ -348,16 +358,6 @@ class FirebirdBlobWriteCacheTest {
         assertThat(CACHE.useBlobData(1, 21L, 31).get(), is(new byte[]{1, 2, 3}));
         releaseSoftlyReachableData(getIdCache().get(1).get(21L));
         assertThat(CACHE.getBlobData(1, 21L).get(), is(new byte[]{1, 2, 3}));
-    }
-    
-    @SneakyThrows(IllegalAccessException.class)
-    private void releaseSoftlyReachableData(final FirebirdBlobWrite write) {
-        for (Field each : FirebirdBlobWrite.class.getDeclaredFields()) {
-            Object value = Plugins.getMemberAccessor().get(each, write);
-            if (value instanceof Reference) {
-                ((Reference<?>) value).clear();
-            }
-        }
     }
     
     @Test
