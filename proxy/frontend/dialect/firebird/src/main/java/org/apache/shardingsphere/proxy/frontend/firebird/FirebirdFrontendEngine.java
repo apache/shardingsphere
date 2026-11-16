@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird;
 
+import io.netty.channel.Channel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
+import org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 import java.util.Arrays;
@@ -65,6 +67,11 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     private final FirebirdCommandExecuteEngine commandExecuteEngine = new FirebirdCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
+    
+    @Override
+    public void initChannel(final Channel channel) {
+        channel.pipeline().addBefore(FrontendChannelInboundHandler.class.getSimpleName(), "FirebirdBatchCreateHandler", ((FirebirdPacketCodecEngine) codecEngine).createBatchCreateHandler());
+    }
     
     @Override
     public void release(final ConnectionSession connectionSession) {

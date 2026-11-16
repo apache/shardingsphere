@@ -17,21 +17,29 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.codec;
 
+import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
@@ -39,6 +47,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.firebirdsql.gds.BlrConstants;
+import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +71,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -379,57 +389,160 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeCoalescedBatchCreateAndMixedMessage() {
-        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildMixedBatchCreate(), buildMixedBatchMessage());
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        assertThat(out.size(), is(2));
-        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
-        ByteBuf batchMessage = (ByteBuf) out.get(1);
-        assertThat(batchMessage.readableBytes(), is(32));
-        assertThat(createBatchSendMessagePacket(batchMessage).getMessageCount(), is(1L));
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildMixedBatchCreate(), buildMixedBatchMessage()));
+        ByteBuf actualCreate = channel.readInbound();
+        assertThat(actualCreate.getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertNull(channel.readInbound());
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        ByteBuf actualMessage = channel.readInbound();
+        assertThat(actualMessage.readableBytes(), is(32));
+        assertThat(createBatchSendMessagePacket(actualMessage).getMessageCount(), is(1L));
+        assertNull(channel.readInbound());
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+        actualCreate.release();
+        actualMessage.release();
+        channel.finishAndReleaseAll();
+    }
+    
+    private EmbeddedChannel createBatchChannel() {
+        EmbeddedChannel result = new EmbeddedChannel(new PacketCodec(codecEngine), codecEngine.createBatchCreateHandler());
+        result.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        result.attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(FirebirdProtocolVersion.PROTOCOL_VERSION16);
+        result.attr(FirebirdConstant.CURRENT_CONNECTION).set(BATCH_CONNECTION_ID);
+        return result;
+    }
+    
+    @Test
+    void assertCreateHandlerRestoresPipelineAfterResponse() {
+        EmbeddedChannel channel = createBatchChannel();
+        ChannelHandler[] expectedHandlers = channel.pipeline().toMap().values().toArray(new ChannelHandler[0]);
+        channel.writeInbound(buildBatchCreate());
+        ByteBuf actualCreate = channel.readInbound();
+        actualCreate.release();
+        assertThat(channel.pipeline().toMap().size(), is(expectedHandlers.length + 1));
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        assertThat(channel.pipeline().toMap().values(), contains(expectedHandlers));
+        ByteBuf actualCreateResponse = channel.readOutbound();
+        actualCreateResponse.release();
+        channel.writeInbound(createCommandPacket(FirebirdCommandPacketType.BATCH_SYNC, 4));
+        ByteBuf actualSync = channel.readInbound();
+        assertThat(actualSync.getInt(0), is(FirebirdCommandPacketType.BATCH_SYNC.getValue()));
+        actualSync.release();
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        ByteBuf actualSyncResponse = channel.readOutbound();
+        assertThat(actualSyncResponse.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertThat(actualSyncResponse.getInt(20), is(0));
+        actualSyncResponse.release();
+        assertThat(channel.pipeline().toMap().values(), contains(expectedHandlers));
+        assertNull(channel.readInbound());
+        assertNull(channel.readOutbound());
+        channel.finishAndReleaseAll();
+    }
+    
+    @Test
+    void assertCreateHandlerReplaysCoalescedCreatesWithoutBufferCopies() {
+        setUpBatchContext();
+        EmbeddedChannel channel = createBatchChannel();
+        CountingByteBufAllocator allocator = new CountingByteBufAllocator();
+        channel.config().setAllocator(allocator);
+        int[] actualPacketCount = {0};
+        channel.pipeline().addLast(new SimpleChannelInboundHandler<ByteBuf>() {
+            
+            @Override
+            protected void channelRead0(final ChannelHandlerContext handlerContext, final ByteBuf message) {
+                FirebirdBatchCreateCommandPacket packet = new FirebirdBatchCreateCommandPacket(new FirebirdPacketPayload(message, StandardCharsets.UTF_8));
+                assertThat(packet.getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
+                actualPacketCount[0]++;
+                allocator.writingResponse = true;
+                try {
+                    handlerContext.writeAndFlush(FirebirdErrorPacketFactory.newInstance(new BatchAlreadyOpenedException(BATCH_STATEMENT_HANDLE)));
+                } finally {
+                    allocator.writingResponse = false;
+                }
+            }
+        });
+        int packetCount = 4096;
+        ByteBuf create = buildBatchCreate();
+        ByteBuf in = Unpooled.buffer(create.readableBytes() * packetCount);
+        for (int i = 0; i < packetCount; i++) {
+            in.writeBytes(create, create.readerIndex(), create.readableBytes());
+        }
+        create.release();
+        try {
+            channel.writeInbound(in);
+            channel.runPendingTasks();
+            assertThat(actualPacketCount[0], is(packetCount));
+            assertThat(allocator.decodedBufferBytes, is(0L));
+            for (int i = 0; i < packetCount; i++) {
+                ByteBuf actualResponse = channel.readOutbound();
+                assertThat(actualResponse.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+                assertThat(actualResponse.getInt(24), is(ISCConstants.isc_batch_open));
+                actualResponse.release();
+            }
+            assertNull(channel.readOutbound());
+            assertThat(in.refCnt(), is(0));
+        } finally {
+            channel.finishAndReleaseAll();
+        }
     }
     
     @Test
     void assertDecodeCoalescedBatchCreateAndSplitMessage() {
+        EmbeddedChannel channel = createBatchChannel();
         ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
-        ByteBuf firstFrame = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), batchMessage.readRetainedSlice(18));
-        List<Object> firstOut = new LinkedList<>();
-        codecEngine.decode(context, firstFrame, firstOut);
-        assertThat(firstOut.size(), is(1));
+        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), batchMessage.readRetainedSlice(18)));
+        ByteBuf actualCreate = channel.readInbound();
+        assertThat(actualCreate.getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertNull(channel.readInbound());
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
         assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
-        List<Object> secondOut = new LinkedList<>();
-        codecEngine.decode(context, batchMessage.readRetainedSlice(batchMessage.readableBytes()), secondOut);
-        assertThat(secondOut.size(), is(1));
-        assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.get(0)).getMessageCount(), is(1L));
+        channel.writeInbound(batchMessage);
+        ByteBuf actualMessage = channel.readInbound();
+        assertThat(createBatchSendMessagePacket(actualMessage).getMessageCount(), is(1L));
+        assertNull(channel.readInbound());
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+        actualCreate.release();
+        actualMessage.release();
+        channel.finishAndReleaseAll();
     }
     
     @Test
     void assertDecodeStandaloneBatchCreateWithBlobBlrDefersToCommandPath() {
-        ByteBuf in = buildBlobBatchCreate();
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        verify(context, never()).close();
-        assertThat(out.size(), is(1));
-        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(buildBlobBatchCreate());
+        ByteBuf actual = channel.readInbound();
+        assertThat(actual.getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertNull(channel.readInbound());
+        assertTrue(channel.isOpen());
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+        actual.release();
+        channel.finishAndReleaseAll();
     }
     
     @Test
     void assertDecodeCoalescedBatchCreateWithBlobAndMessageDefersToCommandPath() {
-        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBlobBatchCreate(), buildBlobBatchMessage());
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        verify(context, never()).close();
-        assertThat(out.size(), is(2));
-        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
-        assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.BATCH_MSG.getValue()));
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildBlobBatchCreate(), buildBlobBatchMessage()));
+        ByteBuf actualCreate = channel.readInbound();
+        assertThat(actualCreate.getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        ByteBuf actualMessage = channel.readInbound();
+        assertThat(actualMessage.getInt(0), is(FirebirdCommandPacketType.BATCH_MSG.getValue()));
+        assertNull(channel.readInbound());
+        assertTrue(channel.isOpen());
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+        actualCreate.release();
+        actualMessage.release();
+        channel.finishAndReleaseAll();
     }
     
     private ByteBuf buildBlobBatchCreate() {
@@ -446,27 +559,120 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeStandaloneBatchCreateWithInvalidBlrDefersToCommandPath() {
-        ByteBuf in = buildInvalidBatchCreate();
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        verify(context, never()).close();
-        assertThat(out.size(), is(1));
-        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(buildInvalidBatchCreate());
+        ByteBuf actual = channel.readInbound();
+        assertThat(actual.getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+        assertNull(channel.readInbound());
+        assertTrue(channel.isOpen());
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+        actual.release();
+        channel.finishAndReleaseAll();
     }
     
     @Test
     void assertDecodeCoalescedBatchCreateWithMalformedBlrWritesErrorResponseAndClosesChannel() {
-        ChannelFuture errorResponseFuture = mock(ChannelFuture.class);
-        when(context.channel().writeAndFlush(any())).thenReturn(errorResponseFuture);
+        EmbeddedChannel channel = createBatchChannel();
         ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildInvalidBatchCreate(), buildBatchMessage(BATCH_STATEMENT_HANDLE, 100));
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        assertTrue(out.isEmpty());
-        assertThat(in.readableBytes(), is(0));
-        assertThat(captureErrorResponse().getErrorCode(), is(335544382));
-        verify(errorResponseFuture).addListener(ChannelFutureListener.CLOSE);
+        channel.writeInbound(in);
+        channel.runPendingTasks();
+        assertNull(channel.readInbound());
+        ByteBuf actual = channel.readOutbound();
+        assertThat(actual.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertThat(actual.getInt(24), is(335544382));
+        assertFalse(channel.isOpen());
+        assertThat(in.refCnt(), is(0));
+        actual.release();
+        channel.finishAndReleaseAll();
+    }
+    
+    @Test
+    void assertDecodeOneByteFragmentsWhileCreateAwaitsResponse() {
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(buildBatchCreate());
+        ByteBuf actualCreate = channel.readInbound();
+        ByteBuf sync = createCommandPacket(FirebirdCommandPacketType.BATCH_SYNC, 4);
+        while (sync.isReadable()) {
+            channel.writeInbound(sync.readRetainedSlice(1));
+        }
+        assertNull(channel.readInbound());
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        ByteBuf actualSync = channel.readInbound();
+        assertThat(actualSync.readableBytes(), is(4));
+        assertThat(actualSync.getInt(0), is(FirebirdCommandPacketType.BATCH_SYNC.getValue()));
+        actualCreate.release();
+        actualSync.release();
+        sync.release();
+        channel.finishAndReleaseAll();
+    }
+    
+    @Test
+    void assertCreateHandlerReleasesPendingFramesOnClose() {
+        EmbeddedChannel channel = createBatchChannel();
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), createCommandPacket(FirebirdCommandPacketType.BATCH_SYNC, 4));
+        channel.writeInbound(in);
+        ByteBuf actualCreate = channel.readInbound();
+        actualCreate.release();
+        ByteBuf actualPending = getPendingMessages().get(0);
+        assertTrue(actualPending.refCnt() > 0);
+        channel.close();
+        channel.runPendingTasks();
+        assertThat(actualPending.refCnt(), is(0));
+        assertThat(in.refCnt(), is(0));
+        assertTrue(getPendingMessages().isEmpty());
+        channel.finishAndReleaseAll();
+    }
+    
+    @Test
+    void assertCreateHandlerDropsResumeAfterClose() {
+        EmbeddedChannel channel = createBatchChannel();
+        channel.pipeline().addBefore(channel.pipeline().lastContext().name(), "closeAfterResponse", new ChannelOutboundHandlerAdapter() {
+            
+            @Override
+            public void write(final ChannelHandlerContext handlerContext, final Object message, final ChannelPromise promise) {
+                handlerContext.write(message, promise);
+                handlerContext.executor().execute(handlerContext::close);
+            }
+        });
+        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), createCommandPacket(FirebirdCommandPacketType.BATCH_SYNC, 4)));
+        ByteBuf actualCreate = channel.readInbound();
+        actualCreate.release();
+        ByteBuf actualPending = getPendingMessages().get(0);
+        channel.writeAndFlush(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        assertFalse(channel.isOpen());
+        assertNull(channel.readInbound());
+        assertThat(actualPending.refCnt(), is(0));
+        assertTrue(getPendingMessages().isEmpty());
+        channel.finishAndReleaseAll();
+    }
+    
+    @Test
+    void assertCreateHandlerReleasesFollowingChunksOnDecodeError() {
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(buildBatchCreate());
+        ByteBuf actualCreate = channel.readInbound();
+        actualCreate.release();
+        ByteBuf invalid = Unpooled.buffer().writeInt(UNKNOWN_COMMAND_TYPE);
+        ByteBuf following = createCommandPacket(FirebirdCommandPacketType.BATCH_SYNC, 4);
+        channel.writeInbound(invalid);
+        channel.writeInbound(following);
+        channel.writeAndFlush(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        assertFalse(channel.isOpen());
+        assertNull(channel.readInbound());
+        ByteBuf actualCreateResponse = channel.readOutbound();
+        actualCreateResponse.release();
+        ByteBuf actualErrorResponse = channel.readOutbound();
+        assertThat(actualErrorResponse.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertThat(actualErrorResponse.getInt(24), is(ISCConstants.isc_random));
+        actualErrorResponse.release();
+        assertNull(channel.readOutbound());
+        assertThat(invalid.refCnt(), is(0));
+        assertThat(following.refCnt(), is(0));
+        channel.finishAndReleaseAll();
     }
     
     private ByteBuf buildInvalidBatchCreate() {
@@ -525,11 +731,21 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeBlobStreamAfterBatchCreate() {
-        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBlobStream(32, buildBlobHeader(1L, 20, 0).writeZero(16)), buildBatchCreate(), buildBlobStream(16, buildBlobHeader(2L, 0, 0)));
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        assertThat(out.size(), is(3));
-        assertThat(((ByteBuf) out.get(2)).readableBytes(), is(28));
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(Unpooled.wrappedUnmodifiableBuffer(buildBlobStream(32, buildBlobHeader(1L, 20, 0).writeZero(16)), buildBatchCreate(),
+                buildBlobStream(16, buildBlobHeader(2L, 0, 0))));
+        ByteBuf actualFirstStream = channel.readInbound();
+        ByteBuf actualCreate = channel.readInbound();
+        setUpBatchContext();
+        channel.writeOutbound(new FirebirdGenericResponsePacket());
+        channel.runPendingTasks();
+        ByteBuf actualSecondStream = channel.readInbound();
+        assertThat(actualSecondStream.readableBytes(), is(28));
+        assertNull(channel.readInbound());
+        actualFirstStream.release();
+        actualCreate.release();
+        actualSecondStream.release();
+        channel.finishAndReleaseAll();
     }
     
     @Test
@@ -678,5 +894,37 @@ class FirebirdPacketCodecEngineTest {
                 Arguments.of("decode allocate statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8, 1),
                 Arguments.of("decode free statement", FirebirdCommandPacketType.FREE_STATEMENT, 12, 1),
                 Arguments.of("decode consecutive free statements", FirebirdCommandPacketType.FREE_STATEMENT, 12, 2));
+    }
+    
+    private static final class CountingByteBufAllocator extends AbstractByteBufAllocator {
+        
+        private boolean writingResponse;
+        
+        private long decodedBufferBytes;
+        
+        private CountingByteBufAllocator() {
+            super(false);
+        }
+        
+        @Override
+        protected ByteBuf newHeapBuffer(final int initialCapacity, final int maxCapacity) {
+            if (!writingResponse) {
+                decodedBufferBytes += initialCapacity;
+            }
+            return Unpooled.buffer(initialCapacity, maxCapacity);
+        }
+        
+        @Override
+        protected ByteBuf newDirectBuffer(final int initialCapacity, final int maxCapacity) {
+            if (!writingResponse) {
+                decodedBufferBytes += initialCapacity;
+            }
+            return Unpooled.directBuffer(initialCapacity, maxCapacity);
+        }
+        
+        @Override
+        public boolean isDirectBufferPooled() {
+            return false;
+        }
     }
 }
