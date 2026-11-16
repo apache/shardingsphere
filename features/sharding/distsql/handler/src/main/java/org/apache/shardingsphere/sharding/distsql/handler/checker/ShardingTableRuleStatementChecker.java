@@ -65,6 +65,7 @@ import org.apache.shardingsphere.sharding.exception.metadata.ShardingTableRuleNo
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
@@ -129,7 +130,25 @@ public final class ShardingTableRuleStatementChecker {
         toBeCheckedRuleConfig.setBindingTableGroups(bindingTableGroups);
         Collection<String> dataSourceNames = getRequiredDataSources(toBeCheckedRuleConfig);
         dataSourceNames.addAll(getRequiredDataSources(currentRuleConfig));
-        return check(toBeCheckedRuleConfig, dataSourceNames);
+        return check(toBeCheckedRuleConfig, dataSourceNames) && isBindingTableSuffixValid(bindingTableGroups, toBeCheckedRuleConfig, dataSourceNames);
+    }
+    
+    private static boolean isBindingTableSuffixValid(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups, final ShardingRuleConfiguration ruleConfig,
+                                                     final Collection<String> dataSourceNames) {
+        Map<String, ShardingTable> shardingTables = createShardingTables(ruleConfig, dataSourceNames);
+        for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
+            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference());
+            if (bindingTables.size() <= 1) {
+                continue;
+            }
+            for (String logicTable : bindingTables) {
+                ShardingTable shardingTable = shardingTables.get(logicTable.toLowerCase());
+                if (null != shardingTable && !ShardingRuleChecker.hasValidNumericSuffix(shardingTable)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     private static ShardingRuleConfiguration createToBeCheckedShardingRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
@@ -606,10 +625,14 @@ public final class ShardingTableRuleStatementChecker {
     
     private static DataNodeInfo createTableDataNode(final String logicTable, final Collection<DataNode> actualDataNodes) {
         String tableName = actualDataNodes.iterator().next().getTableName();
-        String prefix = tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
-                : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
+        String prefix = getTableDataNodePrefix(logicTable, tableName);
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
         return new DataNodeInfo(prefix, suffixMinLength, ShardingTableConstants.DEFAULT_PADDING_CHAR);
+    }
+    
+    private static String getTableDataNodePrefix(final String logicTable, final String tableName) {
+        return tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.TABLE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
+                : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
     }
     
     /**
