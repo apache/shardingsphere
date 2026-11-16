@@ -144,8 +144,8 @@ class ModShardingAlgorithmTest {
     }
     
     private Stream<Arguments> assertPreciseDoShardingArguments() {
-        ModShardingAlgorithm nonPowerOfTwoShardingCountAlgorithm = (ModShardingAlgorithm) TypedSPILoader.getService(
-                ShardingAlgorithm.class, "MOD", PropertiesBuilder.build(new Property("sharding-count", "7")));
+        ModShardingAlgorithm nonPowerOfTwoShardingCountAlgorithm = (ModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "MOD",
+                PropertiesBuilder.build(new Property("sharding-count", "7")));
         Collection<String> nonPowerOfTwoTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6");
         return Stream.of(
                 Arguments.of("int sharding value", defaultAlgorithm, Arrays.asList(
