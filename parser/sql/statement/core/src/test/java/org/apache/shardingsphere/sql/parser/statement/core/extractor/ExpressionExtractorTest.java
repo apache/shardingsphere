@@ -69,7 +69,7 @@ class ExpressionExtractorTest {
         FunctionSegment function = new FunctionSegment(0, 1, "JSON_ARRAYAGG", "JSON_ARRAYAGG(?) FILTER (WHERE ?)");
         function.getParameters().add(argument);
         function.setFilter(filter);
-        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(function));
+        Collection<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(function));
         assertThat(actual, contains(argument, filter));
     }
     

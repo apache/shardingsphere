@@ -16951,11 +16951,11 @@
             </expr>
         </where>
     </select>
-    <select sql-case-id="select_json_aggregate_parameters_pg" parameters="1, 2, true, 4" parameter-marker-count="4">
-        <projections start-index="7" stop-index="88">
-            <expression-projection text="JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3) OVER (ORDER BY $4)" start-index="7" stop-index="88">
+    <select sql-case-id="select_json_aggregate_parameters_pg" parameters="1, 2, true" parameter-marker-count="3">
+        <projections start-index="7" stop-index="69">
+            <expression-projection text="JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3)" start-index="7" stop-index="69">
                 <expr>
-                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3) OVER (ORDER BY $4)" start-index="7" stop-index="88">
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3)" start-index="7" stop-index="69">
                         <parameter>
                             <parameter-marker-expression parameter-index="0" start-index="21" stop-index="22" />
                         </parameter>
@@ -16965,15 +16965,6 @@
                         <filter>
                             <parameter-marker-expression parameter-index="2" start-index="67" stop-index="68" />
                         </filter>
-                        <window-item start-index="76" stop-index="88">
-                            <order-by start-index="77" stop-index="87">
-                                <expression-item expression="$4" order-direction="ASC" start-index="86" stop-index="87">
-                                    <expr>
-                                        <parameter-marker-expression parameter-index="3" start-index="86" stop-index="87" />
-                                    </expr>
-                                </expression-item>
-                            </order-by>
-                        </window-item>
                     </function>
                 </expr>
             </expression-projection>
@@ -17253,6 +17244,31 @@
                         <filter>
                             <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
                         </filter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_json_aggregate_filter_window_parameters_pg" parameters="1, true, 3" parameter-marker-count="3">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" start-index="7" stop-index="76">
+                <expr>
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" start-index="7" stop-index="76">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="21" stop-index="22" />
+                        </parameter>
+                        <filter>
+                            <parameter-marker-expression parameter-index="1" start-index="55" stop-index="56" />
+                        </filter>
+                        <window-item start-index="64" stop-index="76">
+                            <order-by start-index="65" stop-index="75">
+                                <expression-item expression="$3" order-direction="ASC" start-index="74" stop-index="75">
+                                    <expr>
+                                        <parameter-marker-expression parameter-index="2" start-index="74" stop-index="75" />
+                                    </expr>
+                                </expression-item>
+                            </order-by>
+                        </window-item>
                     </function>
                 </expr>
             </expression-projection>

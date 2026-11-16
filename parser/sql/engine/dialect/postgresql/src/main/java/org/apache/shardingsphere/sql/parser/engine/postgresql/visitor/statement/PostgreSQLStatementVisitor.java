@@ -353,25 +353,25 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     private int findNextStringLiteral(final String text, final int startIndex) {
-        int index = startIndex;
-        while (index < text.length()) {
-            if (text.startsWith("--", index)) {
-                index = skipStringContinuationComment(text, index + 2);
-            } else if ('\'' == text.charAt(index)) {
-                return index;
+        int result = startIndex;
+        while (result < text.length()) {
+            if (text.startsWith("--", result)) {
+                result = skipStringContinuationComment(text, result + 2);
+            } else if ('\'' == text.charAt(result)) {
+                return result;
             } else {
-                index++;
+                result++;
             }
         }
         return -1;
     }
     
     private int skipStringContinuationComment(final String text, final int startIndex) {
-        int index = startIndex;
-        while (index < text.length() && '\r' != text.charAt(index) && '\n' != text.charAt(index)) {
-            index++;
+        int result = startIndex;
+        while (result < text.length() && '\r' != text.charAt(result) && '\n' != text.charAt(result)) {
+            result++;
         }
-        return index;
+        return result;
     }
     
     private String decodeUnicode(final String value, final char escape) {
