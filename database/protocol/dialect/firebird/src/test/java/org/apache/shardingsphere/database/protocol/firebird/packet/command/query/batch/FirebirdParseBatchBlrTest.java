@@ -56,6 +56,16 @@ class FirebirdParseBatchBlrTest {
     }
     
     @Test
+    void assertParseSmallintFollowedByInt128() {
+        ByteBuf blr = createBlr(BlrConstants.blr_version5,
+                new byte[]{(byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_int128, 0, (byte) BlrConstants.blr_short, 0}, 4);
+        FirebirdParseBatchBlr actual = FirebirdParseBatchBlr.parse(blr, blr.readableBytes());
+        assertDescriptor(actual.getFields().get(0), FirebirdBinaryColumnType.SHORT, 2, 0, 0);
+        assertDescriptor(actual.getFields().get(1), FirebirdBinaryColumnType.INT128, 16, 0, 8);
+        assertThat(actual.getMessageLength(), is(26));
+    }
+    
+    @Test
     void assertParseBlob2Field() {
         ByteBuf blr = createBlr(BlrConstants.blr_version5, field(BlrConstants.blr_blob2, 0, 0, 0, 0), 2);
         assertTrue(FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields().get(0).isBatchBlobId());

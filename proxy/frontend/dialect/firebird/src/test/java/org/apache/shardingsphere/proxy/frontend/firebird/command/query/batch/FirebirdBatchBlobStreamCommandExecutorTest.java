@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchBlobPolicyException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchBlobStreamCommandPacket;
@@ -81,6 +82,19 @@ class FirebirdBatchBlobStreamCommandExecutorTest {
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         FirebirdBatchStatement actualBatchStatement = manager.getBatchStatement(CONNECTION_ID, STATEMENT_ID);
         assertThat(actualBatchStatement.getBlobStreamSize(), is(20L));
+        assertThat(actualBatchStatement.getBlobBuffer().size(), is(1));
+    }
+    
+    @Test
+    void assertExecuteWithCumulativeBufferSizeExceeded() {
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 16L, false, false, true);
+        when(packet.getData()).thenReturn(Unpooled.buffer().writeLong(1L).writeInt(0).writeInt(0), Unpooled.buffer().writeLong(2L).writeInt(0).writeInt(0));
+        when(packet.getLength()).thenReturn(16L);
+        FirebirdBatchBlobStreamCommandExecutor executor = new FirebirdBatchBlobStreamCommandExecutor(packet, connectionSession);
+        executor.execute();
+        assertThrows(BatchTooBigException.class, executor::execute);
+        FirebirdBatchStatement actualBatchStatement = manager.getBatchStatement(CONNECTION_ID, STATEMENT_ID);
+        assertThat(actualBatchStatement.getBlobStreamSize(), is(16L));
         assertThat(actualBatchStatement.getBlobBuffer().size(), is(1));
     }
     
