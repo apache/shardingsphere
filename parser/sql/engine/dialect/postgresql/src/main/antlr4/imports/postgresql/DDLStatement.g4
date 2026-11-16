@@ -176,7 +176,7 @@ dropIndexOpt
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableNamesClause restartSeqs? dropTableOpt?
+    : TRUNCATE TABLE? relationExprList restartSeqs? dropTableOpt?
     ;
 
 restartSeqs
@@ -966,6 +966,8 @@ fdwOption
     | NO HANDLER
     | VALIDATOR handlerName
     | NO VALIDATOR
+    | CONNECTION handlerName
+    | NO CONNECTION
     ;
 
 handlerName
