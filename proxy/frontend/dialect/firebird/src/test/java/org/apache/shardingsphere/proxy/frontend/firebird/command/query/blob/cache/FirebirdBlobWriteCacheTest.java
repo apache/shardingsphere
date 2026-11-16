@@ -48,11 +48,13 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
@@ -108,19 +110,64 @@ class FirebirdBlobWriteCacheTest {
     
     @Test
     void assertUnregisterConnectionWhenReleaseFails() {
-        CACHE.registerBlob(1, 11, 21L, 31, false);
-        CACHE.closeWrite(1, 11);
+        byte[] expectedData = new byte[]{1, 2, 3};
+        registerClosedBlob(1, 11, 21L, 31, expectedData);
         CACHE.useBlobData(1, 21L, 31);
+        FirebirdBlobWrite expectedWrite = getIdCache().get(1).get(21L);
         Path actualBackingFile = getBackingFile(1, 21L);
+        registerClosedBlob(1, 12, 22L, 31, expectedData);
+        CACHE.useBlobData(1, 22L, 31);
+        Path actualReleasedBackingFile = getBackingFile(1, 22L);
+        CACHE.registerBlob(1, 13, 23L, 31, false);
+        registerClosedBlob(2, 11, 21L, 31, expectedData);
         IOException expected = new IOException("foo_delete_failure");
-        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
-            mocked.when(() -> Files.delete(actualBackingFile)).thenThrow(expected);
+        try (MockedStatic<Files> ignored = mockStatic(Files.class, invocation -> {
+            if ("delete".equals(invocation.getMethod().getName()) && actualBackingFile.equals(invocation.getArgument(0))) {
+                throw expected;
+            }
+            return invocation.callRealMethod();
+        })) {
             assertThat(assertThrows(IOException.class, () -> CACHE.unregisterConnection(1)), sameInstance(expected));
-            assertTrue(getIdCache().get(1).containsKey(21L));
+            assertThat(getIdCache().get(1).get(21L), sameInstance(expectedWrite));
+            assertFalse(getIdCache().get(1).containsKey(22L));
+            assertFalse(getIdCache().get(1).containsKey(23L));
+            assertTrue(getHandleCache().get(1).isEmpty());
             assertTrue(getHandleCache().containsKey(1));
+            assertThat(CACHE.getBlobData(2, 21L).get(), is(expectedData));
         }
+        assertTrue(Files.exists(actualBackingFile));
+        assertFalse(Files.exists(actualReleasedBackingFile));
+        assertThat(CACHE.getBlobData(1, 21L).get(), is(expectedData));
         CACHE.unregisterConnection(1);
         assertFalse(Files.exists(actualBackingFile));
+        assertFalse(getIdCache().containsKey(1));
+        assertFalse(getHandleCache().containsKey(1));
+    }
+    
+    @Test
+    void assertUnregisterConnectionWithMultipleReleaseFailures() {
+        registerClosedBlob(1, 11, 21L, 31, new byte[]{1});
+        CACHE.useBlobData(1, 21L, 31);
+        Path actualFirstBackingFile = getBackingFile(1, 21L);
+        registerClosedBlob(1, 12, 22L, 31, new byte[]{2});
+        CACHE.useBlobData(1, 22L, 31);
+        Path actualSecondBackingFile = getBackingFile(1, 22L);
+        IOException expectedFirst = new IOException("foo_first_delete_failure");
+        IOException expectedSecond = new IOException("foo_second_delete_failure");
+        try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+            mocked.when(() -> Files.delete(any(Path.class))).thenThrow(expectedFirst, expectedSecond);
+            IOException actual = assertThrows(IOException.class, () -> CACHE.unregisterConnection(1));
+            assertThat(actual, sameInstance(expectedFirst));
+            assertThat(actual.getSuppressed().length, is(1));
+            assertThat(actual.getSuppressed()[0], sameInstance(expectedSecond));
+            assertTrue(getIdCache().get(1).containsKey(21L));
+            assertTrue(getIdCache().get(1).containsKey(22L));
+        }
+        CACHE.unregisterConnection(1);
+        assertFalse(Files.exists(actualFirstBackingFile));
+        assertFalse(Files.exists(actualSecondBackingFile));
+        assertFalse(getIdCache().containsKey(1));
+        assertFalse(getHandleCache().containsKey(1));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -489,6 +536,58 @@ class FirebirdBlobWriteCacheTest {
         assertTrue(CACHE.useBlobData(1, 24L, 32).isPresent());
         assertTrue(CACHE.getBlobData(2, 21L).isPresent());
         assertThat(CACHE.getBlobId(2, 12), is(OptionalLong.of(21L)));
+    }
+    
+    @Test
+    void assertRemoveTransactionWhenReleaseFails() {
+        registerClosedBlob(1, 11, 21L, 31, new byte[]{1});
+        CACHE.useBlobData(1, 21L, 31);
+        registerClosedBlob(1, 12, 22L, 31, new byte[]{2});
+        CACHE.useBlobData(1, 22L, 31);
+        registerClosedBlob(1, 13, 23L, 31, new byte[]{3});
+        CACHE.useBlobData(1, 23L, 31);
+        CACHE.registerBlob(1, 14, 24L, 31, false);
+        CACHE.registerBlob(1, 11, 25L, 32, false);
+        CACHE.registerBlob(2, 11, 21L, 31, false);
+        Path actualFirstBackingFile = getBackingFile(1, 21L);
+        Path actualSecondBackingFile = getBackingFile(1, 22L);
+        Path actualReleasedBackingFile = getBackingFile(1, 23L);
+        IOException expectedFirst = new IOException("foo_first_delete_failure");
+        IOException expectedSecond = new IOException("foo_second_delete_failure");
+        try (MockedStatic<Files> ignored = mockStatic(Files.class, invocation -> {
+            if ("delete".equals(invocation.getMethod().getName())) {
+                Path backingFile = invocation.getArgument(0);
+                if (actualFirstBackingFile.equals(backingFile)) {
+                    throw expectedFirst;
+                }
+                if (actualSecondBackingFile.equals(backingFile)) {
+                    throw expectedSecond;
+                }
+            }
+            return invocation.callRealMethod();
+        })) {
+            IOException actual = assertThrows(IOException.class, () -> CACHE.removeTransaction(1, 31));
+            assertThat(actual, anyOf(sameInstance(expectedFirst), sameInstance(expectedSecond)));
+            assertThat(actual.getSuppressed().length, is(1));
+            assertThat(actual.getSuppressed()[0], sameInstance(actual == expectedFirst ? expectedSecond : expectedFirst));
+            assertTrue(getIdCache().get(1).containsKey(21L));
+            assertTrue(getIdCache().get(1).containsKey(22L));
+            assertFalse(getIdCache().get(1).containsKey(23L));
+            assertFalse(getIdCache().get(1).containsKey(24L));
+            assertFalse(CACHE.getBlobId(1, 14).isPresent());
+            assertThat(CACHE.getBlobId(1, 11), is(OptionalLong.of(25L)));
+            assertTrue(CACHE.getBlobData(2, 21L).isPresent());
+        }
+        assertTrue(Files.exists(actualFirstBackingFile));
+        assertTrue(Files.exists(actualSecondBackingFile));
+        assertFalse(Files.exists(actualReleasedBackingFile));
+        CACHE.removeTransaction(1, 31);
+        assertFalse(Files.exists(actualFirstBackingFile));
+        assertFalse(Files.exists(actualSecondBackingFile));
+        assertFalse(CACHE.getBlobData(1, 21L).isPresent());
+        assertFalse(CACHE.getBlobData(1, 22L).isPresent());
+        assertTrue(CACHE.getBlobData(1, 25L).isPresent());
+        assertTrue(CACHE.getBlobData(2, 21L).isPresent());
     }
     
     @Test
