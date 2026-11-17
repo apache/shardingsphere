@@ -25,15 +25,20 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.PreviousSQLTokensAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.keygen.pojo.GeneratedKeyInsertColumnToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -44,9 +49,11 @@ import java.util.Optional;
 @HighFrequencyInvocation
 @RequiredArgsConstructor
 @Setter
-public final class EncryptInsertDerivedColumnsTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext> {
+public final class EncryptInsertDerivedColumnsTokenGenerator implements CollectionSQLTokenGenerator<InsertStatementContext>, PreviousSQLTokensAware {
     
     private final EncryptRule rule;
+    
+    private List<SQLToken> previousSQLTokens;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
@@ -61,11 +68,19 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
             return Collections.emptyList();
         }
         QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(insertStatementContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
+        Optional<InsertColumnsSegment> insertColumnsSegment = insertStatementContext.getSqlStatement().getInsertColumns();
+        int insertColumnsStopIndex = insertColumnsSegment.isPresent() ? insertColumnsSegment.get().getStopIndex() : -1;
+        Optional<GeneratedKeyContext> generatedKeyContext = insertStatementContext.getGeneratedKeyContext();
+        boolean appendGeneratedKey = generatedKeyContext.isPresent() && generatedKeyContext.get().isGenerated() && !generatedKeyContext.get().getGeneratedValues().isEmpty();
         Collection<SQLToken> result = new LinkedList<>();
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {
             List<String> derivedColumnNames = getDerivedColumnNames(encryptTable.get(), each);
             if (!derivedColumnNames.isEmpty()) {
-                result.add(new InsertColumnsToken(each.getStopIndex() + 1, derivedColumnNames, quoteCharacter));
+                if (appendGeneratedKey && each.getStopIndex() + 1 == insertColumnsStopIndex) {
+                    result.add(mergeGeneratedKeyColumn(each.getStopIndex() + 1, derivedColumnNames, quoteCharacter, generatedKeyContext.get().getColumnName()));
+                } else {
+                    result.add(new InsertColumnsToken(each.getStopIndex() + 1, derivedColumnNames, quoteCharacter));
+                }
             }
         }
         return result;
@@ -81,5 +96,17 @@ public final class EncryptInsertDerivedColumnsTokenGenerator implements Collecti
         encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(optional.getName()));
         encryptColumn.getLikeQuery().ifPresent(optional -> result.add(optional.getName()));
         return result;
+    }
+    
+    private InsertColumnsToken mergeGeneratedKeyColumn(final int startIndex, final List<String> derivedColumnNames, final QuoteCharacter quoteCharacter, final String generatedKeyColumnName) {
+        Iterator<SQLToken> iterator = previousSQLTokens.iterator();
+        SQLToken currentToken = iterator.next();
+        while (!(currentToken instanceof GeneratedKeyInsertColumnToken)) {
+            currentToken = iterator.next();
+        }
+        iterator.remove();
+        derivedColumnNames.replaceAll(quoteCharacter::wrap);
+        derivedColumnNames.add(generatedKeyColumnName);
+        return new InsertColumnsToken(startIndex, derivedColumnNames);
     }
 }

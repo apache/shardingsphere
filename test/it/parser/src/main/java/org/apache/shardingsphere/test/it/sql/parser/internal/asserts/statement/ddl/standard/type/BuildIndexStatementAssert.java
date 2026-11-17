@@ -86,7 +86,7 @@ public final class BuildIndexStatementAssert {
     }
     
     private static void assertPartition(final SQLCaseAssertContext assertContext, final PartitionSegment actual, final ExpectedPartition expected) {
-        assertThat(assertContext.getText(String.format("Partition name assertion error: ")), actual.getName().getValue(), is(expected.getName()));
+        assertThat(assertContext.getText("Partition name assertion error: "), actual.getName().getValue(), is(expected.getName()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

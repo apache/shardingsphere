@@ -20,6 +20,7 @@
 
 ### Bug Fixes
 
+1. Proxy: Reject Firebird batch creation for SELECT statements - [#40404](https://github.com/apache/shardingsphere/issues/40404)
 1. Infra: Avoid retaining transient multi-object lookup keys in `OrderedSPILoader` - [#38980](https://github.com/apache/shardingsphere/pull/38980)
 1. Infra: Fix invalid target selection after counter overflow in `RoundRobinLoadBalanceAlgorithm` - [#39339](https://github.com/apache/shardingsphere/pull/39339)
 1. Infra: Reject incomplete WEIGHT load balancer properties during rule configuration validation - [#39378](https://github.com/apache/shardingsphere/pull/39378)
@@ -73,6 +74,7 @@
 1. JDBC: Fix MySQL-compatible typed string conversion for `ResultSet#getObject(index, Class<T>)` - [#38444](https://github.com/apache/shardingsphere/pull/38444)
 1. JDBC: Fix statement close invalidating live result sets of other statements on the same connection - [#39503](https://github.com/apache/shardingsphere/pull/39503)
 1. JDBC: Fix select * is not supported for associated query - [#39131](https://github.com/apache/shardingsphere/pull/39131)
+1. JDBC: Fix `ResultSet#getCharacterStream` returning the serialized column index instead of the column value for memory query results - [#40431](https://github.com/apache/shardingsphere/pull/40431)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
 1. Proxy: Exclude derived projections from PostgreSQL prepared statement row descriptions - [#40194](https://github.com/apache/shardingsphere/issues/40194)
@@ -97,6 +99,7 @@
 1. Proxy: Add error handling for unknown or closed BLOB handles and ids in Firebird - [#39773](https://github.com/apache/shardingsphere/pull/39773)
 1. Proxy: Preserve the SQL error code in Firebird invalid batch message length responses - [#40408](https://github.com/apache/shardingsphere/issues/40408)
 1. Proxy: Fix startup failure when storage units set `dataSourceClassName` to `com.zaxxer.hikari.HikariDataSource` - [#40303](https://github.com/apache/shardingsphere/issues/40303)
+1. Proxy: Fix Firebird system table schemas: add missing tables and columns and correct column types - [#40254](https://github.com/apache/shardingsphere/issues/40254)
 1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
 1. JDBC & Proxy: Reject ordinary pushdown SELECT statements routed to different storage database types - [#40385](https://github.com/apache/shardingsphere/pull/40385)
 1. JDBC & Proxy: Reject ordinary pushdown DAL statements routed to different storage database types - [#40465](https://github.com/apache/shardingsphere/pull/40465)
@@ -129,6 +132,7 @@
 1. SQL Federation: Fix SQL Federation pagination binding for long LIMIT parameters - [#39237](https://github.com/apache/shardingsphere/pull/39237)
 1. Broadcast: Fix case-sensitive table name lookup in broadcast data node rule attribute - [#39153](https://github.com/apache/shardingsphere/pull/39153)
 1. Encrypt: Fix stale encryptors leaking when altering an encrypt rule - [#39209](https://github.com/apache/shardingsphere/pull/39209)
+1. Encrypt: Fix INSERT column and value misalignment when using derived columns with generated primary keys - [#36841](https://github.com/apache/shardingsphere/issues/36841)
 1. Shadow: Apply default shadow algorithm to shadow tables when swapping YAML rule configuration - [#39749](https://github.com/apache/shardingsphere/pull/39749)
 1. Shadow: Fix INSERT SELECT statement being routed to shadow data source - [#39751](https://github.com/apache/shardingsphere/pull/39751)
 1. Sharding: Fix logic table lookup for MySQL SHOW CREATE TABLE and SHOW INDEX - [#39856](https://github.com/apache/shardingsphere/pull/39856)

@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.3. </b>"
+pre = "<b>4.5. </b>"
 title = "通用配置"
-weight = 3
+weight = 5
 chapter = true
 +++
 

@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
@@ -327,6 +328,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return 'b' == character ? '\b' : character;
     }
     
+    @HighFrequencyInvocation
     private String concatenateStringLiterals(final String text) {
         StringBuilder result = new StringBuilder("'");
         boolean escaped = 'E' == text.charAt(0) || 'e' == text.charAt(0);
@@ -341,7 +343,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 result.append("''");
                 index++;
             } else {
-                int nextIndex = text.indexOf('\'', index + 1);
+                int nextIndex = findNextStringLiteral(text, index + 1);
                 if (-1 == nextIndex) {
                     break;
                 }
@@ -350,6 +352,28 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             index++;
         }
         return result.append('\'').toString();
+    }
+    
+    private int findNextStringLiteral(final String text, final int startIndex) {
+        int result = startIndex;
+        while (result < text.length()) {
+            if (text.startsWith("--", result)) {
+                result = skipStringContinuationComment(text, result + 2);
+            } else if ('\'' == text.charAt(result)) {
+                return result;
+            } else {
+                result++;
+            }
+        }
+        return -1;
+    }
+    
+    private int skipStringContinuationComment(final String text, final int startIndex) {
+        int result = startIndex;
+        while (result < text.length() && '\r' != text.charAt(result) && '\n' != text.charAt(result)) {
+            result++;
+        }
+        return result;
     }
     
     private String decodeUnicode(final String value, final char escape) {
@@ -683,17 +707,25 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitFuncExpr(final FuncExprContext ctx) {
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        ShardingSpherePreconditions.checkState(null == ctx.filterClause(), () -> new SQLParsingException("FILTER clauses are not supported"));
+        ShardingSpherePreconditions.checkState(null == ctx.filterClause() || null != ctx.jsonAggregateFunction(), () -> new SQLParsingException("FILTER clauses are not supported"));
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
-        return null == ctx.overClause() ? result : appendWindow(ctx, result);
+        if (null != ctx.filterClause()) {
+            FunctionSegment function = (FunctionSegment) result;
+            FunctionSegment filtered = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), function.getFunctionName(), getOriginalText(ctx));
+            filtered.getParameters().addAll(function.getParameters());
+            filtered.setFilter((ExpressionSegment) visit(ctx.filterClause().aExpr()));
+            result = filtered;
+        }
+        return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
     }
     
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
-        WindowItemSegment window = (WindowItemSegment) visit(ctx.overClause());
+        WindowItemSegment window = null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause());
         if (node instanceof AggregationDistinctProjectionSegment) {
             return createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
         }
@@ -707,7 +739,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     private AggregationDistinctProjectionSegment createAggregationDistinctSegmentWithWindow(final FuncExprContext ctx, final AggregationDistinctProjectionSegment segment,
-                                                                                            final WindowItemSegment window) {
+                                                                                            @Nullable final WindowItemSegment window) {
         AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
                 segment.getDistinctInnerExpression(), segment.getSeparator().orElse(null));
         result.getParameters().addAll(segment.getParameters());
@@ -715,7 +747,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    private AggregationProjectionSegment createAggregationSegmentWithWindow(final FuncExprContext ctx, final AggregationProjectionSegment segment, final WindowItemSegment window) {
+    private AggregationProjectionSegment createAggregationSegmentWithWindow(final FuncExprContext ctx, final AggregationProjectionSegment segment, @Nullable final WindowItemSegment window) {
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
                 segment.getSeparator().orElse(null));
         result.getParameters().addAll(segment.getParameters());
@@ -723,10 +755,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    private FunctionSegment createFunctionSegment(final FuncExprContext ctx, final FunctionSegment segment, final WindowItemSegment window) {
+    private FunctionSegment createFunctionSegment(final FuncExprContext ctx, final FunctionSegment segment, @Nullable final WindowItemSegment window) {
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getFunctionName(), getOriginalText(ctx));
         result.setOwner(segment.getOwner());
         result.getParameters().addAll(segment.getParameters());
+        segment.getFilter().ifPresent(result::setFilter);
+        result.setIgnoreNulls(null != ctx.nullTreatment() && null != ctx.nullTreatment().IGNORE());
         result.setWindow(window);
         return result;
     }
@@ -2235,9 +2269,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement(databaseType);
+        ExecuteStatement result = new ExecuteStatement(databaseType);
+        result.setStatementName((IdentifierValue) visit(ctx.name()));
+        if (null != ctx.executeParamClause()) {
+            result.getArguments().addAll(((CollectionValue<ExpressionSegment>) visit(ctx.executeParamClause().exprList())).getValue());
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     /**

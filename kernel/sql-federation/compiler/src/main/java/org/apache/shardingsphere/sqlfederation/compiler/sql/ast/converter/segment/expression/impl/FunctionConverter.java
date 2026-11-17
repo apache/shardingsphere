@@ -31,6 +31,7 @@ import org.apache.calcite.sql.SqlWindow;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.ExpressionConverter;
@@ -54,6 +55,7 @@ public final class FunctionConverter {
      * @param segment function segment
      * @return SQL node
      */
+    @HighFrequencyInvocation
     public static SqlNode convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(getQualifiedFunctionNames(segment), SqlParserPos.ZERO);
         // TODO optimize SQL parse logic for select current_user
@@ -71,15 +73,18 @@ public final class FunctionConverter {
         }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
-        if (!functions.isEmpty() && segment.getWindow().isPresent()) {
-            SqlBasicCall functionCall = new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
-            SqlWindow sqlWindow = WindowConverter.convertWindowItem(segment.getWindow().get());
-            return new SqlBasicCall(SqlStdOperatorTable.OVER, new SqlNode[]{functionCall, sqlWindow}, SqlParserPos.ZERO);
-        }
         SqlOperator operator = functions.isEmpty()
                 ? new SqlUnresolvedFunction(functionName, null, null, null, null, SqlFunctionCategory.USER_DEFINED_FUNCTION)
                 : functions.iterator().next();
-        return new SqlBasicCall(operator, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
+        SqlNode result = new SqlBasicCall(operator, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO);
+        if (segment.isIgnoreNulls()) {
+            result = new SqlBasicCall(SqlStdOperatorTable.IGNORE_NULLS, new SqlNode[]{result}, SqlParserPos.ZERO);
+        }
+        if (!functions.isEmpty() && segment.getWindow().isPresent()) {
+            SqlWindow sqlWindow = WindowConverter.convertWindowItem(segment.getWindow().get());
+            return new SqlBasicCall(SqlStdOperatorTable.OVER, new SqlNode[]{result, sqlWindow}, SqlParserPos.ZERO);
+        }
+        return result;
     }
     
     private static boolean isSystemDateTimeFunctionWithoutParentheses(final FunctionSegment segment) {
