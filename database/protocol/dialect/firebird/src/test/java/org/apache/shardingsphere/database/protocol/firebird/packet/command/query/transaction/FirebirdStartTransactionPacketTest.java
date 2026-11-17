@@ -79,6 +79,16 @@ class FirebirdStartTransactionPacketTest {
         assertThat(FirebirdStartTransactionPacket.getLength(createPayload(1)), is(16));
     }
     
+    @Test
+    void assertEmptyParameterBuffer() {
+        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeInt(29).writeInt(1).writeInt(0), StandardCharsets.UTF_8);
+        FirebirdStartTransactionPacket actual = new FirebirdStartTransactionPacket(payload);
+        assertThat(actual.getHandle(), is(1));
+        assertFalse(actual.isAutoCommit());
+        assertFalse(actual.isReadOnly());
+        assertThat(actual.getIsolationLevel(), is(TransactionIsolationLevel.REPEATABLE_READ));
+    }
+    
     private FirebirdPacketPayload createPayload(final int handle, final FirebirdTransactionParameterBufferType... types) {
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(0);

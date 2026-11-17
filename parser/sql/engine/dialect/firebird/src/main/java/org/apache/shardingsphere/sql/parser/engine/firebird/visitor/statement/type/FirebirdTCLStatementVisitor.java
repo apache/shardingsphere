@@ -21,10 +21,12 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.LevelOfIsolationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
@@ -41,7 +43,17 @@ public final class FirebirdTCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(getDatabaseType());
+        return null == ctx.levelOfIsolation() ? new SetTransactionStatement(getDatabaseType()) : new SetTransactionStatement(getDatabaseType(), null, getIsolationLevel(ctx.levelOfIsolation()), null);
+    }
+    
+    private TransactionIsolationLevel getIsolationLevel(final LevelOfIsolationContext ctx) {
+        if (null != ctx.UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_UNCOMMITTED;
+        }
+        if (null != ctx.COMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        return null == ctx.SERIALIZABLE() ? TransactionIsolationLevel.REPEATABLE_READ : TransactionIsolationLevel.SERIALIZABLE;
     }
     
     @Override

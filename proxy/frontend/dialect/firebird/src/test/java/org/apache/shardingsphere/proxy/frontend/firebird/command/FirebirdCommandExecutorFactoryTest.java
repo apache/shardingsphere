@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
+import io.netty.util.DefaultAttributeMap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
@@ -36,14 +40,21 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
@@ -63,32 +74,63 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.Fire
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate.FirebirdAllocateStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteImmediateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free.FirebirdFreeStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare.FirebirdPrepareStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdRollbackTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdStartTransactionCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockedConstruction;
 
+import java.sql.SQLException;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 class FirebirdCommandExecutorFactoryTest {
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
+    
+    @BeforeEach
+    void setup() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(1);
+        FirebirdFetchStatementCache.getInstance().registerConnection(1);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        FirebirdFetchStatementCache.getInstance().unregisterConnection(1);
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(1);
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceArguments")
@@ -114,6 +156,7 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class, FirebirdCloseBlobCommandExecutor.class),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class, FirebirdAllocateStatementCommandExecutor.class),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class, FirebirdPrepareStatementCommandExecutor.class),
+                Arguments.of("execute_immediate", FirebirdCommandPacketType.EXEC_IMMEDIATE, FirebirdExecuteImmediatePacket.class, FirebirdExecuteImmediateCommandExecutor.class),
                 Arguments.of("execute_statement", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class, FirebirdExecuteStatementCommandExecutor.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class, FirebirdFetchStatementCommandExecutor.class),
                 Arguments.of("info_s_q_l", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoPacket.class, FirebirdSQLInfoExecutor.class),
@@ -127,5 +170,105 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("cancel", FirebirdCommandPacketType.CANCEL, FirebirdCancelCommandPacket.class, FirebirdCancelCommandExecutor.class),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, FirebirdFreeStatementPacket.class, FirebirdFreeStatementCommandExecutor.class),
                 Arguments.of("unsupported_command", FirebirdCommandPacketType.VOID, CommandPacket.class, FirebirdUnsupportedCommandExecutor.class));
+    }
+    
+    @ParameterizedTest
+    @MethodSource("transactionFailureArguments")
+    void assertTransactionFailureOwnership(final FirebirdCommandPacketType packetType, final Class<? extends CommandPacket> packetClass,
+                                           final Class<? extends CommandExecutor> executorClass, final Exception expected) throws SQLException {
+        ConnectionSession attachmentSession = createConnectionSession();
+        ConnectionSession transactionSession = createConnectionSession();
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(transactionSession);
+        ConnectionSession siblingSession = createConnectionSession();
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(siblingSession);
+        CommandPacket packet = mock(packetClass, invocation -> "getTransactionId".equals(invocation.getMethod().getName()) || "getTransactionHandle".equals(invocation.getMethod().getName())
+                ? transactionId
+                : Answers.RETURNS_DEFAULTS.answer(invocation));
+        try (MockedConstruction<? extends CommandExecutor> ignored = mockConstruction(executorClass, (executor, context) -> doThrow(expected).when(executor).execute())) {
+            CommandExecutor executor = FirebirdCommandExecutorFactory.newInstance(packetType, packet, attachmentSession);
+            Exception actual = assertThrows(Exception.class, executor::execute);
+            assertThat(actual, sameInstance(expected));
+            assertTrue(transactionSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+            assertFalse(siblingSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+            assertFalse(attachmentSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+        }
+    }
+    
+    private ConnectionSession createConnectionSession() {
+        ConnectionSession result = new ConnectionSession(databaseType, new DefaultAttributeMap());
+        result.setConnectionId(1);
+        result.setGrantee(new Grantee("foo_user", "%"));
+        result.getTransactionStatus().setInTransaction(true);
+        return result;
+    }
+    
+    private static Stream<Arguments> transactionFailureArguments() {
+        return Stream.of(
+                Arguments.of(FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class, FirebirdExecuteStatementCommandExecutor.class, new SQLException("foo_failure")),
+                Arguments.of(FirebirdCommandPacketType.EXECUTE2, FirebirdExecuteStatementPacket.class, FirebirdExecuteStatementCommandExecutor.class, mock(ShardingSphereSQLException.class)),
+                Arguments.of(FirebirdCommandPacketType.EXEC_IMMEDIATE, FirebirdExecuteImmediatePacket.class, FirebirdExecuteImmediateCommandExecutor.class, mock(SQLDialectException.class)),
+                Arguments.of(FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class, FirebirdPrepareStatementCommandExecutor.class, new SQLException("foo_failure")),
+                Arguments.of(FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class, FirebirdBatchExecuteCommandExecutor.class, new SQLException("foo_failure")));
+    }
+    
+    @Test
+    void assertCursorExecuteFailureOwnership() throws SQLException {
+        ConnectionSession attachmentSession = createConnectionSession();
+        ConnectionSession transactionSession = createConnectionSession();
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(transactionSession);
+        ConnectionSession siblingSession = createConnectionSession();
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(siblingSession);
+        FirebirdFetchStatementCache.getInstance().registerStatement(1, 10, mock(ProxyBackendHandler.class), transactionSession);
+        FirebirdFetchStatementPacket packet = mock(FirebirdFetchStatementPacket.class);
+        when(packet.getStatementId()).thenReturn(10);
+        SQLException expected = new SQLException("foo_fetch_failure");
+        try (MockedConstruction<FirebirdFetchStatementCommandExecutor> construction = mockConstruction(FirebirdFetchStatementCommandExecutor.class)) {
+            QueryCommandExecutor executor = (QueryCommandExecutor) FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.FETCH, packet, attachmentSession);
+            doThrow(expected).when(construction.constructed().get(0)).execute();
+            SQLException actual = assertThrows(SQLException.class, executor::execute);
+            assertThat(actual, sameInstance(expected));
+            assertTrue(transactionSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+            assertFalse(siblingSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+        }
+    }
+    
+    @Test
+    void assertCursorRowFailureOwnership() throws SQLException {
+        ConnectionSession attachmentSession = createConnectionSession();
+        ConnectionSession transactionSession = createConnectionSession();
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(transactionSession);
+        ConnectionSession siblingSession = createConnectionSession();
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(siblingSession);
+        FirebirdFetchStatementCache.getInstance().registerStatement(1, 10, mock(ProxyBackendHandler.class), transactionSession);
+        FirebirdFetchStatementPacket packet = mock(FirebirdFetchStatementPacket.class);
+        when(packet.getStatementId()).thenReturn(10);
+        SQLException expected = new SQLException("foo_fetch_failure");
+        try (MockedConstruction<FirebirdFetchStatementCommandExecutor> construction = mockConstruction(FirebirdFetchStatementCommandExecutor.class)) {
+            QueryCommandExecutor executor = (QueryCommandExecutor) FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.FETCH, packet, attachmentSession);
+            doThrow(expected).when(construction.constructed().get(0)).getQueryRowPacket();
+            SQLException actual = assertThrows(SQLException.class, executor::getQueryRowPacket);
+            assertThat(actual, sameInstance(expected));
+            assertTrue(transactionSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+            assertFalse(siblingSession.getConnectionContext().getTransactionContext().isExceptionOccur());
+        }
+    }
+    
+    @Test
+    void assertUnknownTransactionValidationOrder() {
+        ConnectionSession attachmentSession = createConnectionSession();
+        FirebirdExecuteStatementPacket packet = mock(FirebirdExecuteStatementPacket.class);
+        when(packet.getTransactionId()).thenReturn(99);
+        CommandExecutor executor = FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, packet, attachmentSession);
+        assertThrows(InvalidStatementHandleException.class, executor::execute);
+    }
+    
+    @Test
+    void assertClosedAttachmentValidationOrder() {
+        ConnectionSession attachmentSession = createConnectionSession();
+        attachmentSession.getDatabaseConnectionManager().getClosed().set(true);
+        FirebirdExecuteStatementPacket packet = mock(FirebirdExecuteStatementPacket.class);
+        when(packet.getTransactionId()).thenReturn(99);
+        CommandExecutor executor = FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, packet, attachmentSession);
+        assertThrows(InvalidStatementHandleException.class, executor::execute);
     }
 }

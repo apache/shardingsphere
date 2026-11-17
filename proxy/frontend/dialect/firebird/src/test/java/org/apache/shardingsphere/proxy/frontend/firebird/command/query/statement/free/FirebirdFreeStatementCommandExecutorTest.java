@@ -26,8 +26,11 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,14 +44,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -75,8 +82,10 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, new FirebirdBatchStatement(STATEMENT_ID));
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
@@ -86,6 +95,8 @@ class FirebirdFreeStatementCommandExecutorTest {
     
     @AfterEach
     void tearDown() {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
@@ -124,6 +135,22 @@ class FirebirdFreeStatementCommandExecutorTest {
     }
     
     @Test
+    void assertFailedDropKeepsWireHandle() throws SQLException {
+        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID);
+        when(packet.getStatementId()).thenReturn(statementId);
+        when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.DROP);
+        SQLException expected = new SQLException("foo_failure");
+        doThrow(expected).when(proxyBackendHandler).close();
+        FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
+        try {
+            assertThat(assertThrows(SQLException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute), sameInstance(expected));
+            assertThat(FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID), is(2));
+        } finally {
+            FirebirdBlobHandleGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    @Test
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
         assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
@@ -134,4 +161,20 @@ class FirebirdFreeStatementCommandExecutorTest {
                 Arguments.of("execute_dropCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.DROP),
                 Arguments.of("execute_unprepareCleansPreparedStatementAndFetchResources", FirebirdFreeStatementPacket.UNPREPARE));
     }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("freeHandleProvider")
+    void assertExecuteResponseHandle(final String name, final int option, final int expectedHandle) throws SQLException {
+        when(packet.getOption()).thenReturn(option);
+        Collection<DatabasePacket> actual = new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getHandle(), is(expectedHandle));
+    }
+    
+    private static Stream<Arguments> freeHandleProvider() {
+        return Stream.of(
+                Arguments.of("drop", FirebirdFreeStatementPacket.DROP, 0xFFFF),
+                Arguments.of("close", FirebirdFreeStatementPacket.CLOSE, STATEMENT_ID),
+                Arguments.of("unprepare", FirebirdFreeStatementPacket.UNPREPARE, STATEMENT_ID));
+    }
+    
 }

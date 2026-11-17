@@ -90,8 +90,10 @@ class FirebirdBatchExecuteCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getDatabaseConnectionManager().closeAllResources()).thenReturn(java.util.Collections.emptyList());
         FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
     }
     
     @AfterEach
@@ -267,7 +269,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
         when(packet.getTransactionHandle()).thenReturn(transactionId);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
-        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             FirebirdBatchExecuteCommandExecutor executor = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession);

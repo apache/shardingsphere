@@ -117,7 +117,7 @@ class FirebirdBatchCancelCommandExecutorTest {
     @Test
     void assertExecuteWhenBatchNotFoundInTransaction() throws SQLException {
         ConnectionSession transactionSession = createConnectionSessionInTransaction();
-        int transactionHandle = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        int transactionHandle = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(transactionSession);
         DatabaseProtocolFrontendEngine engine = DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, TypedSPILoader.getService(DatabaseType.class, "Firebird"));
         new CommandExecutorTask(engine, transactionSession, channelHandlerContext, Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_CANCEL.getValue()).writeInt(STATEMENT_ID)).run();
         new CommandExecutorTask(engine, transactionSession, channelHandlerContext, Unpooled.buffer().writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(transactionHandle)).run();

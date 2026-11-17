@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -44,16 +42,11 @@ public final class FirebirdRollbackTransactionCommandExecutor implements Command
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int transactionHandle = packet.getTransactionId();
-        validateTransactionHandle(transactionHandle);
-        if (!connectionSession.isAutoCommit()) {
-            new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager()).rollback();
+        ConnectionSession transactionSession = FirebirdTransactionIdGenerator.getInstance().getTransactionSession(connectionSession.getConnectionId(), transactionHandle);
+        if (!transactionSession.isAutoCommit()) {
+            new ProxyBackendTransactionManager(transactionSession.getDatabaseConnectionManager()).rollback();
         }
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
-    }
-    
-    private void validateTransactionHandle(final int transactionHandle) {
-        ShardingSpherePreconditions.checkState(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), transactionHandle),
-                () -> new InvalidTransactionHandleException(transactionHandle));
     }
 }

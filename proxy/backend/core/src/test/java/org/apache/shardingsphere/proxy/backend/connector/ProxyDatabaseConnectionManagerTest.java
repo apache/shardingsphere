@@ -89,6 +89,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -166,40 +167,96 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
-    void assertGetConnectionCacheIsEmpty() throws SQLException {
+    void assertGetConnectionsWithProviderCacheGrowth() throws SQLException {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        List<List<Object>> actualRequests = new ArrayList<>(2);
+        List<Connection> initialConnections = Arrays.asList(mock(Connection.class), mock(Connection.class));
+        List<Connection> additionalConnections = Arrays.asList(mock(Connection.class), mock(Connection.class));
+        databaseConnectionManager.setConnectionProvider((databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode) -> {
+            actualRequests.add(Arrays.asList(databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode));
+            return 0 == connectionOffset ? initialConnections : additionalConnections;
+        });
+        assertThat(databaseConnectionManager.getConnections("foo_db", "foo_ds", 1, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(initialConnections.get(1))));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "foo_ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY), is(Collections.singletonList(initialConnections.get(0))));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "foo_ds", 2, 2, ConnectionMode.CONNECTION_STRICTLY), is(additionalConnections));
+        assertThat(databaseConnectionManager.getConnectionSize(), is(4));
+        assertThat(databaseConnectionManager.getUsedDataSourceNames(), is(Collections.singletonList("foo_ds")));
+        assertThat(actualRequests, is(Arrays.asList(Arrays.asList("foo_db", "foo_ds", 0, 2, ConnectionMode.CONNECTION_STRICTLY),
+                Arrays.asList("foo_db", "foo_ds", 2, 2, ConnectionMode.CONNECTION_STRICTLY))));
+        verifyNoInteractions(backendDataSource);
+        assertTrue(databaseConnectionManager.closeAllResources().isEmpty());
+        for (Connection each : initialConnections) {
+            verify(each).close();
+        }
+        for (Connection each : additionalConnections) {
+            verify(each).close();
+        }
+    }
+    
+    @Test
+    void assertGetConnectionsWithProviderProcessing() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actualConnections.size(), is(2));
-        assertThat(databaseConnectionManager.getConnectionSize(), is(2));
+        connectionSession.getConnectionContext().getTransactionContext().beginTransaction(TransactionType.LOCAL.name(), null);
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("foo_key", "foo_value");
+        when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        ConnectionPostProcessor processor = mock(ConnectionPostProcessor.class);
+        databaseConnectionManager.getConnectionPostProcessors().add(processor);
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        TransactionHook hook = mock(TransactionHook.class);
+        setTransactionHooks(Collections.singletonMap(rule, hook));
+        databaseConnectionManager.setConnectionProvider((databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode) -> Collections.singletonList(connection));
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "foo_ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actual, is(Collections.singletonList(connection)));
+        verify(connection.createStatement()).execute("SET foo_key=foo_value");
+        verify(processor).process(connection);
+        verify(hook).afterCreateConnections(eq(rule), any(), eq(actual), any());
+        verifyNoInteractions(backendDataSource);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setTransactionHooks(final Map<ShardingSphereRule, TransactionHook> transactionHooks) {
+        Plugins.getMemberAccessor().set(ProxyDatabaseConnectionManager.class.getDeclaredField("transactionHooks"), databaseConnectionManager, transactionHooks);
+    }
+    
+    @Test
+    void assertGetConnectionsWithProviderFailure() throws SQLException {
+        SQLException expected = new SQLException("foo_failure");
+        databaseConnectionManager.setConnectionProvider((databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode) -> {
+            throw expected;
+        });
+        SQLException actual = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("foo_db", "foo_ds", 0, 1, ConnectionMode.MEMORY_STRICTLY));
+        assertThat(actual, sameInstance(expected));
+        assertTrue(databaseConnectionManager.getUsedDataSourceNames().isEmpty());
+        assertThat(databaseConnectionManager.getConnectionSize(), is(0));
+        verifyNoInteractions(backendDataSource);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getConnectionsWithCacheArguments")
+    void assertGetConnectionsWithCache(final String scenario, final int cachedSize, final int requestedSize, final int newSize, final int expectedCacheSize) throws SQLException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        if (cachedSize > 0) {
+            MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", cachedSize);
+        }
+        if (newSize > 0) {
+            when(backendDataSource.getConnections(anyString(), anyString(), eq(newSize), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(newSize));
+        }
+        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, requestedSize, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actualConnections.size(), is(requestedSize));
+        assertThat(databaseConnectionManager.getConnectionSize(), is(expectedCacheSize));
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
+    }
+    
+    private static Stream<Arguments> getConnectionsWithCacheArguments() {
+        return Stream.of(Arguments.of("empty cache", 0, 2, 2, 2), Arguments.of("cache hit", 10, 2, 0, 10), Arguments.of("cache growth", 10, 12, 2, 12));
     }
     
     @Test
     void assertGetConnectionsWithNullDatabaseName() {
         NullPointerException actualException = assertThrows(NullPointerException.class, () -> databaseConnectionManager.getConnections(null, "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY));
         assertThat(actualException.getMessage(), is("Current database name is null."));
-    }
-    
-    @Test
-    void assertGetConnectionSizeLessThanCache() throws SQLException {
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
-        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 2, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actualConnections.size(), is(2));
-        assertThat(databaseConnectionManager.getConnectionSize(), is(10));
-        assertTrue(connectionSession.getTransactionStatus().isInTransaction());
-    }
-    
-    @Test
-    void assertGetConnectionSizeGreaterThanCache() throws SQLException {
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
-        when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any(), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
-        List<Connection> actualConnections = databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), "ds1", 0, 12, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actualConnections.size(), is(12));
-        assertThat(databaseConnectionManager.getConnectionSize(), is(12));
-        assertTrue(connectionSession.getTransactionStatus().isInTransaction());
     }
     
     @Test
@@ -245,11 +302,6 @@ class ProxyDatabaseConnectionManagerTest {
         Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(connectionPostProcessor);
         Plugins.getMemberAccessor().set(ProxyDatabaseConnectionManager.class.getDeclaredField("connectionPostProcessors"), databaseConnectionManager, connectionPostProcessors);
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private void setTransactionHooks(final Map<ShardingSphereRule, TransactionHook> transactionHooks) {
-        Plugins.getMemberAccessor().set(ProxyDatabaseConnectionManager.class.getDeclaredField("transactionHooks"), databaseConnectionManager, transactionHooks);
     }
     
     @SuppressWarnings("unchecked")

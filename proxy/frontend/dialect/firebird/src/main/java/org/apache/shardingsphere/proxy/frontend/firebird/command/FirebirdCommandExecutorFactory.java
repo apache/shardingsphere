@@ -19,6 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -36,14 +39,20 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
@@ -64,13 +73,20 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.Fire
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate.FirebirdAllocateStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteImmediateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free.FirebirdFreeStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare.FirebirdPrepareStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdRollbackTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdStartTransactionCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+
+import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Command executor factory for Firebird.
@@ -86,7 +102,19 @@ public final class FirebirdCommandExecutorFactory {
      * @param connectionSession connection session
      * @return created instance
      */
+    @HighFrequencyInvocation
     public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
+        CommandExecutor result = createCommandExecutor(commandPacketType, commandPacket, connectionSession);
+        ConnectionSession transactionSession = getCommandSession(commandPacketType, commandPacket, connectionSession);
+        if (transactionSession == connectionSession) {
+            return result;
+        }
+        return result instanceof QueryCommandExecutor
+                ? new TransactionQueryCommandExecutor((QueryCommandExecutor) result, transactionSession)
+                : new TransactionCommandExecutor(result, transactionSession);
+    }
+    
+    private static CommandExecutor createCommandExecutor(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
         switch (commandPacketType) {
             case INFO_DATABASE:
                 return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
@@ -116,6 +144,8 @@ public final class FirebirdCommandExecutorFactory {
                 return new FirebirdAllocateStatementCommandExecutor(connectionSession);
             case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementCommandExecutor((FirebirdPrepareStatementPacket) commandPacket, connectionSession);
+            case EXEC_IMMEDIATE:
+                return new FirebirdExecuteImmediateCommandExecutor((FirebirdExecuteImmediatePacket) commandPacket, connectionSession);
             case EXECUTE:
             case EXECUTE2:
                 return new FirebirdExecuteStatementCommandExecutor((FirebirdExecuteStatementPacket) commandPacket, connectionSession);
@@ -145,6 +175,112 @@ public final class FirebirdCommandExecutorFactory {
                 return new FirebirdCancelCommandExecutor();
             default:
                 return new FirebirdUnsupportedCommandExecutor();
+        }
+    }
+    
+    private static ConnectionSession getCommandSession(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
+        int transactionId;
+        switch (commandPacketType) {
+            case EXECUTE:
+            case EXECUTE2:
+                transactionId = ((FirebirdExecuteStatementPacket) commandPacket).getTransactionId();
+                break;
+            case EXEC_IMMEDIATE:
+                transactionId = ((FirebirdExecuteImmediatePacket) commandPacket).getTransactionId();
+                break;
+            case PREPARE_STATEMENT:
+                transactionId = ((FirebirdPrepareStatementPacket) commandPacket).getTransactionId();
+                break;
+            case BATCH_EXEC:
+                transactionId = ((FirebirdBatchExecuteCommandPacket) commandPacket).getTransactionHandle();
+                break;
+            case FETCH:
+                ConnectionSession cursorSession = FirebirdFetchStatementCache.getInstance().getConnectionSession(connectionSession.getConnectionId(),
+                        ((FirebirdFetchStatementPacket) commandPacket).getStatementId());
+                return null == cursorSession ? connectionSession : cursorSession;
+            default:
+                return connectionSession;
+        }
+        if (0 == transactionId) {
+            return connectionSession;
+        }
+        synchronized (connectionSession.getDatabaseConnectionManager().getCloseLock()) {
+            if (connectionSession.getDatabaseConnectionManager().getClosed().get()
+                    || !FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), transactionId)) {
+                return connectionSession;
+            }
+            return FirebirdTransactionIdGenerator.getInstance().getTransactionSession(connectionSession.getConnectionId(), transactionId);
+        }
+    }
+    
+    @HighFrequencyInvocation
+    @RequiredArgsConstructor
+    private static final class TransactionCommandExecutor implements CommandExecutor {
+        
+        private final CommandExecutor delegate;
+        
+        private final ConnectionSession connectionSession;
+        
+        @Override
+        public Collection<DatabasePacket> execute() throws SQLException {
+            try {
+                return delegate.execute();
+            } catch (final SQLException | ShardingSphereSQLException | SQLDialectException ex) {
+                handleException(ex);
+                throw ex;
+            }
+        }
+        
+        private void handleException(final Exception exception) {
+            DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, connectionSession.getProtocolType()).handleException(connectionSession, exception);
+        }
+        
+        @Override
+        public void close() throws SQLException {
+            delegate.close();
+        }
+    }
+    
+    @HighFrequencyInvocation
+    private static final class TransactionQueryCommandExecutor implements QueryCommandExecutor {
+        
+        private final QueryCommandExecutor delegate;
+        
+        private final TransactionCommandExecutor commandExecutor;
+        
+        private TransactionQueryCommandExecutor(final QueryCommandExecutor delegate, final ConnectionSession connectionSession) {
+            this.delegate = delegate;
+            commandExecutor = new TransactionCommandExecutor(delegate, connectionSession);
+        }
+        
+        @Override
+        public Collection<DatabasePacket> execute() throws SQLException {
+            return commandExecutor.execute();
+        }
+        
+        @Override
+        public ResponseType getResponseType() {
+            return delegate.getResponseType();
+        }
+        
+        @Override
+        public boolean next() throws SQLException {
+            return delegate.next();
+        }
+        
+        @Override
+        public DatabasePacket getQueryRowPacket() throws SQLException {
+            try {
+                return delegate.getQueryRowPacket();
+            } catch (final SQLException | ShardingSphereSQLException | SQLDialectException ex) {
+                commandExecutor.handleException(ex);
+                throw ex;
+            }
+        }
+        
+        @Override
+        public void close() throws SQLException {
+            commandExecutor.close();
         }
     }
 }

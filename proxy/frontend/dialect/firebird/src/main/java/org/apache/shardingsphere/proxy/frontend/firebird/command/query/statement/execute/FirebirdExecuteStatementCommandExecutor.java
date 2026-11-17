@@ -19,22 +19,24 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -49,6 +51,9 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -58,6 +63,7 @@ import java.util.List;
 /**
  * Firebird execute statement command executor.
  */
+@HighFrequencyInvocation
 @RequiredArgsConstructor
 public final class FirebirdExecuteStatementCommandExecutor implements CommandExecutor {
     
@@ -67,21 +73,27 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     private ProxyBackendHandler proxyBackendHandler;
     
+    private ConnectionSession transactionSession;
+    
     @Getter
     private ResponseType responseType;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        connectionSession.beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(packet.getStatementId()));
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
+        ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(packet.getStatementId()));
+        SQLStatement sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
+        FirebirdTransactionIdGenerator transactionIdGenerator = FirebirdTransactionIdGenerator.getInstance();
+        transactionSession = sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement
+                ? transactionIdGenerator.getTransactionSession(connectionSession.getConnectionId(), packet.getTransactionId())
+                : transactionIdGenerator.getTransactionSessionForExecution(connectionSession.getConnectionId(), packet.getTransactionId());
+        transactionSession.beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(packet.getStatementId()));
         try {
-            FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-            ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(packet.getStatementId()));
-            validateTransactionHandle();
             ResponseHeader responseHeader = executePreparedStatement(preparedStatement, packet.getParameterValues());
             if (responseHeader instanceof QueryResponseHeader) {
                 responseType = ResponseType.QUERY;
-                FirebirdFetchStatementCache.getInstance().registerStatement(connectionSession.getConnectionId(), packet.getStatementId(), proxyBackendHandler);
-                connectionSession.getDatabaseConnectionManager().markResourceInUse(proxyBackendHandler);
+                FirebirdFetchStatementCache.getInstance().registerStatement(connectionSession.getConnectionId(), packet.getStatementId(), proxyBackendHandler, transactionSession);
+                transactionSession.getDatabaseConnectionManager().markResourceInUse(proxyBackendHandler);
             } else {
                 responseType = ResponseType.UPDATE;
                 preparedStatement.setAffectedRows(((UpdateResponseHeader) responseHeader).getUpdateCount());
@@ -90,16 +102,16 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
             if (packet.isStoredProcedure() && proxyBackendHandler.next()) {
                 result.add(getSQLResponse());
             }
-            result.add(new FirebirdGenericResponsePacket());
+            int transactionId = packet.getTransactionId();
+            if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
+                FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionId);
+                transactionId = 0;
+            }
+            result.add(new FirebirdGenericResponsePacket().setHandle(transactionId));
             return result;
         } finally {
-            connectionSession.finishPreparedStatementCache();
+            transactionSession.finishPreparedStatementCache();
         }
-    }
-    
-    private void validateTransactionHandle() {
-        ShardingSpherePreconditions.checkState(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), packet.getTransactionId()),
-                () -> new InvalidTransactionHandleException(packet.getTransactionId()));
     }
     
     private ResponseHeader executePreparedStatement(final FirebirdServerPreparedStatement preparedStatement, final List<Object> params) throws SQLException {
@@ -109,9 +121,9 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
             if (sqlStatementContext instanceof ParameterAware) {
                 ((ParameterAware) sqlStatementContext).bindParameters(params);
             }
-            QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
+            QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), transactionSession.getConnectionContext(),
                     ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
-            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, connectionSession, true);
+            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, transactionSession, true);
             return proxyBackendHandler.execute();
         } finally {
             clearBlobUploads(blobIdsToRemove);
@@ -157,5 +169,14 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
         return new FirebirdSQLResponsePacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+    }
+    
+    @Override
+    @SneakyThrows(BackendConnectionException.class)
+    public void close() {
+        if (null != transactionSession) {
+            transactionSession.clearQueryContext();
+            transactionSession.getDatabaseConnectionManager().closeExecutionResources();
+        }
     }
 }

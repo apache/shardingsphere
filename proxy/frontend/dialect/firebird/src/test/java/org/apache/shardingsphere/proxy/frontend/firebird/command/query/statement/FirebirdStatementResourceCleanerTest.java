@@ -24,9 +24,11 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -70,8 +72,14 @@ class FirebirdStatementResourceCleanerTest {
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
     
+    @BeforeEach
+    void registerTransactionConnection() {
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+    }
+    
     @AfterEach
     void tearDown() {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
@@ -83,7 +91,7 @@ class FirebirdStatementResourceCleanerTest {
     @Test
     void assertCleanWithPreparedStatementCacheInvalidation() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(connectionManager);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
@@ -109,7 +117,7 @@ class FirebirdStatementResourceCleanerTest {
     @Test
     void assertCleanWithoutPreparedStatementCacheInvalidation() throws SQLException {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(connectionManager);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
@@ -132,7 +140,7 @@ class FirebirdStatementResourceCleanerTest {
         ProxyDatabaseConnectionManager actualConnectionManager = new ProxyDatabaseConnectionManager(actualConnectionSession);
         when(actualConnectionSession.getDatabaseConnectionManager()).thenReturn(actualConnectionManager);
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, actualProxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, actualProxyBackendHandler, actualConnectionSession);
         actualConnectionManager.add(actualProxyBackendHandler);
         actualConnectionManager.markResourceInUse(actualProxyBackendHandler);
         AtomicBoolean closed = new AtomicBoolean(false);

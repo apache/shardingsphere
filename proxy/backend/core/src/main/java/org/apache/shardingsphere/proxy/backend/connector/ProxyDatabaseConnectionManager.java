@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -65,6 +66,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     private final ConnectionSession connectionSession;
     
+    @Getter(AccessLevel.NONE)
+    private DatabaseConnectionManager<Connection> connectionProvider = this::createDefaultConnections;
+    
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
     private final Collection<ProxyBackendHandler> proxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
@@ -86,6 +90,19 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
             TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     
+    /**
+     * Set the factory for connections missing from the cache.
+     *
+     * <p>The factory receives the first missing offset and the number of connections to create, and applies transaction options.
+     * Returned connections participate in session replay, postprocessing, transaction hooks, caching and cleanup by this manager.</p>
+     *
+     * @param connectionProvider connection factory
+     */
+    @HighFrequencyInvocation
+    public void setConnectionProvider(final DatabaseConnectionManager<Connection> connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
+    
     @Override
     public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                            final ConnectionMode connectionMode) throws SQLException {
@@ -100,7 +117,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         if (connections.size() >= maxConnectionSize) {
             result = new ArrayList<>(connections).subList(connectionOffset, maxConnectionSize);
         } else if (connections.isEmpty()) {
-            Collection<Connection> newConnections = createNewConnections(databaseName, dataSourceName, maxConnectionSize, connectionMode);
+            Collection<Connection> newConnections = createNewConnections(databaseName, dataSourceName, 0, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(cacheKey, newConnections);
@@ -109,7 +126,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         } else {
             List<Connection> allConnections = new ArrayList<>(maxConnectionSize);
             allConnections.addAll(connections);
-            List<Connection> newConnections = createNewConnections(databaseName, dataSourceName, maxConnectionSize - connections.size(), connectionMode);
+            List<Connection> newConnections = createNewConnections(databaseName, dataSourceName, connections.size(), maxConnectionSize - connections.size(), connectionMode);
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
@@ -159,9 +176,10 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
-    private List<Connection> createNewConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        List<Connection> result = ProxyContext.getInstance().getBackendDataSource()
-                .getConnections(databaseName.toLowerCase(), dataSourceName, connectionSize, connectionMode, this::replayTransactionOptions);
+    @HighFrequencyInvocation
+    private List<Connection> createNewConnections(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                                  final ConnectionMode connectionMode) throws SQLException {
+        List<Connection> result = connectionProvider.getConnections(databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
         setSessionVariablesIfNecessary(result);
         if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
             for (Connection each : result) {
@@ -222,6 +240,12 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         for (ConnectionPostProcessor each : connectionPostProcessors) {
             each.process(target);
         }
+    }
+    
+    @HighFrequencyInvocation
+    private List<Connection> createDefaultConnections(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
+                                                      final ConnectionMode connectionMode) throws SQLException {
+        return ProxyContext.getInstance().getBackendDataSource().getConnections(databaseName.toLowerCase(), dataSourceName, connectionSize, connectionMode, this::replayTransactionOptions);
     }
     
     @SuppressWarnings("MagicConstant")

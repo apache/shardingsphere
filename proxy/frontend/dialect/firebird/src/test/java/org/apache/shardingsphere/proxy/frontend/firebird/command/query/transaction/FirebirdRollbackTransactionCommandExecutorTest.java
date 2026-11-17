@@ -56,9 +56,10 @@ class FirebirdRollbackTransactionCommandExecutorTest {
     
     @BeforeEach
     void setUp() {
-        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getDatabaseConnectionManager().closeAllResources()).thenReturn(java.util.Collections.emptyList());
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
     }
     
     @AfterEach
@@ -111,7 +112,7 @@ class FirebirdRollbackTransactionCommandExecutorTest {
         when(packet.getTransactionId()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
             new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();
-            FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+            FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
             assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute());
             when(packet.getTransactionId()).thenReturn(2);
             Collection<DatabasePacket> actual = new FirebirdRollbackTransactionCommandExecutor(packet, connectionSession).execute();

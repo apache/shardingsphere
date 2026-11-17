@@ -37,9 +37,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
+import java.sql.SQLException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -123,7 +127,6 @@ class FirebirdConnectionResourceManagerTest {
         InOrder inOrder = inOrder(statementIdGenerator, transactionIdGenerator, blobIdGenerator, blobHandleGenerator, blobWriteCache, blobReadCache,
                 connectionProtocolVersion, fetchStatementCache, batchStatementManager);
         inOrder.verify(statementIdGenerator).unregisterConnection(CONNECTION_ID);
-        inOrder.verify(transactionIdGenerator).unregisterConnection(CONNECTION_ID);
         inOrder.verify(blobIdGenerator).unregisterConnection(CONNECTION_ID);
         inOrder.verify(blobHandleGenerator).unregisterConnection(CONNECTION_ID);
         inOrder.verify(blobWriteCache).unregisterConnection(CONNECTION_ID);
@@ -131,6 +134,16 @@ class FirebirdConnectionResourceManagerTest {
         inOrder.verify(connectionProtocolVersion).unsetProtocolVersion(CONNECTION_ID);
         inOrder.verify(fetchStatementCache).unregisterConnection(CONNECTION_ID);
         inOrder.verify(batchStatementManager).unregisterConnection(CONNECTION_ID);
+        inOrder.verify(transactionIdGenerator).unregisterConnection(CONNECTION_ID);
         assertNull(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()));
+    }
+    
+    @Test
+    void assertUnregisterConnectionWithCursorCleanupFailure() {
+        doAnswer(invocation -> {
+            throw new SQLException("foo_failure");
+        }).when(fetchStatementCache).unregisterConnection(CONNECTION_ID);
+        assertThrows(SQLException.class, () -> FirebirdConnectionResourceManager.getInstance().unregisterConnection(CONNECTION_ID));
+        verify(transactionIdGenerator).unregisterConnection(CONNECTION_ID);
     }
 }

@@ -18,9 +18,13 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -35,7 +39,7 @@ public final class FirebirdFetchStatementCache {
     
     private static final FirebirdFetchStatementCache INSTANCE = new FirebirdFetchStatementCache();
     
-    private final Map<Integer, Map<Integer, ProxyBackendHandler>> statementRegistry = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<Integer, Statement>> statementRegistry = new ConcurrentHashMap<>();
     
     /**
      * Get fetch statement registry instance.
@@ -61,11 +65,12 @@ public final class FirebirdFetchStatementCache {
      * @param connectionId connection ID
      * @param statementId statement ID
      * @param proxyBackendHandler proxy backend handler
+     * @param connectionSession transaction session
      */
-    public void registerStatement(final int connectionId, final int statementId, final ProxyBackendHandler proxyBackendHandler) {
-        Map<Integer, ProxyBackendHandler> statements = statementRegistry.get(connectionId);
+    public void registerStatement(final int connectionId, final int statementId, final ProxyBackendHandler proxyBackendHandler, final ConnectionSession connectionSession) {
+        Map<Integer, Statement> statements = statementRegistry.get(connectionId);
         if (null != statements) {
-            statements.put(statementId, proxyBackendHandler);
+            statements.put(statementId, new Statement(proxyBackendHandler, connectionSession));
         }
     }
     
@@ -77,8 +82,37 @@ public final class FirebirdFetchStatementCache {
      * @return fetch response packets
      */
     public ProxyBackendHandler getFetchBackendHandler(final int connectionId, final int statementId) {
-        Map<Integer, ProxyBackendHandler> statements = statementRegistry.get(connectionId);
-        return null == statements ? null : statements.get(statementId);
+        Map<Integer, Statement> statements = statementRegistry.get(connectionId);
+        Statement statement = null == statements ? null : statements.get(statementId);
+        return null == statement ? null : statement.getBackendHandler();
+    }
+    
+    /**
+     * Get the transaction session that owns a cursor.
+     *
+     * @param connectionId connection ID
+     * @param statementId statement ID
+     * @return transaction session, or null when the cursor is absent
+     */
+    @HighFrequencyInvocation
+    public ConnectionSession getConnectionSession(final int connectionId, final int statementId) {
+        Map<Integer, Statement> statements = statementRegistry.get(connectionId);
+        Statement statement = null == statements ? null : statements.get(statementId);
+        return null == statement ? null : statement.getConnectionSession();
+    }
+    
+    /**
+     * Unregister cursors owned by a completed transaction.
+     *
+     * @param connectionId connection ID
+     * @param connectionSession transaction session
+     */
+    @HighFrequencyInvocation
+    public void unregisterTransaction(final int connectionId, final ConnectionSession connectionSession) {
+        Map<Integer, Statement> statements = statementRegistry.get(connectionId);
+        if (null != statements) {
+            statements.values().removeIf(each -> each.getConnectionSession() == connectionSession);
+        }
     }
     
     /**
@@ -88,7 +122,7 @@ public final class FirebirdFetchStatementCache {
      * @param statementId statement ID
      */
     public void unregisterStatement(final int connectionId, final int statementId) {
-        Map<Integer, ProxyBackendHandler> statements = statementRegistry.get(connectionId);
+        Map<Integer, Statement> statements = statementRegistry.get(connectionId);
         if (null != statements) {
             statements.remove(statementId);
         }
@@ -101,12 +135,21 @@ public final class FirebirdFetchStatementCache {
      */
     @SneakyThrows(SQLException.class)
     public void unregisterConnection(final int connectionId) {
-        Map<Integer, ProxyBackendHandler> statements = statementRegistry.remove(connectionId);
+        Map<Integer, Statement> statements = statementRegistry.remove(connectionId);
         if (null == statements) {
             return;
         }
-        for (ProxyBackendHandler each : statements.values()) {
-            each.close();
+        for (Statement each : statements.values()) {
+            each.getBackendHandler().close();
         }
+    }
+    
+    @RequiredArgsConstructor
+    @Getter
+    private static final class Statement {
+        
+        private final ProxyBackendHandler backendHandler;
+        
+        private final ConnectionSession connectionSession;
     }
 }

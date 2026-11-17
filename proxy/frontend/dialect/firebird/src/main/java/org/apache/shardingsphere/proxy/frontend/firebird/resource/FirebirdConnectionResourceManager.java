@@ -70,14 +70,17 @@ public final class FirebirdConnectionResourceManager {
      */
     public void unregisterConnection(final int connectionId) {
         FirebirdStatementIdGenerator.getInstance().unregisterConnection(connectionId);
-        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionId);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(connectionId);
         FirebirdBlobHandleGenerator.getInstance().unregisterConnection(connectionId);
         FirebirdBlobWriteCache.getInstance().unregisterConnection(connectionId);
         FirebirdBlobReadCache.getInstance().unregisterConnection(connectionId);
         FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(connectionId);
         FirebirdBlobBinaryProtocolValue.unregisterConnection(connectionId);
-        FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionId);
-        FirebirdBatchStatementManager.getInstance().unregisterConnection(connectionId);
+        try {
+            FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionId);
+        } finally {
+            FirebirdBatchStatementManager.getInstance().unregisterConnection(connectionId);
+            FirebirdTransactionIdGenerator.getInstance().unregisterConnection(connectionId);
+        }
     }
 }

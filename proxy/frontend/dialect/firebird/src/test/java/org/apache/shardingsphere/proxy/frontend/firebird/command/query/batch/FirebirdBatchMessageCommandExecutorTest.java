@@ -170,7 +170,9 @@ class FirebirdBatchMessageCommandExecutorTest {
     private void assertExecuteExecutesAcceptedMessages(final FirebirdBatchStatement batchStatement) throws SQLException {
         FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
         when(executePacket.getStatementHandle()).thenReturn(STATEMENT_ID);
-        when(executePacket.getTransactionHandle()).thenReturn(FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID));
+        when(connectionSession.getDatabaseConnectionManager().closeAllResources()).thenReturn(Collections.emptyList());
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
+        when(executePacket.getTransactionHandle()).thenReturn(transactionId);
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         List<List<List<Object>>> executedParameterValues = new LinkedList<>();
         try (

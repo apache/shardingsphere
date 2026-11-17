@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdObjectHandleGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,23 @@ class FirebirdStatementIdGeneratorTest {
     @Test
     void assertGetStatementId() {
         assertThat(GENERATOR.getStatementId(1), is(0));
+    }
+    
+    @Test
+    void assertGetStatementIdAfterHandleWrap() {
+        FirebirdObjectHandleGenerator handles = FirebirdObjectHandleGenerator.getInstance();
+        handles.registerConnection(1, FirebirdCommandPacketType.CREATE_BLOB);
+        try {
+            for (int i = 0; i < 64999; i++) {
+                handles.nextHandle(1, FirebirdCommandPacketType.CREATE_BLOB, 1);
+            }
+            assertThat(GENERATOR.nextStatementId(1), is(65000));
+            handles.releaseHandle(1, FirebirdCommandPacketType.CREATE_BLOB, 1);
+            assertThat(GENERATOR.nextStatementId(1), is(1));
+            assertThat(GENERATOR.getStatementId(1), is(1));
+        } finally {
+            handles.unregisterConnection(1, FirebirdCommandPacketType.CREATE_BLOB);
+        }
     }
     
     @Test

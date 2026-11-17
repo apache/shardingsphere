@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchStatementManager;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 
 import java.sql.SQLException;
@@ -49,6 +50,9 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
                 FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
                 FirebirdStatementResourceCleaner.clean(connectionSession, packet.getStatementId(), true);
+                if (FirebirdFreeStatementPacket.DROP == packet.getOption()) {
+                    FirebirdStatementIdGenerator.getInstance().releaseStatementId(connectionSession.getConnectionId(), packet.getStatementId());
+                }
                 break;
             case FirebirdFreeStatementPacket.CLOSE:
                 FirebirdBatchStatementManager.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementId());
@@ -57,6 +61,7 @@ public final class FirebirdFreeStatementCommandExecutor implements CommandExecut
             default:
                 throw new DatabaseProtocolException("Unknown DSQL option type %d", packet.getOption());
         }
-        return Collections.singleton(new FirebirdGenericResponsePacket());
+        int handle = FirebirdFreeStatementPacket.DROP == packet.getOption() ? 0xFFFF : packet.getStatementId();
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(handle));
     }
 }

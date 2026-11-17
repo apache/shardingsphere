@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdTransactionParameterBufferType;
@@ -37,7 +38,10 @@ public final class FirebirdStartTransactionPacket extends FirebirdCommandPacket 
     public FirebirdStartTransactionPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         handle = payload.readInt4();
-        tpb.parseBuffer(payload.readBuffer());
+        ByteBuf buffer = payload.readBuffer();
+        if (buffer.isReadable()) {
+            tpb.parseBuffer(buffer);
+        }
     }
     
     /**

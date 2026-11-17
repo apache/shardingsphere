@@ -132,9 +132,10 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
-        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getDatabaseConnectionManager().closeAllResources()).thenReturn(java.util.Collections.emptyList());
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionId()).thenReturn(transactionId);
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
@@ -167,10 +168,9 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void assertExecuteWithClosedTransactionHandle() {
         when(packet.getStatementId()).thenReturn(2);
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
-        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionSession);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         assertThrows(InvalidTransactionHandleException.class, executor::execute);
-        verify(connectionSession).finishPreparedStatementCache();
     }
     
     @Test

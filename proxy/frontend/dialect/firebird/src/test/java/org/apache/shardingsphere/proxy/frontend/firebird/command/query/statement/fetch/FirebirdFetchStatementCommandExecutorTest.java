@@ -95,7 +95,7 @@ class FirebirdFetchStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWhenNoBackendHandlerAfterSameHandleReprepare() throws SQLException {
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
@@ -119,7 +119,7 @@ class FirebirdFetchStatementCommandExecutorTest {
     
     @Test
     void assertNextReturnsTrueWhenFetchCountNotExceeded() throws SQLException {
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         when(packet.getFetchSize()).thenReturn(2);
         when(proxyBackendHandler.next()).thenReturn(true);
         QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
@@ -131,7 +131,7 @@ class FirebirdFetchStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWhenBackendHandlerReturnsRow() throws SQLException {
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         when(packet.getFetchSize()).thenReturn(2);
         QueryResponseRow responseRow = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
         when(proxyBackendHandler.next()).thenReturn(true);
@@ -149,7 +149,7 @@ class FirebirdFetchStatementCommandExecutorTest {
     
     @Test
     void assertExecuteWhenBackendHandlerReturnsNoMoreRows() throws SQLException {
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         when(packet.getFetchSize()).thenReturn(Integer.MAX_VALUE);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
@@ -161,7 +161,7 @@ class FirebirdFetchStatementCommandExecutorTest {
     
     @Test
     void assertGetQueryRowPacketWhenEnd() throws SQLException {
-        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler);
+        FirebirdFetchStatementCache.getInstance().registerStatement(CONNECTION_ID, STATEMENT_ID, proxyBackendHandler, connectionSession);
         executor = new FirebirdFetchStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));

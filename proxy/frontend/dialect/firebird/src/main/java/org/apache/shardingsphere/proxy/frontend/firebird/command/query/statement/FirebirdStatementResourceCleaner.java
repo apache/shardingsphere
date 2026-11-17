@@ -23,6 +23,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheKey;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 
 import java.sql.SQLException;
 
@@ -54,11 +55,13 @@ public final class FirebirdStatementResourceCleaner {
      */
     public static void clean(final ConnectionSession connectionSession, final int statementId, final boolean invalidatePreparedStatementCache) throws SQLException {
         ProxyBackendHandler proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), statementId);
+        ConnectionSession cursorSession =
+                null == proxyBackendHandler ? connectionSession : FirebirdFetchStatementCache.getInstance().getConnectionSession(connectionSession.getConnectionId(), statementId);
         if (null != proxyBackendHandler) {
-            connectionSession.getDatabaseConnectionManager().removeResource(proxyBackendHandler);
+            cursorSession.getDatabaseConnectionManager().removeResource(proxyBackendHandler);
         }
         FirebirdFetchStatementCache.getInstance().unregisterStatement(connectionSession.getConnectionId(), statementId);
-        connectionSession.getConnectionContext().clearCursorContext();
+        cursorSession.getConnectionContext().clearCursorContext();
         try {
             if (null != proxyBackendHandler) {
                 proxyBackendHandler.close();
@@ -66,6 +69,9 @@ public final class FirebirdStatementResourceCleaner {
         } finally {
             if (invalidatePreparedStatementCache) {
                 connectionSession.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
+                for (ConnectionSession each : FirebirdTransactionIdGenerator.getInstance().getTransactionSessions(connectionSession.getConnectionId())) {
+                    each.invalidatePreparedStatementCache(createPreparedStatementCacheKey(statementId));
+                }
             }
         }
     }
