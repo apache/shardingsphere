@@ -22,6 +22,7 @@ import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,5 +36,16 @@ class FirebirdSQLExceptionTest {
         assertThat(actual.getSQLState(), is("22000"));
         assertThat(actual.getErrorCode(), is(ISCConstants.isc_batch_param_version));
         assertThat(actual.getMessageArguments(), is(Arrays.<Object>asList(2, 1)));
+    }
+    
+    @Test
+    void assertConstructUnderNonLatinDefaultFormatLocale() {
+        Locale originalLocale = Locale.getDefault(Locale.Category.FORMAT);
+        Locale.setDefault(Locale.Category.FORMAT, Locale.forLanguageTag("ar-EG"));
+        try {
+            assertThat(new FirebirdSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, 2, 1).getMessage(), is("Wrong version of batch parameters block 2, should be 1"));
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, originalLocale);
+        }
     }
 }

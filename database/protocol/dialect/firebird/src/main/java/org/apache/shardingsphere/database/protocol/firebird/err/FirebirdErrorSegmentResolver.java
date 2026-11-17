@@ -52,18 +52,18 @@ public final class FirebirdErrorSegmentResolver {
      * @param errorCode native error code reported by the backend driver
      * @param message error message stripped of the trailing SQLState/ISC code suffix
      * @param sqlState SQL state
-     * @param messageArguments typed message arguments, used instead of the recovered template arguments when they render the same text
+     * @param messageArgs typed message arguments, used instead of the recovered template arguments when they render the same text
      * @return resolved segments
      */
-    public static List<Segment> resolve(final int errorCode, final String message, final String sqlState, final List<Object> messageArguments) {
+    public static List<Segment> resolve(final int errorCode, final String message, final String sqlState, final List<Object> messageArgs) {
         int code = errorCode >= ISCConstants.isc_arith_except ? errorCode : ISCConstants.isc_random;
-        return buildSegments(code, message, sqlState, messageArguments);
+        return buildSegments(code, message, sqlState, messageArgs);
     }
     
-    private static List<Segment> buildSegments(final int code, final String message, final String sqlState, final List<Object> messageArguments) {
+    private static List<Segment> buildSegments(final int code, final String message, final String sqlState, final List<Object> messageArgs) {
         List<String> parameters = recoverParameters(code, message);
         if (null != parameters) {
-            return buildTemplatedSegments(code, parameters, message, messageArguments);
+            return buildTemplatedSegments(code, parameters, message, messageArgs);
         }
         if (GDSExceptionHelper.getMessage(code).getParamCount() >= 2) {
             return Collections.singletonList(new Segment(ISCConstants.isc_random, toArguments(message), Strings.emptyToNull(sqlState)));
@@ -71,9 +71,9 @@ public final class FirebirdErrorSegmentResolver {
         return Collections.singletonList(new Segment(code, toArguments(message), null));
     }
     
-    private static List<Segment> buildTemplatedSegments(final int code, final List<String> parameters, final String message, final List<Object> messageArguments) {
+    private static List<Segment> buildTemplatedSegments(final int code, final List<String> parameters, final String message, final List<Object> messageArgs) {
         List<Segment> result = new ArrayList<>();
-        result.add(new Segment(code, toTypedArguments(parameters, messageArguments), null));
+        result.add(new Segment(code, toTypedArguments(parameters, messageArgs), null));
         String remainder = stripSeparator(message.substring(render(code, parameters).length()));
         if (!remainder.isEmpty()) {
             result.add(new Segment(ISCConstants.isc_random, Collections.singletonList(remainder), null));
@@ -81,9 +81,9 @@ public final class FirebirdErrorSegmentResolver {
         return result;
     }
     
-    private static List<Object> toTypedArguments(final List<String> parameters, final List<Object> messageArguments) {
-        List<String> renderedArguments = messageArguments.stream().map(String::valueOf).collect(Collectors.toList());
-        return parameters.equals(renderedArguments) ? messageArguments : new ArrayList<>(parameters);
+    private static List<Object> toTypedArguments(final List<String> params, final List<Object> messageArgs) {
+        List<String> renderedArgs = messageArgs.stream().map(String::valueOf).collect(Collectors.toList());
+        return params.equals(renderedArgs) ? messageArgs : new ArrayList<>(params);
     }
     
     private static List<String> recoverParameters(final int code, final String message) {

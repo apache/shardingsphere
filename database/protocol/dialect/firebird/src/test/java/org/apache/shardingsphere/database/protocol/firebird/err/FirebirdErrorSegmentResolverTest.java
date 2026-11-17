@@ -91,18 +91,18 @@ class FirebirdErrorSegmentResolverTest {
     
     @Test
     void assertResolveKeepsTypedBatchParameterVersionArguments() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Arrays.asList(2, 1));
-        assertThat(segments.size(), is(1));
-        assertThat(segments.get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
-        assertThat(segments.get(0).getArguments(), contains(2, 1));
-        assertNull(segments.get(0).getSqlState());
+        List<Segment> actual = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Arrays.asList(2, 1));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        assertThat(actual.get(0).getArguments(), contains(2, 1));
+        assertNull(actual.get(0).getSqlState());
     }
     
     @Test
     void assertResolveIgnoresTypedArgumentsNotMatchingMessage() {
-        List<Segment> segments = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Arrays.asList(3, 1));
-        assertThat(segments.size(), is(1));
-        assertThat(segments.get(0).getArguments(), contains("2", "1"));
+        List<Segment> actual = FirebirdErrorSegmentResolver.resolve(ISCConstants.isc_batch_param_version, "Wrong version of batch parameters block 2, should be 1", "22000", Arrays.asList(3, 1));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getArguments(), contains("2", "1"));
     }
     
     @Test

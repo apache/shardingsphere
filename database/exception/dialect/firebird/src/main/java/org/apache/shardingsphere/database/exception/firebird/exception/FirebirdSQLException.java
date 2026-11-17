@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Firebird SQL exception keeping the typed message arguments of the vendor error.
@@ -34,8 +35,8 @@ public final class FirebirdSQLException extends SQLException {
     
     private final List<Object> messageArguments;
     
-    public FirebirdSQLException(final VendorError vendorError, final Object... messageArguments) {
-        super(String.format(vendorError.getReason(), messageArguments), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
-        this.messageArguments = Arrays.asList(messageArguments);
+    public FirebirdSQLException(final VendorError vendorError, final Object... messageArgs) {
+        super(String.format(Locale.ROOT, vendorError.getReason(), messageArgs), vendorError.getSqlState().getValue(), vendorError.getVendorCode());
+        messageArguments = Arrays.asList(messageArgs);
     }
 }
