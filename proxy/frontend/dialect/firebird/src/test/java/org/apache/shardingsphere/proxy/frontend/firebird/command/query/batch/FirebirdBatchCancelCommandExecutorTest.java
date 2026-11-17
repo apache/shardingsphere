@@ -89,7 +89,7 @@ class FirebirdBatchCancelCommandExecutorTest {
     private Connection backendConnection;
     
     @Test
-    void assertExecute() throws SQLException {
+    void assertExecute() {
         FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(STATEMENT_ID);
         batchStatement.addParameterValues(Arrays.asList(1, "foo"));
@@ -106,7 +106,7 @@ class FirebirdBatchCancelCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWhenBatchNotFound() throws SQLException {
+    void assertExecuteWhenBatchNotFound() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         Collection<DatabasePacket> actual = new FirebirdBatchCancelCommandExecutor(packet, connectionSession).execute();

@@ -119,7 +119,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
     @Mock
     private FirebirdBatchStatement batchStatement;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private FirebirdServerPreparedStatement preparedStatement;
     
     @Mock

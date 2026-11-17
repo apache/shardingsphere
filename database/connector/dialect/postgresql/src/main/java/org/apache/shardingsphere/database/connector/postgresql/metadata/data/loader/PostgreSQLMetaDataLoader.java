@@ -302,11 +302,11 @@ public final class PostgreSQLMetaDataLoader implements DialectMetaDataLoader {
     private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Map<String, Collection<ColumnMetaData>> tableColumnMetaDataMap,
                                                               final Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap, final Collection<String> viewNames) {
         Collection<TableMetaData> result = new LinkedList<>();
-        for (String each : tableColumnMetaDataMap.keySet()) {
-            Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
-            Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
-            Collection<ConstraintMetaData> constraintMetaDataList = tableConstraintMetaDataMap.get(each);
-            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, constraintMetaDataList, viewNames.contains(each) ? TableType.VIEW : TableType.TABLE));
+        for (Entry<String, Collection<ColumnMetaData>> entry : tableColumnMetaDataMap.entrySet()) {
+            Collection<ColumnMetaData> columnMetaDataList = entry.getValue();
+            Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(entry.getKey());
+            Collection<ConstraintMetaData> constraintMetaDataList = tableConstraintMetaDataMap.get(entry.getKey());
+            result.add(new TableMetaData(entry.getKey(), columnMetaDataList, indexMetaDataList, constraintMetaDataList, viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE));
         }
         return result;
     }

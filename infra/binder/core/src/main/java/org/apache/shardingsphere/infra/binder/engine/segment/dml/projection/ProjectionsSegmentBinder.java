@@ -182,10 +182,10 @@ public final class ProjectionsSegmentBinder {
             return false;
         }
         ColumnSegment columnSegment = ((ColumnProjectionSegment) projectionSegment).getColumn();
-        String columnName = columnSegment.getIdentifier().getValue();
         if (columnSegment.getOwner().isPresent() || null != columnSegment.getNestedObjectAttributes() && !columnSegment.getNestedObjectAttributes().isEmpty()) {
             return false;
         }
+        String columnName = columnSegment.getIdentifier().getValue();
         return isTableAliasOrName(boundTableSegment, columnName) || tableBinderContexts.containsKey(CaseInsensitiveString.of(columnName));
     }
     

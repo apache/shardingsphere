@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -76,6 +77,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -178,6 +180,15 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         assertThat(actualRoundTrip.getTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo\"\"table"));
     }
     
+    @Test
+    void assertSelectWithLargeInList() {
+        Collection<String> expectedValues = IntStream.rangeClosed(1, 100000).mapToObj(String::valueOf).collect(Collectors.toList());
+        String sql = "SELECT * FROM foo_table WHERE foo_id IN (" + String.join(", ", expectedValues) + ")";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ListExpression actualValues = (ListExpression) ((InExpression) actual.getWhere().get().getExpr()).getRight();
+        assertThat(actualValues.getItems().stream().map(each -> sql.substring(each.getStartIndex(), each.getStopIndex() + 1)).collect(Collectors.toList()), is(expectedValues));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getQuotedPrivilegeObjectCases")
     void assertQuotedPrivilegeObjectRoundTrip(final String name, final String sqlPrefix, final String objectName, final String sqlSuffix, final Collection<String> expectedIdentifiers) {
@@ -199,6 +210,17 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getInvalidJsonTablePlans")
+    void assertInvalidJsonTablePlan(final String plan) {
+        String sql = "SELECT * FROM JSON_TABLE('{}', '$' AS root COLUMNS (id INT PATH '$.id') PLAN (" + plan + ")) AS jt";
+        assertThrows(SQLParsingException.class, () -> new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+    }
+    
+    private static Stream<String> getInvalidJsonTablePlans() {
+        return Stream.of("root UNION child CROSS other", "root CROSS child UNION other", "(root)");
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedFilterExpressions")
     void assertUnsupportedFilter(final String expression) {
         String sql = "SELECT " + expression;
@@ -211,9 +233,6 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 "COUNT(*) FILTER (WHERE FALSE)",
                 "COUNT(DISTINCT ?) FILTER (WHERE ?)",
                 "SUM(?) FILTER (WHERE ?) OVER (PARTITION BY ? ORDER BY ? ROWS ? PRECEDING)",
-                "JSON_ARRAYAGG(?) FILTER (WHERE ?)",
-                "JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()",
-                "JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)",
                 "SUM((SELECT ?)) FILTER (WHERE EXISTS (SELECT ?))",
                 "ABS((SELECT SUM(?) FILTER (WHERE ?)))");
     }

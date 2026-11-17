@@ -27,6 +27,8 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ParameterConversionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.TransliterationFailedException;
@@ -80,14 +82,14 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     
     @Override
     public void handleException(final ConnectionSession connectionSession, final Exception exception) {
-        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()
-                && !(exception instanceof InTransactionException) && !isBatchBlobException(exception)) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur() && !isRecoverableException(exception)) {
             connectionSession.getConnectionContext().getTransactionContext().setExceptionOccur(true);
         }
     }
     
-    private boolean isBatchBlobException(final Exception exception) {
-        return BATCH_BLOB_EXCEPTION_TYPES.stream().anyMatch(each -> each.isInstance(exception));
+    private boolean isRecoverableException(final Exception exception) {
+        return exception instanceof InTransactionException || exception instanceof InvalidBatchStatementTypeException || exception instanceof InvalidBatchHandleException
+                || BATCH_BLOB_EXCEPTION_TYPES.stream().anyMatch(each -> each.isInstance(exception));
     }
     
     @Override

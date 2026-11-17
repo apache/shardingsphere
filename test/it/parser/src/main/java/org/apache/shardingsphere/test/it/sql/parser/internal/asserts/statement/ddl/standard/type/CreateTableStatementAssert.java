@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.def
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.CreateTableOptionDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.rollup.RollupAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.CreateTableStatementTestCase;
 
@@ -71,6 +73,7 @@ public final class CreateTableStatementAssert {
         assertColumnDefinitions(assertContext, actual, expected);
         assertConstraintDefinitions(assertContext, actual, expected);
         assertCreateTableAsSelectStatement(assertContext, actual, expected);
+        assertCreateTableAsExecuteStatement(assertContext, actual, expected);
         assertCreateTableAsSelectStatementColumns(assertContext, actual, expected);
         assertLikeTableStatement(assertContext, actual, expected);
         assertRollups(assertContext, actual, expected);
@@ -106,6 +109,16 @@ public final class CreateTableStatementAssert {
         } else {
             assertTrue(selectStatement.isPresent(), "actual select statement should exist");
             SelectStatementAssert.assertIs(assertContext, selectStatement.get(), expected.getCreateTableAsSelectStatement());
+        }
+    }
+    
+    private static void assertCreateTableAsExecuteStatement(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        Optional<ExecuteStatement> executeStatement = actual.getExecuteStatement();
+        if (null == expected.getCreateTableAsExecuteStatement()) {
+            assertFalse(executeStatement.isPresent(), assertContext.getText("Actual execute statement should not exist."));
+        } else {
+            assertTrue(executeStatement.isPresent(), assertContext.getText("Actual execute statement should exist."));
+            SQLStatementAssert.assertIs(assertContext, executeStatement.get(), expected.getCreateTableAsExecuteStatement());
         }
     }
     

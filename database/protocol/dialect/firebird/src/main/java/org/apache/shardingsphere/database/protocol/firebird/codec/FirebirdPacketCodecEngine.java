@@ -26,6 +26,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.ReferenceCountUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
@@ -57,6 +58,7 @@ import java.util.Map;
 /**
  * Database packet codec for Firebird.
  */
+@Slf4j
 public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngine {
     
     private static final int MESSAGE_TYPE_LENGTH = 4;
@@ -102,6 +104,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
+            log.debug("Firebird decode failed: connectionId={}, protocolVersion={}, pendingPacketType={}, pendingMessages={}, readerIndex={}, readableBytes={}",
+                    context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get(), context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), pendingPacketType,
+                    pendingMessages.size(), in.readerIndex(), in.readableBytes(), ex);
             out.forEach(ReferenceCountUtil::release);
             out.clear();
             resetState();
@@ -246,6 +251,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     @Override
+    @HighFrequencyInvocation
     public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         Integer connectionId = context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get();
@@ -257,6 +263,8 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
+            log.debug("Firebird encode failed: connectionId={}, protocolVersion={}, packetClass={}, writerIndex={}", connectionId,
+                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), message.getClass().getName(), out.writerIndex(), ex);
             out.resetWriterIndex();
             FirebirdErrorPacketFactory.newInstance(ex).write(payload);
         }

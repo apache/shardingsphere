@@ -21,73 +21,34 @@ Fork the master branch of [ShardingSphere](https://github.com/apache/shardingsph
 ## Directory structure description
 
 ```
-shardingsphere
-├─docs
-  ├─community
-  │  ├─archetypes
-  │  ├─content
-  │  │  ├─contribute
-  │  │  ├─powered-by
-  │  │  ├─security
-  │  │  └─team
-  │  ├─layouts
-  │  ├─static
-  │  └─themes
-  ├─document
-  │  ├─archetypes
-  │  ├─content
-  │  │  ├─concepts
-  │  │  │  ├─adaptor
-  │  │  │  ├─distsql
-  │  │  │  ├─mode
-  │  │  │  └─pluggable         
-  │  │  ├─dev-manual
-  │  │  ├─downloads
-  │  │  ├─features
-  │  │  │  ├─encrypt
-  │  │  │  ├─governance
-  │  │  │  ├─readwrite-splitting
-  │  │  │  ├─scaling
-  │  │  │  ├─shadow
-  │  │  │  ├─sharding
-  │  │  │  │  ├─concept
-  │  │  │  │  ├─principle
-  │  │  │  │  └─use-norms
-  │  │  │  ├─test-engine
-  │  │  │  └─transaction
-  │  │  │      ├─concept
-  │  │  │      ├─principle
-  │  │  │      └─use-norms
-  │  │  ├─others
-  │  │  │  ├─api-change-history
-  │  │  │  └─faq    
-  │  │  ├─overview
-  │  │  ├─quick-start
-  │  │  ├─user-manual
-  │  │  │  ├─shardingsphere-jdbc
-  │  │  │  │  ├─configuration
-  │  │  │  │  └─usage
-  │  │  │  ├─shardingsphere-proxy
-  │  │  │  ├─shardingsphere-sidecar
-  │  │  │  └─shardingsphere-scaling  
-  │  ├─i18n
-  │  ├─layouts
-  │  ├─static
-  │  └─themes
+docs
+├─document
+│  ├─content
+│  └─static
+├─community
+│  ├─content
+│  └─static
+└─blog
+   ├─content
+   └─static
 ```
 
 ## Document Basics
 
-The ShardingSphere document is written in markdown, processed in Hugo, generated HTML, deployed in [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site)   branch, and the source code is located in [Github](https://github.com/apache/shardingsphere/tree/master).
+ShardingSphere documentation is written in Markdown and generated with Hugo.
+The Markdown sources and article media are maintained in the [docs directory](https://github.com/apache/shardingsphere/tree/master/docs), and the generated website is deployed to the [asf-site](https://github.com/apache/shardingsphere-doc/tree/asf-site) branch of `shardingsphere-doc`.
 
-- [Latest version Official course](https://shardingsphere.apache.org/document/current/en/overview/) source is stored in `/document/`.
-- [Community introduction and contribution](https://shardingsphere.apache.org/community/en/involved/) related document sources are stored in `/community/content/`.
+- [Latest version Official course](https://shardingsphere.apache.org/document/current/en/overview/) source is stored in `docs/document/content/`.
+- [Community introduction and contribution](https://shardingsphere.apache.org/community/en/involved/) related document sources are stored in `docs/community/content/`.
+- Blog article sources are stored in `docs/blog/content/`.
+
+Article media is stored in each site's `static` directory.
 
 You can submit questions, edit content, and view other people's changes from [Github](https://github.com/apache/shardingsphere/issues).
 
 ## Page template
 
-The page template is located in the `layouts/partials/` directory in themes.
+Website templates and build configuration are maintained in [shardingsphere-doc](https://github.com/apache/shardingsphere-doc).
 
 ## Ask specific and searchable questions
 
@@ -110,5 +71,5 @@ Anyone with a GitHub account can ask questions (error reports) about shardingsph
 
 ## Appointment
 
-- Unless otherwise specified, please use Hugo `0.70.0` version.
+- Use the Hugo version specified in the [website build workflow](https://github.com/apache/shardingsphere-doc/blob/asf-site/.github/workflows/build-website.yml) in `shardingsphere-doc`.
 - asf-site branches are updated by the official on a regular basis, you do not need to submit pull request to asf-site.

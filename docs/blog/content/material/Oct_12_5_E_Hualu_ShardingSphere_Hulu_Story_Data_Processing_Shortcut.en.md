@@ -1,5 +1,6 @@
 +++
 title = "E-Hualu X ShardingSphere | Hulu Story’s Data Processing Shortcut"
+translationKey = "Oct_12_5_E_Hualu_ShardingSphere_Hulu_Story_Data_Processing_Shortcut"
 weight = 21 
 chapter = true
 +++

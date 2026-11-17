@@ -51,6 +51,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidClumpletStructureException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
@@ -109,6 +110,14 @@ class FirebirdDialectExceptionMapperTest {
         assertThat(actual.getSQLState(), is("28000"));
         assertThat(actual.getErrorCode(), is(ISCConstants.isc_login_error));
         assertThat(actual.getMessage(), is(""));
+    }
+    
+    @Test
+    void assertConvertWithInvalidBatchStatementType() {
+        SQLException actual = mapper.convert(new InvalidBatchStatementTypeException());
+        assertThat(actual.getSQLState(), is("07003"));
+        assertThat(actual.getErrorCode(), is(ISCConstants.isc_batch_type));
+        assertThat(actual.getMessage(), is("Invalid type of statement used in batch"));
     }
     
     @Test

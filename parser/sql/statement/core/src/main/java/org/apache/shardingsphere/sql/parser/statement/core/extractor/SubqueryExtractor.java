@@ -268,6 +268,7 @@ public final class SubqueryExtractor {
         }
         if (expressionSegment instanceof FunctionSegment) {
             ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, SubqueryType.FUNCTION, needRecursive));
+            ((FunctionSegment) expressionSegment).getFilter().ifPresent(filter -> extractSubquerySegmentsFromExpression(result, filter, SubqueryType.FUNCTION, needRecursive));
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
             extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType, needRecursive);

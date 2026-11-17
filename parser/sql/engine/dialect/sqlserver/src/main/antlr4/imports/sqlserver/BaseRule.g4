@@ -228,10 +228,10 @@ primaryKey
 // TODO comb expr
 expr
     : booleanPrimary
-    | expr andOperator expr
-    | expr orOperator expr
     | expr distinctFrom expr
     | notOperator expr
+    | expr andOperator expr
+    | expr orOperator expr
     | LP_ expr RP_
     | expr AT TIME ZONE expr
     ;
