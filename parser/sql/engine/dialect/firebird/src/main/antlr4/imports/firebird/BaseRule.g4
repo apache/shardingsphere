@@ -476,7 +476,8 @@ blobSubTypeName
     ;
 
 blobSubTypeNumber
-    : MINUS_? NUMBER_
+    : NUMBER_
+    | MINUS_ NUMBER_ {$NUMBER_.text.matches("[0-9]+")}?
     ;
 
 dataTypeLength
