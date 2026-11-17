@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
+import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdDatabaseParameterBufferType;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -108,6 +109,12 @@ class FirebirdPacketCodecEngineTest {
     @MethodSource("validHeaderCases")
     void assertIsValidHeader(final String name, final int readableBytes, final boolean expectedValid) {
         assertThat(codecEngine.isValidHeader(readableBytes), is(expectedValid));
+    }
+    
+    @Test
+    void assertIsValidHeaderWithPendingMessages() {
+        getPendingMessages().add(Unpooled.wrappedBuffer(new byte[]{1, 2}));
+        assertTrue(codecEngine.isValidHeader(1));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -213,11 +220,7 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeConnectSplitAcrossReads() {
-        ByteBuf connect = Unpooled.buffer();
-        connect.writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
-        connect.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
-        connect.writeInt(1).writeInt(0);
-        connect.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
+        ByteBuf connect = createConnectPacket();
         int expectedLength = connect.readableBytes();
         List<Object> firstOut = new LinkedList<>();
         codecEngine.decode(context, connect.readRetainedSlice(16), firstOut);
@@ -308,6 +311,22 @@ class FirebirdPacketCodecEngineTest {
         assertThat(encodedError.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
         assertFalse(channel.isOpen());
         encodedError.release();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("shortLastFragmentCases")
+    void assertDecodeHandshakeWithShortLastFragmentThroughPacketCodec(final String name, final ByteBuf packet, final int lastFragmentLength) {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(FirebirdConstant.CURRENT_CONNECTION).set(BATCH_CONNECTION_ID);
+        int expectedLength = packet.readableBytes();
+        channel.writeInbound(packet.readRetainedSlice(expectedLength - lastFragmentLength));
+        assertNull(channel.readInbound());
+        channel.writeInbound(packet.readRetainedSlice(lastFragmentLength));
+        ByteBuf actual = channel.readInbound();
+        assertThat(actual.readableBytes(), is(expectedLength));
+        assertThat(actual.getInt(0), is(packet.getInt(0)));
+        assertNull(channel.readInbound());
+        actual.release();
     }
     
     @Test
@@ -569,6 +588,23 @@ class FirebirdPacketCodecEngineTest {
         return result;
     }
     
+    private static ByteBuf createConnectPacket() {
+        ByteBuf result = Unpooled.buffer();
+        result.writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        result.writeInt(1).writeInt(0);
+        result.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
+        return result;
+    }
+    
+    private static ByteBuf createAttachPacket() {
+        ByteBuf result = Unpooled.buffer();
+        result.writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0);
+        result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        result.writeInt(5).writeByte(1).writeByte(FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode()).writeByte(2).writeBytes("ok".getBytes(StandardCharsets.US_ASCII)).writeZero(3);
+        return result;
+    }
+    
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLength(final int expectedLength) {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
         result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenReturn(expectedLength);
@@ -597,6 +633,14 @@ class FirebirdPacketCodecEngineTest {
                 Arguments.of("readable bytes greater than header", 5, true),
                 Arguments.of("readable bytes equal to header", 4, true),
                 Arguments.of("readable bytes less than header", 3, false));
+    }
+    
+    private static Stream<Arguments> shortLastFragmentCases() {
+        return Stream.of(
+                Arguments.of("connect with 1 byte last fragment", createConnectPacket(), 1),
+                Arguments.of("connect with 3 bytes last fragment", createConnectPacket(), 3),
+                Arguments.of("attach with 1 byte last fragment", createAttachPacket(), 1),
+                Arguments.of("attach with 3 bytes last fragment", createAttachPacket(), 3));
     }
     
     private static Stream<Arguments> fixedLengthCommandCases() {
