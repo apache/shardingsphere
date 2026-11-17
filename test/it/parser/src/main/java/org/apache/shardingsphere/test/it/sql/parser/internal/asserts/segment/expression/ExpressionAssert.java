@@ -363,6 +363,7 @@ public final class ExpressionAssert {
     public static void assertFunction(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunction expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Function method name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
+        assertTrue(actual.isIgnoreNulls() == expected.isIgnoreNulls(), assertContext.getText("Function ignore nulls assertion error: "));
         String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText()
                 : expected.getText();

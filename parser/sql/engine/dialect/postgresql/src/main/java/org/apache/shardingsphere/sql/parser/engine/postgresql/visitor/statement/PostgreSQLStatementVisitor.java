@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
@@ -327,6 +328,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return 'b' == character ? '\b' : character;
     }
     
+    @HighFrequencyInvocation
     private String concatenateStringLiterals(final String text) {
         StringBuilder result = new StringBuilder("'");
         boolean escaped = 'E' == text.charAt(0) || 'e' == text.charAt(0);
@@ -705,6 +707,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitFuncExpr(final FuncExprContext ctx) {
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
@@ -757,6 +760,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         result.setOwner(segment.getOwner());
         result.getParameters().addAll(segment.getParameters());
         segment.getFilter().ifPresent(result::setFilter);
+        result.setIgnoreNulls(null != ctx.nullTreatment() && null != ctx.nullTreatment().IGNORE());
         result.setWindow(window);
         return result;
     }

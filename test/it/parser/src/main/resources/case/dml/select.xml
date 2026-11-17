@@ -17049,7 +17049,7 @@
         <projections start-index="7" stop-index="45">
             <expression-projection text="lag($1) IGNORE NULLS OVER (ORDER BY $2)" start-index="7" stop-index="45">
                 <expr>
-                    <function function-name="lag" text="lag($1) IGNORE NULLS OVER (ORDER BY $2)" start-index="7" stop-index="45">
+                    <function function-name="lag" text="lag($1) IGNORE NULLS OVER (ORDER BY $2)" start-index="7" stop-index="45" ignore-nulls="true">
                         <parameter>
                             <parameter-marker-expression parameter-index="0" start-index="11" stop-index="12" />
                         </parameter>
@@ -17148,7 +17148,7 @@
         <projections start-index="7" stop-index="67">
             <expression-projection text="pg_catalog.lag(order_id) IGNORE NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="67">
                 <expr>
-                    <function function-name="lag" text="pg_catalog.lag(order_id) IGNORE NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="67">
+                    <function function-name="lag" text="pg_catalog.lag(order_id) IGNORE NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="67" ignore-nulls="true">
                         <owner name="pg_catalog" start-index="7" stop-index="16" />
                         <parameter>
                             <column name="order_id" start-index="22" stop-index="29" />
