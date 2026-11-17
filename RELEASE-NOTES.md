@@ -12,6 +12,7 @@
 1. JDBC: Support executing DistSQL - [#37761](https://github.com/apache/shardingsphere/issues/37761)
 1. Transaction: Add optional module for Jakarta Transactions impl of Jakarta EE 9 Spec - [#26041](https://github.com/apache/shardingsphere/issues/26041)
 1. Proxy: Support `op_seek_blob` operation for stream BLOBs in Firebird - [#39984](https://github.com/apache/shardingsphere/pull/39984)
+1. Proxy: Support native Firebird ISQL connections with independent transactions
 
 ### CVE
 
