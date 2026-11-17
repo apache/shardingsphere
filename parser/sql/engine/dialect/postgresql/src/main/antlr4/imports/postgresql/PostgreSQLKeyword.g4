@@ -1521,3 +1521,7 @@ DESCRIPTOR
     : D E S C R I P T O R
     ;
 
+
+PLAN: P L A N;
+
+RESPECT: R E S P E C T;

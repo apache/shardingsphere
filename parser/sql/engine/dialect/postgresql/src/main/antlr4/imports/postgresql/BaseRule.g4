@@ -512,6 +512,9 @@ unreservedWord
     | USAGE
     | SOURCE
     | TARGET
+    | PLAN
+    | IGNORE
+    | RESPECT
     ;
 
 typeFuncNameKeyword
@@ -1126,8 +1129,12 @@ xmlNamespaceEl
 
 funcExpr
     : jsonAggregateFunction filterClause? overClause?
-    | funcApplication withinGroupClause? filterClause? overClause?
+    | funcApplication withinGroupClause? filterClause? nullTreatment? overClause?
     | functionExprCommonSubexpr
+    ;
+
+nullTreatment
+    : (IGNORE | RESPECT) NULLS
     ;
 
 withinGroupClause
@@ -1289,7 +1296,27 @@ jsonExistsErrorClause
     ;
 
 jsonTable
-    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTableErrorClause? RP_
+    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTablePlanClause? jsonTableErrorClause? RP_
+    ;
+
+jsonTablePlanClause
+    : PLAN LP_ jsonTablePlan RP_
+    | PLAN DEFAULT LP_ jsonTableDefaultPlan RP_
+    ;
+
+jsonTableDefaultPlan
+    : (INNER | OUTER) (COMMA_ (UNION | CROSS))?
+    | (UNION | CROSS) (COMMA_ (INNER | OUTER))?
+    ;
+
+jsonTablePlan
+    : name ((INNER | OUTER) jsonTablePlanPrimary)?
+    | jsonTablePlanPrimary UNION jsonTablePlanPrimary (UNION jsonTablePlanPrimary)*
+    | jsonTablePlanPrimary CROSS jsonTablePlanPrimary (CROSS jsonTablePlanPrimary)*
+    ;
+
+jsonTablePlanPrimary
+    : name | LP_ jsonTablePlan RP_
     ;
 
 jsonTableColumn

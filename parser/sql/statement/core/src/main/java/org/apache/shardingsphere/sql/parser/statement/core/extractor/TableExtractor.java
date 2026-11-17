@@ -329,6 +329,7 @@ public final class TableExtractor {
         }
         if (expressionSegment instanceof FunctionSegment) {
             extractTablesFromExpressions(((FunctionSegment) expressionSegment).getParameters(), tableScope);
+            ((FunctionSegment) expressionSegment).getFilter().ifPresent(filter -> extractTablesFromExpression(filter, tableScope));
         }
         if (expressionSegment instanceof AggregationProjectionSegment) {
             extractTablesFromExpressions(((AggregationProjectionSegment) expressionSegment).getParameters(), tableScope);

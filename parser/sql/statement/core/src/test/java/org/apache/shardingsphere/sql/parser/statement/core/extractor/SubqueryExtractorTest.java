@@ -71,6 +71,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,6 +80,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SubqueryExtractorTest {
+    
+    @Test
+    void assertExtractSubquerySegmentsWithFunctionFilter() {
+        SubquerySegment subquery = new SubquerySegment(0, 0, SelectStatement.builder().build(), "");
+        FunctionSegment function = new FunctionSegment(0, 0, "JSON_ARRAYAGG", "");
+        function.setFilter(new SubqueryExpressionSegment(subquery));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "", function));
+        SelectStatement select = SelectStatement.builder().projections(projections).build();
+        Collection<SubquerySegment> actual = SubqueryExtractor.extractSubquerySegments(select, true);
+        assertThat(actual, contains(subquery));
+    }
     
     @ParameterizedTest(name = "INSERT subquery in {0}")
     @ValueSource(strings = {"VALUES", "SET", "ON_DUPLICATE_KEY", "RETURNING", "WITH"})
