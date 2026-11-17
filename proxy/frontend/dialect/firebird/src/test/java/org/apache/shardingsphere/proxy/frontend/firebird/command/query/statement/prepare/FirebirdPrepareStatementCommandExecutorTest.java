@@ -580,6 +580,16 @@ class FirebirdPrepareStatementCommandExecutorTest {
     }
     
     @Test
+    void assertDescribeCaseOnlyDifferentDerivedTablePhysicalColumnsSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT derived_tbl.\"a\", derived_tbl.\"A\" FROM (SELECT id AS \"a\", content AS \"A\" FROM foo_tbl) derived_tbl");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.LONG, "a");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.BLOB, "A");
+    }
+    
+    @Test
     void assertDescribeCaseOnlyDifferentCommonTableExpressionColumnsShorthandSelect() throws Exception {
         when(packet.getSQL()).thenReturn("WITH foo_cte (\"a\", \"A\") AS (SELECT 1, 'foo' FROM foo_tbl) SELECT foo_cte.* FROM foo_cte");
         mockDescribeTypeAndAliasRequest();

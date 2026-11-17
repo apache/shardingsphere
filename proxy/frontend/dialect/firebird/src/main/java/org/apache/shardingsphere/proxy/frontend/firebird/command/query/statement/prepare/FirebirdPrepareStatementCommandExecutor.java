@@ -643,7 +643,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     @HighFrequencyInvocation
     private Optional<Projection> findOriginProjection(final SQLStatementContext sqlStatementContext, final Projection projection) {
-        if (!(projection instanceof ColumnProjection) || !isColumnWithoutOriginalTable(((ColumnProjection) projection).getColumnBoundInfo())
+        if (!(projection instanceof ColumnProjection) || !isDerivedColumn(((ColumnProjection) projection).getColumnBoundInfo())
                 || !(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
             return Optional.empty();
         }
@@ -654,8 +654,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return result.flatMap(projectionSegment -> new ProjectionEngine(selectStatement.getDatabaseType()).createProjection(projectionSegment));
     }
     
-    private boolean isColumnWithoutOriginalTable(@Nullable final ColumnSegmentBoundInfo columnBoundInfo) {
-        return null != columnBoundInfo && columnBoundInfo.getOriginalTable().getValue().isEmpty();
+    private boolean isDerivedColumn(@Nullable final ColumnSegmentBoundInfo columnBoundInfo) {
+        return null != columnBoundInfo && (columnBoundInfo.getOriginalTable().getValue().isEmpty() || TableSourceType.TEMPORARY_TABLE == columnBoundInfo.getTableSourceType());
     }
     
     private Optional<ProjectionSegment> findOriginProjectionSegment(final List<CommonTableExpressionSegment> commonTableExpressions, final SelectStatement select,
@@ -719,7 +719,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                                                                 final Collection<ColumnSegment> declaredColumns, final IdentifierValue columnName) {
         SelectStatement select = getAnchorSelect(derivedSelect);
         Optional<ProjectionSegment> result = findProjectionSegment(commonTableExpressions, select, declaredColumns, columnName);
-        if (!result.isPresent() || !(result.get() instanceof ColumnProjectionSegment) || !isColumnWithoutOriginalTable(((ColumnProjectionSegment) result.get()).getColumn().getColumnBoundInfo())) {
+        if (!result.isPresent() || !(result.get() instanceof ColumnProjectionSegment) || !isDerivedColumn(((ColumnProjectionSegment) result.get()).getColumn().getColumnBoundInfo())) {
             return result;
         }
         ColumnSegment column = ((ColumnProjectionSegment) result.get()).getColumn();
