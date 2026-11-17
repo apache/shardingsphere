@@ -27,13 +27,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InEx
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class LargeExprListParserIT {
@@ -42,30 +42,12 @@ class LargeExprListParserIT {
     
     private static final long SMALL_STACK_SIZE = 512L * 1024L;
     
-    @ParameterizedTest(name = "{0}")
-    @ValueSource(strings = {"openGauss", "PostgreSQL"})
-    void assertParseLargeInList(final String databaseType) {
-        SQLStatement actual = parseWithSmallStack(databaseType, "SELECT COUNT(1) FROM t WHERE col IN (" + createPlaceholders() + ")");
-        assertThat(actual instanceof SelectStatement, is(true));
+    @Test
+    void assertParsePostgreSQLLargeInList() {
+        SQLStatement actual = parseWithSmallStack("PostgreSQL", "SELECT COUNT(1) FROM t WHERE col IN (" + createPlaceholders() + ")");
+        assertThat(actual, isA(SelectStatement.class));
         InExpression inExpression = (InExpression) ((SelectStatement) actual).getWhere().orElseThrow(IllegalStateException::new).getExpr();
         assertThat(inExpression.getExpressionList().size(), is(LIST_SIZE));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @ValueSource(strings = {"openGauss", "PostgreSQL"})
-    void assertParseLargeInsertValues(final String databaseType) {
-        SQLStatement actual = parseWithSmallStack(databaseType, "INSERT INTO t VALUES (" + createPlaceholders() + ")");
-        assertThat(actual instanceof InsertStatement, is(true));
-        InsertValuesSegment insertValues = ((InsertStatement) actual).getValues().iterator().next();
-        assertThat(insertValues.getValues().size(), is(LIST_SIZE));
-    }
-    
-    private String createPlaceholders() {
-        StringBuilder result = new StringBuilder(LIST_SIZE * 2);
-        for (int i = 0; i < LIST_SIZE; i++) {
-            result.append(0 == i ? "?" : ",?");
-        }
-        return result.toString();
     }
     
     private SQLStatement parseWithSmallStack(final String databaseType, final String sql) {
@@ -85,5 +67,37 @@ class LargeExprListParserIT {
         }
         assertNull(failure.get());
         return result.get();
+    }
+    
+    private String createPlaceholders() {
+        StringBuilder result = new StringBuilder(LIST_SIZE * 2);
+        for (int i = 0; i < LIST_SIZE; i++) {
+            result.append(0 == i ? "?" : ",?");
+        }
+        return result.toString();
+    }
+    
+    @Test
+    void assertParseOpenGaussLargeInList() {
+        SQLStatement actual = parseWithSmallStack("openGauss", "SELECT COUNT(1) FROM t WHERE col IN (" + createPlaceholders() + ")");
+        assertThat(actual, isA(SelectStatement.class));
+        InExpression inExpression = (InExpression) ((SelectStatement) actual).getWhere().orElseThrow(IllegalStateException::new).getExpr();
+        assertThat(inExpression.getExpressionList().size(), is(LIST_SIZE));
+    }
+    
+    @Test
+    void assertParsePostgreSQLLargeInsertValues() {
+        SQLStatement actual = parseWithSmallStack("PostgreSQL", "INSERT INTO t VALUES (" + createPlaceholders() + ")");
+        assertThat(actual, isA(InsertStatement.class));
+        InsertValuesSegment insertValues = ((InsertStatement) actual).getValues().iterator().next();
+        assertThat(insertValues.getValues().size(), is(LIST_SIZE));
+    }
+    
+    @Test
+    void assertParseOpenGaussLargeInsertValues() {
+        SQLStatement actual = parseWithSmallStack("openGauss", "INSERT INTO t VALUES (" + createPlaceholders() + ")");
+        assertThat(actual, isA(InsertStatement.class));
+        InsertValuesSegment insertValues = ((InsertStatement) actual).getValues().iterator().next();
+        assertThat(insertValues.getValues().size(), is(LIST_SIZE));
     }
 }
