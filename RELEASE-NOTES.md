@@ -20,6 +20,7 @@
 
 ### Bug Fixes
 
+1. Proxy: Reject Firebird batch creation for SELECT statements - [#40404](https://github.com/apache/shardingsphere/issues/40404)
 1. Infra: Avoid retaining transient multi-object lookup keys in `OrderedSPILoader` - [#38980](https://github.com/apache/shardingsphere/pull/38980)
 1. Infra: Fix invalid target selection after counter overflow in `RoundRobinLoadBalanceAlgorithm` - [#39339](https://github.com/apache/shardingsphere/pull/39339)
 1. Infra: Reject incomplete WEIGHT load balancer properties during rule configuration validation - [#39378](https://github.com/apache/shardingsphere/pull/39378)
