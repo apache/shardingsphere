@@ -101,6 +101,23 @@ class ShorthandProjectionSegmentBinderTest {
     }
     
     @Test
+    void assertBindWithOwnerWithoutLocalFrom() {
+        ShorthandProjectionSegment shorthandProjectionSegment = new ShorthandProjectionSegment(0, 0);
+        shorthandProjectionSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("o")));
+        ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
+        invisibleColumn.setVisible(false);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("o"),
+                new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn),
+                        TableSourceType.PHYSICAL_TABLE));
+        ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, null, tableBinderContexts);
+        assertThat(actual.getActualProjectionSegments().size(), is(1));
+        ProjectionSegment actualColumn = actual.getActualProjectionSegments().iterator().next();
+        assertThat(actualColumn.getColumnLabel(), is("order_id"));
+        assertTrue(actualColumn.isVisible());
+    }
+    
+    @Test
     void assertBindWithoutOwnerForPivotTableSegment() {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         tableBinderContexts.put(CaseInsensitiveString.of("o"),

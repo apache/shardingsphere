@@ -114,6 +114,12 @@ public final class ColumnSegmentBinder {
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(columnSegment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
+        if (!inputColumnSegment.isPresent() && 1 == tableSegmentBinderContexts.size()) {
+            TableSegmentBinderContext tableContext = tableSegmentBinderContexts.iterator().next();
+            if (tableContext instanceof FunctionTableSegmentBinderContext) {
+                tableContext.getOriginalOwner().ifPresent(result.getColumnBoundInfo()::setOwner);
+            }
+        }
         return result;
     }
     

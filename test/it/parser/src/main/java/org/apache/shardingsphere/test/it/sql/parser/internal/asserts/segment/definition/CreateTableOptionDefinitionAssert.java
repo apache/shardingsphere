@@ -42,6 +42,10 @@ public final class CreateTableOptionDefinitionAssert {
      * @param expected expected create table option
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateTableOptionSegment actual, final ExpectedCreateTableOptionDefinition expected) {
+        if (expected.isAssertIndices()) {
+            assertThat(assertContext.getText("Create table option start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+            assertThat(assertContext.getText("Create table option stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
+        }
         if (null == expected.getEngine()) {
             assertFalse(actual.getEngine().isPresent(), assertContext.getText("Actual engine should not exist."));
         } else {

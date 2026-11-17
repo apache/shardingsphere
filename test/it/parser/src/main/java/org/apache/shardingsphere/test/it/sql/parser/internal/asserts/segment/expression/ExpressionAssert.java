@@ -376,6 +376,10 @@ public final class ExpressionAssert {
         if (null != expected.getOwner()) {
             OwnerAssert.assertIs(assertContext, actual.getOwner(), expected.getOwner());
         }
+        if (null != expected.getFilter()) {
+            assertTrue(actual.getFilter().isPresent(), assertContext.getText("Actual function filter should exist."));
+            assertExpression(assertContext, actual.getFilter().get(), expected.getFilter());
+        }
         if (null != expected.getWindowItem()) {
             assertTrue(actual.getWindow().isPresent(), assertContext.getText("Actual function window item should exist."));
             WindowClauseAssert.assertIs(assertContext, actual.getWindow().get(), expected.getWindowItem());

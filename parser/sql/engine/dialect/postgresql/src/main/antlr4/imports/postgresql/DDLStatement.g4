@@ -176,7 +176,7 @@ dropIndexOpt
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableNamesClause restartSeqs? dropTableOpt?
+    : TRUNCATE TABLE? relationExprList restartSeqs? dropTableOpt?
     ;
 
 restartSeqs
@@ -241,11 +241,11 @@ sequenceOptions
     ;
 
 sequenceOption
-    : START WITH? NUMBER_
-    | INCREMENT BY? NUMBER_
-    | MAXVALUE NUMBER_
+    : START WITH? signedIconst
+    | INCREMENT BY? signedIconst
+    | MAXVALUE signedIconst
     | NO MAXVALUE
-    | MINVALUE NUMBER_
+    | MINVALUE signedIconst
     | NO MINVALUE
     | CYCLE
     | NO CYCLE
@@ -966,6 +966,8 @@ fdwOption
     | NO HANDLER
     | VALIDATOR handlerName
     | NO VALIDATOR
+    | CONNECTION handlerName
+    | NO CONNECTION
     ;
 
 handlerName

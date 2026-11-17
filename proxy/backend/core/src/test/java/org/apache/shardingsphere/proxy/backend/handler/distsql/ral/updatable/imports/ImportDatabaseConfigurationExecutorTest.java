@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.im
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.distsql.handler.executor.configuration.imports.ImportDatabaseConfigurationExecutor;
+import org.apache.shardingsphere.distsql.handler.executor.configuration.yaml.swapper.YamlDatabaseConfigurationSwapper;
 import org.apache.shardingsphere.distsql.handler.executor.spi.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -42,6 +43,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 
 import javax.sql.DataSource;
 import java.net.URL;
@@ -53,8 +55,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ImportDatabaseConfigurationExecutorTest {
@@ -79,6 +84,19 @@ class ImportDatabaseConfigurationExecutorTest {
     @MethodSource("importFailureCases")
     void assertImportFailure(final String caseName, final String databaseName, final String filePath, final Class<? extends Throwable> expected) {
         assertThrows(expected, () -> assertExecute(mockContextManager(databaseName), filePath));
+    }
+    
+    @Test
+    void assertImportWhenRuleConversionFails() {
+        ContextManager contextManager = mock(ContextManager.class);
+        URL url = ImportDatabaseConfigurationExecutorTest.class.getResource("/conf/import/database-sharding.yaml");
+        assertNotNull(url);
+        try (
+                MockedConstruction<YamlDatabaseConfigurationSwapper> ignored = mockConstruction(YamlDatabaseConfigurationSwapper.class,
+                        (mock, context) -> when(mock.swapRuleConfigurations(anyCollection())).thenThrow(IllegalStateException.class))) {
+            assertThrows(IllegalStateException.class, () -> executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), contextManager));
+        }
+        verifyNoInteractions(contextManager);
     }
     
     @Test

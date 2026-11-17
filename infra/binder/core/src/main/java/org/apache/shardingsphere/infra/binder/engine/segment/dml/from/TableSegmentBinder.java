@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
@@ -74,7 +75,8 @@ public final class TableSegmentBinder {
         if (segment instanceof FunctionTableSegment) {
             String name = segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText());
             if (null != name) {
-                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext(createProjectionSegments(((FunctionTableSegment) segment).getColumns())));
+                OwnerSegment owner = segment.getAliasSegment().map(optional -> new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())).orElse(null);
+                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext(createProjectionSegments(((FunctionTableSegment) segment).getColumns()), owner));
             }
             return segment;
         }

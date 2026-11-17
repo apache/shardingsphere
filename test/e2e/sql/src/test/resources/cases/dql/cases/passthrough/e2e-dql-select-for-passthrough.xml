@@ -30,6 +30,14 @@
         <assertion />
     </test-case>
 
+    <test-case sql="SELECT * FROM pg_foo_zero_columns" db-types="PostgreSQL" scenario-types="passthrough" adapters="proxy">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM foo_zero_columns" db-types="PostgreSQL" scenario-types="passthrough" adapters="proxy">
+        <assertion expected-data-source-name="expected_dataset" />
+    </test-case>
+
     <test-case sql="SELECT * FROM t_data_type_integer_unsigned" db-types="MySQL" scenario-types="passthrough" scenario-comments="Test ShardingSphere-Proxy MySQL compatibility for unsigned integer data types">
         <assertion expected-data-source-name="expected_dataset" />
     </test-case>

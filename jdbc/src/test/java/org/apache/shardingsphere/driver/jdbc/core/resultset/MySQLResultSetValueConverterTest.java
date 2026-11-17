@@ -20,6 +20,8 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -141,10 +143,10 @@ class MySQLResultSetValueConverterTest {
         assertThrows(UnsupportedDataTypeConversionException.class, () -> actual.convertValue("unknown", Boolean.class));
     }
     
-    @Test
-    void assertConvertEmptyStringToInt() throws SQLException {
-        int actualValue = (int) actual.convertValue("", int.class);
-        int expectedValue = 0;
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"Empty string, '', 0", "Decimal string, 123.45, 123", "Exponent string, 1e3, 1000"})
+    void assertConvertStringToInt(final String name, final String value, final int expectedValue) throws SQLException {
+        int actualValue = (int) actual.convertValue(value, int.class);
         assertThat(actualValue, is(expectedValue));
     }
     
@@ -152,20 +154,6 @@ class MySQLResultSetValueConverterTest {
     void assertConvertEmptyStringToBoolean() throws SQLException {
         boolean actualValue = (boolean) actual.convertValue("", boolean.class);
         assertFalse(actualValue);
-    }
-    
-    @Test
-    void assertConvertDecimalStringToInt() throws SQLException {
-        int actualValue = (int) actual.convertValue("123.45", int.class);
-        int expectedValue = 123;
-        assertThat(actualValue, is(expectedValue));
-    }
-    
-    @Test
-    void assertConvertExponentStringToInt() throws SQLException {
-        int actualValue = (int) actual.convertValue("1e3", int.class);
-        int expectedValue = 1000;
-        assertThat(actualValue, is(expectedValue));
     }
     
     @Test

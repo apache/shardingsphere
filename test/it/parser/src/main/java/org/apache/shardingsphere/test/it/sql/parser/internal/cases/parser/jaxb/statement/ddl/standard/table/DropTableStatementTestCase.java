@@ -34,6 +34,9 @@ import java.util.List;
 @Setter
 public final class DropTableStatementTestCase extends SQLParserTestCase {
     
+    @XmlAttribute(name = "if-exists")
+    private Boolean ifExists;
+    
     @XmlAttribute
     private Boolean temporary;
     

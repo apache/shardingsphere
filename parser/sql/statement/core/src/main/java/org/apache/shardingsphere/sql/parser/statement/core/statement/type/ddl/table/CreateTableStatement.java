@@ -66,6 +66,8 @@ public final class CreateTableStatement extends DDLStatement {
     
     private final List<ColumnSegment> columns;
     
+    private final Collection<ColumnSegment> columnReferences = new LinkedList<>();
+    
     private final Collection<RollupSegment> rollups;
     
     private final SQLStatementAttributes attributes;

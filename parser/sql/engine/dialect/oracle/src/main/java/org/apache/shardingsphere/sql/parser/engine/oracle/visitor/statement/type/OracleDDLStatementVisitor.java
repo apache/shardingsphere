@@ -242,6 +242,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeAt
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.TypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VariableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VarrayTypeSpecContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.VirtualColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
@@ -606,6 +607,9 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
             if (null != each.columnDefinition()) {
                 result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
             }
+            if (null != each.virtualColumnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.virtualColumnDefinition()));
+            }
             if (null != each.outOfLineConstraint()) {
                 result.getValue().add((ConstraintDefinitionSegment) visit(each.outOfLineConstraint()));
             }
@@ -623,6 +627,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         boolean isPrimaryKey = ctx.inlineConstraint().stream().anyMatch(each -> null != each.primaryKey());
         boolean isNotNull = ctx.inlineConstraint().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull, getText(ctx));
+        result.setAutoIncrement(null != ctx.identityClause());
         if (null != ctx.REF() && null != ctx.dataType()) {
             result.setRef(true);
         }
@@ -639,6 +644,15 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     private String getText(final ParserRuleContext ctx) {
         return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+    }
+    
+    @Override
+    public ASTNode visitVirtualColumnDefinition(final VirtualColumnDefinitionContext ctx) {
+        ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
+        DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
+        boolean isPrimaryKey = ctx.inlineConstraint().stream().anyMatch(each -> null != each.primaryKey());
+        boolean isNotNull = ctx.inlineConstraint().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        return new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, isNotNull, getText(ctx));
     }
     
     @SuppressWarnings("unchecked")

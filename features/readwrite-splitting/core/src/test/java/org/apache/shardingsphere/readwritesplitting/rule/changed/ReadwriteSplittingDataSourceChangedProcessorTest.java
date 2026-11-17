@@ -55,9 +55,9 @@ class ReadwriteSplittingDataSourceChangedProcessorTest {
     
     @Test
     void assertSwapRuleItemConfigurationWithTransactionalReadQueryStrategy() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration("foo", createYAMLContent(TransactionalReadQueryStrategy.PRIMARY));
-        assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration(
-                "foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.PRIMARY, "foo_balancer")));
+        ReadwriteSplittingDataSourceGroupRuleConfiguration actual = processor.swapRuleItemConfiguration("foo", createYAMLContent(TransactionalReadQueryStrategy.FIXED));
+        assertThat(actual, deepEqual(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo", "write_ds", Collections.singletonList("read_ds"), TransactionalReadQueryStrategy.FIXED,
+                "foo_balancer")));
     }
     
     private String createYAMLContent(final TransactionalReadQueryStrategy strategy) {

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.audit.SQLAuditEngine;
+import org.apache.shardingsphere.infra.executor.checker.PushDownSQLExecutionCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -131,6 +132,7 @@ public final class DriverExecuteBatchExecutor {
             ExecutionUnit executionUnit = each.getExecutionUnit();
             executionUnits.add(executionUnit);
         }
+        new PushDownSQLExecutionCheckEngine().check(database, new ExecutionContext(executionContext.getQueryContext(), executionUnits, executionContext.getRouteContext()));
         batchExecutor.init(prepareEngine
                 .prepare(database.getName(), executionContext, executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName())));
         setBatchParameters(replayCallback);
