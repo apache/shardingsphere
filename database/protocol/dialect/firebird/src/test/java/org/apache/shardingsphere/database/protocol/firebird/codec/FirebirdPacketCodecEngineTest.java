@@ -30,6 +30,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
@@ -389,20 +390,23 @@ class FirebirdPacketCodecEngineTest {
     
     @Test
     void assertDecodeSeparateBatchCreateAndMessageWithoutRegisteredBatch() {
-        List<Object> actual = new LinkedList<>();
-        ByteBuf create = buildBatchCreate();
-        codecEngine.decode(context, create, actual);
-        registerRejectedBatchFormat(create);
-        ((ByteBuf) actual.remove(0)).release();
-        ByteBuf message = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
-        codecEngine.decode(context, message, actual);
-        assertThat(actual.size(), is(1));
-        assertThat(createBatchSendMessagePacket((ByteBuf) actual.get(0)).getMessageCount(), is(1L));
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(buildBatchCreate());
+        ByteBuf actualCreate = channel.readInbound();
+        registerRejectedBatchFormat(actualCreate);
+        actualCreate.release();
+        channel.writeOutbound(FirebirdErrorPacketFactory.newInstance(new InvalidBatchStatementTypeException()));
+        channel.runPendingTasks();
+        ByteBuf actualResponse = channel.readOutbound();
+        actualResponse.release();
+        channel.writeInbound(buildBatchMessage(BATCH_STATEMENT_HANDLE, 100));
+        ByteBuf actualMessage = channel.readInbound();
+        assertThat(createBatchSendMessagePacket(actualMessage).getMessageCount(), is(1L));
         assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(BATCH_CONNECTION_ID, BATCH_STATEMENT_HANDLE));
-        verify(context.channel(), never()).writeAndFlush(any());
-        ((ByteBuf) actual.get(0)).release();
-        create.release();
-        message.release();
+        assertNull(channel.readInbound());
+        assertNull(channel.readOutbound());
+        actualMessage.release();
+        channel.finishAndReleaseAll();
     }
     
     private void registerRejectedBatchFormat(final ByteBuf create) {
@@ -414,25 +418,26 @@ class FirebirdPacketCodecEngineTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("batchMessageSplitArguments")
     void assertDecodeSeparateBatchCreateAndSplitMessage(final String name, final int splitPosition) {
-        List<Object> actual = new LinkedList<>();
-        ByteBuf create = buildBatchCreate();
-        codecEngine.decode(context, create, actual);
-        registerRejectedBatchFormat(create);
-        ((ByteBuf) actual.remove(0)).release();
+        EmbeddedChannel channel = createBatchChannel();
+        channel.writeInbound(buildBatchCreate());
+        ByteBuf actualCreate = channel.readInbound();
+        registerRejectedBatchFormat(actualCreate);
+        actualCreate.release();
+        channel.writeOutbound(FirebirdErrorPacketFactory.newInstance(new InvalidBatchStatementTypeException()));
+        channel.runPendingTasks();
+        ByteBuf actualResponse = channel.readOutbound();
+        actualResponse.release();
         ByteBuf message = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
-        ByteBuf firstFrame = message.readRetainedSlice(splitPosition);
-        codecEngine.decode(context, firstFrame, actual);
-        assertTrue(actual.isEmpty());
-        ByteBuf secondFrame = message.readRetainedSlice(message.readableBytes());
-        codecEngine.decode(context, secondFrame, actual);
-        assertThat(actual.size(), is(1));
-        assertThat(createBatchSendMessagePacket((ByteBuf) actual.get(0)).getMessageCount(), is(1L));
-        verify(context.channel(), never()).writeAndFlush(any());
-        ((ByteBuf) actual.get(0)).release();
-        create.release();
-        firstFrame.release();
-        secondFrame.release();
+        channel.writeInbound(message.readRetainedSlice(splitPosition));
+        assertNull(channel.readInbound());
+        channel.writeInbound(message.readRetainedSlice(message.readableBytes()));
+        ByteBuf actualMessage = channel.readInbound();
+        assertThat(createBatchSendMessagePacket(actualMessage).getMessageCount(), is(1L));
+        assertNull(channel.readInbound());
+        assertNull(channel.readOutbound());
+        actualMessage.release();
         message.release();
+        channel.finishAndReleaseAll();
     }
     
     @Test
