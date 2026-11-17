@@ -375,38 +375,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         throwIfNotEmpty(result);
     }
     
-    @Override
-    public void cancel() throws SQLException {
-        Collection<SQLException> result = new LinkedList<>();
-        result.addAll(closeResultSets());
-        result.addAll(cancelStatements());
-        throwIfNotEmpty(result);
-    }
-    
-    private void throwIfNotEmpty(final Collection<SQLException> exceptions) throws SQLException {
-        if (exceptions.isEmpty()) {
-            return;
-        }
-        SQLException ex = new SQLException();
-        exceptions.forEach(ex::setNextException);
-        throw ex;
-    }
-    
-    private Collection<SQLException> cancelStatements() {
-        Collection<SQLException> result = new LinkedList<>();
-        for (Statement each : cachedStatements) {
-            if (isCachedPreparedStatement(each) || isClosed(each)) {
-                continue;
-            }
-            try {
-                each.cancel();
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
-        }
-        return result;
-    }
-    
     private Collection<SQLException> closeResultSets() {
         Collection<SQLException> result = new LinkedList<>();
         for (ResultSet each : cachedResultSets) {
@@ -460,5 +428,37 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             }
         }
         return Optional.empty();
+    }
+    
+    private void throwIfNotEmpty(final Collection<SQLException> exceptions) throws SQLException {
+        if (exceptions.isEmpty()) {
+            return;
+        }
+        SQLException ex = new SQLException();
+        exceptions.forEach(ex::setNextException);
+        throw ex;
+    }
+    
+    @Override
+    public void cancel() throws SQLException {
+        Collection<SQLException> result = new LinkedList<>();
+        result.addAll(closeResultSets());
+        result.addAll(cancelStatements());
+        throwIfNotEmpty(result);
+    }
+    
+    private Collection<SQLException> cancelStatements() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (Statement each : cachedStatements) {
+            if (isCachedPreparedStatement(each) || isClosed(each)) {
+                continue;
+            }
+            try {
+                each.cancel();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
     }
 }
