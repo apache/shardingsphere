@@ -44,4 +44,6 @@
     <sql-case id="truncate_table_with_partition_doris" value="TRUNCATE TABLE tbl PARTITION(p1, p2)" db-types="Doris" />
     <sql-case id="truncate_table_with_db_and_partition_doris" value="TRUNCATE TABLE example_db.tbl PARTITION(p1, p2, p3)" db-types="Doris" />
     <sql-case id="truncate_table_with_single_partition_doris" value="TRUNCATE TABLE tbl PARTITION(p1)" db-types="Doris" />
+    <sql-case id="truncate_multiple_only_pg" value="TRUNCATE ONLY t, ONLY u" db-types="PostgreSQL" />
+    <sql-case id="truncate_parenthesized_only_pg" value="TRUNCATE ONLY (t), u *" db-types="PostgreSQL" />
 </sql-cases>

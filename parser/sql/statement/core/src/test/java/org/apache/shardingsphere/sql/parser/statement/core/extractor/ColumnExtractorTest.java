@@ -78,11 +78,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
 class ColumnExtractorTest {
+    
+    @Test
+    void assertExtractFunctionFilterColumns() {
+        ColumnSegment argument = new ColumnSegment(0, 0, new IdentifierValue("foo_argument"));
+        ColumnSegment filter = new ColumnSegment(0, 0, new IdentifierValue("foo_filter"));
+        FunctionSegment function = new FunctionSegment(0, 0, "JSON_ARRAYAGG", "JSON_ARRAYAGG(foo_argument) FILTER (WHERE foo_filter)");
+        function.getParameters().add(argument);
+        function.setFilter(filter);
+        Collection<ColumnSegment> actual = ColumnExtractor.extract(function);
+        assertThat(actual, contains(argument, filter));
+    }
     
     @Test
     void assertExtractColumnSegments() {

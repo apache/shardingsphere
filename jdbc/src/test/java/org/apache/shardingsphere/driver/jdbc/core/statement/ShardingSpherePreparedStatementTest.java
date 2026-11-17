@@ -87,6 +87,13 @@ import static org.mockito.Mockito.when;
 class ShardingSpherePreparedStatementTest {
     
     @Test
+    void assertGetQueryTimeoutBeforeExecution() throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = createPreparedStatement();
+        preparedStatement.setQueryTimeout(3);
+        assertThat(preparedStatement.getQueryTimeout(), is(3));
+    }
+    
+    @Test
     void assertCreatePreparedStatementAfterDatabaseRemoved() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingSphereMetaData metaData = createMetaData(databaseType);

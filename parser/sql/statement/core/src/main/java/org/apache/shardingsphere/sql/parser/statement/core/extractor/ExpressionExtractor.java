@@ -171,6 +171,7 @@ public final class ExpressionExtractor {
             }
             if (each instanceof FunctionSegment) {
                 extractParameterMarkerExpressions(segments, ((FunctionSegment) each).getParameters());
+                ((FunctionSegment) each).getFilter().ifPresent(filter -> extractParameterMarkerExpressions(segments, Collections.singleton(filter)));
             }
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
@@ -318,6 +319,7 @@ public final class ExpressionExtractor {
             for (ExpressionSegment each : ((FunctionSegment) expression).getParameters()) {
                 result.addAll(extractColumns(each, containsSubQuery));
             }
+            ((FunctionSegment) expression).getFilter().ifPresent(filter -> result.addAll(extractColumns(filter, containsSubQuery)));
         }
         if (expression instanceof InExpression) {
             result.addAll(extractColumns(((InExpression) expression).getLeft(), containsSubQuery));
@@ -453,6 +455,7 @@ public final class ExpressionExtractor {
             for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
                 extractSubqueryCompareExpressionsFromExpression(result, each);
             }
+            ((FunctionSegment) expressionSegment).getFilter().ifPresent(filter -> extractSubqueryCompareExpressionsFromExpression(result, filter));
         }
         if (expressionSegment instanceof CaseWhenExpression) {
             CaseWhenExpression caseWhenExpression = (CaseWhenExpression) expressionSegment;

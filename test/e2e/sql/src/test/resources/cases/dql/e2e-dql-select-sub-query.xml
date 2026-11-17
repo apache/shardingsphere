@@ -26,12 +26,12 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '%18')" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator percentage wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator percentage wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '_1000018')" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db,encrypt"
+    <test-case sql="SELECT * FROM t_merchant WHERE merchant_id IN (SELECT merchant_id FROM t_merchant WHERE business_code LIKE '_1000018')" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,encrypt"
                scenario-comments="Test single table's LIKE operator underscore wildcard in subquery select statement when use sharding feature.|Test encrypt table's LIKE operator underscore wildcard in subquery select statement when use encrypt feature.">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
@@ -57,5 +57,20 @@
 
     <test-case sql="SELECT * FROM t_user WHERE telephone = (SELECT DISTINCT telephone FROM t_merchant WHERE telephone = ?)" scenario-types="encrypt" db-types="MySQL,PostgreSQL,openGauss">
         <assertion parameters="86100000001:String" expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM (SELECT count(*) AS ORDERS_COUNT, user_id from t_user group by user_id) AS TEMP_TABLE ORDER BY 2" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test ordered Firebird results with deterministic row comparison.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT o.order_id FROM t_order o WHERE o.user_id = 10 AND EXISTS (SELECT 1 FROM t_order_item i WHERE i.order_id = o.order_id AND i.user_id = o.user_id) ORDER BY o.order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test a correlated EXISTS subquery on binding tables.">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT o.order_id FROM t_order o WHERE o.user_id = 10 AND NOT EXISTS (SELECT 1 FROM t_order_item i WHERE i.order_id = o.order_id AND i.user_id = o.user_id AND i.quantity = 0) ORDER BY o.order_id" db-types="Firebird" scenario-types="db"
+               scenario-comments="Test a correlated NOT EXISTS subquery on binding tables.">
+        <assertion expected-data-source-name="read_dataset" />
     </test-case>
 </e2e-test-cases>

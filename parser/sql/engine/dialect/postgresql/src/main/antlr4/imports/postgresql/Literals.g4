@@ -34,7 +34,7 @@ fragment STRING_CONTENT_: '\'\'' | ~'\'';
 fragment ESCAPE_STRING_CONTENT_: '\\' . | '\'\'' | ~('\'' | '\\');
 fragment STRING_LITERAL_: SQ_ STRING_CONTENT_* SQ_;
 fragment ESCAPE_STRING_LITERAL_: SQ_ ESCAPE_STRING_CONTENT_* SQ_;
-fragment STRING_CONTINUATION_: [ \t\f]* ('\r'? '\n' | '\r') [ \t\r\n\f]*;
+fragment STRING_CONTINUATION_: ([ \t\f] | '--' ~[\r\n]*)* [\r\n] ([ \t\r\n\f]+ | '--' ~[\r\n]* [\r\n])*;
 
 fragment IDENTIFIER_START_CHAR_
    : [a-zA-Z_]

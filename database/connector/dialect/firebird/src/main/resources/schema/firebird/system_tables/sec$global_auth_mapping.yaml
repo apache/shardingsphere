@@ -54,7 +54,7 @@ columns:
     visible: true
   SEC$MAP_FROM:
     caseSensitive: false
-    dataType: 12
+    dataType: 1
     generated: false
     name: SEC$MAP_FROM
     primaryKey: false
@@ -71,5 +71,12 @@ columns:
     dataType: 1
     generated: false
     name: SEC$MAP_TO
+    primaryKey: false
+    visible: true
+  SEC$DESCRIPTION:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: SEC$DESCRIPTION
     primaryKey: false
     visible: true
