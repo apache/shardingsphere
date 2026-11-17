@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -324,6 +325,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     /**
      * Mark a command as executing until its execution resources are closed.
      */
+    @HighFrequencyInvocation
     public void markCommandExecuting() {
         synchronized (closeLock) {
             commandExecuting = true;
