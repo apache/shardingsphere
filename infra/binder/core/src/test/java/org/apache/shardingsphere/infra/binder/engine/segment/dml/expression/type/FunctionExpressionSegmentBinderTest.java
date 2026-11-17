@@ -41,6 +41,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,6 +49,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ExpressionSegmentBinder.class, OrderBySegmentBinder.class})
 class FunctionExpressionSegmentBinderTest {
+    
+    @Test
+    void assertBindIgnoreNulls() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "LAG", "LAG");
+        segment.setIgnoreNulls(true);
+        FunctionSegment actual = FunctionExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, mock(SQLStatementBinderContext.class), LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertTrue(actual.isIgnoreNulls());
+    }
     
     @Test
     void assertBindWithFilter() {
@@ -61,6 +70,7 @@ class FunctionExpressionSegmentBinderTest {
         when(ExpressionSegmentBinder.bind(filter, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)).thenReturn(expectedFilter);
         FunctionSegment actual = FunctionExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
         assertThat(actual.getFilter().get(), is(expectedFilter));
+        assertFalse(actual.isIgnoreNulls());
         assertThat(actual.getStartIndex(), is(segment.getStartIndex()));
         assertThat(actual.getStopIndex(), is(segment.getStopIndex()));
     }
