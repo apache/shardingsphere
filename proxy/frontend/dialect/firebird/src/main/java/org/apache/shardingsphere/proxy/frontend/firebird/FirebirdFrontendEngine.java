@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird;
 
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -45,10 +46,16 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
         FirebirdConnectionResourceManager.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
+    /**
+     * {@inheritDoc}
+     *
+     * <p>An unknown transaction handle names a transaction other than the one this session is tracking, so rejecting it never leaves that tracked
+     * transaction in error; marking it failed here would roll back its otherwise-successful work at commit.</p>
+     */
     @Override
     public void handleException(final ConnectionSession connectionSession, final Exception exception) {
         if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()
-                && !(exception instanceof InTransactionException)) {
+                && !(exception instanceof InTransactionException) && !(exception instanceof InvalidTransactionHandleException)) {
             connectionSession.getConnectionContext().getTransactionContext().setExceptionOccur(true);
         }
     }
