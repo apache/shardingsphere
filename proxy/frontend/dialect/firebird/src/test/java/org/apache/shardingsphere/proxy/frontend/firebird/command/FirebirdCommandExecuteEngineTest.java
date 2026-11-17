@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -27,6 +29,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacke
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
@@ -46,8 +51,11 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
+import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,6 +63,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -63,13 +72,16 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
+@ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 @StaticMockSettings({
         FirebirdCommandPacketFactory.class,
@@ -124,10 +136,22 @@ class FirebirdCommandExecuteEngineTest {
     
     private FirebirdCommandExecuteEngine engine;
     
+    private Logger commandLogger;
+    
+    private Level originalLevel;
+    
     @BeforeEach
     void setUp() {
         engine = new FirebirdCommandExecuteEngine();
         when(context.channel()).thenReturn(channel);
+        commandLogger = (Logger) LoggerFactory.getLogger(FirebirdCommandExecuteEngine.class);
+        originalLevel = commandLogger.getLevel();
+        commandLogger.setLevel(Level.INFO);
+    }
+    
+    @AfterEach
+    void tearDown() {
+        commandLogger.setLevel(originalLevel);
     }
     
     @Test
@@ -147,9 +171,64 @@ class FirebirdCommandExecuteEngineTest {
     }
     
     @Test
-    void assertGetCommandExecutor() {
+    void assertGetCommandExecutorWithGenericDiagnostics(final LogCaptureAssertion logCaptureAssertion) {
+        commandLogger.setLevel(Level.DEBUG);
+        when(connectionSession.getConnectionId()).thenReturn(1);
         when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, packet, connectionSession)).thenReturn(executor);
-        assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.EXECUTE, packet, connectionSession), is(executor));
+        assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.EXECUTE, packet, connectionSession), sameInstance(executor));
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.DEBUG, "Firebird command: connectionId=1, operation=EXECUTE", true);
+    }
+    
+    @Test
+    void assertGetCommandExecutorWithDebugDisabled(final LogCaptureAssertion logCaptureAssertion) {
+        FirebirdExecuteStatementPacket executePacket = mock(FirebirdExecuteStatementPacket.class);
+        when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE, executePacket, connectionSession)).thenReturn(executor);
+        assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.EXECUTE, executePacket, connectionSession), sameInstance(executor));
+        logCaptureAssertion.assertLogCount(0);
+        verifyNoInteractions(executePacket);
+    }
+    
+    @Test
+    void assertGetCommandExecutorWithPrepareDiagnostics(final LogCaptureAssertion logCaptureAssertion) {
+        commandLogger.setLevel(Level.DEBUG);
+        when(connectionSession.getConnectionId()).thenReturn(1);
+        FirebirdPrepareStatementPacket preparePacket = mock(FirebirdPrepareStatementPacket.class);
+        when(preparePacket.getStatementId()).thenReturn(4);
+        when(preparePacket.getTransactionId()).thenReturn(2);
+        when(preparePacket.getSqlDialect()).thenReturn(3);
+        when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.PREPARE_STATEMENT, preparePacket, connectionSession)).thenReturn(executor);
+        assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.PREPARE_STATEMENT, preparePacket, connectionSession), sameInstance(executor));
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.DEBUG, "Firebird command: connectionId=1, operation=PREPARE_STATEMENT, statementId=4, transactionId=2, sqlDialect=3", true);
+        verify(preparePacket, never()).getSQL();
+    }
+    
+    @Test
+    void assertGetCommandExecutorWithExecuteDiagnostics(final LogCaptureAssertion logCaptureAssertion) {
+        commandLogger.setLevel(Level.DEBUG);
+        when(connectionSession.getConnectionId()).thenReturn(1);
+        FirebirdExecuteStatementPacket executePacket = mock(FirebirdExecuteStatementPacket.class);
+        when(executePacket.getStatementId()).thenReturn(4);
+        when(executePacket.getTransactionId()).thenReturn(2);
+        when(executePacket.getParameterValues()).thenReturn(Collections.singletonList("foo_secret"));
+        when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.EXECUTE2, executePacket, connectionSession)).thenReturn(executor);
+        assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.EXECUTE2, executePacket, connectionSession), sameInstance(executor));
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.DEBUG, "Firebird command: connectionId=1, operation=EXECUTE2, statementId=4, transactionId=2, parameterCount=1", true);
+    }
+    
+    @Test
+    void assertGetCommandExecutorWithFetchDiagnostics(final LogCaptureAssertion logCaptureAssertion) {
+        commandLogger.setLevel(Level.DEBUG);
+        when(connectionSession.getConnectionId()).thenReturn(1);
+        FirebirdFetchStatementPacket fetchPacket = mock(FirebirdFetchStatementPacket.class);
+        when(fetchPacket.getStatementId()).thenReturn(4);
+        when(fetchPacket.getFetchSize()).thenReturn(10);
+        when(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.FETCH, fetchPacket, connectionSession)).thenReturn(executor);
+        assertThat(engine.getCommandExecutor(FirebirdCommandPacketType.FETCH, fetchPacket, connectionSession), sameInstance(executor));
+        logCaptureAssertion.assertLogCount(1);
+        logCaptureAssertion.assertLogContent(0, Level.DEBUG, "Firebird command: connectionId=1, operation=FETCH, statementId=4, fetchSize=10", true);
     }
     
     @Test

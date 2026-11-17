@@ -213,4 +213,19 @@
         </set-assignments>
         <property key="timeout" value="100" start-index="194" stop-index="208" />
     </load-data>
+    <load-data sql-case-id="load_data_ignore" ignore="true">
+        <table name="t_order" start-index="46" stop-index="52" />
+    </load-data>
+    <load-data sql-case-id="load_data_replace_partition" replace="true" partition-start-index="55" partition-stop-index="71">
+        <table name="t_order" start-index="47" stop-index="53" />
+        <partition name="p0" start-index="65" stop-index="66" />
+        <partition name="p1" start-index="69" stop-index="70" />
+    </load-data>
+    <load-data sql-case-id="load_data_ignore_with_ignore_lines" ignore="true">
+        <table name="t_order" start-index="46" stop-index="52" />
+    </load-data>
+    <load-data sql-case-id="load_data_partition_with_ignore_lines" ignore="false" partition-start-index="47" partition-stop-index="59">
+        <table name="t_order" start-index="39" stop-index="45" />
+        <partition name="p0" start-index="57" stop-index="58" />
+    </load-data>
 </sql-parser-test-cases>

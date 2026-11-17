@@ -25,9 +25,9 @@ createTable
     : CREATE createTableSpecification TABLE ifNotExists? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))?
       inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tablespace?
-      (AS (select | EXECUTE name executeParamClause?) withData?)?
+      (AS (select | executeStmt) withData?)?
     | CREATE createTableSpecification TABLE ifNotExists? tableName columnNames
-      tableAccessMethodClause? withOption? onCommitOption? tablespace? AS (select | EXECUTE name executeParamClause?) withData?
+      tableAccessMethodClause? withOption? onCommitOption? tablespace? AS (select | executeStmt) withData?
     ;
 
 executeParamClause
@@ -176,7 +176,7 @@ dropIndexOpt
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableNamesClause restartSeqs? dropTableOpt?
+    : TRUNCATE TABLE? relationExprList restartSeqs? dropTableOpt?
     ;
 
 restartSeqs
@@ -966,6 +966,8 @@ fdwOption
     | NO HANDLER
     | VALIDATOR handlerName
     | NO VALIDATOR
+    | CONNECTION handlerName
+    | NO CONNECTION
     ;
 
 handlerName

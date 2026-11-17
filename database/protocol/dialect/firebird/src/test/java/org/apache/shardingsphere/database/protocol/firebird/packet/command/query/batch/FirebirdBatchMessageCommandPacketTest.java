@@ -34,6 +34,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
@@ -56,11 +57,11 @@ class FirebirdBatchMessageCommandPacketTest {
     @CsvSource({"32767, 32767", "-32768, 32768", "-536, 65000", "65000, 65000"})
     void assertGetLengthWithNativeHandle(final int wireHandle, final int expectedHandle) {
         FirebirdBatchRegistry registry = mock(FirebirdBatchRegistry.class);
-        FirebirdBatchStatement batchStatement = mock(FirebirdBatchStatement.class);
+        when(registry.getMessageFormat(anyInt(), anyInt())).thenReturn(null);
         ByteBuf buffer = Unpooled.buffer().writeInt(0).writeInt(wireHandle).writeInt(0);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(registry);
-            when(registry.getBatchStatement(1, expectedHandle)).thenReturn(batchStatement);
+            when(registry.getMessageFormat(1, expectedHandle)).thenReturn(Collections.emptyList());
             int actual = FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8), 1);
             assertThat(actual, is(12));
         } finally {
@@ -72,6 +73,7 @@ class FirebirdBatchMessageCommandPacketTest {
     @ValueSource(ints = {0, -1, 65535})
     void assertGetLengthWithInvalidObject(final int wireHandle) {
         FirebirdBatchRegistry registry = mock(FirebirdBatchRegistry.class);
+        when(registry.getMessageFormat(anyInt(), anyInt())).thenReturn(null);
         ByteBuf buffer = Unpooled.buffer().writeInt(0).writeInt(wireHandle).writeInt(0);
         try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(registry);
