@@ -356,21 +356,21 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     /**
      * Close all resources.
      *
-     * <p>While a command is executing, only cancel it. Its statements and connections are released by {@link #closeExecutionResources()} when it finishes.</p>
+     * <p>While a command is executing, only cancel it. Its statements and connections are released by {@link #closeExecutionResources()} when it finishes, after the cancellation completes.</p>
      *
      * @return exceptions occurred during closing resources
      */
     public Collection<SQLException> closeAllResources() {
         synchronized (closeLock) {
             closed.set(true);
-            if (!commandExecuting) {
-                Collection<SQLException> result = new LinkedList<>();
-                result.addAll(closeHandlers(true));
-                result.addAll(closeConnections(true));
-                return result;
+            if (commandExecuting) {
+                return cancelHandlers();
             }
+            Collection<SQLException> result = new LinkedList<>();
+            result.addAll(closeHandlers(true));
+            result.addAll(closeConnections(true));
+            return result;
         }
-        return cancelHandlers();
     }
     
     private Collection<SQLException> cancelHandlers() {
