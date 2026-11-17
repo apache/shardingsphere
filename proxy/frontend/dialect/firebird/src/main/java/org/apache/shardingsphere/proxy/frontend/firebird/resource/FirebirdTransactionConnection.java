@@ -286,6 +286,9 @@ public final class FirebirdTransactionConnection implements InvocationHandler {
                 if (target instanceof Statement && "close".equals(method.getName())) {
                     statements.remove(target);
                 }
+                if ("unwrap".equals(method.getName())) {
+                    return ((Class<?>) args[0]).isInstance(proxy) ? proxy : result;
+                }
                 return wrap(result);
             } finally {
                 attachment.firebirdConnection.getGDSHelper().setCurrentTransaction(previousTransaction);

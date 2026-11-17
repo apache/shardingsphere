@@ -19,6 +19,8 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -28,12 +30,13 @@ import static org.mockito.Mockito.when;
 
 class FirebirdBatchReleaseCommandPacketTest {
     
-    @Test
-    void assertConstructor() {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"3, 3", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertConstructor(final int wireHandle, final int expectedHandle) {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readInt4()).thenReturn(3);
-        FirebirdBatchReleaseCommandPacket actualPacket = new FirebirdBatchReleaseCommandPacket(payload);
-        assertThat(actualPacket.getStatementHandle(), is(3));
+        when(payload.readInt4()).thenReturn(wireHandle);
+        FirebirdBatchReleaseCommandPacket actual = new FirebirdBatchReleaseCommandPacket(payload);
+        assertThat(actual.getStatementHandle(), is(expectedHandle));
         verify(payload).skipReserved(4);
     }
     

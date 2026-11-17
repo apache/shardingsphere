@@ -23,6 +23,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.util.ReferenceCountUtil;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
@@ -45,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
@@ -56,6 +58,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -377,34 +380,56 @@ class FirebirdPacketCodecEngineTest {
         assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.iterator().next()).getStatementHandle(), is(BATCH_STATEMENT_HANDLE));
     }
     
-    @Test
-    void assertDecodeCoalescedBatchCreateAndMixedMessage() {
-        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildMixedBatchCreate(), buildMixedBatchMessage());
-        List<Object> out = new LinkedList<>();
-        codecEngine.decode(context, in, out);
-        assertThat(out.size(), is(2));
-        assertThat(((ByteBuf) out.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
-        ByteBuf batchMessage = (ByteBuf) out.get(1);
-        assertThat(batchMessage.readableBytes(), is(32));
-        assertThat(createBatchSendMessagePacket(batchMessage).getMessageCount(), is(1L));
-        assertNull(getPendingPacketType());
-        assertTrue(getPendingMessages().isEmpty());
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"42, 42", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "65000, 65000"})
+    void assertDecodeCoalescedBatchCreateAndMixedMessage(final int wireHandle, final int expectedHandle) {
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildMixedBatchCreate().setInt(Integer.BYTES, wireHandle), buildMixedBatchMessage().setInt(Integer.BYTES, wireHandle));
+        List<Object> actual = new ArrayList<>(2);
+        try {
+            codecEngine.decode(context, in, actual);
+            assertThat(actual.size(), is(2));
+            assertThat(((ByteBuf) actual.get(0)).getInt(0), is(FirebirdCommandPacketType.BATCH_CREATE.getValue()));
+            ByteBuf actualMessage = (ByteBuf) actual.get(1);
+            assertThat(actualMessage.readableBytes(), is(32));
+            FirebirdBatchMessageCommandPacket actualPacket = createBatchSendMessagePacket(actualMessage);
+            assertThat(actualPacket.getStatementHandle(), is(expectedHandle));
+            assertThat(actualPacket.getMessageCount(), is(1L));
+            assertNull(getPendingPacketType());
+            assertTrue(getPendingMessages().isEmpty());
+            verify(context, never()).close();
+        } finally {
+            actual.forEach(ReferenceCountUtil::release);
+            in.release();
+        }
     }
     
-    @Test
-    void assertDecodeCoalescedBatchCreateAndSplitMessage() {
-        ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
-        ByteBuf firstFrame = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), batchMessage.readRetainedSlice(18));
-        List<Object> firstOut = new LinkedList<>();
-        codecEngine.decode(context, firstFrame, firstOut);
-        assertThat(firstOut.size(), is(1));
-        assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
-        List<Object> secondOut = new LinkedList<>();
-        codecEngine.decode(context, batchMessage.readRetainedSlice(batchMessage.readableBytes()), secondOut);
-        assertThat(secondOut.size(), is(1));
-        assertThat(createBatchSendMessagePacket((ByteBuf) secondOut.get(0)).getMessageCount(), is(1L));
-        assertNull(getPendingPacketType());
-        assertTrue(getPendingMessages().isEmpty());
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"42, 42", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "65000, 65000"})
+    void assertDecodeCoalescedBatchCreateAndSplitMessage(final int wireHandle, final int expectedHandle) {
+        ByteBuf batchMessage = buildBatchMessage(wireHandle, 100);
+        ByteBuf firstFrame = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate().setInt(Integer.BYTES, wireHandle), batchMessage.readRetainedSlice(18));
+        ByteBuf secondFrame = batchMessage.readRetainedSlice(batchMessage.readableBytes());
+        List<Object> actualFirst = new ArrayList<>(1);
+        List<Object> actualSecond = new ArrayList<>(1);
+        try {
+            codecEngine.decode(context, firstFrame, actualFirst);
+            assertThat(actualFirst.size(), is(1));
+            assertThat(getPendingPacketType(), is(FirebirdCommandPacketType.BATCH_MSG));
+            codecEngine.decode(context, secondFrame, actualSecond);
+            assertThat(actualSecond.size(), is(1));
+            FirebirdBatchMessageCommandPacket actualPacket = createBatchSendMessagePacket((ByteBuf) actualSecond.get(0));
+            assertThat(actualPacket.getStatementHandle(), is(expectedHandle));
+            assertThat(actualPacket.getMessageCount(), is(1L));
+            assertNull(getPendingPacketType());
+            assertTrue(getPendingMessages().isEmpty());
+            verify(context, never()).close();
+        } finally {
+            actualFirst.forEach(ReferenceCountUtil::release);
+            actualSecond.forEach(ReferenceCountUtil::release);
+            firstFrame.release();
+            secondFrame.release();
+            batchMessage.release();
+        }
     }
     
     @Test

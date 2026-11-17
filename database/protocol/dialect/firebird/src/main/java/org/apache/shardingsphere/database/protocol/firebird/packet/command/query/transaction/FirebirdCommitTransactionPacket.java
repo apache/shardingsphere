@@ -31,7 +31,7 @@ public final class FirebirdCommitTransactionPacket extends FirebirdCommandPacket
     
     public FirebirdCommitTransactionPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        transactionId = payload.readInt4();
+        transactionId = payload.readInt4() & 0xFFFF;
     }
     
     @Override

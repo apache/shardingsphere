@@ -38,7 +38,7 @@ public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
     public FirebirdOpenBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         blobParameterBuffer = FirebirdCommandPacketType.OPEN_BLOB2 == commandType ? ByteBufUtil.getBytes(payload.readBuffer()) : new byte[0];
-        transactionId = payload.readInt4();
+        transactionId = payload.readInt4() & 0xFFFF;
         blobId = payload.readInt8();
     }
     

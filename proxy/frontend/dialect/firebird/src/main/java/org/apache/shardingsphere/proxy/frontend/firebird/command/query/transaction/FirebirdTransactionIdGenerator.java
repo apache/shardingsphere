@@ -180,7 +180,7 @@ public final class FirebirdTransactionIdGenerator {
                                                                 final ConnectionMode connectionMode) throws SQLException {
         synchronized (connectionSession.getDatabaseConnectionManager().getCloseLock()) {
             checkAttachmentOpen(connectionSession);
-            List<Connection> attachments = getAttachmentConnections(connectionSession, databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
+            Collection<Connection> attachments = getAttachmentConnections(connectionSession, databaseName, dataSourceName, connectionOffset, connectionSize, connectionMode);
             createSnapshotTransactions(connectionSession, attachments);
             List<Connection> result = new ArrayList<>(connectionSize);
             for (Connection each : attachments) {

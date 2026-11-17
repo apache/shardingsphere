@@ -21,6 +21,8 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -31,20 +33,21 @@ import static org.mockito.Mockito.when;
 
 class FirebirdBatchCreateCommandPacketTest {
     
-    @Test
-    void assertConstructor() {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"7, 7", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertConstructor(final int wireHandle, final int expectedHandle) {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         ByteBuf blrBuffer = mock(ByteBuf.class);
         ByteBuf batchParametersBuffer = mock(ByteBuf.class);
-        when(payload.readInt4()).thenReturn(7);
+        when(payload.readInt4()).thenReturn(wireHandle);
         when(payload.readBuffer()).thenReturn(blrBuffer, batchParametersBuffer);
         when(payload.readInt4Unsigned()).thenReturn(12L);
         when(blrBuffer.isReadable()).thenReturn(true);
-        FirebirdBatchCreateCommandPacket actualPacket = new FirebirdBatchCreateCommandPacket(payload);
-        assertThat(actualPacket.getStatementHandle(), is(7));
-        assertThat(actualPacket.getBatchBlr(), is(blrBuffer));
-        assertThat(actualPacket.getBatchMessageLength(), is(12L));
-        assertThat(actualPacket.getBatchParametersBuffer(), is(batchParametersBuffer));
+        FirebirdBatchCreateCommandPacket actual = new FirebirdBatchCreateCommandPacket(payload);
+        assertThat(actual.getStatementHandle(), is(expectedHandle));
+        assertThat(actual.getBatchBlr(), is(blrBuffer));
+        assertThat(actual.getBatchMessageLength(), is(12L));
+        assertThat(actual.getBatchParametersBuffer(), is(batchParametersBuffer));
         verify(payload).skipReserved(4);
     }
     

@@ -45,7 +45,7 @@ public final class FirebirdExecuteImmediatePacket extends FirebirdCommandPacket 
      */
     public FirebirdExecuteImmediatePacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        transactionId = payload.readInt4();
+        transactionId = payload.readInt4() & 0xFFFF;
         payload.skipReserved(8);
         String originSQL = payload.readString();
         hintValueContext = SQLHintUtils.extractHint(originSQL);

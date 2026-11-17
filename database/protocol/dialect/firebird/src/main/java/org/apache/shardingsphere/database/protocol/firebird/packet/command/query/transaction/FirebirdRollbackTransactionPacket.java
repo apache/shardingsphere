@@ -31,7 +31,7 @@ public final class FirebirdRollbackTransactionPacket extends FirebirdCommandPack
     
     public FirebirdRollbackTransactionPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        transactionId = payload.readInt4();
+        transactionId = payload.readInt4() & 0xFFFF;
     }
     
     @Override

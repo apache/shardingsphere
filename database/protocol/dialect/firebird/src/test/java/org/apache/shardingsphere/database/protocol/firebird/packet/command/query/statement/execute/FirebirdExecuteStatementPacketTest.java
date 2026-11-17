@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +40,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -104,13 +106,16 @@ class FirebirdExecuteStatementPacketTest {
         assertThat(packet.getParameterValues(), is(Collections.singletonList(null)));
     }
     
-    @Test
-    void assertExecuteStatementPacketWhenBLRIsNotReadable() {
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"7, 7, 9, 9", "32767, 32767, 0, 0", "0, 0, -32768, 32768", "-32768, 32768, -536, 65000", "32768, 32768, 65000, 65000", "-1, 65535, -1, 65535"})
+    void assertExecuteStatementPacketWhenBLRIsNotReadable(final int wireStatementHandle, final int expectedStatementHandle, final int wireTransactionHandle, final int expectedTransactionHandle) {
         when(payload.readBuffer()).thenReturn(byteBuf);
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 0);
-        FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
-        assertThat(packet.getParameterTypes(), is(Collections.emptyList()));
-        assertThat(packet.getParameterValues(), is(Collections.emptyList()));
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), wireStatementHandle, wireTransactionHandle, 0, 0);
+        FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        assertThat(actual.getStatementId(), is(expectedStatementHandle));
+        assertThat(actual.getTransactionId(), is(expectedTransactionHandle));
+        assertTrue(actual.getParameterTypes().isEmpty());
+        assertTrue(actual.getParameterValues().isEmpty());
     }
     
     @Test

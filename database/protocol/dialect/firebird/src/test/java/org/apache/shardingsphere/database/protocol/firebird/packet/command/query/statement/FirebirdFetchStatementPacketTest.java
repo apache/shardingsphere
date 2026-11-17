@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,6 +36,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -71,16 +73,17 @@ class FirebirdFetchStatementPacketTest {
         assertThat(packet.getParameterTypes().get(0), is(expectedParameterType));
     }
     
-    @Test
-    void assertFetchStatementPacketWhenBLRIsNotReadable() {
-        when(payload.readInt4()).thenReturn(3, 7, 10);
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"3, 3", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertFetchStatementPacketWhenBLRIsNotReadable(final int wireHandle, final int expectedHandle) {
+        when(payload.readInt4()).thenReturn(wireHandle, 7, 10);
         when(payload.readBuffer()).thenReturn(byteBuf);
-        FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(payload);
+        FirebirdFetchStatementPacket actual = new FirebirdFetchStatementPacket(payload);
         verify(payload).skipReserved(4);
-        assertThat(packet.getStatementId(), is(3));
-        assertThat(packet.getMessage(), is(7));
-        assertThat(packet.getFetchSize(), is(10));
-        assertThat(packet.getParameterTypes().size(), is(0));
+        assertThat(actual.getStatementId(), is(expectedHandle));
+        assertThat(actual.getMessage(), is(7));
+        assertThat(actual.getFetchSize(), is(10));
+        assertTrue(actual.getParameterTypes().isEmpty());
     }
     
     @Test

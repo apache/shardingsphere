@@ -25,6 +25,8 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -51,14 +53,15 @@ class FirebirdInfoPacketTest {
         assertThat(FirebirdInfoPacket.getLength(payload), is(24));
     }
     
-    @Test
-    void assertNewInstance() {
-        when(payload.readInt4()).thenReturn(1, 2, 100);
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"1, 1", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertNewInstance(final int wireHandle, final int expectedHandle) {
+        when(payload.readInt4()).thenReturn(wireHandle, 2, 100);
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true, true, false);
         when(byteBuf.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.RECORDS.getCode(), (byte) FirebirdCommonInfoPacketType.END.getCode());
         FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
-        assertThat(actual.getHandle(), is(1));
+        assertThat(actual.getHandle(), is(expectedHandle));
         assertThat(actual.getIncarnation(), is(2));
         assertThat(actual.getMaxLength(), is(100));
         List<FirebirdInfoPacketType> infoItems = actual.getInfoItems();

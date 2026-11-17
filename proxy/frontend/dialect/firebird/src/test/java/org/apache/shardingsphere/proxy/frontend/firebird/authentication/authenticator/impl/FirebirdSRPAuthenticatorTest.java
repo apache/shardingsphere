@@ -50,30 +50,23 @@ class FirebirdSRPAuthenticatorTest {
         assertTrue(authenticator.authenticate(user, new Object[]{null, mockAuthenticationData(), clientProof}));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("authenticateFailureArguments")
-    void assertAuthenticateFailure(final String name, final String clientProof) {
-        assertFalse(authenticator.authenticate(user, new Object[]{null, mockAuthenticationData(), clientProof}));
-    }
-    
     private FirebirdSRPAuthenticationData mockAuthenticationData() {
         FirebirdSRPAuthenticationData result = mock(FirebirdSRPAuthenticationData.class);
         when(result.serverProof("foo")).thenReturn(new byte[]{0, 10, 105});
         return result;
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("authenticateFailureArguments")
+    void assertAuthenticateFailure(final String name, final String clientProof) {
+        assertFalse(authenticator.authenticate(user, new Object[]{null, mockAuthenticationData(), clientProof}));
+    }
+    
     private static Stream<Arguments> authenticateSuccessArguments() {
-        return Stream.of(
-                Arguments.of("hex_text_with_leading_zeros", "000A69"),
-                Arguments.of("hex_text_without_leading_zeros", "A69"),
-                Arguments.of("lowercase_hex_text", "a69"));
+        return Stream.of(Arguments.of("hex_text_with_leading_zeros", "000A69"), Arguments.of("hex_text_without_leading_zeros", "A69"), Arguments.of("lowercase_hex_text", "a69"));
     }
     
     private static Stream<Arguments> authenticateFailureArguments() {
-        return Stream.of(
-                Arguments.of("different_number", "A6A"),
-                Arguments.of("non_hex_text", "wrong"),
-                Arguments.of("empty_text", ""),
-                Arguments.of("absent_proof", null));
+        return Stream.of(Arguments.of("different_number", "A6A"), Arguments.of("non_hex_text", "wrong"), Arguments.of("empty_text", ""), Arguments.of("absent_proof", null));
     }
 }

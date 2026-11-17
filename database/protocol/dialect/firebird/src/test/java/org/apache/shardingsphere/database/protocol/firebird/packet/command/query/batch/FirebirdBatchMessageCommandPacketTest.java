@@ -19,17 +19,81 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.MockedStatic;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class FirebirdBatchMessageCommandPacketTest {
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"42, 42", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertConstructor(final int wireHandle, final int expectedHandle) {
+        ByteBuf buffer = Unpooled.buffer().writeInt(0).writeInt(wireHandle).writeInt(0);
+        try {
+            FirebirdBatchMessageCommandPacket actual = new FirebirdBatchMessageCommandPacket(new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8));
+            assertThat(actual.getStatementHandle(), is(expectedHandle));
+        } finally {
+            buffer.release();
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"32767, 32767", "-32768, 32768", "-536, 65000", "65000, 65000"})
+    void assertGetLengthWithNativeHandle(final int wireHandle, final int expectedHandle) {
+        FirebirdBatchRegistry registry = mock(FirebirdBatchRegistry.class);
+        FirebirdBatchStatement batchStatement = mock(FirebirdBatchStatement.class);
+        ByteBuf buffer = Unpooled.buffer().writeInt(0).writeInt(wireHandle).writeInt(0);
+        try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
+            mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(registry);
+            when(registry.getBatchStatement(1, expectedHandle)).thenReturn(batchStatement);
+            int actual = FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8), 1);
+            assertThat(actual, is(12));
+        } finally {
+            buffer.release();
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(ints = {0, -1, 65535})
+    void assertGetLengthWithInvalidObject(final int wireHandle) {
+        FirebirdBatchRegistry registry = mock(FirebirdBatchRegistry.class);
+        ByteBuf buffer = Unpooled.buffer().writeInt(0).writeInt(wireHandle).writeInt(0);
+        try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class)) {
+            mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(registry);
+            assertThrows(InvalidBatchHandleException.class, () -> FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8), 1));
+        } finally {
+            buffer.release();
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(ints = {0, 8, 11})
+    void assertGetLengthWithIncompleteRegistryHeader(final int length) {
+        ByteBuf buffer = Unpooled.buffer().writeZero(2 + length);
+        buffer.readerIndex(2);
+        try {
+            int actual = FirebirdBatchMessageCommandPacket.getLength(new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8), 1);
+            assertThat(actual, is(-1));
+            assertThat(buffer.readerIndex(), is(2));
+        } finally {
+            buffer.release();
+        }
+    }
     
     @Test
     void assertGetLengthWithColumnDescriptors() {

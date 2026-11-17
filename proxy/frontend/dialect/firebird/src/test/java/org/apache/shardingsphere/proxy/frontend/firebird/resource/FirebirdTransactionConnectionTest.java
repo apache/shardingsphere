@@ -28,7 +28,10 @@ import org.firebirdsql.gds.ng.FbDatabase;
 import org.firebirdsql.gds.ng.FbTransaction;
 import org.firebirdsql.gds.ng.TransactionState;
 import org.firebirdsql.jdbc.FBConnection;
+import org.firebirdsql.jdbc.FBPreparedStatement;
 import org.firebirdsql.jdbc.FBRowId;
+import org.firebirdsql.jdbc.FirebirdPreparedStatement;
+import org.firebirdsql.jdbc.FirebirdStatement;
 import org.firebirdsql.jdbc.JaybirdTypeCodes;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,6 +60,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -73,6 +77,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -179,6 +184,57 @@ class FirebirdTransactionConnectionTest {
         } catch (final InvocationTargetException ex) {
             throw ex.getCause();
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("statementUnwrapTypes")
+    void assertStatementUnwrapDriverType(final Class<? extends Statement> requestedType) {
+        withJdbcConnections(jdbcConnections -> {
+            FBPreparedStatement statement = mock(FBPreparedStatement.class);
+            when(statement.isWrapperFor(requestedType)).thenReturn(true);
+            when(statement.unwrap(requestedType)).thenAnswer(invocation -> statement);
+            when(pooledConnection.prepareStatement("foo_sql")).thenReturn(statement);
+            Connection connection = FirebirdTransactionConnection.createTransaction(attachment, 1, false, TransactionIsolationLevel.REPEATABLE_READ);
+            PreparedStatement statementView = connection.prepareStatement("foo_sql");
+            assertTrue(statementView.isWrapperFor(requestedType));
+            Statement actual = statementView.unwrap(requestedType);
+            assertThat(actual, isA(requestedType));
+            assertNull(currentTransaction.get());
+        });
+    }
+    
+    private static Stream<Class<? extends Statement>> statementUnwrapTypes() {
+        return Stream.of(FirebirdPreparedStatement.class, FirebirdStatement.class, FBPreparedStatement.class);
+    }
+    
+    @Test
+    void assertStatementUnwrapStandardInterfaceKeepsConnectionView() {
+        withJdbcConnections(jdbcConnections -> {
+            PreparedStatement statement = mock(PreparedStatement.class);
+            when(statement.unwrap(PreparedStatement.class)).thenReturn(statement);
+            when(pooledConnection.prepareStatement("foo_sql")).thenReturn(statement);
+            Connection connection = FirebirdTransactionConnection.createTransaction(attachment, 1, false, TransactionIsolationLevel.REPEATABLE_READ);
+            PreparedStatement statementView = connection.prepareStatement("foo_sql");
+            PreparedStatement actual = statementView.unwrap(PreparedStatement.class);
+            assertThat(actual.getConnection(), sameInstance(connection));
+            assertNull(currentTransaction.get());
+        });
+    }
+    
+    @Test
+    void assertStatementUnwrapUnsupportedInterface() {
+        withJdbcConnections(jdbcConnections -> {
+            PreparedStatement statement = mock(PreparedStatement.class);
+            SQLException expected = new SQLException("foo_unwrap");
+            when(statement.unwrap(Runnable.class)).thenThrow(expected);
+            when(pooledConnection.prepareStatement("foo_sql")).thenReturn(statement);
+            Connection connection = FirebirdTransactionConnection.createTransaction(attachment, 1, false, TransactionIsolationLevel.REPEATABLE_READ);
+            PreparedStatement statementView = connection.prepareStatement("foo_sql");
+            assertFalse(statementView.isWrapperFor(Runnable.class));
+            SQLException actual = assertThrows(SQLException.class, () -> statementView.unwrap(Runnable.class));
+            assertThat(actual, sameInstance(expected));
+            assertNull(currentTransaction.get());
+        });
     }
     
     @Test

@@ -59,8 +59,8 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
     
     public FirebirdExecuteStatementPacket(final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
         type = FirebirdCommandPacketType.valueOf(payload.readInt4());
-        statementId = payload.readInt4();
-        transactionId = payload.readInt4();
+        statementId = payload.readInt4() & 0xFFFF;
+        transactionId = payload.readInt4() & 0xFFFF;
         parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
         message = payload.readInt4();
         int msgCount = payload.readInt4();

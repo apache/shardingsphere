@@ -23,6 +23,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.charset.StandardCharsets;
 
@@ -32,13 +34,30 @@ import static org.hamcrest.Matchers.isA;
 
 class FirebirdExecuteImmediatePacketTest {
     
-    @Test
-    void assertParse() {
-        FirebirdPacketPayload payload = createPayload(7, "SET TRANSACTION");
-        FirebirdExecuteImmediatePacket actual = new FirebirdExecuteImmediatePacket(payload);
-        assertThat(actual.getTransactionId(), is(7));
-        assertThat(actual.getSQL(), is("SET TRANSACTION"));
-        assertThat(payload.getByteBuf().readableBytes(), is(0));
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"7, 7", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertParse(final int wireHandle, final int expectedHandle) {
+        FirebirdPacketPayload payload = createPayload(wireHandle, "SET TRANSACTION");
+        try {
+            FirebirdExecuteImmediatePacket actual = new FirebirdExecuteImmediatePacket(payload);
+            assertThat(actual.getTransactionId(), is(expectedHandle));
+            assertThat(actual.getSQL(), is("SET TRANSACTION"));
+            assertThat(payload.getByteBuf().readableBytes(), is(0));
+        } finally {
+            payload.getByteBuf().release();
+        }
+    }
+    
+    private FirebirdPacketPayload createPayload(final int transactionId, final String sql) {
+        FirebirdPacketPayload result = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
+        result.writeInt4(FirebirdCommandPacketType.EXEC_IMMEDIATE.getValue());
+        result.writeInt4(transactionId);
+        result.writeInt4(1);
+        result.writeInt4(3);
+        result.writeString(sql);
+        result.writeInt4(0);
+        result.writeInt4(0);
+        return result;
     }
     
     @Test
@@ -52,17 +71,5 @@ class FirebirdExecuteImmediatePacketTest {
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXEC_IMMEDIATE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION19, 1),
                 isA(FirebirdExecuteImmediatePacket.class));
         assertThat(payload.readInt4(), is(FirebirdCommandPacketType.TRANSACTION.getValue()));
-    }
-    
-    private FirebirdPacketPayload createPayload(final int transactionId, final String sql) {
-        FirebirdPacketPayload result = new FirebirdPacketPayload(Unpooled.buffer(), StandardCharsets.UTF_8);
-        result.writeInt4(FirebirdCommandPacketType.EXEC_IMMEDIATE.getValue());
-        result.writeInt4(transactionId);
-        result.writeInt4(1);
-        result.writeInt4(3);
-        result.writeString(sql);
-        result.writeInt4(0);
-        result.writeInt4(0);
-        return result;
     }
 }

@@ -30,8 +30,8 @@ public class FirebirdBatchExecuteCommandPacket extends FirebirdCommandPacket {
     
     public FirebirdBatchExecuteCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementHandle = payload.readInt4();
-        transactionHandle = payload.readInt4();
+        statementHandle = payload.readInt4() & 0xFFFF;
+        transactionHandle = payload.readInt4() & 0xFFFF;
     }
     
     @Override

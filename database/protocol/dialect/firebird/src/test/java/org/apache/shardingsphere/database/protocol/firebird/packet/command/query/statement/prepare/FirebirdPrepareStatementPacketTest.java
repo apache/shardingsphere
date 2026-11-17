@@ -23,6 +23,8 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -47,6 +49,19 @@ class FirebirdPrepareStatementPacketTest {
     
     @Mock
     private ByteBuf byteBuf;
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"0,0,0,0", "32767,32767,32767,32767", "-32768,32768,-536,65000", "32768,32768,65000,65000", "-1,65535,-1,65535"})
+    void assertConstructorWithNativeHandles(final int wireTransactionHandle, final int expectedTransactionHandle, final int wireStatementHandle, final int expectedStatementHandle) {
+        when(payload.readInt4()).thenReturn(wireTransactionHandle, wireStatementHandle, 3, 100000);
+        when(payload.readString()).thenReturn("SELECT 1");
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        FirebirdPrepareStatementPacket actual = new FirebirdPrepareStatementPacket(payload);
+        assertThat(actual.getTransactionId(), is(expectedTransactionHandle));
+        assertThat(actual.getStatementId(), is(expectedStatementHandle));
+        assertThat(actual.getSqlDialect(), is(3));
+        assertThat(actual.getMaxLength(), is(100000));
+    }
     
     @Test
     void assertConstructor() {

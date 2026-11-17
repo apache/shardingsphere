@@ -21,6 +21,8 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -37,12 +39,13 @@ class FirebirdCommitTransactionPacketTest {
     @Mock
     private FirebirdPacketPayload payload;
     
-    @Test
-    void assertReadTransactionId() {
-        when(payload.readInt4()).thenReturn(123);
-        FirebirdCommitTransactionPacket packet = new FirebirdCommitTransactionPacket(payload);
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"123, 123", "0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertReadTransactionId(final int wireHandle, final int expectedHandle) {
+        when(payload.readInt4()).thenReturn(wireHandle);
+        FirebirdCommitTransactionPacket actual = new FirebirdCommitTransactionPacket(payload);
         verify(payload).skipReserved(4);
-        assertThat(packet.getTransactionId(), is(123));
+        assertThat(actual.getTransactionId(), is(expectedHandle));
     }
     
     @Test

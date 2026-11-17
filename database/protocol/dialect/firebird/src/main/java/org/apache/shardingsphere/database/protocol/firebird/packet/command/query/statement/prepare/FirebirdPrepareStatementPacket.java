@@ -53,8 +53,8 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     public FirebirdPrepareStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        transactionId = payload.readInt4();
-        statementId = payload.readInt4();
+        transactionId = payload.readInt4() & 0xFFFF;
+        statementId = payload.readInt4() & 0xFFFF;
         sqlDialect = payload.readInt4();
         String originSQL = payload.readString();
         hintValueContext = SQLHintUtils.extractHint(originSQL);
@@ -70,7 +70,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     }
     
     public boolean isValidStatementHandle() {
-        return 0xFFFF != statementId && -1 != statementId;
+        return 0xFFFF != statementId;
     }
     
     /**
@@ -89,7 +89,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     @Override
     public String getSQL() {
-         return sql;
+        return sql;
     }
     
     @Override

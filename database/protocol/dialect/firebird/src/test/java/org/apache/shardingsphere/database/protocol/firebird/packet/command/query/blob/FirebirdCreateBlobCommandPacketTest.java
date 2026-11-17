@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -44,6 +45,14 @@ class FirebirdCreateBlobCommandPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
+    
+    @ParameterizedTest(name = "{0}")
+    @CsvSource({"0, 0", "32767, 32767", "32768, 32768", "-32768, 32768", "-536, 65000", "-1, 65535"})
+    void assertTransactionHandle(final int wireHandle, final int expectedHandle) {
+        when(payload.readInt4()).thenReturn(wireHandle);
+        FirebirdCreateBlobCommandPacket actual = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB, payload);
+        assertThat(actual.getTransactionId(), is(expectedHandle));
+    }
     
     @Test
     void assertCreateBlobPacketWithoutBpb() {

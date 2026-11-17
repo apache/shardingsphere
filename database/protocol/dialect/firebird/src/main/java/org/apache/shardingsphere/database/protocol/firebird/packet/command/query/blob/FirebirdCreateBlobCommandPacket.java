@@ -48,7 +48,7 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
                 bpb.parseBuffer(buffer);
             }
         }
-        transactionId = payload.readInt4();
+        transactionId = payload.readInt4() & 0xFFFF;
         requestedBlobId = payload.readInt8();
     }
     
