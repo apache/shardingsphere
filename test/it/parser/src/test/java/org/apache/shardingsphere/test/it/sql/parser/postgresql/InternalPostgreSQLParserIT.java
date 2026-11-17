@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -76,6 +77,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -176,6 +178,15 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         AnalyzeTableStatement actualRoundTrip = (AnalyzeTableStatement) new SQLStatementVisitorEngine("PostgreSQL")
                 .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(roundTripSQL, false));
         assertThat(actualRoundTrip.getTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo\"\"table"));
+    }
+    
+    @Test
+    void assertSelectWithLargeInList() {
+        Collection<String> expectedValues = IntStream.rangeClosed(1, 100000).mapToObj(String::valueOf).collect(Collectors.toList());
+        String sql = "SELECT * FROM foo_table WHERE foo_id IN (" + String.join(", ", expectedValues) + ")";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ListExpression actualValues = (ListExpression) ((InExpression) actual.getWhere().get().getExpr()).getRight();
+        assertThat(actualValues.getItems().stream().map(each -> sql.substring(each.getStartIndex(), each.getStopIndex() + 1)).collect(Collectors.toList()), is(expectedValues));
     }
     
     @ParameterizedTest(name = "{0}")
