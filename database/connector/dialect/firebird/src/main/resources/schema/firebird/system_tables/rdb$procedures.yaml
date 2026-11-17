@@ -117,7 +117,7 @@ columns:
     visible: true
   RDB$ENGINE_NAME:
     caseSensitive: false
-    dataType: 2004
+    dataType: 1
     generated: false
     name: RDB$ENGINE_NAME
     primaryKey: false

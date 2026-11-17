@@ -91,4 +91,6 @@
     <sql-case id="explain_for_select_between_to_date_function" value="explain plan for select sum(amount_sold) from sales where time_id between to_date('01-JAN-2000','dd-MON-yyyy') and to_date('31-DEC-2000','dd-MON-yyyy') ;" db-types="Oracle"/>
     <sql-case id="explain_insert_returning_star_pg" value="EXPLAIN INSERT INTO t_order VALUES (1) RETURNING *" db-types="PostgreSQL" case-types="Literal" />
     <sql-case id="explain_insert_default_returning_pg" value="EXPLAIN INSERT INTO t_order DEFAULT VALUES RETURNING order_id" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="explain_create_table_as_columns_pg" value="EXPLAIN CREATE TABLE result_table (a) AS SELECT 1" db-types="PostgreSQL" />
+    <sql-case id="explain_create_table_as_execute_pg" value="EXPLAIN CREATE TABLE result_table (a) AS EXECUTE p(1)" db-types="PostgreSQL" />
 </sql-cases>

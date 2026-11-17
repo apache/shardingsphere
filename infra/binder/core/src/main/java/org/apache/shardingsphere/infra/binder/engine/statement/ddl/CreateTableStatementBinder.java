@@ -137,6 +137,7 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
                 .databaseType(sqlStatement.getDatabaseType())
                 .table(boundTable)
                 .selectStatement(boundSelectStatement)
+                .executeStatement(sqlStatement.getExecuteStatement().orElse(null))
                 .ifNotExists(sqlStatement.isIfNotExists())
                 .temporary(sqlStatement.isTemporary())
                 .likeTable(sqlStatement.getLikeTable().orElse(null))

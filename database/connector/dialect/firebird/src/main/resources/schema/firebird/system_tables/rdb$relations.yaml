@@ -138,7 +138,7 @@ columns:
     visible: true
   RDB$SQL_SECURITY:
     caseSensitive: false
-    dataType: 5
+    dataType: 16
     generated: false
     name: RDB$SQL_SECURITY
     primaryKey: false

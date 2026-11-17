@@ -270,12 +270,24 @@
 
     <create-table sql-case-id="create_table_as_execute_parameters_postgresql" parameters="1,2" parameter-marker-count="2">
         <table name="foo" start-index="13" stop-index="15" />
+        <execute parameters="1,2">
+            <name name="foo_query" />
+            <argument>
+                <parameter-marker-expression parameter-index="0" start-index="38" stop-index="38" />
+            </argument>
+            <argument>
+                <parameter-marker-expression parameter-index="1" start-index="41" stop-index="41" />
+            </argument>
+        </execute>
     </create-table>
 
     <create-table sql-case-id="create_table_as_execute_columns_postgresql">
         <table name="foo" start-index="13" stop-index="15" />
         <column name="id" start-index="18" stop-index="19" />
         <column name="name" start-index="22" stop-index="25" />
+        <execute>
+            <name name="foo_query" />
+        </execute>
     </create-table>
 
     <create-table sql-case-id="create_table_storage_compression_postgresql">
