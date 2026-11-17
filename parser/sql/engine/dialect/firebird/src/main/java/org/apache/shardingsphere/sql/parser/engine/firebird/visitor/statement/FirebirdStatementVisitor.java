@@ -167,7 +167,7 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     }
     
     private String getSingleQuotedText(final String text) {
-        return '\'' == text.charAt(0) ? text : "'" + text.substring(3, text.length() - 2) + "'";
+        return '\'' == text.charAt(0) ? text : "'" + text.substring(3, text.length() - 2).replace("'", "''") + "'";
     }
     
     @Override

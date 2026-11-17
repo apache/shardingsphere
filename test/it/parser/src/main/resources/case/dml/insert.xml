@@ -4748,6 +4748,34 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_alternative_quoted_literal_with_apostrophe_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="27">
+            <column name="status" start-index="21" stop-index="26" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="it''s" start-index="37" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_alternative_quoted_literal_with_consecutive_apostrophes_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="27">
+            <column name="status" start-index="21" stop-index="26" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="it''''s" start-index="37" stop-index="46" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />

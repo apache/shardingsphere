@@ -13386,9 +13386,9 @@
 
     <select sql-case-id="select_alternative_quoted_literal_with_paired_delimiter_firebird">
         <projections start-index="7" stop-index="15">
-            <expression-projection text="it's" start-index="7" stop-index="15">
+            <expression-projection text="it''s" start-index="7" stop-index="15">
                 <expr>
-                    <literal-expression value="it's" start-index="7" stop-index="15" />
+                    <literal-expression value="it''s" start-index="7" stop-index="15" />
                 </expr>
             </expression-projection>
         </projections>
