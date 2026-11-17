@@ -69,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -492,7 +493,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private int getOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                  final Supplier<Optional<ShardingSphereSchema>> schema) {
         int result = getBinaryOperationType(expr, sqlStatementContext, database, schema);
-        return Types.OTHER == result ? Types.INTEGER : result;
+        return Types.OTHER == result || INT128_TYPE == result ? Types.INTEGER : result;
     }
     
     private int getBinaryOperationType(final BinaryOperationExpression expr, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
@@ -697,8 +698,9 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case MIN:
                 return getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema);
             case SUM:
-            case AVG:
                 return getSumType(getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema));
+            case AVG:
+                return getAvgType(getCommonType(aggregation.getParameters(), sqlStatementContext, database, schema));
             default:
                 return Types.OTHER;
         }
@@ -717,8 +719,25 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         }
     }
     
+    private int getAvgType(final int dataType) {
+        switch (dataType) {
+            case Types.TINYINT:
+            case Types.SMALLINT:
+            case Types.INTEGER:
+                return Types.BIGINT;
+            default:
+                return dataType;
+        }
+    }
+    
     private int getSubqueryType(final SelectStatement subquery, final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                 final Supplier<Optional<ShardingSphereSchema>> schema) {
+        Optional<CombineSegment> combine = subquery.getCombine();
+        if (combine.isPresent()) {
+            int leftType = getSubqueryType(combine.get().getLeft().getSelect(), sqlStatementContext, database, schema);
+            int rightType = getSubqueryType(combine.get().getRight().getSelect(), sqlStatementContext, database, schema);
+            return getCommonDataType(leftType, rightType);
+        }
         List<ProjectionSegment> projections = subquery.getProjections().getProjections();
         if (1 != projections.size()) {
             return Types.OTHER;

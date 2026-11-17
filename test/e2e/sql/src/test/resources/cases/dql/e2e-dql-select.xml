@@ -44,7 +44,7 @@
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT order_id, order_id + 1 - 2 AS SHIFTED_ID, (user_id + 1) * 2 AS DOUBLED_USER_ID FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
+    <test-case sql="SELECT order_id, order_id + 1 - 2 AS SHIFTED_ID, (user_id * 2) + 1 AS DOUBLED_USER_ID FROM t_order WHERE user_id = ? ORDER BY order_id" db-types="Firebird" scenario-types="db">
         <assertion parameters="10:int" expected-data-source-name="read_dataset" />
     </test-case>
     
