@@ -84,6 +84,13 @@
         <create-table parameters="1">
             <table name="foo" start-index="21" stop-index="23" />
             <column name="id" start-index="25" stop-index="26" />
+            <execute parameters="1">
+                <name name="foo_query" />
+                <argument>
+                    <parameter-marker-expression parameter-index="0" start-index="50" stop-index="50" />
+                    <literal-expression value="1" start-index="50" stop-index="50" />
+                </argument>
+            </execute>
         </create-table>
     </explain>
 </sql-parser-test-cases>

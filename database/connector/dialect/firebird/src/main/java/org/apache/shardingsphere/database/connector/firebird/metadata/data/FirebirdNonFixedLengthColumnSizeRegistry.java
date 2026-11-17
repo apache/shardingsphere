@@ -19,13 +19,18 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.OptionalInt;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -35,6 +40,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class FirebirdNonFixedLengthColumnSizeRegistry {
     
     private static final Map<String, Map<String, Integer>> COLUMN_SIZES = new ConcurrentHashMap<>();
+    
+    private static final Map<String, Integer> SYSTEM_COLUMN_SIZES = loadSystemColumnSizes();
+    
+    @SneakyThrows(IOException.class)
+    private static Map<String, Integer> loadSystemColumnSizes() {
+        Properties props = new Properties();
+        try (InputStream inputStream = FirebirdNonFixedLengthColumnSizeRegistry.class.getResourceAsStream("/metadata/firebird/system-table-column-sizes.properties")) {
+            props.load(inputStream);
+        }
+        Map<String, Integer> result = new HashMap<>(props.size(), 1F);
+        for (String each : props.stringPropertyNames()) {
+            result.put(each, Integer.parseInt(props.getProperty(each)));
+        }
+        return result;
+    }
     
     /**
      * Refresh column sizes for a table.
@@ -70,17 +90,21 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
      * @param columnName column name
      * @return column size
      */
+    @HighFrequencyInvocation
     public static OptionalInt findColumnSize(final String schemaName, final String tableName, final String columnName) {
         if (null == tableName || null == columnName) {
             return OptionalInt.empty();
         }
         Integer columnSize = COLUMN_SIZES.getOrDefault(buildTableKey(schemaName, tableName), Collections.emptyMap()).get(toKey(columnName));
+        if (null == columnSize) {
+            columnSize = SYSTEM_COLUMN_SIZES.get(new StringBuilder(toKey(tableName)).append('.').append(toKey(columnName)).toString());
+        }
         return null == columnSize ? OptionalInt.empty() : OptionalInt.of(columnSize);
     }
     
     private static String buildTableKey(final String schemaName, final String tableName) {
         String schemaKey = null == schemaName ? "" : toKey(schemaName);
-        return schemaKey + "." + toKey(trimToLogicTableName(tableName));
+        return new StringBuilder(schemaKey).append('.').append(toKey(trimToLogicTableName(tableName))).toString();
     }
     
     private static String trimToLogicTableName(final String tableName) {

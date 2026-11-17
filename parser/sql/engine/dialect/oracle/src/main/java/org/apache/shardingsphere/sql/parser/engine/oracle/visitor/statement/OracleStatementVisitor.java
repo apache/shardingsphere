@@ -619,12 +619,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.booleanPrimary());
         }
         if (null != ctx.LP_()) {
-            ASTNode result = visit(ctx.expr(0));
-            if (result instanceof ColumnSegment) {
-                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
-                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
-            }
-            return result;
+            return visitParenthesizedExpression(ctx.expr(0), ctx.LP_(), ctx.RP_());
         }
         if (null != ctx.andOperator()) {
             return createBinaryOperationExpression(ctx, ctx.andOperator().getText());
@@ -642,6 +637,21 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.builtinFunctionsExpr());
         }
         return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr(0)), false);
+    }
+    
+    private ASTNode visitParenthesizedExpression(final ExprContext ctx, final TerminalNode leftParentheses, final TerminalNode rightParentheses) {
+        ExprContext expression = ctx;
+        while (null != expression.LP_()) {
+            expression = expression.expr(0);
+        }
+        ASTNode result = visit(expression);
+        if (result instanceof ColumnSegment) {
+            ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(leftParentheses.getSymbol().getStartIndex(), leftParentheses.getSymbol().getStopIndex(),
+                    leftParentheses.getSymbol().getText()));
+            ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(rightParentheses.getSymbol().getStartIndex(), rightParentheses.getSymbol().getStopIndex(),
+                    rightParentheses.getSymbol().getText()));
+        }
+        return result;
     }
     
     private ASTNode createMultisetExpression(final ExprContext ctx) {
@@ -859,12 +869,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return visit(ctx.privateExprOfDb());
         }
         if (null != ctx.LP_() && 1 == ctx.expr().size()) {
-            ASTNode result = visit(ctx.expr(0));
-            if (result instanceof ColumnSegment) {
-                ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
-                ((ColumnSegment) result).setRightParentheses(new ParenthesesSegment(ctx.RP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.RP_().getSymbol().getText()));
-            }
-            return result;
+            return visitParenthesizedExpression(ctx.expr(0), ctx.LP_(), ctx.RP_());
         }
         if (null != ctx.LP_()) {
             ListExpression result = new ListExpression(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex());

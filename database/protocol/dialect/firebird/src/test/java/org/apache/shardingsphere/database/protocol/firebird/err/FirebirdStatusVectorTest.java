@@ -76,6 +76,21 @@ class FirebirdStatusVectorTest {
     }
     
     @Test
+    void assertWriteWithInvalidBatchStatementType() {
+        FirebirdStatusVector actual = new FirebirdStatusVector(new SQLException("Invalid type of statement used in batch", "07003", ISCConstants.isc_batch_type));
+        actual.write((PacketPayload) payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_sqlerr);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(-901);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_batch_type);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
     void assertWriteOmitsArgumentWhenMessageIsEmpty() {
         FirebirdStatusVector vector = new FirebirdStatusVector(new SQLException("", "28000", ISCConstants.isc_login));
         vector.write(payload);

@@ -275,4 +275,21 @@
             <parameter name="EXTPROC_DLLS" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_search_path_null_pg">
+        <parameter-assign value="NULL">
+            <parameter name="search_path" />
+        </parameter-assign>
+    </set-parameter>
+
+    <set-parameter sql-case-id="set_search_path_null_to_pg">
+        <parameter-assign value="NULL">
+            <parameter name="search_path" />
+        </parameter-assign>
+    </set-parameter>
+
+    <set-parameter sql-case-id="set_search_path_quoted_null_control_pg">
+        <parameter-assign value="'NULL'">
+            <parameter name="search_path" />
+        </parameter-assign>
+    </set-parameter>
 </sql-parser-test-cases>
