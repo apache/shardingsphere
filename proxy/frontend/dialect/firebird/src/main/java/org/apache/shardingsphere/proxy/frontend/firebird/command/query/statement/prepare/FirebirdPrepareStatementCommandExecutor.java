@@ -103,10 +103,12 @@ import org.jspecify.annotations.Nullable;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -130,6 +132,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private static final int MAX_BYTES_PER_CHARACTER = 4;
     
     private static final int MAX_FLOAT_PRECISION = 24;
+    
+    private static final Collection<String> COMPARISON_OPERATORS = new HashSet<>(Arrays.asList("=", "<>", "!=", ">", ">=", "<", "<=", "<=>", "IS DISTINCT FROM", "IS NOT DISTINCT FROM"));
     
     private static final Map<String, Integer> CAST_DATA_TYPES = new HashMap<>(22, 1F);
     
@@ -542,10 +546,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         BinaryOperationExpression binary = (BinaryOperationExpression) expr;
         processExpr(binary.getLeft(), affectedColumns);
         processExpr(binary.getRight(), affectedColumns);
-        if (binary.getLeft() instanceof ColumnSegment) {
+        if (binary.getLeft() instanceof ColumnSegment && !"||".equals(binary.getOperator())) {
             putAffectedColumn((ColumnSegment) binary.getLeft(), binary.getRight(), affectedColumns);
         }
-        if (binary.getRight() instanceof ColumnSegment) {
+        if (binary.getRight() instanceof ColumnSegment && COMPARISON_OPERATORS.contains(binary.getOperator())) {
             putAffectedColumn((ColumnSegment) binary.getRight(), binary.getLeft(), affectedColumns);
         }
     }

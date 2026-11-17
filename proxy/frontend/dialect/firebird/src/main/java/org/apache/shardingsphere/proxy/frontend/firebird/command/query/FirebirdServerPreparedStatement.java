@@ -69,7 +69,7 @@ public final class FirebirdServerPreparedStatement implements ServerPreparedStat
     private Object toExactNumeric(final String value) {
         BigDecimal result;
         try {
-            result = new BigDecimal(value);
+            result = new BigDecimal(value.trim());
         } catch (final NumberFormatException ignored) {
             return value;
         }

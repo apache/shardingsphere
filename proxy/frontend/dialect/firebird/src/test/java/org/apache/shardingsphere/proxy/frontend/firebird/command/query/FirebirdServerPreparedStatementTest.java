@@ -55,7 +55,9 @@ class FirebirdServerPreparedStatementTest {
         return Stream.of(
                 Arguments.of("integral", "10", 10L),
                 Arguments.of("integral with zero fraction", "10.00", 10L),
+                Arguments.of("integral with surrounding spaces", " 10 ", 10L),
                 Arguments.of("fractional", "12.34", new BigDecimal("12.34")),
+                Arguments.of("fractional with surrounding spaces", " 12.34 ", new BigDecimal("12.34")),
                 Arguments.of("over long range", "12345678901234567890", new BigDecimal("12345678901234567890")),
                 Arguments.of("not a number", "foo_value", "foo_value"));
     }

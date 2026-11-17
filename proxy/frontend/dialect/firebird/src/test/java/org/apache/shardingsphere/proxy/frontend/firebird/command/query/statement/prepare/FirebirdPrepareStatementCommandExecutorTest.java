@@ -530,8 +530,24 @@ class FirebirdPrepareStatementCommandExecutorTest {
         actualReturnPacket.getDescribeBind().get(1).write(amountPayload);
         verify(amountPayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
         verify(amountPayload).writeInt4LE(32765);
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(preparedStatement.getExactNumericParameterIndexes(), is(Collections.singleton(1)));
+        FirebirdServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(actualPreparedStatement.getExactNumericParameterIndexes(), is(Collections.singleton(1)));
+    }
+    
+    @Test
+    void assertDescribeConcatenationParametersAsVarchar() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) SELECT id + 2 FROM foo_tbl WHERE ? || id = 'foo1' AND id || ? = 'foo1'");
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.BIND, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
+                FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeBind().size(), is(2));
+        for (FirebirdReturnColumnPacket each : actualReturnPacket.getDescribeBind()) {
+            FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+            each.write(payload);
+            verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+            verify(payload).writeInt4LE(32765);
+        }
     }
     
     @Test
@@ -610,8 +626,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
             verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
             verify(payload).writeInt4LE(32765);
         }
-        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-        assertThat(preparedStatement.getExactNumericParameterIndexes(), is(new HashSet<>(Arrays.asList(0, 1))));
+        FirebirdServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(actualPreparedStatement.getExactNumericParameterIndexes(), is(new HashSet<>(Arrays.asList(0, 1))));
     }
     
     @Test
