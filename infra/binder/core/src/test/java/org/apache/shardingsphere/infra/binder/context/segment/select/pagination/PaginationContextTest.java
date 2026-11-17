@@ -86,6 +86,11 @@ class PaginationContextTest {
     }
     
     @Test
+    void assertGetActualOffsetWithShortParameters() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getShortParameters()).getActualOffset(), is(30L));
+    }
+    
+    @Test
     void assertGetActualOffsetWithNullOffsetSegment() {
         assertThat(new PaginationContext(null, getRowCountSegment(), getParameters()).getActualOffset(), is(0L));
     }
@@ -104,6 +109,11 @@ class PaginationContextTest {
     @Test
     void assertGetActualRowCountWithByteArrayParameters() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getByteArrayParameters()).getActualRowCount().orElse(null), is(20L));
+    }
+    
+    @Test
+    void assertGetActualRowCountWithShortParameters() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getShortParameters()).getActualRowCount().orElse(null), is(20L));
     }
     
     @Test
@@ -143,6 +153,10 @@ class PaginationContextTest {
     
     private List<Object> getByteArrayParameters() {
         return Arrays.asList("30".getBytes(StandardCharsets.UTF_8), "20".getBytes(StandardCharsets.UTF_8));
+    }
+    
+    private List<Object> getShortParameters() {
+        return Arrays.asList((short) 30, (short) 20);
     }
     
     @Test
