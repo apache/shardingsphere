@@ -48,21 +48,8 @@ class FirebirdBlrRowMetadataTest {
     
     @Test
     void assertParseBLRWithTextCharsetsAndLengths() {
-        ByteBuf blr = Unpooled.buffer()
-                .writeZero(4)
-                .writeByte(6)
-                .writeByte(0)
-                .writeByte(BlrConstants.blr_text2)
-                .writeShortLE(1)
-                .writeShortLE(4)
-                .writeZero(2)
-                .writeByte(BlrConstants.blr_varying2)
-                .writeShortLE(4)
-                .writeShortLE(300)
-                .writeZero(2)
-                .writeByte(BlrConstants.blr_long)
-                .writeZero(3)
-                .writeByte(BlrConstants.blr_end);
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(6).writeByte(0).writeByte(BlrConstants.blr_text2).writeShortLE(1).writeShortLE(4).writeZero(2).writeByte(BlrConstants.blr_varying2)
+                .writeShortLE(4).writeShortLE(300).writeZero(2).writeByte(BlrConstants.blr_long).writeZero(3).writeByte(BlrConstants.blr_end);
         FirebirdBlrRowMetadata actual = FirebirdBlrRowMetadata.parseBLR(blr);
         assertThat(actual.getColumnTypes(), is(Arrays.asList(FirebirdBinaryColumnType.TEXT, FirebirdBinaryColumnType.VARYING, FirebirdBinaryColumnType.LONG)));
         assertThat(actual.getColumnCharsets(), is(Arrays.asList(1, 4, 0)));

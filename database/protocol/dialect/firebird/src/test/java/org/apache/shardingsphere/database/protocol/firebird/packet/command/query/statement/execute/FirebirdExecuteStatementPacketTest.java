@@ -99,10 +99,8 @@ class FirebirdExecuteStatementPacketTest {
     
     @Test
     void assertExecuteStatementPacketWithOctetsParameters() {
-        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(4).writeByte(0)
-                .writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
-                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
-                .writeByte(BlrConstants.blr_end);
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(4).writeByte(0).writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2).writeByte(BlrConstants.blr_end);
         FirebirdPacketPayload packetPayload = createExecutePayload(blr, 0);
         packetPayload.writeBytes(new byte[]{(byte) 0xab, 0x00, 0x01, 0x02});
         packetPayload.writeBuffer(new byte[]{0x00, (byte) 0xff, (byte) 0x80});
@@ -127,11 +125,9 @@ class FirebirdExecuteStatementPacketTest {
     
     @Test
     void assertExecuteStatementPacketWithNullOctetsParameters() {
-        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(6).writeByte(0)
-                .writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
-                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
-                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2)
-                .writeByte(BlrConstants.blr_end);
+        ByteBuf blr = Unpooled.buffer().writeZero(4).writeByte(6).writeByte(0).writeByte(BlrConstants.blr_text2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(4).writeZero(2)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY).writeShortLE(10).writeZero(2).writeByte(BlrConstants.blr_varying2).writeShortLE(ISCConstants.CS_BINARY)
+                .writeShortLE(10).writeZero(2).writeByte(BlrConstants.blr_end);
         FirebirdPacketPayload packetPayload = createExecutePayload(blr, 0b101);
         packetPayload.writeBuffer(new byte[]{0x01, 0x02});
         FirebirdExecuteStatementPacket actual = new FirebirdExecuteStatementPacket(packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13);

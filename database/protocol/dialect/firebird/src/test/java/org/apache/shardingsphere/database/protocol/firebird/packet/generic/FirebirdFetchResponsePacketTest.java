@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.ISCConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -136,7 +137,7 @@ class FirebirdFetchResponsePacketTest {
         try {
             FirebirdPacketPayload packetPayload = new FirebirdPacketPayload(actual, StandardCharsets.UTF_8);
             BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.TEXT, new byte[]{0x01, 0x02, (byte) 0xff})));
-            FirebirdFetchResponsePacket.getFetchRowPacket(row).write(packetPayload);
+            FirebirdFetchResponsePacket.getFetchRowPacket(row).write((PacketPayload) packetPayload);
             assertThat(actual.readableBytes(), is(20));
             actual.skipBytes(16);
             assertThat(actual.readByte(), is((byte) 0x01));
