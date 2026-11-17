@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -89,6 +90,25 @@ class ExpressionSegmentBinderTest {
     
     private static Stream<Arguments> typeCastArguments() {
         return Stream.of(Arguments.of("text", SegmentType.PROJECTION), Arguments.of("NUMERIC(10,2)", SegmentType.PREDICATE), Arguments.of("timestamp with time zone", SegmentType.PROJECTION));
+    }
+    
+    @Test
+    void assertBindFieldAccess() {
+        ColumnSegment column = new ColumnSegment(1, 1, new IdentifierValue("r"));
+        ColumnSegment boundColumn = new ColumnSegment(1, 1, new IdentifierValue("r"));
+        ColumnSegment field = new ColumnSegment(4, 4, new IdentifierValue("a"));
+        FieldAccessExpression segment = new FieldAccessExpression(0, 4, column, field, "(r).a");
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerContexts = LinkedHashMultimap.create();
+        when(ColumnSegmentBinder.bind(same(column), eq(SegmentType.PROJECTION), same(binderContext), same(tableContexts), same(outerContexts))).thenReturn(boundColumn);
+        FieldAccessExpression actual = (FieldAccessExpression) ExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, binderContext, tableContexts, outerContexts);
+        assertThat(actual.getExpression(), sameInstance(boundColumn));
+        assertThat(actual.getField(), sameInstance(field));
+        assertThat(actual.getText(), is("(r).a"));
+        assertThat(actual.getStartIndex(), is(0));
+        assertThat(actual.getStopIndex(), is(4));
+        assertThat(segment.getExpression(), sameInstance(column));
     }
     
     @Test

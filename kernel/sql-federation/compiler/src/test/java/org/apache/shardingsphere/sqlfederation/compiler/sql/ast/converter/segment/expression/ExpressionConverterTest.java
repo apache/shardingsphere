@@ -22,6 +22,8 @@ import org.apache.calcite.sql.SqlDynamicParam;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlCase;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -35,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
@@ -43,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowReferenceExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -83,6 +87,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -109,6 +114,29 @@ import static org.mockito.Mockito.when;
 class ExpressionConverterTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @Test
+    void assertConvertFieldAccess() {
+        ColumnSegment column = new ColumnSegment(1, 1, new IdentifierValue("r"));
+        ColumnSegment field = new ColumnSegment(4, 4, new IdentifierValue("a"));
+        SqlIdentifier baseNode = new SqlIdentifier("r", SqlParserPos.ZERO);
+        SqlIdentifier fieldNode = new SqlIdentifier("a", SqlParserPos.ZERO);
+        when(ColumnConverter.convert(column)).thenReturn(baseNode);
+        when(ColumnConverter.convert(field)).thenReturn(fieldNode);
+        FieldAccessExpression expression = new FieldAccessExpression(0, 4, column, field, "(r).a");
+        SqlBasicCall actual = (SqlBasicCall) ExpressionConverter.convert(expression).get();
+        assertThat(actual.getOperator(), is(SqlStdOperatorTable.DOT));
+        assertThat(actual.getOperandList(), is(Arrays.asList(baseNode, fieldNode)));
+    }
+    
+    @Test
+    void assertConvertWholeRowReference() {
+        RowReferenceExpression expression = new RowReferenceExpression(0, 4,
+                Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("s")), new ColumnSegment(2, 2, new IdentifierValue("t"))), "s.t.*");
+        SqlIdentifier actual = (SqlIdentifier) ExpressionConverter.convert(expression).get();
+        assertTrue(actual.isStar());
+        assertThat(actual.names, is(Arrays.asList("s", "t", "")));
+    }
     
     @Test
     void assertConvertDelegatesToAllSupportedConverters() {

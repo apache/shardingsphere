@@ -1847,4 +1847,81 @@
             </execute>
         </create-table>
     </explain>
+    <explain sql-case-id="explain_subquery_row_expansion_pg">
+        <select>
+            <projections start-index="15" stop-index="33">
+                <expression-projection text="(SELECT r FROM t).*" start-index="15" stop-index="33">
+                    <expr>
+                        <unary-operation-expression start-index="15" stop-index="33">
+                            <operator>.*</operator>
+                            <expr>
+                                <subquery start-index="15" stop-index="31">
+                                    <select>
+                                        <projections start-index="23" stop-index="23">
+                                            <column-projection name="r" start-index="23" stop-index="23" />
+                                        </projections>
+                                        <from>
+                                            <simple-table name="t" start-index="30" stop-index="30" />
+                                        </from>
+                                    </select>
+                                </subquery>
+                            </expr>
+                        </unary-operation-expression>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </explain>
+    <explain sql-case-id="explain_subquery_field_pg">
+        <select>
+            <projections start-index="15" stop-index="35">
+                <expression-projection text="(SELECT r FROM t).a" start-index="15" stop-index="35">
+                    <expr>
+                        <field-access-expression start-index="16" stop-index="34">
+                            <expr>
+                                <subquery start-index="16" stop-index="32">
+                                    <select>
+                                        <projections start-index="24" stop-index="24">
+                                            <column-projection name="r" start-index="24" stop-index="24" />
+                                        </projections>
+                                        <from>
+                                            <simple-table name="t" start-index="31" stop-index="31" />
+                                        </from>
+                                    </select>
+                                </subquery>
+                            </expr>
+                            <field name="a" start-index="34" stop-index="34" />
+                        </field-access-expression>
+                    </expr>
+                </expression-projection>
+            </projections>
+        </select>
+    </explain>
+    <explain sql-case-id="explain_qualified_whole_row_pg">
+        <select>
+            <projections start-index="15" stop-index="29">
+                <expression-projection text="(s.t.*) IS NULL" start-index="15" stop-index="29">
+                    <expr>
+                        <binary-operation-expression start-index="15" stop-index="29">
+                            <left>
+                                <row-reference-expression start-index="16" stop-index="20">
+                                    <qualifier name="s" start-index="16" stop-index="16" />
+                                    <qualifier name="t" start-index="18" stop-index="18" />
+                                </row-reference-expression>
+                            </left>
+                            <operator>IS</operator>
+                            <right>
+                                <literal-expression value="NULL" start-index="26" stop-index="29" />
+                            </right>
+                        </binary-operation-expression>
+                    </expr>
+                </expression-projection>
+            </projections>
+            <from>
+                <simple-table name="t" start-index="36" stop-index="38">
+                    <owner name="s" start-index="36" stop-index="36" />
+                </simple-table>
+            </from>
+        </select>
+    </explain>
 </sql-parser-test-cases>

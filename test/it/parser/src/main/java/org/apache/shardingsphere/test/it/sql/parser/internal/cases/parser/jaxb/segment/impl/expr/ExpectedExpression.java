@@ -130,6 +130,12 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     @XmlElement(name = "row-expression")
     private ExpectedRowExpression rowExpression;
     
+    @XmlElement(name = "field-access-expression")
+    private ExpectedFieldAccessExpression fieldAccessExpression;
+    
+    @XmlElement(name = "row-reference-expression")
+    private ExpectedRowReferenceExpression rowReferenceExpression;
+    
     @XmlElement(name = "unary-operation-expression")
     private ExpectedUnaryOperationExpression unaryOperationExpression;
     

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -283,6 +284,8 @@ class ExpressionExtractorTest {
                 Arguments.of("Wrapped type cast", Collections.singleton(wrappedCast), Collections.singletonList(question)),
                 Arguments.of("Nested common and sibling", Arrays.asList(nested, secondDollar), Arrays.asList(firstDollar, secondDollar)),
                 Arguments.of("Nested row marker order", Collections.singleton(row), Arrays.asList(question, firstDollar, secondDollar)),
+                Arguments.of("Field base marker", Collections.singleton(new FieldAccessExpression(0, 5, firstDollar,
+                        new ColumnSegment(5, 5, new IdentifierValue("a")), "($2).a")), Collections.singletonList(firstDollar)),
                 Arguments.of("Unary marker", Collections.singleton(new UnaryOperationExpression(0, 3, firstDollar, "~", "~$2")), Collections.singletonList(firstDollar)),
                 Arguments.of("Collate expression marker", Collections.singleton(new CollateExpression(0, 20, new LiteralExpressionSegment(18, 20, "C"), dollarCast)),
                         Collections.singletonList(firstDollar)));
@@ -355,6 +358,8 @@ class ExpressionExtractorTest {
                 Arguments.of("Nested expression columns", nested, false, Arrays.asList(first, first, second, first, second)),
                 Arguments.of("Row column order and duplicates", row, false, Arrays.asList(first, second, first)),
                 Arguments.of("Empty row", new RowExpression(0, 4, "ROW()"), false, Collections.emptyList()),
+                Arguments.of("Field base column", new FieldAccessExpression(0, 10, first, new ColumnSegment(10, 10, new IdentifierValue("a")), "(foo_col).a"),
+                        false, Collections.singletonList(first)),
                 Arguments.of("Unary column", unary, false, Collections.singletonList(first)),
                 Arguments.of("Unary literal", new UnaryOperationExpression(0, 1, new LiteralExpressionSegment(1, 1, 1), "~", "~1"), false, Collections.emptyList()),
                 Arguments.of("Collate operand column", collate, false, Collections.singletonList(second)),

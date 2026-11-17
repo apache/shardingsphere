@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Case
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -286,6 +287,9 @@ public final class SubqueryExtractor {
         }
         if (expressionSegment instanceof TypeCastExpression) {
             extractSubquerySegmentsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
+        }
+        if (expressionSegment instanceof FieldAccessExpression) {
+            extractSubquerySegmentsFromExpression(result, ((FieldAccessExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof UnaryOperationExpression) {
             extractSubquerySegmentsFromExpression(result, ((UnaryOperationExpression) expressionSegment).getExpression(), subqueryType, needRecursive);

@@ -178,11 +178,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Exis
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowReferenceExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -621,10 +623,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.aExpr()) {
             ASTNode result = visit(ctx.aExpr());
             if (null != ctx.optIndirection().indirectionEl()) {
-                Collection<ExpressionSegment> children = new LinkedList<>();
-                children.add((ExpressionSegment) result);
-                collectFunctionParameters(ctx.optIndirection(), children);
-                return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
+                return createIndirectionExpression(ctx, (ExpressionSegment) result, ctx.optIndirection());
             }
             if (result instanceof ColumnSegment) {
                 ((ColumnSegment) result).setLeftParentheses(new ParenthesesSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.LP_().getSymbol().getStopIndex(), ctx.LP_().getSymbol().getText()));
@@ -638,10 +637,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.selectWithParens()) {
             ExpressionSegment result = createSubqueryExpressionSegment(ctx);
             if (null != ctx.indirection()) {
-                Collection<ExpressionSegment> children = new LinkedList<>();
-                children.add(result);
-                collectFunctionParameters(ctx.indirection(), children);
-                return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
+                return createIndirectionExpression(ctx, result, ctx.indirection());
             }
             return result;
         }
@@ -655,6 +651,31 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return visit(ctx.implicitRow());
         }
         return createCommonExpressionSegment(ctx);
+    }
+    
+    private ExpressionSegment createIndirectionExpression(final CExprContext ctx, final ExpressionSegment expression, final ParseTree indirection) {
+        Collection<IndirectionElContext> elements = getTargetRuleContextFromParseTree(indirection, IndirectionElContext.class);
+        for (IndirectionElContext each : elements) {
+            if (null != each.LBT_()) {
+                Collection<ExpressionSegment> children = new LinkedList<>();
+                children.add(expression);
+                collectFunctionParameters(indirection, children);
+                return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
+            }
+        }
+        ExpressionSegment result = expression;
+        for (IndirectionElContext each : elements) {
+            int stopIndex = each.stop.getStopIndex();
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), stopIndex));
+            if (null == each.attrName()) {
+                result = new UnaryOperationExpression(ctx.start.getStartIndex(), stopIndex, result, ".*", text);
+            } else {
+                AttrNameContext field = each.attrName();
+                result = new FieldAccessExpression(ctx.start.getStartIndex(), stopIndex, result,
+                        new ColumnSegment(field.start.getStartIndex(), field.stop.getStopIndex(), createIdentifierValue(field.getText())), text);
+            }
+        }
+        return result;
     }
     
     private CommonExpressionSegment createCommonExpressionSegment(final ParserRuleContext ctx) {
@@ -955,10 +976,17 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
             }
         }
-        if (null != ctx.indirection() && null != ctx.indirection().indirectionEl().DOT_ASTERISK_()) {
-            ColumnSegment result = new ColumnSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("*"));
-            result.setOwner(new OwnerSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
-            return result;
+        if (null != ctx.indirection() && (null != ctx.indirection().indirectionEl().DOT_ASTERISK_() || null != ctx.indirection().indirectionEl().ASTERISK_())) {
+            Collection<IndirectionElContext> elements = getTargetRuleContextFromParseTree(ctx.indirection(), IndirectionElContext.class);
+            Collection<ColumnSegment> qualifiers = new ArrayList<>(elements.size() + 1);
+            qualifiers.add(new ColumnSegment(ctx.colId().start.getStartIndex(), ctx.colId().stop.getStopIndex(), createIdentifierValue(ctx.colId().getText())));
+            for (IndirectionElContext each : elements) {
+                if (null != each.attrName()) {
+                    AttrNameContext qualifier = each.attrName();
+                    qualifiers.add(new ColumnSegment(qualifier.start.getStartIndex(), qualifier.stop.getStopIndex(), createIdentifierValue(qualifier.getText())));
+                }
+            }
+            return new RowReferenceExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), qualifiers, getOriginalText(ctx));
         }
         if (null != ctx.indirection() && null != ctx.indirection().indirectionEl().attrName()) {
             AttrNameContext attrName = ctx.indirection().indirectionEl().attrName();

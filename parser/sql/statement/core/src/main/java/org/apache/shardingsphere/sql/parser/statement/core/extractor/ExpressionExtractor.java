@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Case
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -176,6 +177,9 @@ public final class ExpressionExtractor {
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
+            if (each instanceof FieldAccessExpression) {
+                extractParameterMarkerExpressions(segments, Collections.singleton(((FieldAccessExpression) each).getExpression()));
+            }
             if (each instanceof UnaryOperationExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((UnaryOperationExpression) each).getExpression()));
             }
@@ -298,6 +302,9 @@ public final class ExpressionExtractor {
             for (ExpressionSegment each : ((RowExpression) expression).getItems()) {
                 result.addAll(extractColumns(each, containsSubQuery));
             }
+        }
+        if (expression instanceof FieldAccessExpression) {
+            result.addAll(extractColumns(((FieldAccessExpression) expression).getExpression(), containsSubQuery));
         }
         if (expression instanceof UnaryOperationExpression) {
             result.addAll(extractColumns(((UnaryOperationExpression) expression).getExpression(), containsSubQuery));

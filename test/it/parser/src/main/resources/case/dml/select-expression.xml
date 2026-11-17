@@ -5026,7 +5026,19 @@
         <projections start-index="7" stop-index="19">
             <expression-projection start-index="7" stop-index="19" text="(ROW(1, ?)).*">
                 <expr>
-                    <common-expression start-index="7" stop-index="19" text="(ROW(1, ?)).*" />
+                    <unary-operation-expression start-index="7" stop-index="19">
+                        <operator>.*</operator>
+                        <expr>
+                            <row-expression start-index="8" stop-index="16" text="ROW(1, ?)">
+                                <items>
+                                    <literal-expression value="1" start-index="12" stop-index="12" />
+                                </items>
+                                <items>
+                                    <parameter-marker-expression parameter-index="0" start-index="15" stop-index="15" />
+                                </items>
+                            </row-expression>
+                        </expr>
+                    </unary-operation-expression>
                 </expr>
             </expression-projection>
         </projections>
@@ -5038,9 +5050,9 @@
                 <expr>
                     <row-expression start-index="7" stop-index="16" text="ROW(foo.*)">
                         <items>
-                            <column start-index="11" stop-index="15" name="*">
-                                <owner start-index="11" stop-index="13" name="foo" />
-                            </column>
+                            <row-reference-expression start-index="11" stop-index="15">
+                                <qualifier name="foo" start-index="11" stop-index="13" />
+                            </row-reference-expression>
                         </items>
                     </row-expression>
                 </expr>
@@ -5055,7 +5067,16 @@
         <projections start-index="7" stop-index="23">
             <expression-projection start-index="7" stop-index="23" text="(foo_record(?)).*">
                 <expr>
-                    <common-expression start-index="7" stop-index="23" text="(foo_record(?)).*" />
+                    <unary-operation-expression start-index="7" stop-index="23">
+                        <operator>.*</operator>
+                        <expr>
+                            <function function-name="foo_record" text="foo_record(?)" start-index="8" stop-index="20">
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="0" start-index="19" stop-index="19" />
+                                </parameter>
+                            </function>
+                        </expr>
+                    </unary-operation-expression>
                 </expr>
             </expression-projection>
         </projections>

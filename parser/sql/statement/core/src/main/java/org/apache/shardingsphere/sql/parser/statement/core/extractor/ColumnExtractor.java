@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -121,6 +122,10 @@ public final class ColumnExtractor {
         }
         if (expression instanceof NotExpression) {
             extract(((NotExpression) expression).getExpression(), result);
+            return;
+        }
+        if (expression instanceof FieldAccessExpression) {
+            extract(((FieldAccessExpression) expression).getExpression(), result);
             return;
         }
         if (expression instanceof UnaryOperationExpression) {

@@ -22,6 +22,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
@@ -63,8 +64,12 @@ public final class UnaryOperationExpressionConverter {
      * @return SQL node
      */
     public static SqlBasicCall convert(final UnaryOperationExpression segment) {
-        SqlOperator operator = convertOperator(segment);
+        boolean rowExpansion = ".*".equals(segment.getOperator());
+        SqlOperator operator = rowExpansion ? SqlStdOperatorTable.DOT : convertOperator(segment);
         List<SqlNode> sqlNodes = convertSqlNodes(segment);
+        if (rowExpansion) {
+            sqlNodes.add(SqlIdentifier.star(SqlParserPos.ZERO));
+        }
         return new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO);
     }
     

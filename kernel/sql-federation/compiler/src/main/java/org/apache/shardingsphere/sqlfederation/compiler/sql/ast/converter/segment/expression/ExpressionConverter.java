@@ -19,7 +19,11 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.fun.SqlStdOperatorTable;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -30,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
@@ -37,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowReferenceExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -72,6 +78,9 @@ import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segmen
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl.VariableSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.projection.impl.AggregationProjectionConverter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -103,6 +112,20 @@ public final class ExpressionConverter {
         }
         if (segment instanceof BinaryOperationExpression) {
             return Optional.of(BinaryOperationExpressionConverter.convert((BinaryOperationExpression) segment));
+        }
+        if (segment instanceof FieldAccessExpression) {
+            FieldAccessExpression fieldAccess = (FieldAccessExpression) segment;
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.DOT, Arrays.asList(convert(fieldAccess.getExpression()).orElseThrow(IllegalStateException::new),
+                    ColumnConverter.convert(fieldAccess.getField())), SqlParserPos.ZERO));
+        }
+        if (segment instanceof RowReferenceExpression) {
+            RowReferenceExpression rowReference = (RowReferenceExpression) segment;
+            List<String> names = new ArrayList<>(rowReference.getQualifiers().size() + 1);
+            for (ColumnSegment each : rowReference.getQualifiers()) {
+                names.add(each.getIdentifier().getValue());
+            }
+            names.add("");
+            return Optional.of(new SqlIdentifier(names, SqlParserPos.ZERO));
         }
         if (segment instanceof ColumnSegment) {
             return Optional.of(ColumnConverter.convert((ColumnSegment) segment));

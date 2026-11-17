@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Case
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -146,6 +147,11 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof UnaryOperationExpression) {
             return UnaryOperationExpressionBinder.bind((UnaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof FieldAccessExpression) {
+            FieldAccessExpression fieldAccess = (FieldAccessExpression) segment;
+            return new FieldAccessExpression(fieldAccess.getStartIndex(), fieldAccess.getStopIndex(),
+                    bind(fieldAccess.getExpression(), parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts), fieldAccess.getField(), fieldAccess.getText());
         }
         if (segment instanceof TypeCastExpression) {
             TypeCastExpression typeCast = (TypeCastExpression) segment;
