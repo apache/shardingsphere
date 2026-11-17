@@ -2261,9 +2261,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement(databaseType);
+        ExecuteStatement result = new ExecuteStatement(databaseType);
+        result.setStatementName((IdentifierValue) visit(ctx.name()));
+        if (null != ctx.executeParamClause()) {
+            result.getArguments().addAll(((CollectionValue<ExpressionSegment>) visit(ctx.executeParamClause().exprList())).getValue());
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     /**

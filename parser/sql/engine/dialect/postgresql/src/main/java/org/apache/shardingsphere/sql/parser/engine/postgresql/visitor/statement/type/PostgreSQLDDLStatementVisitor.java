@@ -237,6 +237,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.NameS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
@@ -419,6 +420,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
                 .selectStatement(selectStatement)
+                .executeStatement(null == ctx.executeStmt() ? null : (ExecuteStatement) visit(ctx.executeStmt()))
                 .columns(columns)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
@@ -426,9 +428,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         if (null != selectStatement) {
             result.addParameterMarkers(selectStatement.getParameterMarkers());
         }
-        if (null != ctx.executeParamClause()) {
-            visit(ctx.executeParamClause().exprList());
-            result.addParameterMarkers(getParameterMarkerSegments());
+        if (result.getExecuteStatement().isPresent()) {
+            result.addParameterMarkers(result.getExecuteStatement().get().getParameterMarkers());
         }
         appendExpressionColumns(ctx, result.getColumnReferences());
         return result;
