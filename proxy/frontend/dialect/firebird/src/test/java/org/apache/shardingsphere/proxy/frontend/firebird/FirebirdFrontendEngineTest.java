@@ -185,7 +185,7 @@ class FirebirdFrontendEngineTest {
             when(connectionSession.getConnectionId()).thenReturn(BATCH_CONNECTION_ID);
             when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus());
             ServerPreparedStatementRegistry preparedStatements = new ServerPreparedStatementRegistry();
-            preparedStatements.addPreparedStatement(BATCH_STATEMENT_HANDLE, mock(FirebirdServerPreparedStatement.class));
+            preparedStatements.addPreparedStatement(BATCH_STATEMENT_HANDLE, mock(FirebirdServerPreparedStatement.class, Answers.RETURNS_DEEP_STUBS));
             when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(preparedStatements);
             when(ProxyContext.getInstance()).thenReturn(proxyContext);
             when(proxyContext.getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);

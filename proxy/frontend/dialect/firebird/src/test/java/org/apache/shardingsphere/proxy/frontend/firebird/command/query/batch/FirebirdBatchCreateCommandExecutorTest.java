@@ -258,6 +258,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         mockPreparedStatement();
         when(packet.getBatchBlr()).thenReturn(createBlobBatchBlr());
         when(packet.getBatchMessageLength()).thenReturn(10L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
         Collection<DatabasePacket> actual = new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute();
         assertThat(actual.size(), is(1));
         DatabasePacket actualPacket = actual.iterator().next();
