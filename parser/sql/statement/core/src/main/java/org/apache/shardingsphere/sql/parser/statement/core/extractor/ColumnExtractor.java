@@ -292,6 +292,7 @@ public final class ColumnExtractor {
                 extract(each, result);
             }
         }
+        expression.getFilter().ifPresent(filter -> extract(filter, result));
         expression.getWindow().ifPresent(optional -> extractColumnsInWindowItemSegment(optional, result));
     }
     

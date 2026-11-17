@@ -35,6 +35,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidRequestHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
@@ -82,6 +83,9 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         if (sqlDialectException instanceof InvalidBatchParameterVersionException) {
             InvalidBatchParameterVersionException ex = (InvalidBatchParameterVersionException) sqlDialectException;
             return toSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, ex.getVersion(), ex.getExpectedVersion());
+        }
+        if (sqlDialectException instanceof InvalidBatchStatementTypeException) {
+            return toSQLException(FirebirdVendorError.INVALID_BATCH_STATEMENT_TYPE);
         }
         if (sqlDialectException instanceof BatchParametersRequiredException) {
             return toSQLException(FirebirdVendorError.BATCH_PARAMETERS_REQUIRED);
