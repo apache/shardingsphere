@@ -17274,4 +17274,224 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_function_row_expansion_pg">
+        <projections start-index="7" stop-index="14">
+            <expression-projection text="(f(1)).*" start-index="7" stop-index="14">
+                <expr>
+                    <common-expression text="(f(1)).*" start-index="7" stop-index="14">
+                        <children>
+                            <expression>
+                                <function function-name="f" text="f(1)" start-index="8" stop-index="11">
+                                    <parameter>
+                                        <literal-expression value="1" start-index="10" stop-index="10" />
+                                    </parameter>
+                                </function>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="21" stop-index="21" />
+        </from>
+    </select>
+    <select sql-case-id="select_parameter_row_expansion_pg" parameters="1" parameter-marker-count="1">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="($1::rec).*" start-index="7" stop-index="17">
+                <expr>
+                    <common-expression text="($1::rec).*" start-index="7" stop-index="17">
+                        <children>
+                            <expression>
+                                <type-cast-expression start-index="8" stop-index="14">
+                                    <expression>
+                                        <parameter-marker-expression parameter-index="0" start-index="8" stop-index="9" />
+                                    </expression>
+                                    <data-type>rec</data-type>
+                                </type-cast-expression>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_constructor_row_expansion_pg">
+        <projections start-index="7" stop-index="19">
+            <expression-projection text="(ROW(1, 2)).*" start-index="7" stop-index="19">
+                <expr>
+                    <common-expression text="(ROW(1, 2)).*" start-index="7" stop-index="19">
+                        <children>
+                            <expression>
+                                <row-expression start-index="8" stop-index="16" text="ROW(1, 2)">
+                                    <items>
+                                        <literal-expression value="1" start-index="12" stop-index="12" />
+                                    </items>
+                                    <items>
+                                        <literal-expression value="2" start-index="15" stop-index="15" />
+                                    </items>
+                                </row-expression>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_row_fields_and_expansion_pg">
+        <projections start-index="7" stop-index="18">
+            <expression-projection text="(r).a" start-index="7" stop-index="11">
+                <expr>
+                    <common-expression text="(r).a" start-index="7" stop-index="11">
+                        <children>
+                            <expression>
+                                <column name="r" start-index="8" stop-index="8" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+            <expression-projection text="(r).*" start-index="14" stop-index="18">
+                <expr>
+                    <common-expression text="(r).*" start-index="14" stop-index="18">
+                        <children>
+                            <expression>
+                                <column name="r" start-index="15" stop-index="15" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="25" stop-index="25" />
+        </from>
+    </select>
+    <select sql-case-id="select_function_field_expansion_pg">
+        <projections start-index="7" stop-index="17">
+            <expression-projection text="((f()).a).*" start-index="7" stop-index="17">
+                <expr>
+                    <common-expression text="((f()).a).*" start-index="7" stop-index="17">
+                        <children>
+                            <expression>
+                                <common-expression text="(f()).a" start-index="8" stop-index="14">
+                                    <children>
+                                        <expression>
+                                            <function function-name="f" text="f()" start-index="9" stop-index="11" />
+                                        </expression>
+                                    </children>
+                                </common-expression>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="24" stop-index="24" />
+        </from>
+    </select>
+    <select sql-case-id="select_subquery_field_expansion_pg">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="((SELECT r FROM t).a).*" start-index="7" stop-index="29">
+                <expr>
+                    <common-expression text="((SELECT r FROM t).a).*" start-index="7" stop-index="29">
+                        <children>
+                            <expression>
+                                <common-expression text="(SELECT r FROM t).a" start-index="8" stop-index="26">
+                                    <children>
+                                        <expression>
+                                            <subquery start-index="8" stop-index="24">
+                                                <select>
+                                                    <projections start-index="16" stop-index="16">
+                                                        <column-projection name="r" start-index="16" stop-index="16" />
+                                                    </projections>
+                                                    <from>
+                                                        <simple-table name="t" start-index="23" stop-index="23" />
+                                                    </from>
+                                                </select>
+                                            </subquery>
+                                        </expression>
+                                    </children>
+                                </common-expression>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_split_row_expansion_pg">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="(f()). /*comment*/ *" start-index="7" stop-index="26">
+                <expr>
+                    <common-expression text="(f()). /*comment*/ *" start-index="7" stop-index="26">
+                        <children>
+                            <expression>
+                                <function function-name="f" text="f()" start-index="8" stop-index="10" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="33" stop-index="33" />
+        </from>
+        <comment start-index="14" stop-index="24" text="/*comment*/" />
+    </select>
+    <select sql-case-id="select_quoted_row_field_pg">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="(r).&quot;a&quot;" start-index="7" stop-index="13">
+                <expr>
+                    <common-expression text="(r).&quot;a&quot;" start-index="7" stop-index="13">
+                        <children>
+                            <expression>
+                                <column name="r" start-index="8" stop-index="8" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="20" stop-index="20" />
+        </from>
+    </select>
+    <select sql-case-id="select_row_field_chain_pg">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="(r).a.b" start-index="7" stop-index="13">
+                <expr>
+                    <common-expression text="(r).a.b" start-index="7" stop-index="13">
+                        <children>
+                            <expression>
+                                <column name="r" start-index="8" stop-index="8" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="20" stop-index="20" />
+        </from>
+    </select>
+    <select sql-case-id="select_whole_row_argument_pg">
+        <projections start-index="7" stop-index="12">
+            <expression-projection text="f(j.*)" start-index="7" stop-index="12">
+                <expr>
+                    <function function-name="f" text="f(j.*)" start-index="7" stop-index="12">
+                        <parameter>
+                            <column name="*" start-index="9" stop-index="11">
+                                <owner name="j" start-index="9" stop-index="9" />
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table alias="j" name="t" start-index="19" stop-index="24" />
+        </from>
+    </select>
 </sql-parser-test-cases>

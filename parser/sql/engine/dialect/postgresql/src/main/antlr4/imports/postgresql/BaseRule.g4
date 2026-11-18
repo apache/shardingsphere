@@ -374,6 +374,7 @@ unreservedWord
     | RELATIVE
     | RELEASE
     | RENAME
+    | REPACK
     | REPEATABLE
     | REPLACE
     | REPLICA

@@ -277,6 +277,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLNotifyStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLOpenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLReindexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLRepackStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLSecurityLabelStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLUnlistenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.accessmethod.PostgreSQLCreateAccessMethodStatementTestCase;
@@ -2068,6 +2069,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "cluster")
     private final List<PostgreSQLClusterStatementTestCase> clusterStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "repack")
+    private final List<PostgreSQLRepackStatementTestCase> repackStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-access-method")
     private final List<PostgreSQLCreateAccessMethodStatementTestCase> createAccessMethodTestCases = new LinkedList<>();

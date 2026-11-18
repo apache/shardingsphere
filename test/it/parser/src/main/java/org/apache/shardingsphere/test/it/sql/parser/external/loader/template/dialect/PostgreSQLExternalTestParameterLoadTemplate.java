@@ -59,19 +59,78 @@ import java.util.stream.IntStream;
  */
 public final class PostgreSQLExternalTestParameterLoadTemplate implements ExternalTestParameterLoadTemplate {
     
+    private static final Pattern SYNTAX_ERROR_POSITION = Pattern.compile(".* at character [0-9]+$");
+    
+    private static final Pattern SYNTAX_ERROR_LINE = Pattern.compile("LINE ([0-9]+): (.*)");
+    
     @Override
     public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
                                                      final List<String> resultFileContent, final String databaseType, final String reportType) {
         List<ScriptStatement> statements = new ScriptReader(sqlCaseFileContent, databaseType).read();
         int[] echoes = findEchoes(statements, resultFileContent);
-        Collection<ExternalSQLTestParameter> result = new ArrayList<>(statements.size());
+        List<ScriptStatement> sqlStatements = statements.stream().filter(each -> !each.sql.isEmpty()).collect(Collectors.toList());
+        int[] sqlEchoes = findEchoes(sqlStatements, resultFileContent);
+        int sqlIndex = 0;
+        Collection<ExternalSQLTestParameter> result = new ArrayList<>(sqlStatements.size());
         for (int i = 0; i < statements.size(); i++) {
             ScriptStatement statement = statements.get(i);
-            if (!statement.sql.isEmpty() && !hasNativeError(statement, i, echoes, resultFileContent)) {
-                result.add(new ExternalSQLTestParameter(sqlCaseFileName + (result.size() + 1), databaseType, statement.sql, reportType));
+            if (statement.sql.isEmpty()) {
+                continue;
             }
+            if (!hasNativeError(statement, i, echoes, resultFileContent)) {
+                ExternalSQLTestParameter parameter = new ExternalSQLTestParameter(sqlCaseFileName + (result.size() + 1), databaseType, statement.sql, reportType);
+                parameter.setNativeSyntaxError(hasNativeSyntaxError(statement, sqlIndex, sqlEchoes, resultFileContent));
+                result.add(parameter);
+            }
+            sqlIndex++;
         }
         return result;
+    }
+    
+    private boolean hasNativeSyntaxError(final ScriptStatement statement, final int index, final int[] echoes, final List<String> expectedLines) {
+        if (echoes[index] < 0 || !String.join("\n", statement.echo).contains(statement.sql)) {
+            return false;
+        }
+        int start = echoes[index] + statement.echo.size();
+        int end = IntStream.range(index + 1, echoes.length).map(each -> echoes[each]).filter(each -> each >= 0).findFirst().orElse(expectedLines.size());
+        if (start >= end) {
+            return false;
+        }
+        String error = expectedLines.get(start);
+        if (!error.startsWith("ERROR:  syntax error at or near ") && !"ERROR:  syntax error at end of input".equals(error)
+                && !"ERROR:  for a generated column, GENERATED ALWAYS must be specified".equals(error)) {
+            return false;
+        }
+        if (hasNestedDiagnostic(expectedLines, start + 1, end)) {
+            return false;
+        }
+        if (SYNTAX_ERROR_POSITION.matcher(error).matches()) {
+            return true;
+        }
+        return start + 1 < end && matchesSyntaxErrorLine(statement.echo, expectedLines.get(start + 1));
+    }
+    
+    private boolean matchesSyntaxErrorLine(final List<String> echo, final String line) {
+        Matcher matcher = SYNTAX_ERROR_LINE.matcher(line);
+        if (!matcher.matches()) {
+            return false;
+        }
+        int index = Integer.parseInt(matcher.group(1)) - 1;
+        String snippet = matcher.group(2).replaceAll("^\\.\\.\\.|\\.\\.\\.$", "");
+        return index >= 0 && index < echo.size() && !snippet.isEmpty() && echo.get(index).contains(snippet);
+    }
+    
+    private boolean hasNestedDiagnostic(final List<String> expectedLines, final int start, final int end) {
+        for (int i = start; i < end; i++) {
+            String line = expectedLines.get(i);
+            if (line.startsWith("QUERY:") || line.startsWith("CONTEXT:")) {
+                return true;
+            }
+            if (!line.startsWith("LINE ") && !line.startsWith(" ") && !line.startsWith("DETAIL:") && !line.startsWith("HINT:")) {
+                break;
+            }
+        }
+        return false;
     }
     
     private int[] findEchoes(final List<ScriptStatement> statements, final List<String> expectedLines) {

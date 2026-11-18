@@ -1221,6 +1221,18 @@ close
     : CLOSE (cursorName | ALL)
     ;
 
+repack
+    : REPACK repackOptions? (qualifiedName (LP_ columnList RP_)? (USING INDEX indexName?)? | USING INDEX)?
+    ;
+
+repackOptions
+    : LP_ repackOption (COMMA_ repackOption)* RP_
+    ;
+
+repackOption
+    : (nonReservedWord | analyzeKeyword) (booleanOrString | numericOnly)?
+    ;
+
 cluster
     : CLUSTER clusterVerboseSpecification? (tableName clusterIndexSpecification? | indexName ON tableName)?
     ;
