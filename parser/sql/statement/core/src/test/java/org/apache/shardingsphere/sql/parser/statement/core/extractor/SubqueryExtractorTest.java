@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.C
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
@@ -81,16 +80,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SubqueryExtractorTest {
-    
-    @Test
-    void assertExtractFieldBaseSubquery() {
-        SubquerySegment subquery = new SubquerySegment(1, 17, SelectStatement.builder().projections(new ProjectionsSegment(8, 8)).build(), "SELECT r FROM t");
-        FieldAccessExpression expression = new FieldAccessExpression(0, 20, new SubqueryExpressionSegment(subquery),
-                new ColumnSegment(20, 20, new IdentifierValue("a")), "((SELECT r FROM t).a)");
-        ProjectionsSegment projections = new ProjectionsSegment(0, 20);
-        projections.getProjections().add(new ExpressionProjectionSegment(0, 20, expression.getText(), expression));
-        assertThat(SubqueryExtractor.extractSubquerySegments(SelectStatement.builder().projections(projections).build(), false), contains(subquery));
-    }
     
     @Test
     void assertExtractSubquerySegmentsWithFunctionFilter() {

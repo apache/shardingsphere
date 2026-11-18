@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Case
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -298,9 +297,6 @@ public final class TableExtractor {
         }
         if (expressionSegment instanceof CommonExpressionSegment) {
             extractTablesFromExpressions(((CommonExpressionSegment) expressionSegment).getChildren(), tableScope);
-        }
-        if (expressionSegment instanceof FieldAccessExpression) {
-            extractTablesFromExpression(((FieldAccessExpression) expressionSegment).getExpression(), tableScope);
         }
         if (expressionSegment instanceof UnaryOperationExpression) {
             extractTablesFromExpression(((UnaryOperationExpression) expressionSegment).getExpression(), tableScope);

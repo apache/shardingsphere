@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.C
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
@@ -85,13 +84,6 @@ import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
 class ColumnExtractorTest {
-    
-    @Test
-    void assertExtractFieldBaseColumn() {
-        ColumnSegment column = new ColumnSegment(1, 1, new IdentifierValue("r"));
-        FieldAccessExpression expression = new FieldAccessExpression(0, 4, column, new ColumnSegment(4, 4, new IdentifierValue("a")), "(r).a");
-        assertThat(ColumnExtractor.extract(expression), contains(column));
-    }
     
     @Test
     void assertExtractFunctionFilterColumns() {

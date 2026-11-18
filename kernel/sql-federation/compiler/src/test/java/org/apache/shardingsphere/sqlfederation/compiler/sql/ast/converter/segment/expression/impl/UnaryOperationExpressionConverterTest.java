@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segment.expression.impl;
 
 import org.apache.calcite.sql.SqlBasicCall;
-import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.operator.common.SQLExtensionOperatorTable;
@@ -34,24 +32,12 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ExpressionConverter.class)
 class UnaryOperationExpressionConverterTest {
-    
-    @Test
-    void assertConvertRowExpansion() {
-        LiteralExpressionSegment expression = new LiteralExpressionSegment(0, 0, 1);
-        SqlNode expressionNode = mock(SqlNode.class);
-        when(ExpressionConverter.convert(expression)).thenReturn(Optional.of(expressionNode));
-        SqlBasicCall actual = UnaryOperationExpressionConverter.convert(new UnaryOperationExpression(0, 3, expression, ".*", "(1).*"));
-        assertThat(actual.getOperator(), is(SqlStdOperatorTable.DOT));
-        assertThat(actual.getOperandList().get(0), is(expressionNode));
-        assertTrue(((SqlIdentifier) actual.getOperandList().get(1)).isStar());
-    }
     
     @Test
     void assertConvertSupportedOperator() {

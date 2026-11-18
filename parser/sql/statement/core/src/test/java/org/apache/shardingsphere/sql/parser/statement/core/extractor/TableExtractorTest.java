@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.C
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -98,18 +97,6 @@ import static org.mockito.Mockito.when;
 class TableExtractorTest {
     
     private final TableExtractor tableExtractor = new TableExtractor();
-    
-    @Test
-    void assertExtractFieldBaseSubqueryTable() {
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(22, 22, new IdentifierValue("t")));
-        SelectStatement inner = SelectStatement.builder().from(table).projections(new ProjectionsSegment(15, 15)).build();
-        FieldAccessExpression expression = new FieldAccessExpression(7, 25, new SubqueryExpressionSegment(new SubquerySegment(8, 23, inner, "SELECT r FROM t")),
-                new ColumnSegment(25, 25, new IdentifierValue("a")), "((SELECT r FROM t).a)");
-        ProjectionsSegment projections = new ProjectionsSegment(7, 25);
-        projections.getProjections().add(new ExpressionProjectionSegment(7, 25, expression.getText(), expression));
-        tableExtractor.extractTablesFromSelect(SelectStatement.builder().projections(projections).build());
-        assertThat(tableExtractor.getRewriteTables(), contains(table));
-    }
     
     @Test
     void assertExtractTablesFromFunctionFilter() {

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExtractArgExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FieldAccessExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
@@ -37,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowReferenceExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
@@ -78,7 +76,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExistsSubquery;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExtractArgExpression;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedFieldAccessExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedInExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalDayToSecondExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedIntervalExpression;
@@ -92,7 +89,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedQuantifySubqueryExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedRowExpression;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedRowReferenceExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedUnaryOperationExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedValuesExpression;
@@ -624,19 +620,6 @@ public final class ExpressionAssert {
         }
     }
     
-    private static void assertFieldAccessExpression(final SQLCaseAssertContext assertContext, final FieldAccessExpression actual, final ExpectedFieldAccessExpression expected) {
-        assertNotNull(expected, assertContext.getText("Expected field access expression should exist."));
-        assertExpression(assertContext, actual.getExpression(), expected.getExpr());
-        ColumnAssert.assertIs(assertContext, actual.getField(), expected.getField());
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
-    }
-    
-    private static void assertRowReferenceExpression(final SQLCaseAssertContext assertContext, final RowReferenceExpression actual, final ExpectedRowReferenceExpression expected) {
-        assertNotNull(expected, assertContext.getText("Expected row reference expression should exist."));
-        ColumnAssert.assertIs(assertContext, actual.getQualifiers(), expected.getQualifiers());
-        SQLSegmentAssert.assertIs(assertContext, actual, expected);
-    }
-    
     /**
      * Assert unary operation expression.
      *
@@ -807,10 +790,6 @@ public final class ExpressionAssert {
             assertMultisetExpression(assertContext, (MultisetExpression) actual, expected.getMultisetExpression());
         } else if (actual instanceof RowExpression) {
             assertRowExpression(assertContext, (RowExpression) actual, expected.getRowExpression());
-        } else if (actual instanceof FieldAccessExpression) {
-            assertFieldAccessExpression(assertContext, (FieldAccessExpression) actual, expected.getFieldAccessExpression());
-        } else if (actual instanceof RowReferenceExpression) {
-            assertRowReferenceExpression(assertContext, (RowReferenceExpression) actual, expected.getRowReferenceExpression());
         } else if (actual instanceof UnaryOperationExpression) {
             assertUnaryOperationExpression(assertContext, (UnaryOperationExpression) actual, expected.getUnaryOperationExpression());
         } else if (actual instanceof XmlElementFunctionSegment) {
