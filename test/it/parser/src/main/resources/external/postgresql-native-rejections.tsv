@@ -24,6 +24,7 @@ aggregates	fd20e268316deddc738fc9485587a33392cbf09915c7d354ea988cd12dcfc906	NATI
 aggregates	e07b61d2d78bf59d73329c2e7e4908abb9788655705034bdd26dba163087631a	NATIVE_NEGATIVE_ACCEPTED	select max(min(unique1)) from tenk1;
 aggregates	6ed85d7592f863532b49e3489256252abc2c8d5450e1ae19c6d759e55bb74945	NATIVE_NEGATIVE_ACCEPTED	select max(unique1) filter (where bool_or(ten > 0)) from tenk1;
 aggregates	c9c58c6ddf40b30850688332a2da63308cba79196b7202684130ab7a2869c31f	NATIVE_NEGATIVE_ACCEPTED	select max(unique1) filter (where sum(ten) > 0) from tenk1;
+aggregates	deb9993b6e3015f19e9ad56b3384a64c0562fe6409f4a0f50521d3bcc4db1aa9	NATIVE_REJECTION	select p, percentile_cont(p order by p) within group (order by x)  -- error
 aggregates	7f3e4fd65243e216b2ad8ac40ee68e3c05183458e674d7dc9c6707d32a9da3f3	NATIVE_NEGATIVE_ACCEPTED	select rank(sum(x)) within group (order by x) from generate_series(1,5) x;
 alter_table	ea6b488030f9c315eec7bf90a5db9ad15f3d755af39380c934583735c10aa487	NATIVE_NEGATIVE_ACCEPTED	alter table atacc1 SET WITH OIDS;
 collate	021e72a6ce35ff33b99608290f9a3a619d5d29a4f3504d0c88fb8e0f780b90e6	NATIVE_REJECTION	SELECT CAST('42' AS text COLLATE "C");

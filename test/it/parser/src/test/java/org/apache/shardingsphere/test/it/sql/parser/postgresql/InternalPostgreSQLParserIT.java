@@ -282,6 +282,28 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 Arguments.of("(ORDER BY 1.5) FILTER (WHERE $1)", Collections.singletonList(0)));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getOrderedSetSortExpressions")
+    void assertOrderedSetFilterSortExpression(final String sortExpression, final Class<? extends ExpressionSegment> expressionType) {
+        String sql = "SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY " + sortExpression + " DESC NULLS LAST) FILTER (WHERE active) FROM sales";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        CommonExpressionSegment actualExpression = (CommonExpressionSegment) ((ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next()).getExpr();
+        assertThat(actualExpression.getChildren(), contains(isA(FunctionSegment.class), isA(expressionType), isA(ColumnSegment.class)));
+        ExpressionSegment actualSortExpression = new ArrayList<>(actualExpression.getChildren()).get(1);
+        assertThat(sql.substring(actualSortExpression.getStartIndex(), actualSortExpression.getStopIndex() + 1), is(sortExpression));
+    }
+    
+    private static Stream<Arguments> getOrderedSetSortExpressions() {
+        return Stream.of(Arguments.of("price", ColumnSegment.class), Arguments.of("(SELECT max(price) FROM prices)", SubqueryExpressionSegment.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"DISTINCT 0.5", "VARIADIC ARRAY[1]", "0.5, VARIADIC ARRAY[1]", "0.5 ORDER BY price"})
+    void assertInvalidOrderedSetArguments(final String arguments) {
+        String sql = "SELECT percentile_cont(" + arguments + ") WITHIN GROUP (ORDER BY price) FILTER (WHERE active) FROM sales";
+        assertThrows(SQLParsingException.class, () -> new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+    }
+    
     @Test
     void assertFilterInsideFunctionSubquery() {
         String sql = "SELECT ABS((SELECT SUM(?) FILTER (WHERE ?)))";

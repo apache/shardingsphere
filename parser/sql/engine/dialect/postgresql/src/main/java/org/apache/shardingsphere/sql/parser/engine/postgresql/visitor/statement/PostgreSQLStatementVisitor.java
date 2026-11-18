@@ -714,9 +714,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return visit(ctx.functionExprCommonSubexpr());
         }
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
+        List<ExpressionSegment> children = Collections.emptyList();
         if (null != ctx.withinGroupClause()) {
-            for (SortbyContext each : ctx.withinGroupClause().sortClause().sortbyList().sortby()) {
-                visit(each.aExpr());
+            Collection<SortbyContext> sortItems = ctx.withinGroupClause().sortClause().sortbyList().sortby();
+            children = new ArrayList<>(sortItems.size() + 2);
+            children.add((ExpressionSegment) result);
+            for (SortbyContext each : sortItems) {
+                children.add((ExpressionSegment) visit(each.aExpr()));
             }
         }
         if (null == ctx.filterClause()) {
@@ -725,7 +729,13 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         ExpressionSegment filter = (ExpressionSegment) visit(ctx.filterClause().aExpr());
         if (null == ctx.jsonAggregateFunction()) {
             ExpressionSegment aggregate = (ExpressionSegment) (null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result));
-            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), Arrays.asList(aggregate, filter));
+            if (children.isEmpty()) {
+                children = Arrays.asList(aggregate, filter);
+            } else {
+                children.set(0, aggregate);
+                children.add(filter);
+            }
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
         }
         FunctionSegment function = (FunctionSegment) result;
         FunctionSegment filtered = createFunctionSegment(ctx, function, null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause()));
