@@ -105,16 +105,20 @@ class ReadwriteSplittingRuleStatementCheckerTest {
         ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), transactionalReadQueryStrategy, null);
         assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
-
+    
     @Test
     void assertCheckCreationWithValidTransactionalReadQueryStrategyUnderTurkishLocale() {
         Locale defaultLocale = Locale.getDefault();
+        Locale displayLocale = Locale.getDefault(Locale.Category.DISPLAY);
+        Locale formatLocale = Locale.getDefault(Locale.Category.FORMAT);
         try {
             Locale.setDefault(Locale.forLanguageTag("tr-TR"));
             ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "primary", null);
             assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
         } finally {
             Locale.setDefault(defaultLocale);
+            Locale.setDefault(Locale.Category.DISPLAY, displayLocale);
+            Locale.setDefault(Locale.Category.FORMAT, formatLocale);
         }
     }
     
