@@ -87,3 +87,10 @@ columns:
     name: MON$STATEMENT_TIMER
     primaryKey: false
     visible: true
+  MON$COMPILED_STATEMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$COMPILED_STATEMENT_ID
+    primaryKey: false
+    visible: true

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -51,11 +52,11 @@ import static org.mockito.Mockito.when;
 
 class PushDownSQLExecutionCheckEngineTest {
     
-    @ParameterizedTest(name = "{0}: storage types {1}, execution units {2}")
-    @MethodSource("getAllowedSelects")
-    void assertCheckWithAllowedSelect(final String protocolType, final Collection<String> storageTypes, final Collection<Integer> routedUnits) {
+    @ParameterizedTest(name = "{0}, protocol {1}: storage types {2}, execution units {3}")
+    @MethodSource("getAllowedExecutions")
+    void assertCheckWithAllowedExecution(final String operation, final String protocolType, final Collection<String> storageTypes, final Collection<Integer> routedUnits) {
         ShardingSphereDatabase database = createDatabase(protocolType, storageTypes);
-        ExecutionContext executionContext = createExecutionContext(mock(SelectStatement.class), routedUnits);
+        ExecutionContext executionContext = createExecutionContext("SELECT".equals(operation) ? mock(SelectStatement.class) : mock(AnalyzeTableStatement.class), routedUnits);
         assertDoesNotThrow(() -> new PushDownSQLExecutionCheckEngine().check(database, executionContext));
     }
     
@@ -86,40 +87,44 @@ class PushDownSQLExecutionCheckEngineTest {
         return result;
     }
     
-    private static Stream<Arguments> getAllowedSelects() {
-        return Stream.of(
-                Arguments.of("MySQL", Arrays.asList("MySQL", "PostgreSQL"), Collections.emptyList()),
-                Arguments.of("MySQL", Collections.singletonList("MySQL"), Collections.singletonList(0)),
-                Arguments.of("MySQL", Arrays.asList("MySQL", "MySQL"), Arrays.asList(0, 1)),
-                Arguments.of("PostgreSQL", Arrays.asList("MySQL", "PostgreSQL", "MySQL"), Arrays.asList(0, 2)),
-                Arguments.of("MySQL", Arrays.asList("MySQL", "PostgreSQL"), Arrays.asList(1, 1)),
-                Arguments.of("PostgreSQL", Arrays.asList("Oracle", "Oracle"), Arrays.asList(0, 1)));
+    private static Stream<Arguments> getAllowedExecutions() {
+        return Stream.of("SELECT", "DAL").flatMap(operation -> Stream.of(
+                Arguments.of(operation, "MySQL", Arrays.asList("MySQL", "PostgreSQL"), Collections.emptyList()),
+                Arguments.of(operation, "MySQL", Collections.singletonList("MySQL"), Collections.singletonList(0)),
+                Arguments.of(operation, "MySQL", Arrays.asList("MySQL", "MySQL"), Arrays.asList(0, 1)),
+                Arguments.of(operation, "PostgreSQL", Arrays.asList("MySQL", "PostgreSQL", "MySQL"), Arrays.asList(0, 2)),
+                Arguments.of(operation, "MySQL", Arrays.asList("MySQL", "PostgreSQL"), Arrays.asList(1, 1)),
+                Arguments.of(operation, "PostgreSQL", Arrays.asList("Oracle", "Oracle"), Arrays.asList(0, 1))));
     }
     
-    @ParameterizedTest(name = "{0} and {1}")
+    @ParameterizedTest(name = "{0}: {1} and {2}")
     @MethodSource("getRejectedStorageTypes")
-    void assertCheckWithMixedStorageTypes(final String firstStorageType, final String secondStorageType) {
+    void assertCheckWithMixedStorageTypes(final String operation, final String firstStorageType, final String secondStorageType) {
         ShardingSphereDatabase database = createDatabase("MySQL", Arrays.asList(firstStorageType, secondStorageType));
-        ExecutionContext executionContext = createExecutionContext(mock(SelectStatement.class), Arrays.asList(0, 1));
+        ExecutionContext executionContext = createExecutionContext("SELECT".equals(operation) ? mock(SelectStatement.class) : mock(AnalyzeTableStatement.class), Arrays.asList(0, 1));
         SQLException actual = assertThrows(SQLException.class, () -> new PushDownSQLExecutionCheckEngine().check(database, executionContext));
-        assertThat(actual.getMessage(), is("Unsupported SQL operation: SELECT across different storage database types in push down execution."));
+        assertThat(actual.getMessage(), is("Unsupported SQL operation: " + operation + " across different storage database types in push down execution."));
         assertThat(actual.getSQLState(), is("0A000"));
         assertThat(actual.getErrorCode(), is(30001));
     }
     
     private static Stream<Arguments> getRejectedStorageTypes() {
-        return Stream.of(Arguments.of("MySQL", "PostgreSQL"), Arguments.of("MySQL", "MariaDB"), Arguments.of("Oracle", "SQLServer"));
+        return Stream.of("SELECT", "DAL").flatMap(operation -> Stream.of(
+                Arguments.of(operation, "MySQL", "PostgreSQL"),
+                Arguments.of(operation, "MySQL", "MariaDB"),
+                Arguments.of(operation, "PostgreSQL", "openGauss"),
+                Arguments.of(operation, "Oracle", "SQLServer")));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("getNonSelectStatements")
-    void assertCheckWithNonSelect(final SQLStatement sqlStatement) {
+    @MethodSource("getOtherStatements")
+    void assertCheckWithOtherStatement(final SQLStatement sqlStatement) {
         ShardingSphereDatabase database = createDatabase("MySQL", Arrays.asList("MySQL", "PostgreSQL"));
         ExecutionContext executionContext = createExecutionContext(sqlStatement, Arrays.asList(0, 1));
         assertDoesNotThrow(() -> new PushDownSQLExecutionCheckEngine().check(database, executionContext));
     }
     
-    private static Stream<SQLStatement> getNonSelectStatements() {
+    private static Stream<SQLStatement> getOtherStatements() {
         return Stream.of(mock(InsertStatement.class), mock(CreateTableStatement.class), mock(CommitStatement.class));
     }
     

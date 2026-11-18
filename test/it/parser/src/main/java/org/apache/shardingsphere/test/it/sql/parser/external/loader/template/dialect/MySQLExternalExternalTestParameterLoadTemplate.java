@@ -41,9 +41,9 @@ public final class MySQLExternalExternalTestParameterLoadTemplate implements Ext
     
     private static final int MYSQL_8_0_MAX_VERSION = 80099;
     
-    private static final Pattern VERSION_COMMENT_PATTERN = Pattern.compile("/\\*!([0-9]{5}).*?\\*/", Pattern.DOTALL);
+    private static final Pattern VERSION_COMMENT_PATTERN = Pattern.compile("/\\*!(\\d{5}).*?\\*/", Pattern.DOTALL);
     
-    private static final Pattern VERSION_COMMENT_START_PATTERN = Pattern.compile("/\\*!([0-9]{5})");
+    private static final Pattern VERSION_COMMENT_START_PATTERN = Pattern.compile("/\\*!(\\d{5})");
     
     private static final Pattern DELIMITER_COMMAND_PATTERN = Pattern.compile("(?i)(?:--\\s*)?delimiter\\s+(.+)");
     

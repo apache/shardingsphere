@@ -334,6 +334,7 @@
     <sql-case id="select_with_substring_function" value="SELECT ProductID, Name, ProductNumber FROM [Production].[Product] WHERE SUBSTRING(ProductNumber, 0, 4) =  'HN-'" db-types="SQLServer"/>
     <sql-case id="select_with_not_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS NOT DISTINCT FROM NULL" db-types="SQLServer"/>
     <sql-case id="select_with_distinct_from" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17;" db-types="SQLServer"/>
+    <sql-case id="select_with_distinct_from_and" value="SELECT * FROM #SampleTempTable WHERE id IS DISTINCT FROM 17 AND order_id = 1" db-types="SQLServer"/>
     <sql-case id="select_with_contains_function" value="SELECT product_id FROM products WHERE CONTAINS(product_description, '&quot;Snap Happy 100EZ&quot; OR FORMSOF(THESAURUS,&quot;Snap Happy&quot;) OR &quot;100EZ&quot;') AND product_cost &lt; 200" db-types="SQLServer"/>
     <sql-case id="select_with_default_schema" value="SELECT has_backup_checksums, database_name, * FROM msdb..backupset" db-types="SQLServer"/>
     <sql-case id="select_from_dbms_table" value="select * from table(dbms_xplan.display);" db-types="Oracle"/>
@@ -651,4 +652,43 @@
     <sql-case id="select_key_alias_without_as_firebird" value="SELECT order_id KEY FROM t_order" db-types="Firebird" />
     <sql-case id="select_text_alias_without_as_firebird" value="SELECT order_id TEXT FROM t_order" db-types="Firebird" />
     <sql-case id="select_comment_alias_without_as_firebird" value="SELECT order_id COMMENT FROM t_order" db-types="Firebird" />
+    <sql-case id="select_operator_prefix_aliases_pg" value="SELECT ~~a, !~~a, ~~*a, !~~*a, &amp;&amp;a, ~*a, !~a, !~*a FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_fixed_generic_operator_symbols_pg" value="SELECT a == b, a &lt;=&gt; b FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_operator_backtick_pg" value="SELECT a ` b, `a FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_prefix_alias_parameter_precedence_pg" value="SELECT ~~$1 + $2" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_json_arrayagg_function_table_pg" value="SELECT * FROM JSON_ARRAYAGG(1 RETURNING json) AS agg" db-types="PostgreSQL" />
+    <sql-case id="select_prefix_alias_between_pg" value="SELECT 1 BETWEEN ~~$1 + $2 AND 3" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_fixed_operator_left_associative_pg" value="SELECT `1 ` 2, &lt;=&gt;1 &lt;=&gt; 2" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_fixed_operator_between_left_associative_pg" value="SELECT 0 BETWEEN `1 ` 2 AND 3, 0 BETWEEN &lt;=&gt;1 &lt;=&gt; 2 AND 3" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_mixed_symbolic_operator_precedence_pg" value="SELECT $1 &amp;&amp; $2 &lt;=&gt; $3, $4 &lt;=&gt; $5 &amp; $6, $7 ~~ $8 &lt;=&gt; $9, @ $10 @ $11" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_mixed_symbolic_operator_between_pg" value="SELECT 0 BETWEEN $1 &amp;&amp; $2 &lt;=&gt; $3 AND 4" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_parenthesized_column_simple_oracle" value="SELECT (foo_id) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_qualified_oracle" value="SELECT (t.foo_id) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_nested_oracle" value="SELECT ((foo_id)) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_deep_nested_oracle" value="SELECT (((foo_id))) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_quoted_oracle" value='SELECT ("foo_id") FROM foo_tbl t' db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_spaced_oracle" value="SELECT ( foo_id ) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_full_width_compatibility_oracle" value="SELECT （foo_id） FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_unparenthesized_oracle" value="SELECT foo_id FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_calculation_oracle" value="SELECT (foo_id + 1) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_literal_oracle" value="SELECT (1) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_function_oracle" value="SELECT (ABS(foo_id)) FROM foo_tbl t" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_parenthesized_column_list_oracle" value="SELECT foo_id FROM foo_tbl WHERE (foo_id, bar_id) = ((1, 2))" db-types="Oracle" case-types="LITERAL" />
+    <sql-case id="select_json_aggregate_parameters_pg" value="SELECT JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_json_arrayagg_filter_window_pg" value="SELECT JSON_ARRAYAGG(order_id RETURNING jsonb) FILTER (WHERE user_id &gt; 0) OVER (PARTITION BY status) FROM t_order" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_json_table_default_plan_pg" value="SELECT * FROM JSON_TABLE('{}', '$' COLUMNS (a int) PLAN DEFAULT (INNER, CROSS)) jt" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_json_table_plan_pg" value="SELECT * FROM JSON_TABLE('{}', '$' AS root COLUMNS (NESTED '$.a[*]' AS child COLUMNS (a int)) PLAN (root OUTER child) EMPTY ON ERROR) jt" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_lag_ignore_nulls_markers_pg" value="SELECT lag($1) IGNORE NULLS OVER (ORDER BY $2)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_nth_value_respect_nulls_pg" value="SELECT nth_value(a, 2) RESPECT NULLS OVER w FROM foo_table WINDOW w AS (ORDER BY a)" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_continued_string_pg" value="SELECT 'first line'&#10;' - next line'&#10;&#9;' - third line'&#10;&#9;AS &quot;Three lines to one&quot;;" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_commented_continued_string_pg" value="SELECT 'a' -- 'ignored'&#10;'b'" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_first_value_respect_nulls_pg" value="SELECT first_value(order_id) RESPECT NULLS OVER (ORDER BY user_id) FROM t_order" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_qualified_lag_ignore_nulls_pg" value="SELECT pg_catalog.lag(order_id) IGNORE NULLS OVER (ORDER BY user_id) FROM t_order" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_quoted_commented_continued_string_pg" value="SELECT 'a''b' -- 'ignored'&#10;'c'" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_crlf_commented_continued_string_pg" value="SELECT 'a'&#13;&#10;-- 'ignored'&#13;&#10;'b'" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_expression_keywords_as_identifiers_pg" value="SELECT ignore, respect, plan FROM foo_table" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="select_postgresql_json_arrayagg_filter_without_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_postgresql_json_arrayagg_filter_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_json_objectagg_filter_parameter_pg" value="SELECT JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_json_aggregate_filter_window_parameters_pg" value="SELECT JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

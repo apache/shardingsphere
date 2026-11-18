@@ -139,7 +139,7 @@ Related resources created by the Operator can also be found at:
 
 # Configure ShardingSphere-Proxy for Data Encryption Capabilities
 
-ShardingSphere supports DistSQL to help DBAs quickly set up and run storage node registration, rule configuration and more. You can find out more [here](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/).
+ShardingSphere supports DistSQL to help DBAs quickly set up and run storage node registration, rule configuration and more. You can find out more [here](https://shardingsphere.apache.org/document/current/en/user-manual/distsql/).
 
 As enterprises continue to transform digitally, increasing amounts of user data are being communicated between all kinds of businesses. Various countries and regions have introduced regulations and frameworks to ensure data security, such as the EU's GDPR and others.
 
@@ -169,7 +169,7 @@ Followings are examples of data encryption:
 
 6. Data source physical table query
 
-You can find further details of the encryption features [here](https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/distsql/usage/encrypt-rule/).
+You can find further details of the encryption features [here](https://shardingsphere.apache.org/document/current/en/user-manual/distsql/usage/encrypt-rule/).
 
 # Good news! Our new ShardingSphere-on-Cloud is now live!
 

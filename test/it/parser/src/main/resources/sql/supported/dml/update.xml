@@ -99,4 +99,5 @@
     <sql-case id="update_array_parameter_pg" value="UPDATE t_order SET status[$1] = $2" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="update_member_target_pg" value="UPDATE t_order SET status.value = 'foo'" db-types="PostgreSQL" />
     <sql-case id="update_indirection_parameters_postgresql_regression" value="UPDATE foo SET items[?] = ?, span[?:?] = ?" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="update_ignore_sequential_values_mysql" value="UPDATE IGNORE t_order SET user_id = ?, merchant_id = user_id WHERE order_id = ?" db-types="MySQL" case-types="PLACEHOLDER" />
 </sql-cases>

@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.checker.ShardingRouteContextCheckerFactory;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
@@ -31,6 +36,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ShardingRouteEngineFactory;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
@@ -53,8 +59,9 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> 
             return new RouteContext();
         }
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        ShardingConditions shardingConditions = createShardingConditions(queryContext, globalRuleMetaData, database, rule);
-        if (sqlStatement instanceof DMLStatement && shardingConditions.isNeedMerge()) {
+        SQLStatementContext routingSQLStatementContext = getRoutingSQLStatementContext(queryContext.getSqlStatementContext(), rule, logicTableNames);
+        ShardingConditions shardingConditions = createShardingConditions(routingSQLStatementContext, queryContext.getParameters(), globalRuleMetaData, database, rule);
+        if (routingSQLStatementContext.getSqlStatement() instanceof DMLStatement && shardingConditions.isNeedMerge()) {
             shardingConditions.merge();
         }
         RouteContext result = ShardingRouteEngineFactory.newInstance(rule, database, queryContext, shardingConditions, logicTableNames, props).route(rule);
@@ -62,16 +69,34 @@ public final class ShardingSQLRouter implements EntranceSQLRouter<ShardingRule> 
         return result;
     }
     
-    private ShardingConditions createShardingConditions(final QueryContext queryContext,
-                                                        final RuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
+    private SQLStatementContext getRoutingSQLStatementContext(final SQLStatementContext sqlStatementContext, final ShardingRule rule, final Collection<String> logicTableNames) {
+        if (!(sqlStatementContext instanceof ExplainStatementContext) || !"MySQL".equals(sqlStatementContext.getSqlStatement().getDatabaseType().getType())) {
+            return sqlStatementContext;
+        }
+        SQLStatementContext explainableSQLStatementContext = ((ExplainStatementContext) sqlStatementContext).getExplainableSQLStatementContext();
+        if (!(explainableSQLStatementContext instanceof SelectStatementContext) || 1 != logicTableNames.size() || 1 != explainableSQLStatementContext.getTablesContext().getSimpleTables().size()
+                || ((SelectStatementContext) explainableSQLStatementContext).isContainsJoinQuery()) {
+            return sqlStatementContext;
+        }
+        return hasShardingHint(rule, logicTableNames.iterator().next()) ? explainableSQLStatementContext : sqlStatementContext;
+    }
+    
+    private boolean hasShardingHint(final ShardingRule rule, final String logicTableName) {
+        ShardingTable shardingTable = rule.getShardingTable(logicTableName);
+        boolean databaseHint = rule.getDatabaseShardingStrategyConfiguration(shardingTable) instanceof HintShardingStrategyConfiguration
+                && !(HintManager.isDatabaseShardingOnly() ? HintManager.getDatabaseShardingValues() : HintManager.getDatabaseShardingValues(logicTableName)).isEmpty();
+        return databaseHint || rule.getTableShardingStrategyConfiguration(shardingTable) instanceof HintShardingStrategyConfiguration && !HintManager.getTableShardingValues(logicTableName).isEmpty();
+    }
+    
+    private ShardingConditions createShardingConditions(final SQLStatementContext sqlStatementContext, final List<Object> params, final RuleMetaData globalRuleMetaData,
+                                                        final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
-        if (queryContext.getSqlStatementContext().getSqlStatement() instanceof DMLStatement
-                || queryContext.getSqlStatementContext().getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
-            shardingConditions = new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(queryContext.getSqlStatementContext(), queryContext.getParameters());
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement || sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()) {
+            shardingConditions = new ShardingConditionEngine(globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, params);
         } else {
             shardingConditions = Collections.emptyList();
         }
-        return new ShardingConditions(shardingConditions, queryContext.getSqlStatementContext(), rule);
+        return new ShardingConditions(shardingConditions, sqlStatementContext, rule);
     }
     
     private void checkRouteContext(final QueryContext queryContext, final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props,

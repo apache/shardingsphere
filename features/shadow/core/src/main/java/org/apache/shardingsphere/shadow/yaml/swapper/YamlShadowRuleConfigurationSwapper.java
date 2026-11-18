@@ -55,8 +55,6 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
         result.getTables().putAll(swapToYamlShadowTables(data.getTables()));
         result.getShadowAlgorithms().putAll(swapToYamlShadowAlgorithms(data.getShadowAlgorithms()));
         result.setDefaultShadowAlgorithmName(data.getDefaultShadowAlgorithmName());
-        setTableDefaultShadowDataSource(data.getTables(), data.getDataSources());
-        setTableDefaultShadowAlgorithm(data.getTables(), data.getDefaultShadowAlgorithmName());
         return result;
     }
     
@@ -91,7 +89,14 @@ public final class YamlShadowRuleConfigurationSwapper implements YamlRuleConfigu
         return dataSources.entrySet().stream().map(entry -> swapToDataSource(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private ShadowDataSourceConfiguration swapToDataSource(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
+    /**
+     * Swap a named YAML data source to object.
+     *
+     * @param name data source name
+     * @param yamlConfig YAML data source configuration
+     * @return data source configuration
+     */
+    public ShadowDataSourceConfiguration swapToDataSource(final String name, final YamlShadowDataSourceConfiguration yamlConfig) {
         return new ShadowDataSourceConfiguration(name, yamlConfig.getProductionDataSourceName(), yamlConfig.getShadowDataSourceName());
     }
     

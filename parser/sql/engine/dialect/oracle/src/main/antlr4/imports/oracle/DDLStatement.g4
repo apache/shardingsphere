@@ -414,7 +414,7 @@ inlineRefConstraint
     ;
 
 virtualColumnDefinition
-    : columnName dataType? (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
+    : columnName dataType? visibleClause (GENERATED ALWAYS)? AS LP_ expr RP_ VIRTUAL? inlineConstraint*
     ;
 
 outOfLineConstraint

@@ -156,7 +156,6 @@ jobs:
       - uses: ./.github/actions/setup-build-environment
       - name: Run Dependency Convergence Check
         run: |
-          sed -i '/<requireMavenVersion>/i \                                    <dependencyConvergence/>' pom.xml
           ./mvnw clean install -DskipTests -T1C -Dmaven.enforcer.fail=true
 
   check-owasp:

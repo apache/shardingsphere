@@ -26,12 +26,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtra
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -54,6 +56,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.Fe
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -74,6 +77,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -176,6 +180,15 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         assertThat(actualRoundTrip.getTables().iterator().next().getTableName().getIdentifier().getValue(), is("foo\"\"table"));
     }
     
+    @Test
+    void assertSelectWithLargeInList() {
+        Collection<String> expectedValues = IntStream.rangeClosed(1, 100000).mapToObj(String::valueOf).collect(Collectors.toList());
+        String sql = "SELECT * FROM foo_table WHERE foo_id IN (" + String.join(", ", expectedValues) + ")";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ListExpression actualValues = (ListExpression) ((InExpression) actual.getWhere().get().getExpr()).getRight();
+        assertThat(actualValues.getItems().stream().map(each -> sql.substring(each.getStartIndex(), each.getStopIndex() + 1)).collect(Collectors.toList()), is(expectedValues));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getQuotedPrivilegeObjectCases")
     void assertQuotedPrivilegeObjectRoundTrip(final String name, final String sqlPrefix, final String objectName, final String sqlSuffix, final Collection<String> expectedIdentifiers) {
@@ -197,6 +210,17 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getInvalidJsonTablePlans")
+    void assertInvalidJsonTablePlan(final String plan) {
+        String sql = "SELECT * FROM JSON_TABLE('{}', '$' AS root COLUMNS (id INT PATH '$.id') PLAN (" + plan + ")) AS jt";
+        assertThrows(SQLParsingException.class, () -> new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+    }
+    
+    private static Stream<String> getInvalidJsonTablePlans() {
+        return Stream.of("root UNION child CROSS other", "root CROSS child UNION other", "(root)");
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getUnsupportedFilterExpressions")
     void assertUnsupportedFilter(final String expression) {
         String sql = "SELECT " + expression;
@@ -209,9 +233,6 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 "COUNT(*) FILTER (WHERE FALSE)",
                 "COUNT(DISTINCT ?) FILTER (WHERE ?)",
                 "SUM(?) FILTER (WHERE ?) OVER (PARTITION BY ? ORDER BY ? ROWS ? PRECEDING)",
-                "JSON_ARRAYAGG(?) FILTER (WHERE ?)",
-                "JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()",
-                "JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)",
                 "SUM((SELECT ?)) FILTER (WHERE EXISTS (SELECT ?))",
                 "ABS((SELECT SUM(?) FILTER (WHERE ?)))");
     }
@@ -727,5 +748,93 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     
     private static Stream<Arguments> getCursorCountCases() {
         return Stream.of(Arguments.of("Decimal count", "10", 10L), Arguments.of("Grouped count", "1_0", 10L), Arguments.of("Negative grouped count", "-1_0", -10L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getConstraintColumnReferences")
+    void assertConstraintColumnReferences(final String name, final String constraint, final Collection<String> expectedColumnNames, final Collection<String> expectedReferencedColumnNames) {
+        String sql = "CREATE TABLE foo_table (\"ORDER_ID\" integer, \"STATUS\" text, " + constraint + ")";
+        CreateTableStatement actual = (CreateTableStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        Collection<ColumnSegment> actualColumns = actual.getConstraintDefinitions().iterator().next().getColumnReferences();
+        assertThat(actualColumns.stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(expectedColumnNames));
+        Collection<ColumnSegment> actualReferencedColumns = actual.getConstraintDefinitions().iterator().next().getReferencedColumns();
+        assertThat(actualReferencedColumns.stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(expectedReferencedColumnNames));
+        for (ColumnSegment each : actualColumns) {
+            assertThat(sql.substring(each.getStartIndex(), each.getStopIndex() + 1), is(each.getIdentifier().getValueWithQuoteCharacters()));
+        }
+        for (ColumnSegment each : actualReferencedColumns) {
+            assertThat(sql.substring(each.getStartIndex(), each.getStopIndex() + 1), is(each.getIdentifier().getValueWithQuoteCharacters()));
+        }
+    }
+    
+    private static Stream<Arguments> getConstraintColumnReferences() {
+        return Stream.of(
+                Arguments.of("Primary key", "PRIMARY KEY (\"ORDER_ID\")", Collections.singletonList("ORDER_ID"), Collections.emptyList()),
+                Arguments.of("Unique columns", "UNIQUE (\"ORDER_ID\", \"STATUS\")", Arrays.asList("ORDER_ID", "STATUS"), Collections.emptyList()),
+                Arguments.of("Check with quoted literal", "CHECK (\"STATUS\" <> '\"ORDER_ID\"' AND \"ORDER_ID\" > 0)", Arrays.asList("STATUS", "ORDER_ID"), Collections.emptyList()),
+                Arguments.of("Foreign key", "FOREIGN KEY (\"ORDER_ID\") REFERENCES foo_parent (\"PARENT_ID\")", Collections.singletonList("ORDER_ID"), Collections.singletonList("PARENT_ID")),
+                Arguments.of("Composite foreign key", "FOREIGN KEY (\"ORDER_ID\", \"STATUS\") REFERENCES foo_parent (\"PARENT_ID\", \"PARENT_STATUS\")",
+                        Arrays.asList("ORDER_ID", "STATUS"), Arrays.asList("PARENT_ID", "PARENT_STATUS")),
+                Arguments.of("Implicit referenced columns", "FOREIGN KEY (\"ORDER_ID\") REFERENCES foo_parent", Collections.singletonList("ORDER_ID"), Collections.emptyList()),
+                Arguments.of("Exclusion column", "EXCLUDE USING gist (\"ORDER_ID\" WITH =)", Collections.singletonList("ORDER_ID"), Collections.emptyList()),
+                Arguments.of("Check function", "CHECK (length(\"STATUS\") > 0)", Collections.singletonList("STATUS"), Collections.emptyList()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getCreateTableColumnReferences")
+    void assertCreateTableColumnReferences(final String name, final String sql, final Collection<String> expectedColumnNames) {
+        CreateTableStatement actual = (CreateTableStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getColumnReferences().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(expectedColumnNames));
+        for (ColumnSegment each : actual.getColumnReferences()) {
+            assertThat(sql.substring(each.getStartIndex(), each.getStopIndex() + 1), is(each.getIdentifier().getValueWithQuoteCharacters()));
+        }
+    }
+    
+    private static Stream<Arguments> getCreateTableColumnReferences() {
+        return Stream.of(
+                Arguments.of("Generated expression", "CREATE TABLE foo_table (\"ORDER_ID\" integer, \"DERIVED\" integer GENERATED ALWAYS AS (\"ORDER_ID\" + 1) STORED)",
+                        Arrays.asList("ORDER_ID", "DERIVED", "ORDER_ID")),
+                Arguments.of("Partition key", "CREATE TABLE foo_table (\"ORDER_ID\" integer) PARTITION BY RANGE (\"ORDER_ID\")", Arrays.asList("ORDER_ID", "ORDER_ID")),
+                Arguments.of("Quoted default literal", "CREATE TABLE foo_table (\"STATUS\" text DEFAULT '\"ORDER_ID\"')", Collections.singletonList("STATUS")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getCreateIndexColumnReferences")
+    void assertCreateIndexColumnReferences(final String name, final String sql, final Collection<String> expectedColumnNames) {
+        CreateIndexStatement actual = (CreateIndexStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getColumnReferences().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(expectedColumnNames));
+        for (ColumnSegment each : actual.getColumnReferences()) {
+            assertThat(sql.substring(each.getStartIndex(), each.getStopIndex() + 1), is(each.getIdentifier().getValueWithQuoteCharacters()));
+        }
+    }
+    
+    private static Stream<Arguments> getCreateIndexColumnReferences() {
+        return Stream.of(
+                Arguments.of("Covering partial index", "CREATE INDEX foo_idx ON foo_table (\"ORDER_ID\") INCLUDE (\"STATUS\") WHERE \"STATUS\" <> '\"ORDER_ID\"'",
+                        Arrays.asList("ORDER_ID", "STATUS", "STATUS")),
+                Arguments.of("Arithmetic expression", "CREATE INDEX foo_idx ON foo_table ((\"ORDER_ID\" + 1))", Collections.singletonList("ORDER_ID")),
+                Arguments.of("Function expression", "CREATE INDEX foo_idx ON foo_table (lower(\"STATUS\"))", Collections.singletonList("STATUS")),
+                Arguments.of("Anonymous partial index", "CREATE INDEX ON foo_table (\"ORDER_ID\") WHERE \"STATUS\" IS NOT NULL", Arrays.asList("ORDER_ID", "STATUS")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getIdentitySequenceOptions")
+    void assertIdentitySequenceOptions(final String name, final String sequenceOptions) {
+        String columnDefinition = "foo_id BIGINT GENERATED ALWAYS AS IDENTITY (" + sequenceOptions + ")";
+        String sql = "CREATE TABLE foo_identity (" + columnDefinition + ")";
+        CreateTableStatement actual = (CreateTableStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getColumnDefinitions().size(), is(1));
+        ColumnDefinitionSegment actualColumn = actual.getColumnDefinitions().iterator().next();
+        assertThat(actualColumn.getColumnName().getIdentifier().getValue(), is("foo_id"));
+        assertThat(actualColumn.getText(), is(columnDefinition));
+        assertThat(sql.substring(actualColumn.getStartIndex(), actualColumn.getStopIndex() + 1), is(columnDefinition));
+    }
+    
+    private static Stream<Arguments> getIdentitySequenceOptions() {
+        return Stream.of(
+                Arguments.of("Ascending negative range", "INCREMENT BY 1 START WITH -5 MINVALUE -100 MAXVALUE -1"),
+                Arguments.of("Descending bigint range", "INCREMENT BY -1 START WITH -1 MINVALUE -9223372036854775808 MAXVALUE -1"),
+                Arguments.of("Explicit positive signs", "INCREMENT BY +2 START WITH +5 MINVALUE +1 MAXVALUE +100"),
+                Arguments.of("Zero start and minimum", "INCREMENT 1 START 0 MINVALUE 0 MAXVALUE 100"));
     }
 }

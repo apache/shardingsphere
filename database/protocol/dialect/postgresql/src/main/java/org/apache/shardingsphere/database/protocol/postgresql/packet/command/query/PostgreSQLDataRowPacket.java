@@ -26,10 +26,13 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 /**
@@ -44,6 +47,7 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
     private final Collection<Object> data;
     
     @Override
+    @HighFrequencyInvocation
     protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(data.size());
         for (Object each : data) {
@@ -80,7 +84,7 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         } else {
-            byte[] columnData = each.toString().getBytes(payload.getCharset());
+            byte[] columnData = (each instanceof LocalTime ? DateTimeFormatter.ISO_LOCAL_TIME.format((LocalTime) each) : each.toString()).getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         }

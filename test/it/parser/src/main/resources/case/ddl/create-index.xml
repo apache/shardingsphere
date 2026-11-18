@@ -566,4 +566,19 @@
         <index name="idx" start-index="20" stop-index="22" />
         <column name="a" start-index="38" stop-index="38" />
     </create-index>
+    <create-index sql-case-id="create_index_json_objectagg_pg">
+        <table>
+            <simple-table name="t" start-index="19" stop-index="19" />
+        </table>
+        <index name="ix" start-index="13" stop-index="14" />
+        <column name="a" start-index="37" stop-index="37" />
+        <column name="b" start-index="40" stop-index="40" />
+    </create-index>
+    <create-index sql-case-id="create_index_json_arrayagg_pg">
+        <table>
+            <simple-table name="t" start-index="19" stop-index="19" />
+        </table>
+        <index name="ix" start-index="13" stop-index="14" />
+        <column name="a" start-index="36" stop-index="36" />
+    </create-index>
 </sql-parser-test-cases>

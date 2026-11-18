@@ -88,7 +88,7 @@ public final class ShardingSpherePreconditions {
     }
     
     /**
-     * Ensures that a collection passed as a parameter to the calling method is not empty.
+     * Ensures that a map passed as a parameter to the calling method is not empty.
      *
      * @param <T> type of exception
      * @param map map to be checked
@@ -102,7 +102,7 @@ public final class ShardingSpherePreconditions {
     }
     
     /**
-     * Ensures that a collection passed as a parameter to the calling method must empty.
+     * Ensures that a collection passed as a parameter to the calling method is empty.
      *
      * @param <T> type of exception
      * @param values collection to be checked
@@ -116,7 +116,7 @@ public final class ShardingSpherePreconditions {
     }
     
     /**
-     * Ensures that a map passed as a parameter to the calling method must empty.
+     * Ensures that a map passed as a parameter to the calling method is empty.
      *
      * @param <T> type of exception
      * @param map map to be checked

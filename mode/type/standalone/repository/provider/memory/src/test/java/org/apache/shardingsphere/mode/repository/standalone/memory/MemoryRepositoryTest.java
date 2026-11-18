@@ -17,19 +17,43 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.memory;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class MemoryRepositoryTest {
     
-    private final MemoryRepository memoryRepository = new MemoryRepository();
+    private final StandalonePersistRepository memoryRepository = TypedSPILoader.getService(StandalonePersistRepository.class, "Memory");
     
     @BeforeEach
     void setUp() {
@@ -56,6 +80,87 @@ class MemoryRepositoryTest {
         memoryRepository.delete("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0");
         assertFalse(memoryRepository.isExisted("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"));
         assertThat(memoryRepository.query("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"), is((String) null));
+    }
+    
+    @ParameterizedTest(name = "{0}, parentExists={1}")
+    @CsvSource({"/metadata/foo_db/schemas/foo_db/tables/foo_tbl,true", "/metadata/foo_db/schemas/foo_db/tables/foo_tbl,false", "/metadata/foo_db/schemas/foo_db/tables/foo_tbl/,true"})
+    void assertDeleteSubtree(final String key, final boolean parentExists) {
+        if (parentExists) {
+            memoryRepository.persist(key, "foo_tbl");
+        }
+        String tableKey = "/metadata/foo_db/schemas/foo_db/tables/foo_tbl";
+        memoryRepository.persist(tableKey + "/active_version", "1");
+        memoryRepository.persist(tableKey + "/versions/0", "foo_version_0");
+        memoryRepository.persist(tableKey + "/versions/1", "foo_version_1");
+        memoryRepository.persist(tableKey + "_extra/versions/0", "foo_sibling");
+        memoryRepository.delete(key);
+        assertNull(memoryRepository.query(key));
+        assertNull(memoryRepository.query(tableKey + "/active_version"));
+        assertNull(memoryRepository.query(tableKey + "/versions/0"));
+        assertNull(memoryRepository.query(tableKey + "/versions/1"));
+        assertTrue(memoryRepository.getChildrenKeys(tableKey + "/").isEmpty());
+        assertThat(memoryRepository.getChildrenKeys("/metadata/foo_db/schemas/foo_db/tables"), is(Collections.singletonList("foo_tbl_extra")));
+        assertThat(memoryRepository.query(tableKey + "_extra/versions/0"), is("foo_sibling"));
+    }
+    
+    @Test
+    void assertDeleteMissingNode() {
+        memoryRepository.delete("/metadata/zzzz_missing");
+        assertFalse(memoryRepository.isExisted("/metadata/zzzz_missing"));
+        assertThat(memoryRepository.getChildrenKeys("/metadata"), is(Arrays.asList("encrypt_db", "sharding_db")));
+        assertThat(memoryRepository.query("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"), is("t_order"));
+    }
+    
+    @Test
+    void assertConcurrentDelete() throws ReflectiveOperationException, InterruptedException, ExecutionException {
+        SortedMap<String, String> metaDataSortedMap = spy(new TreeMap<>());
+        metaDataSortedMap.put("/foo/child", "foo_child");
+        metaDataSortedMap.put("/bar", "bar_parent");
+        metaDataSortedMap.put("/bar/child", "bar_child");
+        metaDataSortedMap.put("/foo_extra/child", "foo_sibling");
+        Plugins.getMemberAccessor().set(MemoryRepository.class.getDeclaredField("metaDataSortedMap"), memoryRepository, metaDataSortedMap);
+        SortedMap<String, String> subtree = metaDataSortedMap.tailMap("/foo/");
+        SortedMap<?, ?> mockedSubtree = mock(SortedMap.class, RETURNS_DEEP_STUBS);
+        CountDownLatch deleteStarted = new CountDownLatch(1);
+        CountDownLatch continueDelete = new CountDownLatch(1);
+        when(mockedSubtree.keySet().iterator()).thenAnswer(invocation -> {
+            Iterator<String> result = subtree.keySet().iterator();
+            deleteStarted.countDown();
+            assertTrue(continueDelete.await(10, TimeUnit.SECONDS));
+            return result;
+        });
+        doReturn(mockedSubtree).when(metaDataSortedMap).tailMap("/foo/");
+        FutureTask<Void> deleteTask = new FutureTask<>(() -> memoryRepository.delete("/foo"), null);
+        Thread deleteThread = new Thread(deleteTask);
+        FutureTask<Void> anotherDeleteTask = new FutureTask<>(() -> memoryRepository.delete("/bar"), null);
+        Thread anotherDeleteThread = new Thread(anotherDeleteTask);
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        try {
+            deleteThread.start();
+            assertTrue(deleteStarted.await(5, TimeUnit.SECONDS));
+            anotherDeleteThread.start();
+            assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+                while (!anotherDeleteTask.isDone()) {
+                    ThreadInfo threadInfo = threadMXBean.getThreadInfo(anotherDeleteThread.getId());
+                    if (null != threadInfo && deleteThread.getId() == threadInfo.getLockOwnerId()) {
+                        break;
+                    }
+                    Thread.yield();
+                }
+            });
+        } finally {
+            continueDelete.countDown();
+            deleteThread.join(5000L);
+            anotherDeleteThread.join(5000L);
+        }
+        assertFalse(deleteThread.isAlive());
+        assertFalse(anotherDeleteThread.isAlive());
+        deleteTask.get();
+        anotherDeleteTask.get();
+        assertTrue(memoryRepository.getChildrenKeys("/foo/").isEmpty());
+        assertNull(memoryRepository.query("/bar"));
+        assertTrue(memoryRepository.getChildrenKeys("/bar/").isEmpty());
+        assertThat(memoryRepository.query("/foo_extra/child"), is("foo_sibling"));
     }
     
     @Test

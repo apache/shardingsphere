@@ -52,6 +52,12 @@ public final class ExpectedFunction extends AbstractExpectedSQLSegment implement
     @XmlElement
     private ExpectedOwner owner;
     
+    @XmlElement(name = "filter")
+    private ExpectedExpression filter;
+    
+    @XmlAttribute(name = "ignore-nulls")
+    private boolean ignoreNulls;
+    
     @XmlElement(name = "window-item")
     private ExpectedWindowItem windowItem;
 }

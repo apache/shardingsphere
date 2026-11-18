@@ -19,7 +19,11 @@
 
 This file is the sole owner of completion-loop orchestration. Other policy sources may route here or define their own implementation and verification rules, but must not duplicate this sequence or its review selection.
 
-For every authorized code-writing task, including a restoration or rollback that changes production, test, script, build, generated, or behavior-affecting configuration artifacts:
+Apply this loop to authorized changes to Git-tracked files and unignored untracked files, including restoration or rollback.
+Untracked Git-ignored files and files outside Git repositories are outside this loop's scope.
+Deliverables include source, tests, scripts, build files, generated artifacts, configuration, documentation, prompts, Skills, and AGENTS.md.
+A read-only review does not enter this loop merely because its input contains changed files.
+Private review snapshots, ledgers, logs, and drafts used only to perform the review stay outside the declared candidate and do not recursively trigger review.
 
 1. Confirm the post-write task-delta audit required by `AGENTS.md` is current for the read-only diff, surrounding context, and acceptance checklist.
    Confirm every task-introduced hunk is necessary and allowlisted, prohibited paths have no task delta, architecture changes were authorized, tests protect owned behavior, and unattributed work remains untouched.
@@ -27,13 +31,13 @@ For every authorized code-writing task, including a restoration or rollback that
    Treat scripts, searches, formatters, compilation, tests, benchmarks, and review tools as evidence rather than proof, and fix every safe in-scope violation.
 3. Run the applicable verification and non-regression checks that lack valid current-state evidence.
    An invalidated, unmatched, missing, or inconclusive required result keeps the task incomplete.
-4. Invoke `$review-pr` in Formal Review Mode for every code-writing task, including ordinary low-risk local changes, without requiring a separate user request.
+4. Invoke `$review-pr` in Formal Review Mode for every task that changes files reported by Git, regardless of file type, without requiring a separate user request.
    Policy and harness changes also require this Formal Review route.
    Use [review-pr](../skills/review-pr/SKILL.md) as the sole review entry and apply its Review Focus, Local Candidate Scope, Scope and Evidence, and Independent Review Coordination requirements.
    Existing authority, architecture, safety, and triggered high-risk gates remain required.
    - When the effective final task delta adds, extends or strengthens defensive code, assign an independent reviewer within the current task to audit that delta read-only under the existing defensive-code rules.
      Do not assign this audit when no such defensive change remains in the final task delta.
-5. Hand off only when the selected review is confirmed, all required current-state checks pass, and no later code-affecting write or new evidence invalidates them.
+5. Hand off only when the selected review is confirmed, all required current-state checks pass, and no later deliverable-content write or new evidence invalidates them.
    For a required Formal Review, the latest confirmed complete review must return `Review Result: Mergeable`.
 6. When a confirmed Formal Review returns `Not Mergeable` with a safe in-scope required finding, fix it, rerun only invalidated audits and checks, and invoke the same review entry for the changed full candidate.
    Preserve the original task baseline and attributed scope through this fix loop, and continue until step 5 passes.
@@ -62,8 +66,10 @@ Report confirmed findings and required changes, or explicitly state that no bloc
 Keep `Task Status: Completed`, the outer `Evidence:` summary, and `Commit Message:` outside the review block.
 Do not substitute bounded self-review for the required Formal Review or fabricate a passing verdict.
 
-The project Stop hook checks the textual completion state after supported write tools change a non-prose repository artifact.
-Any later code-affecting write marks the task pending again and requires current checks and the applicable passing review before completion.
+The project Stop hook checks completion state after supported tool events change repository deliverable content.
+Any later repository deliverable-content write marks the task pending again and requires applicable current checks and a passing review of the updated cumulative candidate.
+Restoring original content does not clear an existing pending review.
+The hook must not treat file extensions as review exemptions.
 When required user input blocks completion, include exactly one `Task Status: Awaiting User` line, non-empty `Required User Action:` and `Evidence:` summaries, and any actual non-passing Formal Review result relevant to that blocker.
 If no Formal Review has run, state that fact instead of fabricating a report.
 The hook may yield that turn but must retain the pending state.

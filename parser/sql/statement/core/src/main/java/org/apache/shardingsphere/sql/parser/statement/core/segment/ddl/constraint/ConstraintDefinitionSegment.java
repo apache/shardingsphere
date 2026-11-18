@@ -46,6 +46,10 @@ public final class ConstraintDefinitionSegment implements CreateDefinitionSegmen
     
     private final Collection<ColumnSegment> indexColumns = new LinkedList<>();
     
+    private final Collection<ColumnSegment> columnReferences = new LinkedList<>();
+    
+    private final Collection<ColumnSegment> referencedColumns = new LinkedList<>();
+    
     private ConstraintSegment constraintName;
     
     private IndexSegment indexName;

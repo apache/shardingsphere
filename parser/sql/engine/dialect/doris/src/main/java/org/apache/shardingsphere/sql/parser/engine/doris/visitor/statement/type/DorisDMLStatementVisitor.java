@@ -295,7 +295,8 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.loadDataIgnoreLines()) {
             LoadDataIgnoreLinesContext ignoreCtx = ctx.loadDataIgnoreLines();
-            long number = Long.parseLong(ignoreCtx.numberLiterals().getText().replaceAll("^[+]", ""));
+            String numberLiteral = ignoreCtx.numberLiterals().getText();
+            long number = Long.parseLong(numberLiteral.startsWith("+") ? numberLiteral.substring(1) : numberLiteral);
             String unit = null == ignoreCtx.LINES() ? "ROWS" : "LINES";
             result.setIgnoreLines(new IgnoreLinesSegment(ignoreCtx.start.getStartIndex(), ignoreCtx.stop.getStopIndex(), number, unit));
         }

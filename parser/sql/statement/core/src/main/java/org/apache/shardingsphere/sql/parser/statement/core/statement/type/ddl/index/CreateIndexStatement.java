@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,8 @@ public final class CreateIndexStatement extends DDLStatement {
     private final LockTableSegment lockTable;
     
     private final Collection<ColumnSegment> columns;
+    
+    private final Collection<ColumnSegment> columnReferences = new LinkedList<>();
     
     private final String indexType;
     

@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SSLUtilsTest {
@@ -46,6 +47,8 @@ class SSLUtilsTest {
     void assertGenerateSelfSignedX509Certificate() throws GeneralSecurityException {
         KeyPair keyPair = SSLUtils.generateRSAKeyPair();
         X509Certificate actual = SSLUtils.generateSelfSignedX509Certificate(keyPair);
+        assertThat(actual.getSubjectX500Principal().getName(), is("O=ShardingSphere,CN="));
+        assertNull(actual.getSubjectAlternativeNames());
         actual.checkValidity(new Date());
         actual.checkValidity(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365L * 99L))));
         actual.verify(keyPair.getPublic());

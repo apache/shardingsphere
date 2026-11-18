@@ -99,6 +99,19 @@ class TableExtractorTest {
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Test
+    void assertExtractTablesFromFunctionFilter() {
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_filter")));
+        SelectStatement filtered = SelectStatement.builder().from(table).build();
+        FunctionSegment function = new FunctionSegment(0, 0, "JSON_ARRAYAGG", "");
+        function.setFilter(new SubqueryExpressionSegment(new SubquerySegment(0, 0, filtered, "")));
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ExpressionProjectionSegment(0, 0, "", function));
+        SelectStatement select = SelectStatement.builder().projections(projections).build();
+        tableExtractor.extractTablesFromSelect(select);
+        assertThat(tableExtractor.getRewriteTables(), contains(table));
+    }
+    
+    @Test
     void assertExtractUnaryExpressionTableOwner() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(30, 38, new IdentifierValue("foo_table")));
         ColumnSegment column = new ColumnSegment(14, 15, new IdentifierValue("id"));

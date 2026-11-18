@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseNameValidator {
     
-    private static final Pattern DATABASE_NAME_PATTERN = Pattern.compile("[A-Za-z][A-Za-z0-9_]*");
+    private static final Pattern DATABASE_NAME_PATTERN = Pattern.compile("[A-Za-z]\\w*");
     
     /**
      * Validate database name.
