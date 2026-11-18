@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.external;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  * External SQL parser test parameter.
@@ -34,4 +35,7 @@ public final class ExternalSQLTestParameter {
     private final String sql;
     
     private final String reportType;
+    
+    @Setter
+    private boolean nativeSyntaxError;
 }
