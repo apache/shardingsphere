@@ -26,13 +26,16 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -43,7 +46,8 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({FirebirdBlobReadCache.class, FirebirdBlobWriteCache.class})
 class FirebirdInfoPacketExecutorTest {
     
     @Mock
@@ -58,10 +62,10 @@ class FirebirdInfoPacketExecutorTest {
         if (FirebirdCommandPacketType.INFO_SQL == commandType) {
             when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         }
-        Collection<DatabasePacket> responses = new FirebirdInfoPacketExecutor(commandType, packet, connectionSession).execute();
-        assertThat(responses.size(), is(1));
-        FirebirdGenericResponsePacket response = (FirebirdGenericResponsePacket) responses.iterator().next();
-        assertThat(response.getData(), isA(expectedDataType));
+        Collection<DatabasePacket> actual = new FirebirdInfoPacketExecutor(commandType, packet, connectionSession).execute();
+        assertThat(actual.size(), is(1));
+        FirebirdGenericResponsePacket actualResponse = (FirebirdGenericResponsePacket) actual.iterator().next();
+        assertThat(actualResponse.getData(), isA(expectedDataType));
     }
     
     private static Stream<Arguments> infoCommands() {
@@ -74,7 +78,7 @@ class FirebirdInfoPacketExecutorTest {
     @Test
     void assertRejectsInvalidCommandType() {
         FirebirdInfoPacketExecutor executor = new FirebirdInfoPacketExecutor(FirebirdCommandPacketType.COMMIT, packet, connectionSession);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, executor::execute);
-        assertThat(exception.getMessage(), is("Invalid command type for FirebirdInfoPacketExecutor: COMMIT"));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, executor::execute);
+        assertThat(actual.getMessage(), is("Invalid command type for FirebirdInfoPacketExecutor: COMMIT"));
     }
 }

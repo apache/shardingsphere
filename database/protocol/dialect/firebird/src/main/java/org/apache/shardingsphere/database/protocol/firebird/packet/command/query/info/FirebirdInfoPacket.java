@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,21 +37,24 @@ import java.util.function.IntFunction;
  * Information command packet for Firebird.
  */
 @RequiredArgsConstructor
-@Getter
 public final class FirebirdInfoPacket extends FirebirdCommandPacket {
     
     private final int objectHandle;
     
+    @Getter
     private final int incarnation;
     
     private final List<FirebirdInfoPacketType> items = new ArrayList<>();
     
+    @Getter
     private final int bufferLength;
     
+    @HighFrequencyInvocation
     public FirebirdInfoPacket(final FirebirdPacketPayload payload, final FirebirdCommandPacketType commandPacketType) {
         this(payload, getInfoItemResolver(commandPacketType));
     }
     
+    @HighFrequencyInvocation
     public FirebirdInfoPacket(final FirebirdPacketPayload payload, final IntFunction<FirebirdInfoPacketType> valueOf) {
         payload.skipReserved(4);
         objectHandle = payload.readInt4();
@@ -103,7 +107,7 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
      *
      * @return response buffer length
      */
-    public int getBufferLength() {
+    public int getMaxLength() {
         return bufferLength;
     }
     

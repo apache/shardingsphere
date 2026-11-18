@@ -67,7 +67,7 @@ class FirebirdInfoPacketTest {
         FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
         assertThat(actual.getHandle(), is(1));
         assertThat(actual.getIncarnation(), is(2));
-        assertThat(actual.getBufferLength(), is(100));
+        assertThat(actual.getMaxLength(), is(100));
         List<FirebirdInfoPacketType> infoItems = actual.getInfoItems();
         assertThat(infoItems.get(0), is(FirebirdSQLInfoPacketType.RECORDS));
         assertThat(infoItems.get(1), is(FirebirdCommonInfoPacketType.END));
