@@ -233,7 +233,11 @@ checkOption
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | bExpr (comparisonOperator bExpr)?
+    : CURRENT_TIMESTAMP | defaultComparison (IS NOT? DISTINCT FROM defaultComparison)?
+    ;
+
+defaultComparison
+    : bExpr (comparisonOperator bExpr)?
     ;
 
 sequenceOptions

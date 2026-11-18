@@ -225,9 +225,9 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     @ParameterizedTest(name = "{0}")
-    @ValueSource(strings = {"=", "<>", "<", ">", "<=", ">="})
-    void assertColumnDefaultComparison(final String operator) {
-        String sql = "CREATE TABLE t (flag bool DEFAULT 1 " + operator + " 1)";
+    @ValueSource(strings = {"1 = 1", "1 <> 1", "1 < 1", "1 > 1", "1 <= 1", "1 >= 1", "1 < 2 IS DISTINCT FROM 3 < 4", "1 < 2 IS NOT DISTINCT FROM 3 < 4"})
+    void assertColumnDefaultComparison(final String expression) {
+        String sql = "CREATE TABLE t (flag bool DEFAULT " + expression + ")";
         SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
         assertThat(actual, isA(CreateTableStatement.class));
     }
@@ -239,7 +239,7 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     private static Stream<String> getInvalidDefaultAndStatisticsSQL() {
-        return Stream.of("CREATE TABLE t (b bool DEFAULT 1 IN (1, 2))", "CREATE STATISTICS s ON y + z FROM t", "CREATE STATISTICS s ON (x, y) FROM t");
+        return Stream.of("CREATE TABLE t (b bool DEFAULT 1 IN (1, 2))", "CREATE TABLE t (b bool DEFAULT 1 = 2 = 3)", "CREATE STATISTICS s ON y + z FROM t", "CREATE STATISTICS s ON (x, y) FROM t");
     }
     
     @ParameterizedTest(name = "{0}")
