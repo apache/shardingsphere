@@ -37,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobManag
 import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 import org.apache.shardingsphere.data.pipeline.core.metadata.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDataSourceConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
@@ -337,10 +338,14 @@ public final class MigrationJobAPI implements TransmissionJobAPI {
     
     private void cleanTempTableOnRollback(final String jobId) throws SQLException {
         MigrationJobConfiguration jobConfig = new PipelineJobConfigurationManager(TypedSPILoader.getService(PipelineJobType.class, getType()).getOption()).getJobConfiguration(jobId);
+        ContextManager contextManager = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobId));
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(jobConfig.getTargetDatabaseName());
+        Map<String, StorageUnit> storageUnits = null == database ? Collections.emptyMap() : database.getResourceMetaData().getStorageUnits();
+        PipelineDataSourceConfiguration targetConfig = PipelineDataSourceConfigurationUtils.transformPipelineDataSourceConfiguration(jobId, jobConfig.getTarget(), storageUnits);
         PipelinePrepareSQLBuilder pipelineSQLBuilder = new PipelinePrepareSQLBuilder(jobConfig.getTargetDatabaseType());
         TableAndSchemaNameMapper mapping = new TableAndSchemaNameMapper(jobConfig.getTargetTableSchemaMap());
         try (
-                PipelineDataSource dataSource = new PipelineDataSource(jobConfig.getTarget());
+                PipelineDataSource dataSource = new PipelineDataSource(targetConfig);
                 Connection connection = dataSource.getConnection()) {
             DatabaseIdentifierContext identifierContext = dataSource.getIdentifierContext();
             for (String each : jobConfig.getTargetTableNames()) {
