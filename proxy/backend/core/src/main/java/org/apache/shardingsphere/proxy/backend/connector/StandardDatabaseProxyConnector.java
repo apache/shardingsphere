@@ -357,6 +357,38 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     }
     
     /**
+     * Get the rename-destination segments mapped to the table whose schema they inherit.
+     *
+     * <p>Renaming a table never changes its schema, but the parsed destination identifier is bound like any other
+     * unqualified table reference, which resolves it to the database's default schema instead of the source table's
+     * actual schema. The destination must therefore be reconciled under the source table's schema, not its own.</p>
+     *
+     * @return rename-destination segments mapped to their schema-defining source segment
+     */
+    private Map<SimpleTableSegment, SimpleTableSegment> getRenameSchemaSources() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement instanceof AlterTableStatement) {
+            AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
+            return alterTableStatement.getRenameTable().<Map<SimpleTableSegment, SimpleTableSegment>>map(optional -> Collections.singletonMap(optional, alterTableStatement.getTable()))
+                    .orElseGet(Collections::emptyMap);
+        }
+        if (sqlStatement instanceof RenameTableStatement) {
+            Collection<RenameTableDefinitionSegment> renameTables = ((RenameTableStatement) sqlStatement).getRenameTables();
+            Map<SimpleTableSegment, SimpleTableSegment> result = new HashMap<>(renameTables.size());
+            for (RenameTableDefinitionSegment each : renameTables) {
+                result.put(each.getRenameTable(), each.getTable());
+            }
+            return result;
+        }
+        return Collections.emptyMap();
+    }
+    
+    private SimpleTableSegment getCreatedTable() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        return sqlStatement instanceof CreateTableStatement ? ((CreateTableStatement) sqlStatement).getTable() : null;
+    }
+    
+    /**
      * Get the tables this DDL statement targets, for deferring their meta data refresh.
      *
      * <p>{@code TablesContext} drops every table named {@code DUAL}, case-insensitively, to exclude the SQL pseudo-table
@@ -386,49 +418,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return sqlStatement.getAttributes().findAttribute(TableSQLStatementAttribute.class).map(TableSQLStatementAttribute::getTables).orElse(Collections.emptyList());
     }
     
-    private SimpleTableSegment getCreatedTable() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        return sqlStatement instanceof CreateTableStatement ? ((CreateTableStatement) sqlStatement).getTable() : null;
-    }
-    
-    /**
-     * Get the index-name candidates this CREATE TABLE statement declared, for recovering a logical index name a
-     * storage-imposed identifier-length limit shortened.
-     *
-     * @return index-name candidates, empty when this statement does not create a table
-     */
-    private Collection<ShardingSphereIndex> getRevisionCandidateIndexes() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        return sqlStatement instanceof CreateTableStatement ? CreateTablePushDownMetaDataRefresher.createRevisionCandidateIndexes((CreateTableStatement) sqlStatement) : Collections.emptyList();
-    }
-    
-    /**
-     * Get the rename-destination segments mapped to the table whose schema they inherit.
-     *
-     * <p>Renaming a table never changes its schema, but the parsed destination identifier is bound like any other
-     * unqualified table reference, which resolves it to the database's default schema instead of the source table's
-     * actual schema. The destination must therefore be reconciled under the source table's schema, not its own.</p>
-     *
-     * @return rename-destination segments mapped to their schema-defining source segment
-     */
-    private Map<SimpleTableSegment, SimpleTableSegment> getRenameSchemaSources() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        if (sqlStatement instanceof AlterTableStatement) {
-            AlterTableStatement alterTableStatement = (AlterTableStatement) sqlStatement;
-            return alterTableStatement.getRenameTable().<Map<SimpleTableSegment, SimpleTableSegment>>map(optional -> Collections.singletonMap(optional, alterTableStatement.getTable()))
-                    .orElseGet(Collections::emptyMap);
-        }
-        if (sqlStatement instanceof RenameTableStatement) {
-            Collection<RenameTableDefinitionSegment> renameTables = ((RenameTableStatement) sqlStatement).getRenameTables();
-            Map<SimpleTableSegment, SimpleTableSegment> result = new HashMap<>(renameTables.size());
-            for (RenameTableDefinitionSegment each : renameTables) {
-                result.put(each.getRenameTable(), each.getTable());
-            }
-            return result;
-        }
-        return Collections.emptyMap();
-    }
-    
     private Optional<IdentifierValue> getBoundSchemaName(final SimpleTableSegment tableSegment) {
         return tableSegment.getTableName().getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).filter(originalSchema -> !Strings.isNullOrEmpty(originalSchema.getValue()));
     }
@@ -447,6 +436,17 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             }
         }
         return routeUnits.iterator().next().getDataSourceMapper().getLogicName();
+    }
+    
+    /**
+     * Get the index-name candidates this CREATE TABLE statement declared, for recovering a logical index name a
+     * storage-imposed identifier-length limit shortened.
+     *
+     * @return index-name candidates, empty when this statement does not create a table
+     */
+    private Collection<ShardingSphereIndex> getRevisionCandidateIndexes() {
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        return sqlStatement instanceof CreateTableStatement ? CreateTablePushDownMetaDataRefresher.createRevisionCandidateIndexes((CreateTableStatement) sqlStatement) : Collections.emptyList();
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {

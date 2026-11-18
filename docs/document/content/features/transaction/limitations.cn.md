@@ -12,7 +12,7 @@ Apache ShardingSphere 希望能够将分布式事务的选择权交给使用者�
 
 * 不支持因网络、硬件异常导致的跨库事务。例如：同一事务中，跨两个库更新，更新完毕后、未提交之前，第一个库宕机，则只有第二个库数据提交，且无法回滚。
 * ShardingSphere-Proxy 使用 PostgreSQL 时，事务中执行 `ALTER TABLE` 改变的表，其元数据会在事务结束后刷新，而不会因为元数据刷新另用一条无法看到未提交事务的连接而刷新失败。
-  `CREATE TABLE`、`DROP TABLE` 和 `RENAME TABLE` 使用同一套延迟刷新机制改变元数据，因此基于同样的原因受支持，而非另行扩展支持的语句集合。
+  `CREATE TABLE`、`DROP TABLE` 和 `ALTER TABLE ... RENAME TO` 使用同一套延迟刷新机制改变元数据，因此基于同样的原因受支持，而非另行扩展支持的语句集合。
   其余会改变元数据的 DDL 语句仍不支持，包括 schema、视图和索引语句。ShardingSphere-Proxy 使用 openGauss 时，事务中不支持任何会改变元数据的 DDL 语句。
   不支持的语句会在执行前以 SQLSTATE `0A000` 拒绝，避免事务回滚后存储数据库与 ShardingSphere 元数据不一致。
 * 事务中不支持 `ALTER TABLE ... SET SCHEMA`，即便其它 `ALTER TABLE` 形式都受支持，因为目前无法在提交后解析出目标 schema。
