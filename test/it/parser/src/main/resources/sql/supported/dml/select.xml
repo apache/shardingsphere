@@ -701,4 +701,7 @@
     <sql-case id="select_quoted_row_field_pg" value="SELECT (r).&quot;a&quot; FROM t" db-types="PostgreSQL" />
     <sql-case id="select_row_field_chain_pg" value="SELECT (r).a.b FROM t" db-types="PostgreSQL" />
     <sql-case id="select_whole_row_argument_pg" value="SELECT f(j.*) FROM t AS j" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_aggregate_filter" value="SELECT SUM(order_id) FILTER (WHERE user_id &gt; 0) FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_function_filter" value="SELECT any_value(order_id) FILTER (WHERE user_id &gt; 0) FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_aggregate_filter_window" value="SELECT COUNT(*) FILTER (WHERE $1) OVER (ORDER BY $2)" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

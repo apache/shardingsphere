@@ -233,7 +233,7 @@ checkOption
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | aExpr
+    : CURRENT_TIMESTAMP | bExpr
     ;
 
 sequenceOptions
@@ -1665,7 +1665,11 @@ createServer
     ;
 
 createStatistics
-    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON exprList FROM fromList
+    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON statisticsExpression (COMMA_ statisticsExpression)* FROM fromList
+    ;
+
+statisticsExpression
+    : colId | funcExprWindowless | LP_ aExpr RP_
     ;
 
 createSubscription

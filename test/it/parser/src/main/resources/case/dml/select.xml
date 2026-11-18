@@ -17494,4 +17494,98 @@
             <simple-table alias="j" name="t" start-index="19" stop-index="24" />
         </from>
     </select>
+    <select sql-case-id="select_postgresql_aggregate_filter">
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="SUM(order_id) FILTER (WHERE user_id &gt; 0)" start-index="7" stop-index="46">
+                <expr>
+                    <common-expression text="SUM(order_id) FILTER (WHERE user_id &gt; 0)" start-index="7" stop-index="46">
+                        <children>
+                            <expression>
+                                <aggregation-projection type="SUM" expression="SUM(order_id)" start-index="7" stop-index="19">
+                                    <parameters>
+                                        <column name="order_id" start-index="11" stop-index="18" />
+                                    </parameters>
+                                </aggregation-projection>
+                            </expression>
+                            <expression>
+                                <binary-operation-expression start-index="35" stop-index="45">
+                                    <left>
+                                        <column name="user_id" start-index="35" stop-index="41" />
+                                    </left>
+                                    <operator>&gt;</operator>
+                                    <right>
+                                        <literal-expression value="0" start-index="45" stop-index="45" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_function_filter">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="any_value(order_id) FILTER (WHERE user_id &gt; 0)" start-index="7" stop-index="52">
+                <expr>
+                    <common-expression text="any_value(order_id) FILTER (WHERE user_id &gt; 0)" start-index="7" stop-index="52">
+                        <children>
+                            <expression>
+                                <function function-name="any_value" text="any_value(order_id)" start-index="7" stop-index="25">
+                                    <parameter>
+                                        <column name="order_id" start-index="17" stop-index="24" />
+                                    </parameter>
+                                </function>
+                            </expression>
+                            <expression>
+                                <binary-operation-expression start-index="41" stop-index="51">
+                                    <left>
+                                        <column name="user_id" start-index="41" stop-index="47" />
+                                    </left>
+                                    <operator>&gt;</operator>
+                                    <right>
+                                        <literal-expression value="0" start-index="51" stop-index="51" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="59" stop-index="65" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_aggregate_filter_window" parameters="true, 1" parameter-marker-count="2">
+        <projections start-index="7" stop-index="51">
+            <expression-projection text="COUNT(*) FILTER (WHERE $1) OVER (ORDER BY $2)" start-index="7" stop-index="51">
+                <expr>
+                    <common-expression text="COUNT(*) FILTER (WHERE $1) OVER (ORDER BY $2)" start-index="7" stop-index="51">
+                        <children>
+                            <expression>
+                                <aggregation-projection type="COUNT" expression="COUNT(*) FILTER (WHERE $1) OVER (ORDER BY $2)" start-index="7" stop-index="51">
+                                    <window-item start-index="39" stop-index="51">
+                                        <order-by start-index="40" stop-index="50">
+                                            <expression-item expression="$2" order-direction="ASC" start-index="49" stop-index="50">
+                                                <expr>
+                                                    <parameter-marker-expression parameter-index="1" start-index="49" stop-index="50" />
+                                                </expr>
+                                            </expression-item>
+                                        </order-by>
+                                    </window-item>
+                                </aggregation-projection>
+                            </expression>
+                            <expression>
+                                <parameter-marker-expression parameter-index="0" start-index="30" stop-index="31" />
+                            </expression>
+                        </children>
+                    </common-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

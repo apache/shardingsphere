@@ -260,6 +260,7 @@ import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -712,16 +713,19 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        ShardingSpherePreconditions.checkState(null == ctx.filterClause() || null != ctx.jsonAggregateFunction(), () -> new SQLParsingException("FILTER clauses are not supported"));
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
-        if (null != ctx.filterClause()) {
-            FunctionSegment function = (FunctionSegment) result;
-            FunctionSegment filtered = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), function.getFunctionName(), getOriginalText(ctx));
-            filtered.getParameters().addAll(function.getParameters());
-            filtered.setFilter((ExpressionSegment) visit(ctx.filterClause().aExpr()));
-            result = filtered;
+        if (null == ctx.filterClause()) {
+            return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
         }
-        return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
+        ExpressionSegment filter = (ExpressionSegment) visit(ctx.filterClause().aExpr());
+        if (null == ctx.jsonAggregateFunction()) {
+            ExpressionSegment aggregate = (ExpressionSegment) (null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result));
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), Arrays.asList(aggregate, filter));
+        }
+        FunctionSegment function = (FunctionSegment) result;
+        FunctionSegment filtered = createFunctionSegment(ctx, function, null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause()));
+        filtered.setFilter(filter);
+        return filtered;
     }
     
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {

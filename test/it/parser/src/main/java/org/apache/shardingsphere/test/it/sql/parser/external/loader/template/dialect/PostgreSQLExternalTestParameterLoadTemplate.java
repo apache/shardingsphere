@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.dialect;
 
+import com.google.common.hash.Hashing;
+import com.google.common.io.Resources;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -35,9 +37,12 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.spi.DialectSQLParserFacade;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter.ParseExpectation;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.template.ExternalTestParameterLoadTemplate;
 
+import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,9 +64,7 @@ import java.util.stream.IntStream;
  */
 public final class PostgreSQLExternalTestParameterLoadTemplate implements ExternalTestParameterLoadTemplate {
     
-    private static final Pattern SYNTAX_ERROR_POSITION = Pattern.compile(".* at character [0-9]+$");
-    
-    private static final Pattern SYNTAX_ERROR_LINE = Pattern.compile("LINE ([0-9]+): (.*)");
+    private static final Map<String, ParseExpectation> VERIFIED_NATIVE_REJECTIONS = loadVerifiedNativeRejections();
     
     @Override
     public Collection<ExternalSQLTestParameter> load(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
@@ -79,7 +82,7 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             }
             if (!hasNativeError(statement, i, echoes, resultFileContent)) {
                 ExternalSQLTestParameter parameter = new ExternalSQLTestParameter(sqlCaseFileName + (result.size() + 1), databaseType, statement.sql, reportType);
-                parameter.setNativeSyntaxError(hasNativeSyntaxError(statement, sqlIndex, sqlEchoes, resultFileContent));
+                parameter.setParseExpectation(getParseExpectation(sqlCaseFileName, statement, sqlIndex, sqlEchoes, resultFileContent));
                 result.add(parameter);
             }
             sqlIndex++;
@@ -87,37 +90,17 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
         return result;
     }
     
-    private boolean hasNativeSyntaxError(final ScriptStatement statement, final int index, final int[] echoes, final List<String> expectedLines) {
+    private ParseExpectation getParseExpectation(final String script, final ScriptStatement statement, final int index, final int[] echoes, final List<String> expectedLines) {
         if (echoes[index] < 0 || !String.join("\n", statement.echo).contains(statement.sql)) {
-            return false;
+            return ParseExpectation.SUPPORTED;
         }
         int start = echoes[index] + statement.echo.size();
         int end = IntStream.range(index + 1, echoes.length).map(each -> echoes[each]).filter(each -> each >= 0).findFirst().orElse(expectedLines.size());
-        if (start >= end) {
-            return false;
+        if (start >= end || !expectedLines.get(start).startsWith("ERROR:  ") || hasNestedDiagnostic(expectedLines, start + 1, end)) {
+            return ParseExpectation.SUPPORTED;
         }
-        String error = expectedLines.get(start);
-        if (!error.startsWith("ERROR:  syntax error at or near ") && !"ERROR:  syntax error at end of input".equals(error)
-                && !"ERROR:  for a generated column, GENERATED ALWAYS must be specified".equals(error)) {
-            return false;
-        }
-        if (hasNestedDiagnostic(expectedLines, start + 1, end)) {
-            return false;
-        }
-        if (SYNTAX_ERROR_POSITION.matcher(error).matches()) {
-            return true;
-        }
-        return start + 1 < end && matchesSyntaxErrorLine(statement.echo, expectedLines.get(start + 1));
-    }
-    
-    private boolean matchesSyntaxErrorLine(final List<String> echo, final String line) {
-        Matcher matcher = SYNTAX_ERROR_LINE.matcher(line);
-        if (!matcher.matches()) {
-            return false;
-        }
-        int index = Integer.parseInt(matcher.group(1)) - 1;
-        String snippet = matcher.group(2).replaceAll("^\\.\\.\\.|\\.\\.\\.$", "");
-        return index >= 0 && index < echo.size() && !snippet.isEmpty() && echo.get(index).contains(snippet);
+        String digest = Hashing.sha256().hashString(statement.sql + "\n" + expectedLines.get(start), StandardCharsets.UTF_8).toString();
+        return VERIFIED_NATIVE_REJECTIONS.getOrDefault(script + '\t' + digest, ParseExpectation.SUPPORTED);
     }
     
     private boolean hasNestedDiagnostic(final List<String> expectedLines, final int start, final int end) {
@@ -131,6 +114,13 @@ public final class PostgreSQLExternalTestParameterLoadTemplate implements Extern
             }
         }
         return false;
+    }
+    
+    @SneakyThrows(IOException.class)
+    private static Map<String, ParseExpectation> loadVerifiedNativeRejections() {
+        return Resources.readLines(Resources.getResource("external/postgresql-native-rejections.tsv"), StandardCharsets.UTF_8).stream()
+                .filter(each -> !each.isEmpty() && !each.startsWith("#")).map(each -> each.split("\t", 4))
+                .collect(Collectors.toMap(each -> each[0] + '\t' + each[1], each -> ParseExpectation.valueOf(each[2])));
     }
     
     private int[] findEchoes(final List<ScriptStatement> statements, final List<String> expectedLines) {
