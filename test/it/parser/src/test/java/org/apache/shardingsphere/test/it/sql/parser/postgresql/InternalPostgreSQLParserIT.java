@@ -70,6 +70,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +86,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -223,6 +225,14 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
     }
     
     @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"=", "<>", "<", ">", "<=", ">="})
+    void assertColumnDefaultComparison(final String operator) {
+        String sql = "CREATE TABLE t (flag bool DEFAULT 1 " + operator + " 1)";
+        SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual, isA(CreateTableStatement.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getInvalidDefaultAndStatisticsSQL")
     void assertInvalidDefaultAndStatistics(final String sql) {
         assertThrows(SQLParsingException.class, () -> new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
@@ -253,6 +263,23 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
                 Arguments.of("COUNT(DISTINCT ?) FILTER (WHERE ?)", AggregationDistinctProjectionSegment.class, false, 2),
                 Arguments.of("SUM(?) FILTER (WHERE ?) OVER (PARTITION BY ? ORDER BY ? ROWS ? PRECEDING)", AggregationProjectionSegment.class, true, 5),
                 Arguments.of("SUM((SELECT ?)) FILTER (WHERE EXISTS (SELECT ?))", AggregationProjectionSegment.class, false, 2));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getOrderedSetFilterCases")
+    void assertOrderedSetFilterParameterOrder(final String clauses, final List<Integer> parameterIndexes) {
+        String sql = "SELECT percentile_cont(0.5) WITHIN GROUP " + clauses;
+        SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getParameterCount(), is(parameterIndexes.size()));
+        assertThat(actual.getParameterMarkers().stream().sorted(Comparator.comparingInt(ParameterMarkerSegment::getStartIndex))
+                .map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(parameterIndexes));
+    }
+    
+    private static Stream<Arguments> getOrderedSetFilterCases() {
+        return Stream.of(
+                Arguments.of("(ORDER BY $1::double precision) FILTER (WHERE $2)", Arrays.asList(0, 1)),
+                Arguments.of("(ORDER BY ?::double precision) FILTER (WHERE ?)", Arrays.asList(0, 1)),
+                Arguments.of("(ORDER BY 1.5) FILTER (WHERE $1)", Collections.singletonList(0)));
     }
     
     @Test

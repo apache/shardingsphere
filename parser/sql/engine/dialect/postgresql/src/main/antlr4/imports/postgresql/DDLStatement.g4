@@ -233,7 +233,7 @@ checkOption
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | bExpr
+    : CURRENT_TIMESTAMP | bExpr (comparisonOperator bExpr)?
     ;
 
 sequenceOptions

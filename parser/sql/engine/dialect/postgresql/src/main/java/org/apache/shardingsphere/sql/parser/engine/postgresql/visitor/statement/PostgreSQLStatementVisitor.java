@@ -714,6 +714,11 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return visit(ctx.functionExprCommonSubexpr());
         }
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
+        if (null != ctx.withinGroupClause()) {
+            for (SortbyContext each : ctx.withinGroupClause().sortClause().sortbyList().sortby()) {
+                visit(each.aExpr());
+            }
+        }
         if (null == ctx.filterClause()) {
             return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
         }
