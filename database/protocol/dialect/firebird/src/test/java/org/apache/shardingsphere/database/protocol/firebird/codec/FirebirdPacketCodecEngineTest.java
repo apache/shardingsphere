@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -46,6 +47,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
@@ -63,9 +65,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -272,8 +276,43 @@ class FirebirdPacketCodecEngineTest {
         assertNull(channel.readInbound());
         ByteBuf encodedError = channel.readOutbound();
         assertThat(encodedError.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertThat(encodedError.toString(StandardCharsets.UTF_8), containsString(String.format("Cannot find '%s' in command packet type", UNKNOWN_COMMAND_TYPE)));
         assertFalse(channel.isOpen());
         encodedError.release();
+    }
+    
+    @ParameterizedTest
+    @EnumSource(value = FirebirdCommandPacketType.class, names = {"EXEC_IMMEDIATE2", "COMPILE", "BATCH_BLOB_STREAM", "INFO_BATCH", "INFO_CURSOR", "INFO_TRANSACTION",
+            "INFO_REQUEST", "SERVICE_INFO", "EXEC_IMMEDIATE", "DETACH", "PING"})
+    void assertUnframedUnimplementedCommandWritesErrorAndClosesChannel(final FirebirdCommandPacketType type) {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        channel.attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(FirebirdProtocolVersion.PROTOCOL_VERSION13);
+        channel.attr(FirebirdConstant.CURRENT_CONNECTION).set(1);
+        channel.writeInbound(Unpooled.buffer().writeInt(type.getValue()));
+        channel.runPendingTasks();
+        assertNull(channel.readInbound());
+        ByteBuf response = channel.readOutbound();
+        assertThat(response.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertThat(response.toString(StandardCharsets.UTF_8), containsString(String.format("Operation %s is not implemented.", type)));
+        assertFalse(channel.isOpen());
+        response.release();
+        channel.finishAndReleaseAll();
+    }
+    
+    @Test
+    void assertEncodeUnimplementedCommandErrorKeepsChannelOpen() {
+        EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
+        channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        UnsupportedOperationException cause = assertThrows(UnsupportedOperationException.class,
+                () -> FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXEC_IMMEDIATE, null, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1));
+        channel.writeOutbound(FirebirdErrorPacketFactory.newInstance(cause));
+        ByteBuf response = channel.readOutbound();
+        assertThat(response.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
+        assertThat(response.toString(StandardCharsets.UTF_8), containsString("Operation EXEC_IMMEDIATE is not implemented."));
+        assertTrue(channel.isOpen());
+        response.release();
+        channel.finishAndReleaseAll();
     }
     
     @Test
@@ -599,13 +638,13 @@ class FirebirdPacketCodecEngineTest {
     
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLength(final int expectedLength) {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
-        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenReturn(expectedLength);
+        result.when(() -> FirebirdCommandPacketFactory.getLength(any(), any(), any(), anyInt())).thenReturn(expectedLength);
         return result;
     }
     
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLengthException() {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
-        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenThrow(IndexOutOfBoundsException.class);
+        result.when(() -> FirebirdCommandPacketFactory.getLength(any(), any(), any(), anyInt())).thenThrow(IndexOutOfBoundsException.class);
         return result;
     }
     

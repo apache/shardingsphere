@@ -60,6 +60,6 @@ class FirebirdBlobInfoPacketTypeTest {
         List<?> actualInfoItems = actual.getInfoItems();
         assertThat(actualInfoItems.size(), is(1));
         assertThat(actualInfoItems.get(0), is(FirebirdBlobInfoPacketType.TYPE));
-        assertThat(actual.getMaxLength(), is(100));
+        assertThat(actual.getBufferLength(), is(100));
     }
 }

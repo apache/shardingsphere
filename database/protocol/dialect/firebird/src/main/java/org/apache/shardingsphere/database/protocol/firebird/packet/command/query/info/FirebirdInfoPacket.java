@@ -21,7 +21,11 @@ import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.util.ArrayList;
@@ -35,28 +39,72 @@ import java.util.function.IntFunction;
 @Getter
 public final class FirebirdInfoPacket extends FirebirdCommandPacket {
     
-    private final int handle;
+    private final int objectHandle;
     
     private final int incarnation;
     
-    private final List<FirebirdInfoPacketType> infoItems = new ArrayList<>();
+    private final List<FirebirdInfoPacketType> items = new ArrayList<>();
     
-    private final int maxLength;
+    private final int bufferLength;
+    
+    public FirebirdInfoPacket(final FirebirdPacketPayload payload, final FirebirdCommandPacketType commandPacketType) {
+        this(payload, getInfoItemResolver(commandPacketType));
+    }
     
     public FirebirdInfoPacket(final FirebirdPacketPayload payload, final IntFunction<FirebirdInfoPacketType> valueOf) {
         payload.skipReserved(4);
-        handle = payload.readInt4();
+        objectHandle = payload.readInt4();
         incarnation = payload.readInt4();
-        parseInfo(payload.readBuffer(), valueOf);
-        maxLength = payload.readInt4();
+        ByteBuf buffer = payload.readBuffer();
+        while (buffer.isReadable()) {
+            items.add(resolveInfoItem(buffer.readByte(), valueOf));
+        }
+        bufferLength = payload.readInt4();
     }
     
-    private void parseInfo(final ByteBuf buffer, final IntFunction<FirebirdInfoPacketType> valueOf) {
-        while (buffer.isReadable()) {
-            int code = buffer.readByte();
-            FirebirdInfoPacketType type = valueOf.apply(code);
-            infoItems.add(null == type ? FirebirdCommonInfoPacketType.valueOf(code) : type);
+    private static FirebirdInfoPacketType resolveInfoItem(final int code, final IntFunction<FirebirdInfoPacketType> valueOf) {
+        FirebirdInfoPacketType type = valueOf.apply(code);
+        return null == type ? FirebirdCommonInfoPacketType.valueOf(code) : type;
+    }
+    
+    private static IntFunction<FirebirdInfoPacketType> getInfoItemResolver(final FirebirdCommandPacketType commandPacketType) {
+        switch (commandPacketType) {
+            case INFO_DATABASE:
+                return FirebirdDatabaseInfoPacketType::valueOf;
+            case INFO_BLOB:
+                return FirebirdBlobInfoPacketType::valueOf;
+            case INFO_SQL:
+                return FirebirdSQLInfoPacketType::valueOf;
+            default:
+                throw new IllegalArgumentException(String.format("Unsupported Firebird INFO command type: %s", commandPacketType));
         }
+    }
+    
+    /**
+     * Get the handle of the object queried by the INFO command.
+     *
+     * @return object handle
+     */
+    public int getHandle() {
+        return objectHandle;
+    }
+    
+    /**
+     * Get the requested information items.
+     *
+     * @return requested information items
+     */
+    public List<FirebirdInfoPacketType> getInfoItems() {
+        return items;
+    }
+    
+    /**
+     * Get the requested response buffer length.
+     *
+     * @return response buffer length
+     */
+    public int getBufferLength() {
+        return bufferLength;
     }
     
     @Override

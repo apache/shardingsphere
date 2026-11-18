@@ -31,7 +31,7 @@ class FirebirdCommandPacketTypeTest {
     }
     
     @Test
-    void assertValueOfWithIllegalArgument() {
+    void assertValueOfWithUnknownCode() {
         assertThrows(NullPointerException.class, () -> FirebirdCommandPacketType.valueOf(-1));
     }
 }

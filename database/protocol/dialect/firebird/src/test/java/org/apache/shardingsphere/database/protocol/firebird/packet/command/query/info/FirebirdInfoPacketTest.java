@@ -18,19 +18,28 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info;
 
 import io.netty.buffer.ByteBuf;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -58,10 +67,33 @@ class FirebirdInfoPacketTest {
         FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
         assertThat(actual.getHandle(), is(1));
         assertThat(actual.getIncarnation(), is(2));
-        assertThat(actual.getMaxLength(), is(100));
+        assertThat(actual.getBufferLength(), is(100));
         List<FirebirdInfoPacketType> infoItems = actual.getInfoItems();
         assertThat(infoItems.get(0), is(FirebirdSQLInfoPacketType.RECORDS));
         assertThat(infoItems.get(1), is(FirebirdCommonInfoPacketType.END));
+    }
+    
+    @ParameterizedTest
+    @MethodSource("infoItemArguments")
+    void assertParseInfoItemByCommandType(final FirebirdCommandPacketType commandPacketType, final FirebirdInfoPacketType expectedInfoItem) {
+        when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(true, false);
+        when(byteBuf.readByte()).thenReturn((byte) 4);
+        assertThat(new FirebirdInfoPacket(payload, commandPacketType).getInfoItems(), is(Collections.singletonList(expectedInfoItem)));
+    }
+    
+    private static Stream<Arguments> infoItemArguments() {
+        return Stream.of(
+                Arguments.of(FirebirdCommandPacketType.INFO_DATABASE, FirebirdDatabaseInfoPacketType.DB_ID),
+                Arguments.of(FirebirdCommandPacketType.INFO_BLOB, FirebirdBlobInfoPacketType.NUM_SEGMENTS),
+                Arguments.of(FirebirdCommandPacketType.INFO_SQL, FirebirdSQLInfoPacketType.SELECT));
+    }
+    
+    @Test
+    void assertRejectNonInfoCommandBeforeReadingPayload() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new FirebirdInfoPacket(payload, FirebirdCommandPacketType.COMMIT));
+        assertThat(actual.getMessage(), is("Unsupported Firebird INFO command type: COMMIT"));
+        verifyNoInteractions(payload);
     }
     
     @Test

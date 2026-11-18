@@ -160,7 +160,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
             List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType);
             int expectedLength = null == columnDescriptors
-                    ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
+                    ? FirebirdCommandPacketFactory.getLength(commandType, payload,
                             context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
                     : FirebirdBatchMessageCommandPacket.getLength(payload, columnDescriptors);
             if (expectedLength < 0) {

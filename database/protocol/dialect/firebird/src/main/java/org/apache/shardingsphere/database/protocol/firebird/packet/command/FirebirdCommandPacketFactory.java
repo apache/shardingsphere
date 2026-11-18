@@ -36,9 +36,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -68,9 +65,9 @@ public final class FirebirdCommandPacketFactory {
                                                     final int connectionId) {
         switch (commandPacketType) {
             case INFO_DATABASE:
-                return FirebirdDatabaseInfoPacketType.createPacket(payload);
             case INFO_BLOB:
-                return FirebirdBlobInfoPacketType.createPacket(payload);
+            case INFO_SQL:
+                return new FirebirdInfoPacket(payload, commandPacketType);
             case TRANSACTION:
                 return new FirebirdStartTransactionPacket(payload);
             case CREATE_BLOB:
@@ -100,8 +97,6 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdExecuteStatementPacket(payload, protocolVersion);
             case FETCH:
                 return new FirebirdFetchStatementPacket(payload);
-            case INFO_SQL:
-                return FirebirdSQLInfoPacketType.createPacket(payload);
             case COMMIT:
                 return new FirebirdCommitTransactionPacket(payload);
             case ROLLBACK:
@@ -121,20 +116,21 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_SYNC:
                 return new FirebirdBatchSyncCommandPacket(payload);
             default:
+                rejectUnimplementedCommand(commandPacketType);
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
     }
     
     /**
-     * Get expected length of command packet including message type.
+     * Get length of command packet including message type.
      *
      * @param commandPacketType command packet type for Firebird
      * @param payload packet payload for Firebird
      * @param protocolVersion protocol version of Firebird
      * @param connectionId connection ID
-     * @return expected length of packet, or 0 if length is variable
+     * @return length of packet, or 0 if length is variable
      */
-    public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
+    public static int getLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
         switch (commandPacketType) {
             case INFO_DATABASE:
             case INFO_SQL:
@@ -188,7 +184,63 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_SYNC:
                 return FirebirdBatchSyncCommandPacket.getLength();
             default:
+                rejectUnimplementedCommand(commandPacketType);
                 return 0;
+        }
+    }
+    
+    private static void rejectUnimplementedCommand(final FirebirdCommandPacketType commandPacketType) {
+        switch (commandPacketType) {
+            case CREATE:
+            case COMPILE:
+            case START:
+            case START_AND_SEND:
+            case SEND:
+            case RECEIVE:
+            case RELEASE:
+            case PREPARE:
+            case RECONNECT:
+            case QUE_EVENTS:
+            case CANCEL_EVENTS:
+            case COMMIT_RETAINING:
+            case PREPARE2:
+            case CONNECT_REQUEST:
+            case DDL:
+            case GET_SLICE:
+            case PUT_SLICE:
+            case EXEC_IMMEDIATE:
+            case SET_CURSOR:
+            case START_AND_RECEIVE:
+            case START_SEND_AND_RECEIVE:
+            case EXEC_IMMEDIATE2:
+            case TRANSACT:
+            case DRDATABASE:
+            case SERVICE_ATTACH:
+            case SERVICE_DETACH:
+            case DETACH:
+            case PING:
+            case SERVICE_INFO:
+            case SERVICE_START:
+            case ROLLBACK_RETAINING:
+            case UPDATE_ACCOUNT_INFO:
+            case AUTHENTICATE_USER:
+            case TRUSTED_AUTH:
+            case CANCEL:
+            case ABORT_AUX_CONNECTION:
+            case CRYPT:
+            case CRYPT_KEY_CALLBACK:
+            case BATCH_REGBLOB:
+            case BATCH_BLOB_STREAM:
+            case BATCH_SET_BPB:
+            case REPL_DATA:
+            case FETCH_SCROLL:
+            case INFO_BATCH:
+            case INFO_CURSOR:
+            case INFO_TRANSACTION:
+            case INFO_REQUEST:
+                throw new UnsupportedOperationException(String.format("Operation %s is not implemented.", commandPacketType));
+            default:
+                break;
         }
     }
 }
