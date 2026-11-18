@@ -67,6 +67,15 @@ class FirebirdTransactionIdGeneratorTest {
     }
     
     @Test
+    void assertIsTransactionActiveResolvesLazyResponseSentinelToMostRecentTransaction() {
+        FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        assertTrue(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 0xFFFF));
+        FirebirdTransactionIdGenerator.getInstance().closeTransaction(CONNECTION_ID, transactionId);
+        assertFalse(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 0xFFFF));
+    }
+    
+    @Test
     void assertIsTransactionActiveWithoutRegisteredConnection() {
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         assertThrows(IllegalStateException.class, () -> FirebirdTransactionIdGenerator.getInstance().isTransactionActive(CONNECTION_ID, 1));
