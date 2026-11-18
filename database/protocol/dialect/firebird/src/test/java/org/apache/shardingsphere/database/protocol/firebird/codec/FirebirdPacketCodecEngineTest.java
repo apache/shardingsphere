@@ -284,19 +284,17 @@ class FirebirdPacketCodecEngineTest {
     @ParameterizedTest
     @EnumSource(value = FirebirdCommandPacketType.class, names = {"EXEC_IMMEDIATE2", "COMPILE", "BATCH_BLOB_STREAM", "INFO_BATCH", "INFO_CURSOR", "INFO_TRANSACTION",
             "INFO_REQUEST", "SERVICE_INFO", "EXEC_IMMEDIATE", "DETACH", "PING"})
-    void assertUnframedUnimplementedCommandWritesErrorAndClosesChannel(final FirebirdCommandPacketType type) {
+    void assertUnimplementedCommandQueuesTerminalResponse(final FirebirdCommandPacketType type) {
         EmbeddedChannel channel = new EmbeddedChannel(new PacketCodec(new FirebirdPacketCodecEngine()));
         channel.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
         channel.attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(FirebirdProtocolVersion.PROTOCOL_VERSION13);
         channel.attr(FirebirdConstant.CURRENT_CONNECTION).set(1);
         channel.writeInbound(Unpooled.buffer().writeInt(type.getValue()));
-        channel.runPendingTasks();
+        FirebirdGenericResponsePacket actualResponse = channel.readInbound();
+        assertThat(actualResponse.getErrorMessage(), containsString(String.format("Operation %s is not implemented.", type)));
+        channel.writeInbound(Unpooled.buffer().writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(7));
         assertNull(channel.readInbound());
-        ByteBuf response = channel.readOutbound();
-        assertThat(response.getInt(0), is(FirebirdCommandPacketType.RESPONSE.getValue()));
-        assertThat(response.toString(StandardCharsets.UTF_8), containsString(String.format("Operation %s is not implemented.", type)));
-        assertFalse(channel.isOpen());
-        response.release();
+        assertNull(channel.readOutbound());
         channel.finishAndReleaseAll();
     }
     

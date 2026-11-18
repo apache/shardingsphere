@@ -31,13 +31,13 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 public final class FirebirdInfoPacketExecutor implements CommandExecutor {
-
+    
     private final FirebirdCommandPacketType commandPacketType;
-
+    
     private final FirebirdInfoPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         switch (commandPacketType) {

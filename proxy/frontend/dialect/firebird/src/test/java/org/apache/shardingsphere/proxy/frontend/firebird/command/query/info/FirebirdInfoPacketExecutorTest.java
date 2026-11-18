@@ -39,19 +39,19 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdInfoPacketExecutorTest {
-
+    
     @Mock
     private FirebirdInfoPacket packet;
-
+    
     @Mock
     private ConnectionSession connectionSession;
-
+    
     @ParameterizedTest
     @MethodSource("infoCommands")
     void assertExecute(final FirebirdCommandPacketType commandType, final Class<?> expectedDataType) {
@@ -61,16 +61,16 @@ class FirebirdInfoPacketExecutorTest {
         Collection<DatabasePacket> responses = new FirebirdInfoPacketExecutor(commandType, packet, connectionSession).execute();
         assertThat(responses.size(), is(1));
         FirebirdGenericResponsePacket response = (FirebirdGenericResponsePacket) responses.iterator().next();
-        assertInstanceOf(expectedDataType, response.getData());
+        assertThat(response.getData(), isA(expectedDataType));
     }
-
+    
     private static Stream<Arguments> infoCommands() {
         return Stream.of(
                 Arguments.of(FirebirdCommandPacketType.INFO_BLOB, FirebirdBlobInfoReturnPacket.class),
                 Arguments.of(FirebirdCommandPacketType.INFO_DATABASE, FirebirdDatabaseInfoReturnPacket.class),
                 Arguments.of(FirebirdCommandPacketType.INFO_SQL, FirebirdSQLInfoReturnPacket.class));
     }
-
+    
     @Test
     void assertRejectsInvalidCommandType() {
         FirebirdInfoPacketExecutor executor = new FirebirdInfoPacketExecutor(FirebirdCommandPacketType.COMMIT, packet, connectionSession);

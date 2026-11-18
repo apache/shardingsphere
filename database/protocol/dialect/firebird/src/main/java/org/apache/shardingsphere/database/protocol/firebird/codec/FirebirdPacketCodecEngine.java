@@ -59,14 +59,20 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private FirebirdCommandPacketType pendingPacketType;
     
+    private boolean rejectedCommand;
+    
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= MESSAGE_TYPE_LENGTH;
+        return rejectedCommand || !pendingMessages.isEmpty() || readableBytes >= MESSAGE_TYPE_LENGTH;
     }
     
     @Override
     @HighFrequencyInvocation
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
+        if (rejectedCommand) {
+            in.skipBytes(in.readableBytes());
+            return;
+        }
         try {
             if (pendingMessages.isEmpty()) {
                 pendingPacketType = FirebirdCommandPacketType.valueOf(in.getInt(in.readerIndex()));
@@ -80,6 +86,12 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 }
             }
             addToBuffer(context, in, out);
+        } catch (final UnsupportedOperationException ex) {
+            rejectedCommand = true;
+            resetState();
+            in.skipBytes(in.readableBytes());
+            // Queue the terminal response behind the complete frames already decoded for this channel.
+            out.add(FirebirdErrorPacketFactory.newInstance(ex));
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -126,7 +138,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private void processPackets(final ChannelHandlerContext context, final ByteBuf buffer, final List<Object> out) {
         Charset charset = context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get();
         while (buffer.isReadable()) {
-            if (!isValidHeader(buffer.readableBytes())) {
+            if (buffer.readableBytes() < MESSAGE_TYPE_LENGTH) {
                 pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
                 return;
             }

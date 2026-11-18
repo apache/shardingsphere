@@ -17,17 +17,23 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
+import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
+import org.apache.shardingsphere.proxy.frontend.netty.ProxyFlowControlHandler;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**
@@ -41,6 +47,17 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     private final FirebirdCommandExecuteEngine commandExecuteEngine = new FirebirdCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine codecEngine = new FirebirdPacketCodecEngine();
+    
+    @Override
+    public void initChannel(final Channel channel) {
+        channel.pipeline().addAfter(ProxyFlowControlHandler.class.getSimpleName(), null, new SimpleChannelInboundHandler<FirebirdGenericResponsePacket>() {
+            
+            @Override
+            protected void channelRead0(final ChannelHandlerContext context, final FirebirdGenericResponsePacket error) {
+                context.writeAndFlush(error).addListener(ChannelFutureListener.CLOSE);
+            }
+        });
+    }
     
     @Override
     public void release(final ConnectionSession connectionSession) {
