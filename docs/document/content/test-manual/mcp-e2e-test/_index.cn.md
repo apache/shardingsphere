@@ -40,7 +40,7 @@ MCP E2E workflow 包含三个相互独立的测试套件：
 构建并安装 MCP E2E 依赖和 distribution：
 
 ```bash
-./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+./mvnw -pl test/e2e/mcp,distribution/mcp -Prelease,default-dep -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
 构建本地 distribution image：

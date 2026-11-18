@@ -49,7 +49,7 @@ public final class PackagedDistributionTestSupport {
     
     private static final String DIST_PATTERN = "apache-shardingsphere-mcp-";
     
-    private static final String DISTRIBUTION_PACKAGE_COMMAND = "./mvnw -pl distribution/mcp -am -DskipTests package";
+    private static final String DISTRIBUTION_PACKAGE_COMMAND = "./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package";
     
     private static final String DOCKER_BIND_HOST = "0.0.0.0";
     

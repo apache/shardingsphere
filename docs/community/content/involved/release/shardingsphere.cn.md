@@ -238,7 +238,9 @@ export GPG_TTY=$(tty)
 ./mvnw release:prepare -P-dev,release,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--P-dev,release,all：选择 release 的 profile，这个 profile 会打包默认依赖源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
+-P-dev,release,all：启用发行打包和 `all` 依赖集合，构建源码包、jar 文件及包括 MCP 在内的二进制发行包。
+
+普通 `release` profile 打包不要求 GPG 签名凭据；正式候选包的 `.asc` 文件沿用 `release:perform` 的 `apache-release` 签名流程生成。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
@@ -321,7 +323,7 @@ svn --username=${APACHE LDAP 用户名} commit -m 'Add gpg key for ${APACHE LDAP
 mkdir ${RELEASE.VERSION}
 ```
 
-将源码包、二进制包和 ShardingSphere-Proxy 可执行二进制包添加至 SVN 工作目录。
+将源码包及 JDBC、Proxy、Agent、MCP 二进制包添加至 SVN 工作目录，同时收集各自的 `.asc` 和 `.sha512` 文件。
 
 ```shell
 cd ${RELEASE.VERSION}
@@ -329,6 +331,7 @@ cp -f ~/shardingsphere/distribution/src/target/*.zip* .
 cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* .
 cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* .
 cp -f ~/shardingsphere/distribution/agent/target/*.tar.gz* .
+cp -f ~/shardingsphere/distribution/mcp/target/*.tar.gz* .
 ```
 
 ### 4. 提交 Apache SVN
@@ -384,6 +387,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz
 ```
 
 ### 3. 检查发布文件内容
@@ -413,6 +417,7 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
 - `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`
 - `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
 - `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
+- `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz`
 
 进行如下检查:
 
@@ -424,6 +429,22 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
   - 依赖许可证的完整版全部在 `license` 目录；
   - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
+
+MCP 还需在新的空目录中验证实际归档的解包结果，不能只检查构建目录或由测试 helper 修复后的副本。
+确认解包目录 `apache-shardingsphere-mcp-${RELEASE.VERSION}/` 包含 `bin`、`conf`、`lib`、`plugins`、`logs`、`licenses`、`LICENSE` 和 `NOTICE`，并检查 `all` profile 对应的数据库依赖。
+在 Unix 系统上，确认 `bin/start.sh` 和 `bin/docker-entrypoint.sh` 在归档中的权限均为 `0755`，并在不补执行 `chmod` 的情况下启动 MCP：
+
+```shell
+MCP_VERIFY_DIR=$(mktemp -d)
+tar -xzf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz -C "${MCP_VERIFY_DIR}"
+cd "${MCP_VERIFY_DIR}/apache-shardingsphere-mcp-${RELEASE.VERSION}"
+test -x bin/start.sh
+test -x bin/docker-entrypoint.sh
+./bin/start.sh conf/mcp-http.yaml
+```
+
+确认 MCP HTTP 服务可以启动，完成检查后停止进程。
+在 Windows 系统上，使用 `bin\start.bat conf\mcp-http.yaml` 验证启动。
 
 ## 发起投票
 
@@ -606,6 +627,7 @@ docker logout
 3.8 ShardingSphere MCP 发布
 
 ShardingSphere MCP 通过仓库中的 [`.github/workflows/release-mcp.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/release-mcp.yml) workflow 发布。
+项目二进制候选包使用 `release,all`，该 OCI 镜像和 MCP Registry workflow 继续使用 `release,default-dep`，保留现有镜像的默认数据库依赖集合。
 该 workflow 会构建 MCP 发行包、把 `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}` 推送到 GHCR，
 稳定版额外更新 `latest`，然后通过 GitHub OIDC 把 `mcp/server.json` 发布到官方 MCP Registry。
 

@@ -10,7 +10,7 @@ ShardingSphere-MCP 可以通过源码构建的独立发行包运行，也可以�
 构建发行包：
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package
+./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
 发行包目录包含：

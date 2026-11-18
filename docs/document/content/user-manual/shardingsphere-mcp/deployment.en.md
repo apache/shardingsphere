@@ -10,7 +10,7 @@ ShardingSphere-MCP can run from the standalone distribution built from source or
 Build the distribution:
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package
+./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
 The distribution directory contains:

@@ -78,7 +78,9 @@ jobs:
           type: source
           image: apache/shardingsphere-mcp-e2e
       - name: Build MCP E2E Test Dependencies and Distribution
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -Prelease,default-dep -am install -DskipTests -DskipITs -Dspotless.skip=true
+      - name: Verify MCP Distribution Archive
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Dit.test=PackagedArchiveE2EIT -De2e.run.type=DOCKER -Dspotless.skip=true
       - name: Build MCP Distribution Image
         if: steps.prepare-image.outputs.cache-hit != 'true'
         env:
@@ -145,7 +147,7 @@ jobs:
           restore-maven-repository: 'false'
           restore-distribution: 'true'
       - name: Run MCP Functionality E2E
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.functionality -De2e.run.type=DOCKER -Dmcp.e2e.container.image="${{ steps.download-distribution.outputs.image }}" -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -Dspotless.skip=true
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp verify -Pe2e.mcp.functionality '-Dit.test=*IT,!PackagedArchiveE2EIT' -De2e.run.type=DOCKER -Dmcp.e2e.container.image="${{ steps.download-distribution.outputs.image }}" -Dmcp.e2e.artifact-root="${{ github.workspace }}/test/e2e/mcp/target/functionality-e2e" -Dspotless.skip=true
       - name: Upload MCP Functionality E2E Artifacts
         if: always()
         uses: actions/upload-artifact@v6

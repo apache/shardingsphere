@@ -80,90 +80,115 @@
         </dependency>
     </dependencies>
     
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven-dependency-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>copy-mcp-libraries</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <includeScope>runtime</includeScope>
-                            <outputDirectory>${project.build.directory}/apache-shardingsphere-mcp-${project.version}/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-runtime-assets</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/apache-shardingsphere-mcp-${project.version}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/src/main/resources</directory>
-                                </resource>
-                                <resource>
-                                    <directory>${project.basedir}/src/main/bin</directory>
-                                    <targetPath>bin</targetPath>
-                                </resource>
-                                <resource>
-                                    <directory>${project.basedir}/src/main/release-docs</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>${maven-antrun-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>reset-runtime-layout</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <target>
-                                <delete dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}" />
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>prepare-runtime-layout</id>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/plugins" />
-                                <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />
-                                <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/start.sh" perm="755" />
-                                <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/docker-entrypoint.sh" perm="755" />
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
     <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <finalName>apache-shardingsphere-${project.version}</finalName>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>${maven-dependency-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-mcp-libraries</id>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <includeScope>runtime</includeScope>
+                                    <outputDirectory>${project.build.directory}/apache-shardingsphere-mcp-${project.version}/lib</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-assets</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/apache-shardingsphere-mcp-${project.version}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/resources</directory>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/bin</directory>
+                                            <targetPath>bin</targetPath>
+                                        </resource>
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/release-docs</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${maven-antrun-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>reset-runtime-layout</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <target>
+                                        <delete dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>prepare-runtime-layout</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/plugins" />
+                                        <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />
+                                        <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/start.sh" perm="755" />
+                                        <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/docker-entrypoint.sh" perm="755" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>shardingsphere-mcp-bin</id>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/shardingsphere-mcp-binary-distribution.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>net.nicoulaj.maven.plugins</groupId>
+                        <artifactId>checksum-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>default-dep</id>
             <activation>
@@ -288,7 +313,7 @@
                 <dependency>
                     <groupId>org.firebirdsql.jdbc</groupId>
                     <artifactId>jaybird</artifactId>
-                    <scope>runtime</scope>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>com.facebook.presto</groupId>
@@ -302,6 +327,25 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-assets</id>
+                                <configuration>
+                                    <resources combine.children="append">
+                                        <resource>
+                                            <directory>${project.basedir}/src/main/release-docs-all</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>db-postgresql</id>
@@ -380,7 +424,7 @@
                 <dependency>
                     <groupId>org.firebirdsql.jdbc</groupId>
                     <artifactId>jaybird</artifactId>
-                    <scope>runtime</scope>
+                    <scope>provided</scope>
                 </dependency>
             </dependencies>
         </profile>

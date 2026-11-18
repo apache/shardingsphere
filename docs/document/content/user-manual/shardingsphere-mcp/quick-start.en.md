@@ -16,7 +16,7 @@ This page shows how to build ShardingSphere-MCP from source, connect it to a use
 Run the following command from the repository root:
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package
+./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
 Enter the distribution directory:

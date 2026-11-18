@@ -86,7 +86,7 @@ jobs:
       - name: Run and Install MCP JDK 21 Subchain Tests
         run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false
       - name: Package MCP Distribution
-        run: ./mvnw -pl distribution/mcp -DskipTests package
+        run: ./mvnw -pl distribution/mcp -Prelease,default-dep -DskipTests package
       - name: Build Local MCP Docker Image
         run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-release:local distribution/mcp/target
       - name: Run MCP Distribution E2E
@@ -100,7 +100,7 @@ jobs:
           fi
           DISTRIBUTION_HOME=$(cd "${DISTRIBUTION_HOME}" && pwd)
           ./mvnw -pl test/e2e/mcp verify -Dspotless.skip=true \
-            -Dit.test=PackagedDistributionE2EIT \
+            -Dit.test=PackagedArchiveE2EIT,PackagedDistributionE2EIT \
             -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image=shardingsphere-mcp-release:local \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}"

@@ -16,7 +16,7 @@ weight = 1
 在仓库根目录执行：
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package
+./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
 进入发行包目录：
