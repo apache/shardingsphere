@@ -93,17 +93,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
-          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
-            echo "Packaged MCP distribution was not found." 1>&2
-            exit 1
-          fi
-          DISTRIBUTION_HOME=$(cd "${DISTRIBUTION_HOME}" && pwd)
           ./mvnw -pl test/e2e/mcp verify -Dspotless.skip=true \
             -Dit.test=PackagedArchiveE2EIT,PackagedDistributionE2EIT \
             -De2e.run.type=DOCKER \
-            -Dmcp.e2e.container.image=shardingsphere-mcp-release:local \
-            -Dmcp.distribution.home="${DISTRIBUTION_HOME}"
+            -Dmcp.e2e.container.image=shardingsphere-mcp-release:local
       - name: Prepare MCP Registry Metadata
         shell: bash
         run: |

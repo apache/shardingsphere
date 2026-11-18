@@ -14,8 +14,8 @@ Use JDK 21 or later and run the following command from the source repository roo
   -Dmaven.test.skip=true package
 ```
 
-With the `release` profile enabled, `package` generates a standalone runtime directory.
-Ordinary compilation, testing, and installation do not assemble the distribution directory without `release`.
+With the `release` profile enabled, `package` generates the binary distribution and its SHA-512 checksum.
+Ordinary compilation, testing, and installation do not generate the distribution without `release`.
 
 ## Profile Selection
 
@@ -51,17 +51,23 @@ The `all` profile retains the Presto and ClickHouse connectors without bundling 
 
 ## Docker Image
 
-Build images with `distribution/mcp/Dockerfile`, using `distribution/mcp/target` as the build context after generating the MCP runtime directory.
+Build images with `distribution/mcp/Dockerfile`, using `distribution/mcp/target` as the build context after generating the MCP binary distribution.
+The Dockerfile extracts the distribution archive during the image build.
 
 ## Artifacts
 
-- Runtime directory: `distribution/mcp/target/apache-shardingsphere-mcp-<version>/`
 - Binary distribution: `distribution/mcp/target/apache-shardingsphere-<version>-shardingsphere-mcp-bin.tar.gz`
 - SHA-512 checksum: the binary distribution filename followed by `.sha512`.
 
-`<version>` is the project version of the source being built.
+Replace `<version>` and `${version}` with the project version of the source being built.
 
-The runtime directory contains `bin`, `conf`, `lib`, `plugins`, and `logs`.
+Extract the distribution before running it locally:
+
+```bash
+tar -xzf distribution/mcp/target/apache-shardingsphere-${version}-shardingsphere-mcp-bin.tar.gz -C distribution/mcp/target
+```
+
+The extracted `apache-shardingsphere-mcp-<version>/` directory contains `bin`, `conf`, `lib`, `plugins`, and `logs`.
 
 The archive preserves the runtime directory name, contents, and startup script permissions, and participates in Maven `install` as the `shardingsphere-mcp-bin` attached artifact.
 The project release uses `-Prelease,all`; default builds and images continue to use `-Prelease,default-dep`.

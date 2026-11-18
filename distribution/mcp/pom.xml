@@ -87,44 +87,8 @@
                 <finalName>apache-shardingsphere-${project.version}</finalName>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${maven-antrun-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>reset-runtime-layout</id>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <target>
-                                        <delete dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}" />
-                                        <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/plugins" />
-                                        <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
-                            <execution>
-                                <id>shardingsphere-mcp-runtime</id>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>src/main/assembly/shardingsphere-mcp-runtime-distribution.xml</descriptor>
-                                    </descriptors>
-                                    <finalName>apache-shardingsphere-mcp-${project.version}</finalName>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <attach>false</attach>
-                                </configuration>
-                            </execution>
                             <execution>
                                 <id>shardingsphere-mcp-bin</id>
                                 <goals>

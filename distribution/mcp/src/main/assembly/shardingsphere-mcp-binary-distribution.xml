@@ -26,22 +26,68 @@
     
     <fileSets>
         <fileSet>
-            <directory>${project.build.directory}/apache-shardingsphere-mcp-${project.version}</directory>
-            <outputDirectory>/</outputDirectory>
+            <directory>src/main/bin</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/bin</directory>
             <excludes>
-                <exclude>bin/*.sh</exclude>
+                <exclude>*.sh</exclude>
             </excludes>
+            <outputDirectory>bin</outputDirectory>
             <fileMode>0644</fileMode>
             <directoryMode>0755</directoryMode>
         </fileSet>
         <fileSet>
-            <directory>${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin</directory>
-            <outputDirectory>bin</outputDirectory>
-            <includes>
-                <include>*.sh</include>
-            </includes>
-            <fileMode>0755</fileMode>
+            <directory>src/main/resources</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/release-docs</directory>
+            <outputDirectory>/</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>plugins</outputDirectory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>lib</outputDirectory>
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
             <directoryMode>0755</directoryMode>
         </fileSet>
     </fileSets>
+    
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+            <scope>runtime</scope>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+    </dependencySets>
 </assembly>

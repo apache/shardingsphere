@@ -19,9 +19,10 @@ weight = 1
 ./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
-进入发行包目录：
+解压并进入发行包目录：
 
 ```bash
+tar -xzf distribution/mcp/target/apache-shardingsphere-${version}-shardingsphere-mcp-bin.tar.gz -C distribution/mcp/target
 cd distribution/mcp/target/apache-shardingsphere-mcp-${version}
 ```
 

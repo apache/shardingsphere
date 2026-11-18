@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.compress.archivers.examples.Expander;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
@@ -40,6 +42,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Packaged distribution support for MCP E2E tests.
@@ -48,6 +51,10 @@ import java.util.stream.Stream;
 public final class PackagedDistributionTestSupport {
     
     private static final String DIST_PATTERN = "apache-shardingsphere-mcp-";
+    
+    private static final String ARCHIVE_PREFIX = "apache-shardingsphere-";
+    
+    private static final String ARCHIVE_SUFFIX = "-shardingsphere-mcp-bin.tar.gz";
     
     private static final String DISTRIBUTION_PACKAGE_COMMAND = "./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package";
     
@@ -72,83 +79,21 @@ public final class PackagedDistributionTestSupport {
         return createPreparedDistribution(workingHome, transport, runtimeDatabases);
     }
     
-    /**
-     * Prepare a reusable packaged MCP distribution home with supplied runtime databases.
-     *
-     * @param workingHome reusable working home
-     * @param transport runtime transport
-     * @param runtimeDatabases runtime databases
-     * @return prepared packaged distribution
-     * @throws IOException I/O exception
-     */
-    public static PreparedPackagedDistribution prepareReusable(final Path workingHome, final RuntimeTransport transport,
-                                                               final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
-        Path actualWorkingHome = prepareReusableWorkingHome(workingHome);
-        return createPreparedDistribution(actualWorkingHome, transport, runtimeDatabases);
+    private static Path prepareWorkingHome(final Path tempDir) throws IOException {
+        Path result = tempDir.resolve("distribution-home");
+        prepareDistributionHome(result);
+        resetRuntimeDirectories(result);
+        makeStartScriptExecutable(result);
+        return result;
     }
     
-    private static PreparedPackagedDistribution createPreparedDistribution(final Path workingHome, final RuntimeTransport transport,
-                                                                           final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
-        Path configFile = rewriteConfiguration(workingHome, transport, runtimeDatabases);
-        return new PreparedPackagedDistribution(workingHome, configFile, transport);
-    }
-    
-    /**
-     * Create a mounted configuration file for a Dockerized MCP distribution.
-     *
-     * @param targetFile target config file
-     * @param transport runtime transport
-     * @param runtimeDatabases runtime databases
-     * @return created config file
-     * @throws IOException I/O exception
-     */
-    public static Path createDockerConfigurationFile(final Path targetFile, final RuntimeTransport transport,
-                                                     final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
-        MCPLaunchConfiguration config = RuntimeTransport.HTTP == transport
-                ? new MCPLaunchConfiguration(new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH), runtimeDatabases)
-                : new MCPLaunchConfiguration(runtimeDatabases);
-        return writeConfiguration(targetFile, config);
-    }
-    
-    private static Path writeConfiguration(final Path targetFile, final MCPLaunchConfiguration config) throws IOException {
-        Files.writeString(targetFile, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(config)));
-        return targetFile;
-    }
-    
-    private static Optional<Path> findDistributionHome() throws IOException {
+    private static void prepareDistributionHome(final Path workingHome) throws IOException {
         Optional<Path> configuredDistributionHome = resolveConfiguredDistributionHome();
         if (configuredDistributionHome.isPresent()) {
-            return configuredDistributionHome;
+            copyDistributionHome(configuredDistributionHome.get(), workingHome);
+        } else {
+            unpackDistributionArchive(findBuiltDistributionArchive().orElseThrow(PackagedDistributionTestSupport::createMissingDistributionHomeException), workingHome);
         }
-        return findBuiltDistributionHome();
-    }
-    
-    private static Path prepareWorkingHome(final Path tempDir) throws IOException {
-        Path sourceDistributionHome = findRequiredDistributionHome();
-        Path workingHome = copyDistributionHome(sourceDistributionHome, tempDir.resolve("distribution-home"));
-        resetRuntimeDirectories(workingHome);
-        makeStartScriptExecutable(workingHome);
-        return workingHome;
-    }
-    
-    private static Path prepareReusableWorkingHome(final Path workingHome) throws IOException {
-        if (!Files.exists(workingHome)) {
-            copyDistributionHome(findRequiredDistributionHome(), workingHome);
-        }
-        resetRuntimeDirectories(workingHome);
-        makeStartScriptExecutable(workingHome);
-        return workingHome;
-    }
-    
-    private static Path findRequiredDistributionHome() throws IOException {
-        return findDistributionHome().orElseThrow(PackagedDistributionTestSupport::createMissingDistributionHomeException);
-    }
-    
-    private static IllegalStateException createMissingDistributionHomeException() {
-        Path expectedTargetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
-        return new IllegalStateException("Packaged MCP distribution was not found. Run `" + DISTRIBUTION_PACKAGE_COMMAND
-                + "` first or set `mcp.distribution.home` in env/e2e-env.properties or pass "
-                + "`-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `" + expectedTargetDirectory + "`.");
     }
     
     private static Optional<Path> resolveConfiguredDistributionHome() {
@@ -171,16 +116,6 @@ public final class PackagedDistributionTestSupport {
         return findRepositoryRoot().resolve(result).normalize();
     }
     
-    private static Optional<Path> findBuiltDistributionHome() throws IOException {
-        Path targetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
-        if (!Files.isDirectory(targetDirectory)) {
-            return Optional.empty();
-        }
-        try (Stream<Path> paths = Files.list(targetDirectory)) {
-            return paths.filter(Files::isDirectory).filter(each -> each.getFileName().toString().startsWith(DIST_PATTERN)).min(Comparator.comparing(Path::toString));
-        }
-    }
-    
     private static Path findRepositoryRoot() {
         String multiModuleProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory", "").trim();
         if (!multiModuleProjectDirectory.isEmpty()) {
@@ -196,7 +131,7 @@ public final class PackagedDistributionTestSupport {
         throw new IllegalStateException("Repository root was not found.");
     }
     
-    private static Path copyDistributionHome(final Path source, final Path target) throws IOException {
+    private static void copyDistributionHome(final Path source, final Path target) throws IOException {
         Files.walkFileTree(source, new SimpleFileVisitor<>() {
             
             @Override
@@ -213,20 +148,42 @@ public final class PackagedDistributionTestSupport {
                 return FileVisitResult.CONTINUE;
             }
         });
-        return target;
+    }
+    
+    private static Optional<Path> findBuiltDistributionArchive() throws IOException {
+        Path targetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
+        if (!Files.isDirectory(targetDirectory)) {
+            return Optional.empty();
+        }
+        try (Stream<Path> paths = Files.list(targetDirectory)) {
+            return paths.filter(Files::isRegularFile).filter(each -> each.getFileName().toString().startsWith(ARCHIVE_PREFIX) && each.getFileName().toString().endsWith(ARCHIVE_SUFFIX))
+                    .min(Comparator.comparing(Path::toString));
+        }
+    }
+    
+    private static IllegalStateException createMissingDistributionHomeException() {
+        Path expectedTargetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
+        return new IllegalStateException("Packaged MCP distribution archive was not found. Run `" + DISTRIBUTION_PACKAGE_COMMAND
+                + "` first or set `mcp.distribution.home` in env/e2e-env.properties or pass "
+                + "`-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `" + expectedTargetDirectory + "`.");
+    }
+    
+    private static void unpackDistributionArchive(final Path archive, final Path workingHome) throws IOException {
+        Files.createDirectories(workingHome.getParent());
+        Path unpackDirectory = Files.createTempDirectory(workingHome.getParent(), "distribution-archive-");
+        try (TarArchiveInputStream input = new TarArchiveInputStream(new GZIPInputStream(Files.newInputStream(archive)))) {
+            new Expander().expand(input, unpackDirectory);
+        }
+        String archiveName = archive.getFileName().toString();
+        String version = archiveName.substring(ARCHIVE_PREFIX.length(), archiveName.length() - ARCHIVE_SUFFIX.length());
+        Files.move(unpackDirectory.resolve(DIST_PATTERN + version), workingHome);
+        Files.delete(unpackDirectory);
     }
     
     private static void resetRuntimeDirectories(final Path workingHome) throws IOException {
         deleteDirectoryIfExists(workingHome.resolve("data"));
         deleteDirectoryIfExists(workingHome.resolve("logs"));
         deleteDirectoryIfExists(workingHome.resolve("plugins"));
-    }
-    
-    private static void makeStartScriptExecutable(final Path workingHome) {
-        Path startScript = workingHome.resolve("bin/start.sh");
-        if (Files.exists(startScript)) {
-            startScript.toFile().setExecutable(true);
-        }
     }
     
     private static void deleteDirectoryIfExists(final Path path) throws IOException {
@@ -238,6 +195,19 @@ public final class PackagedDistributionTestSupport {
                 Files.deleteIfExists(each);
             }
         }
+    }
+    
+    private static void makeStartScriptExecutable(final Path workingHome) {
+        Path startScript = workingHome.resolve("bin/start.sh");
+        if (Files.exists(startScript)) {
+            startScript.toFile().setExecutable(true);
+        }
+    }
+    
+    private static PreparedPackagedDistribution createPreparedDistribution(final Path workingHome, final RuntimeTransport transport,
+                                                                           final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
+        Path configFile = rewriteConfiguration(workingHome, transport, runtimeDatabases);
+        return new PreparedPackagedDistribution(workingHome, configFile, transport);
     }
     
     private static Path rewriteConfiguration(final Path workingHome, final RuntimeTransport transport,
@@ -259,6 +229,52 @@ public final class PackagedDistributionTestSupport {
         }
         HttpTransportConfiguration sourceHttpTransport = sourceConfig.getHttpTransport();
         return new MCPLaunchConfiguration(new HttpTransportConfiguration(sourceHttpTransport.getBindHost(), 0, sourceHttpTransport.getEndpointPath()), actualRuntimeDatabases);
+    }
+    
+    private static Path writeConfiguration(final Path targetFile, final MCPLaunchConfiguration config) throws IOException {
+        Files.writeString(targetFile, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(config)));
+        return targetFile;
+    }
+    
+    /**
+     * Prepare a reusable packaged MCP distribution home with supplied runtime databases.
+     *
+     * @param workingHome reusable working home
+     * @param transport runtime transport
+     * @param runtimeDatabases runtime databases
+     * @return prepared packaged distribution
+     * @throws IOException I/O exception
+     */
+    public static PreparedPackagedDistribution prepareReusable(final Path workingHome, final RuntimeTransport transport,
+                                                               final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
+        Path actualWorkingHome = prepareReusableWorkingHome(workingHome);
+        return createPreparedDistribution(actualWorkingHome, transport, runtimeDatabases);
+    }
+    
+    private static Path prepareReusableWorkingHome(final Path workingHome) throws IOException {
+        if (!Files.exists(workingHome)) {
+            prepareDistributionHome(workingHome);
+        }
+        resetRuntimeDirectories(workingHome);
+        makeStartScriptExecutable(workingHome);
+        return workingHome;
+    }
+    
+    /**
+     * Create a mounted configuration file for a Dockerized MCP distribution.
+     *
+     * @param targetFile target config file
+     * @param transport runtime transport
+     * @param runtimeDatabases runtime databases
+     * @return created config file
+     * @throws IOException I/O exception
+     */
+    public static Path createDockerConfigurationFile(final Path targetFile, final RuntimeTransport transport,
+                                                     final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
+        MCPLaunchConfiguration config = RuntimeTransport.HTTP == transport
+                ? new MCPLaunchConfiguration(new HttpTransportConfiguration(DOCKER_BIND_HOST, DOCKER_HTTP_PORT, DEFAULT_ENDPOINT_PATH), runtimeDatabases)
+                : new MCPLaunchConfiguration(runtimeDatabases);
+        return writeConfiguration(targetFile, config);
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport) {

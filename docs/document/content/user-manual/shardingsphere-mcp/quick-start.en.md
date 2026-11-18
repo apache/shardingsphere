@@ -19,9 +19,10 @@ Run the following command from the repository root:
 ./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
-Enter the distribution directory:
+Extract the archive and enter the distribution directory:
 
 ```bash
+tar -xzf distribution/mcp/target/apache-shardingsphere-${version}-shardingsphere-mcp-bin.tar.gz -C distribution/mcp/target
 cd distribution/mcp/target/apache-shardingsphere-mcp-${version}
 ```
 

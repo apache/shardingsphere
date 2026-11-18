@@ -13,7 +13,14 @@ Build the distribution:
 ./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
-The distribution directory contains:
+Extract the distribution:
+
+```bash
+tar -xzf distribution/mcp/target/apache-shardingsphere-${version}-shardingsphere-mcp-bin.tar.gz -C distribution/mcp/target
+```
+
+Replace `${version}` with the built distribution version.
+The extracted distribution directory contains:
 
 - `bin/`: startup scripts.
 - `conf/`: default configuration and logging configuration.

@@ -14,12 +14,12 @@ pre = "<b>10.5. </b>"
   -Dmaven.test.skip=true package
 ```
 
-启用 `release` profile 后，`package` 会生成独立运行目录。
-未启用 `release` 时，普通编译、测试和安装不会组装发行目录。
+启用 `release` profile 后，`package` 会生成二进制发行包和 SHA-512 校验文件。
+未启用 `release` 时，普通编译、测试和安装不会生成发行包。
 
 ## Profile 选择
 
-`release` 控制发行目录组装，数据库依赖由 `default-dep`、`all` 或 `db-*` profile 选择。
+`release` 控制发行打包，数据库依赖由 `default-dep`、`all` 或 `db-*` profile 选择。
 显式启用 `release` 会使同一 POM 中 `activeByDefault` 的 `default-dep` 不再自动激活，因此默认发行构建需使用 `-Prelease,default-dep`。
 定制数据库时，将其替换为 `-Prelease,db-postgresql`、其他已有 `db-*` 组合或 `-Prelease,all`。
 
@@ -51,17 +51,23 @@ pre = "<b>10.5. </b>"
 
 ## Docker 镜像
 
-镜像通过 `distribution/mcp/Dockerfile` 构建，以 `distribution/mcp/target` 为构建上下文，需先生成 MCP 运行目录。
+镜像通过 `distribution/mcp/Dockerfile` 构建，以 `distribution/mcp/target` 为构建上下文，需先生成 MCP 二进制发行包。
+Dockerfile 在构建镜像时解压发行包。
 
 ## 制品
 
-- 运行目录：`distribution/mcp/target/apache-shardingsphere-mcp-<version>/`
 - 二进制发行包：`distribution/mcp/target/apache-shardingsphere-<version>-shardingsphere-mcp-bin.tar.gz`
 - SHA-512 校验文件：与发行包同名，追加 `.sha512`。
 
-`<version>` 为所构建源码的项目版本。
+将 `<version>` 和 `${version}` 替换为所构建源码的项目版本。
 
-运行目录包含 `bin`、`conf`、`lib`、`plugins` 和 `logs`。
+本地运行前先解压发行包：
+
+```bash
+tar -xzf distribution/mcp/target/apache-shardingsphere-${version}-shardingsphere-mcp-bin.tar.gz -C distribution/mcp/target
+```
+
+解压后的 `apache-shardingsphere-mcp-<version>/` 目录包含 `bin`、`conf`、`lib`、`plugins` 和 `logs`。
 
 归档保留运行目录的名称、内容和启动脚本权限，并作为 `shardingsphere-mcp-bin` 附属制品参与 Maven `install`。
 项目正式发布使用 `-Prelease,all`；默认构建和镜像仍使用 `-Prelease,default-dep`。
