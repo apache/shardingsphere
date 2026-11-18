@@ -37,5 +37,14 @@ public final class ExternalSQLTestParameter {
     private final String reportType;
     
     @Setter
-    private boolean nativeSyntaxError;
+    private ParseExpectation parseExpectation = ParseExpectation.SUPPORTED;
+    
+    /**
+     * Expected outcome of the parser regression case.
+     */
+    public enum ParseExpectation {
+        SUPPORTED,
+        NATIVE_REJECTION,
+        NATIVE_NEGATIVE_ACCEPTED
+    }
 }

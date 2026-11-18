@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
-import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter.ParseExpectation;
 import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalTestParameterLoader;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy.ExternalTestParameterLoadStrategy;
@@ -43,8 +43,9 @@ import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Optional;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class ExternalSQLParserIT {
     
@@ -52,31 +53,22 @@ public abstract class ExternalSQLParserIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     @Execution(ExecutionMode.CONCURRENT)
-    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType, final boolean nativeSyntaxError) throws IOException {
+    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType, final ParseExpectation expectation) throws IOException {
         boolean isSuccess = false;
         try (
                 SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType)
                         .create(databaseType, SQLParserExternalITEnvironment.getInstance().getResultPath())) {
             try {
-                Optional<ParseASTNode> parseASTNode = parseSQL(databaseType, sql, nativeSyntaxError);
-                if (parseASTNode.isPresent()) {
-                    new SQLStatementVisitorEngine(databaseType).visit(parseASTNode.get());
-                    isSuccess = true;
+                SQLParserEngine parser = new SQLParserEngine(databaseType, new CacheOption(128, 1024L));
+                if (ParseExpectation.NATIVE_REJECTION == expectation) {
+                    assertThrows(SQLParsingException.class, () -> parser.parse(sql, false));
+                    return;
                 }
+                new SQLStatementVisitorEngine(databaseType).visit(parser.parse(sql, false));
+                isSuccess = true;
             } finally {
                 resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
             }
-        }
-    }
-    
-    private Optional<ParseASTNode> parseSQL(final String databaseType, final String sql, final boolean nativeSyntaxError) {
-        try {
-            return Optional.of(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
-        } catch (final SQLParsingException ex) {
-            if (nativeSyntaxError) {
-                return Optional.empty();
-            }
-            throw ex;
         }
     }
     
@@ -90,7 +82,7 @@ public abstract class ExternalSQLParserIT {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) throws ReflectiveOperationException {
             ExternalCaseSettings settings = context.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
             Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
-            return getTestParameters(settings).map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType(), each.isNativeSyntaxError()));
+            return getTestParameters(settings).map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType(), each.getParseExpectation()));
         }
         
         private Stream<ExternalSQLTestParameter> getTestParameters(final ExternalCaseSettings settings) throws ReflectiveOperationException {

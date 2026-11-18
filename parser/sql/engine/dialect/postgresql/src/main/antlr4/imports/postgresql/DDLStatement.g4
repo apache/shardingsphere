@@ -233,7 +233,11 @@ checkOption
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | aExpr
+    : CURRENT_TIMESTAMP | defaultComparison (IS NOT? DISTINCT FROM defaultComparison)?
+    ;
+
+defaultComparison
+    : bExpr (comparisonOperator bExpr)?
     ;
 
 sequenceOptions
@@ -1665,7 +1669,11 @@ createServer
     ;
 
 createStatistics
-    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON exprList FROM fromList
+    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON statisticsExpression (COMMA_ statisticsExpression)* FROM fromList
+    ;
+
+statisticsExpression
+    : colId | funcExprWindowless | LP_ aExpr RP_
     ;
 
 createSubscription
