@@ -40,6 +40,8 @@ For a custom database selection, replace it with `-Prelease,db-postgresql`, anot
 
 The `all` and `db-firebird` profiles retain the Firebird connector but do not bundle the Jaybird JDBC driver; add the driver separately under `plugins/`.
 
+The `all` profile retains the Presto and ClickHouse connectors without bundling their JDBC drivers; use `-Prelease,all,db-presto,db-clickhouse` to bundle those drivers, or add them separately under `plugins/`.
+
 ### Dependency Sets
 
 | Profile       | Purpose                                                                                                       |

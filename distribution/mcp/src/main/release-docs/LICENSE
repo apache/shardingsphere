@@ -286,3 +286,19 @@ applicable license texts are included under licenses/.
     mcp-json-jackson2 1.1.2: https://github.com/modelcontextprotocol/java-sdk, MIT
     reactive-streams 1.0.4: https://github.com/reactive-streams/reactive-streams-jvm, MIT-0
     slf4j-api 2.0.17: https://www.slf4j.org/, MIT
+
+========================================================================
+Optional Presto JDBC Driver
+========================================================================
+
+For binary distributions that include presto-jdbc (https://prestodb.io/), its shaded components use BSD-3-Clause, MIT, MPL-2.0, GPL version 2 with the Classpath exception, and CDDL version 1.0.
+For those distributions, the license texts, notices, selected licenses, and source locations are described in licenses/LICENSE-presto-jdbc.txt.
+
+========================================================================
+Optional ClickHouse JDBC Driver
+========================================================================
+
+For binary distributions that include clickhouse-jdbc (https://github.com/ClickHouse/clickhouse-java), its shaded components include Apache-2.0 components, ANTLR under BSD-3-Clause, and native LZ4 and xxHash code under BSD-2-Clause.
+The native-code copyright notices and complete license texts are included at licenses/LICENSE-lz4.txt.
+The ASM license text is included at licenses/LICENSE-asm.txt, and the ANTLR license text is included at licenses/LICENSE-antlr4-runtime.txt.
+The corresponding Apache attribution notices are reproduced in NOTICE.

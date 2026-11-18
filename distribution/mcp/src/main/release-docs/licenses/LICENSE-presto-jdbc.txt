@@ -1,5 +1,15 @@
-Third-party license texts for components shaded into presto-jdbc 0.298.1.
+Third-party license texts and references for components shaded into presto-jdbc 0.298.1.
+Project: https://prestodb.io/
 Source artifact: https://repo.maven.apache.org/maven2/com/facebook/presto/presto-jdbc/0.298.1/presto-jdbc-0.298.1-sources.jar
+
+The shaded Java Object Layout (JOL) code (https://openjdk.org/projects/code-tools/jol/) is licensed under GPL version 2 with the Classpath exception.
+Its complete license text is retained in the presto-jdbc JAR at META-INF/license/LICENSE.jol.txt.
+
+This distribution uses the shaded Java Common Annotations code (https://github.com/javaee/javax.annotation) under CDDL version 1.0.
+The upstream combined license text is retained in the presto-jdbc JAR at META-INF/LICENSE.txt.
+
+The Public Suffix List data (https://publicsuffix.org/) is licensed under MPL-2.0, whose complete text is included below.
+Its attribution notice is retained in the presto-jdbc JAR at com/facebook/presto/jdbc/internal/okhttp3/internal/publicsuffix/NOTICE.
 
 ========================================================================
 Google Auth Library: OAuth2 (BSD-3-Clause)

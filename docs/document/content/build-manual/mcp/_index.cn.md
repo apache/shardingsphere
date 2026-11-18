@@ -40,6 +40,8 @@ pre = "<b>10.5. </b>"
 
 `all` 和 `db-firebird` profile 保留 Firebird 连接器，但不随包提供 Jaybird JDBC 驱动，需自行添加到 `plugins/`。
 
+`all` 保留 Presto、ClickHouse 连接器，但不随带这两个 JDBC 驱动；如需随包提供驱动，可组合 `-Prelease,all,db-presto,db-clickhouse`，也可将驱动自行放入 `plugins/`。
+
 ### 依赖组合
 
 | Profile       | 用途                                                                             |
