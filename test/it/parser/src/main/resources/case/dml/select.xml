@@ -16951,4 +16951,327 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_json_aggregate_parameters_pg" parameters="1, 2, true" parameter-marker-count="3">
+        <projections start-index="7" stop-index="69">
+            <expression-projection text="JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3)" start-index="7" stop-index="69">
+                <expr>
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG($1 ORDER BY $2 RETURNING jsonb) FILTER (WHERE $3)" start-index="7" stop-index="69">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="21" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="1" start-index="33" stop-index="34" />
+                        </parameter>
+                        <filter>
+                            <parameter-marker-expression parameter-index="2" start-index="67" stop-index="68" />
+                        </filter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_arrayagg_filter_window_pg">
+        <from>
+            <simple-table name="t_order" start-index="106" stop-index="112" />
+        </from>
+        <projections start-index="7" stop-index="99">
+            <expression-projection text="JSON_ARRAYAGG(order_id RETURNING jsonb) FILTER (WHERE user_id &gt; 0) OVER (PARTITION BY status)" start-index="7" stop-index="99">
+                <expr>
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(order_id RETURNING jsonb) FILTER (WHERE user_id &gt; 0) OVER (PARTITION BY status)" start-index="7" stop-index="99">
+                        <parameter>
+                            <column name="order_id" start-index="21" stop-index="28" />
+                        </parameter>
+                        <filter>
+                            <binary-operation-expression start-index="61" stop-index="71">
+                                <left>
+                                    <column name="user_id" start-index="61" stop-index="67" />
+                                </left>
+                                <operator>&gt;</operator>
+                                <right>
+                                    <literal-expression value="0" start-index="71" stop-index="71" />
+                                </right>
+                            </binary-operation-expression>
+                        </filter>
+                        <window-item start-index="79" stop-index="99">
+                            <partition-by>
+                                <column name="status" start-index="93" stop-index="98" />
+                            </partition-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_table_default_plan_pg">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="jt" start-index="14" stop-index="81">
+                <table-function function-name="JSON_TABLE" text="JSON_TABLE('{}', '$' COLUMNS (a int) PLAN DEFAULT (INNER, CROSS))" start-index="14" stop-index="78">
+                    <function-parameter>
+                        <literal-expression value="{}" start-index="25" stop-index="28" />
+                    </function-parameter>
+                    <function-parameter>
+                        <literal-expression value="$" start-index="31" stop-index="33" />
+                    </function-parameter>
+                </table-function>
+                <column name="a" start-index="44" stop-index="44" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_json_table_plan_pg">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="jt" start-index="14" stop-index="135">
+                <table-function function-name="JSON_TABLE" text="JSON_TABLE('{}', '$' AS root COLUMNS (NESTED '$.a[*]' AS child COLUMNS (a int)) PLAN (root OUTER child) EMPTY ON ERROR)" start-index="14" stop-index="132">
+                    <function-parameter>
+                        <literal-expression value="{}" start-index="25" stop-index="28" />
+                    </function-parameter>
+                    <function-parameter>
+                        <literal-expression value="$" start-index="31" stop-index="33" />
+                    </function-parameter>
+                    <function-parameter>
+                        <literal-expression value="$.a[*]" start-index="59" stop-index="66" />
+                    </function-parameter>
+                </table-function>
+                <column name="a" start-index="86" stop-index="86" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_lag_ignore_nulls_markers_pg" parameters="1, 2" parameter-marker-count="2">
+        <projections start-index="7" stop-index="45">
+            <expression-projection text="lag($1) IGNORE NULLS OVER (ORDER BY $2)" start-index="7" stop-index="45">
+                <expr>
+                    <function function-name="lag" text="lag($1) IGNORE NULLS OVER (ORDER BY $2)" start-index="7" stop-index="45" ignore-nulls="true">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="11" stop-index="12" />
+                        </parameter>
+                        <window-item start-index="33" stop-index="45">
+                            <order-by start-index="34" stop-index="44">
+                                <expression-item expression="$2" order-direction="ASC" start-index="43" stop-index="44">
+                                    <expr>
+                                        <parameter-marker-expression parameter-index="1" start-index="43" stop-index="44" />
+                                    </expr>
+                                </expression-item>
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_nth_value_respect_nulls_pg">
+        <from>
+            <simple-table name="foo_table" start-index="49" stop-index="57" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="nth_value(a, 2) RESPECT NULLS OVER w" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="nth_value" text="nth_value(a, 2) RESPECT NULLS OVER w" start-index="7" stop-index="42">
+                        <parameter>
+                            <column name="a" start-index="17" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2" start-index="20" stop-index="20" />
+                        </parameter>
+                        <window-item start-index="37" stop-index="42">
+                            <window-name>w</window-name>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <window start-index="59" stop-index="82">
+            <window-item start-index="66" stop-index="82">
+                <window-name>w</window-name>
+                <order-by start-index="72" stop-index="81">
+                    <column-item name="a" order-direction="ASC" start-index="81" stop-index="81" />
+                </order-by>
+            </window-item>
+        </window>
+    </select>
+
+    <select sql-case-id="select_continued_string_pg">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="'first line'&#10;' - next line'&#10;&#9;' - third line'" start-index="7" stop-index="75" alias="Three lines to one">
+                <expr>
+                    <literal-expression value="first line - next line - third line" start-index="7" stop-index="50" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_commented_continued_string_pg">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="'a' -- 'ignored'&#10;'b'" start-index="7" stop-index="26">
+                <expr>
+                    <literal-expression value="ab" start-index="7" stop-index="26" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_first_value_respect_nulls_pg">
+        <from>
+            <simple-table name="t_order" start-index="72" stop-index="78" />
+        </from>
+        <projections start-index="7" stop-index="65">
+            <expression-projection text="first_value(order_id) RESPECT NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="65">
+                <expr>
+                    <function function-name="first_value" text="first_value(order_id) RESPECT NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="65">
+                        <parameter>
+                            <column name="order_id" start-index="19" stop-index="26" />
+                        </parameter>
+                        <window-item start-index="48" stop-index="65">
+                            <order-by start-index="49" stop-index="64">
+                                <column-item name="user_id" order-direction="ASC" start-index="58" stop-index="64" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_qualified_lag_ignore_nulls_pg">
+        <from>
+            <simple-table name="t_order" start-index="74" stop-index="80" />
+        </from>
+        <projections start-index="7" stop-index="67">
+            <expression-projection text="pg_catalog.lag(order_id) IGNORE NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="67">
+                <expr>
+                    <function function-name="lag" text="pg_catalog.lag(order_id) IGNORE NULLS OVER (ORDER BY user_id)" start-index="7" stop-index="67" ignore-nulls="true">
+                        <owner name="pg_catalog" start-index="7" stop-index="16" />
+                        <parameter>
+                            <column name="order_id" start-index="22" stop-index="29" />
+                        </parameter>
+                        <window-item start-index="50" stop-index="67">
+                            <order-by start-index="51" stop-index="66">
+                                <column-item name="user_id" order-direction="ASC" start-index="60" stop-index="66" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_quoted_commented_continued_string_pg">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="'a''b' -- 'ignored'&#10;'c'" start-index="7" stop-index="29">
+                <expr>
+                    <literal-expression value="a''bc" start-index="7" stop-index="29" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_crlf_commented_continued_string_pg">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="'a'&#13;&#10;-- 'ignored'&#13;&#10;'b'" start-index="7" stop-index="28">
+                <expr>
+                    <literal-expression value="ab" start-index="7" stop-index="28" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_expression_keywords_as_identifiers_pg">
+        <from>
+            <simple-table name="foo_table" start-index="34" stop-index="42" />
+        </from>
+        <projections start-index="7" stop-index="27">
+            <column-projection name="ignore" start-index="7" stop-index="12" />
+            <column-projection name="respect" start-index="15" stop-index="21" />
+            <column-projection name="plan" start-index="24" stop-index="27" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_json_arrayagg_filter_without_window" parameters="1, true" parameter-marker-count="2">
+        <projections start-index="7" stop-index="39">
+            <expression-projection text="JSON_ARRAYAGG(?) FILTER (WHERE ?)" start-index="7" stop-index="39">
+                <expr>
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(?) FILTER (WHERE ?)" start-index="7" stop-index="39">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="21" stop-index="21" />
+                        </parameter>
+                        <filter>
+                            <parameter-marker-expression parameter-index="1" start-index="38" stop-index="38" />
+                        </filter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_postgresql_json_arrayagg_filter_window" parameters="1, true" parameter-marker-count="2">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" start-index="7" stop-index="47">
+                <expr>
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" start-index="7" stop-index="47">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="21" stop-index="21" />
+                        </parameter>
+                        <filter>
+                            <parameter-marker-expression parameter-index="1" start-index="38" stop-index="38" />
+                        </filter>
+                        <window-item start-index="46" stop-index="47" />
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_objectagg_filter_parameter_pg" parameters="1, true" parameter-marker-count="2">
+        <projections start-index="7" stop-index="52">
+            <expression-projection text="JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)" start-index="7" stop-index="52">
+                <expr>
+                    <function function-name="JSON_OBJECTAGG" text="JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)" start-index="7" stop-index="52">
+                        <parameter>
+                            <literal-expression value="foo" start-index="22" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="34" stop-index="34" />
+                        </parameter>
+                        <filter>
+                            <parameter-marker-expression parameter-index="1" start-index="51" stop-index="51" />
+                        </filter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_json_aggregate_filter_window_parameters_pg" parameters="1, true, 3" parameter-marker-count="3">
+        <projections start-index="7" stop-index="76">
+            <expression-projection text="JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" start-index="7" stop-index="76">
+                <expr>
+                    <function function-name="JSON_ARRAYAGG" text="JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" start-index="7" stop-index="76">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="21" stop-index="22" />
+                        </parameter>
+                        <filter>
+                            <parameter-marker-expression parameter-index="1" start-index="55" stop-index="56" />
+                        </filter>
+                        <window-item start-index="64" stop-index="76">
+                            <order-by start-index="65" stop-index="75">
+                                <expression-item expression="$3" order-direction="ASC" start-index="74" stop-index="75">
+                                    <expr>
+                                        <parameter-marker-expression parameter-index="2" start-index="74" stop-index="75" />
+                                    </expr>
+                                </expression-item>
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

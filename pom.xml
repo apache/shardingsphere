@@ -104,7 +104,7 @@
         <json-path.version>2.10.0</json-path.version>
         <json-smart.version>2.6.0</json-smart.version>
         <accessors-smart.version>2.6.0</accessors-smart.version>
-        <asm.version>9.7.1</asm.version>
+        <asm.version>9.9.1</asm.version>
         <groovy.version>4.0.33</groovy.version>
         <freemarker.version>2.3.35</freemarker.version>
         <bytebuddy.version>1.18.8</bytebuddy.version>

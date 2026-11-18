@@ -54,6 +54,9 @@ public final class FunctionSegment implements ComplexExpressionSegment {
     @Setter
     private ExpressionSegment filter;
     
+    @Setter
+    private boolean ignoreNulls;
+    
     /**
      * Get window.
      *

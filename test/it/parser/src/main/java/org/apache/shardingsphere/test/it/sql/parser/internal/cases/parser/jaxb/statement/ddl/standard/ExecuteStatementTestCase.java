@@ -17,10 +17,26 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.identifier.ExpectedIdentifier;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Execute statement test case.
  */
+@Getter
+@Setter
 public final class ExecuteStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "name")
+    private ExpectedIdentifier statementName;
+    
+    @XmlElement(name = "argument")
+    private final List<ExpectedExpression> arguments = new LinkedList<>();
 }
