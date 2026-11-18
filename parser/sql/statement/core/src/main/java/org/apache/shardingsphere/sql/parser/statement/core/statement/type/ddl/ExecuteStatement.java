@@ -17,14 +17,37 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Execute statement.
  */
+@Getter
 public final class ExecuteStatement extends DDLStatement {
+    
+    @Setter
+    private IdentifierValue statementName;
+    
+    private final List<ExpressionSegment> arguments = new LinkedList<>();
     
     public ExecuteStatement(final DatabaseType databaseType) {
         super(databaseType);
+    }
+    
+    /**
+     * Get statement name.
+     *
+     * @return statement name
+     */
+    public Optional<IdentifierValue> getStatementName() {
+        return Optional.ofNullable(statementName);
     }
 }

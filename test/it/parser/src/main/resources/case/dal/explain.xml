@@ -1820,4 +1820,31 @@
             </returning>
         </insert>
     </explain>
+    <explain sql-case-id="explain_create_table_as_columns_pg">
+        <create-table>
+            <table name="result_table" start-index="21" stop-index="32" />
+            <column name="a" start-index="35" stop-index="35" />
+            <select>
+                <projections start-index="48" stop-index="48">
+                    <expression-projection text="1" start-index="48" stop-index="48">
+                        <expr>
+                            <literal-expression value="1" start-index="48" stop-index="48" />
+                        </expr>
+                    </expression-projection>
+                </projections>
+            </select>
+        </create-table>
+    </explain>
+    <explain sql-case-id="explain_create_table_as_execute_pg">
+        <create-table>
+            <table name="result_table" start-index="21" stop-index="32" />
+            <column name="a" start-index="35" stop-index="35" />
+            <execute>
+                <name name="p" />
+                <argument>
+                    <literal-expression value="1" start-index="51" stop-index="51" />
+                </argument>
+            </execute>
+        </create-table>
+    </explain>
 </sql-parser-test-cases>

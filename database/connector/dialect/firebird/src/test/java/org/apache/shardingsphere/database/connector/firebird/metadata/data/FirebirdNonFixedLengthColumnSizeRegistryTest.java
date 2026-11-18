@@ -104,6 +104,31 @@ class FirebirdNonFixedLengthColumnSizeRegistryTest {
         assertThat(actual.getAsInt(), is(24));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("systemColumnSizeArguments")
+    void assertFindColumnSizeWithSystemColumn(final String name, final String schemaName, final String tableName, final String columnName, final int expected) {
+        OptionalInt actual = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize(schemaName, tableName, columnName);
+        assertTrue(actual.isPresent());
+        assertThat(actual.getAsInt(), is(expected));
+    }
+    
+    private static Stream<Arguments> systemColumnSizeArguments() {
+        return Stream.of(
+                Arguments.of("procedure engine metadata identifier", "foo_db", "RDB$PROCEDURES", "RDB$ENGINE_NAME", 63),
+                Arguments.of("case insensitive without database metadata", null, "rdb$procedures", "rdb$engine_name", 63),
+                Arguments.of("monitoring protocol varchar", "bar_db", "MON$ATTACHMENTS", "MON$REMOTE_PROTOCOL", 10),
+                Arguments.of("exception message varchar", "foo_db", "RDB$EXCEPTIONS", "RDB$MESSAGE", 1023),
+                Arguments.of("security metadata name", "foo_db", "SEC$USERS", "SEC$FIRST_NAME", 32));
+    }
+    
+    @Test
+    void assertFindColumnSizeWithRegisteredSystemColumn() {
+        columnSizes.put("SCHEMA_A.RDB$PROCEDURES", Collections.singletonMap("RDB$ENGINE_NAME", 17));
+        OptionalInt actual = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_a", "RDB$PROCEDURES", "RDB$ENGINE_NAME");
+        assertTrue(actual.isPresent());
+        assertThat(actual.getAsInt(), is(17));
+    }
+    
     private static Stream<Arguments> refreshTableRemoveCases() {
         return Stream.of(
                 Arguments.of("empty_column_sizes", "schema_a", "table_a", Collections.emptyMap(), "SCHEMA_A.TABLE_A"),
@@ -116,6 +141,8 @@ class FirebirdNonFixedLengthColumnSizeRegistryTest {
                 Arguments.of("null_table_name", null, "size_col", false, false),
                 Arguments.of("null_column_name", "table_a", null, true, true),
                 Arguments.of("table_not_registered", "table_a", "size_col", false, false),
-                Arguments.of("column_not_registered", "table_a", "size_col", true, false));
+                Arguments.of("column_not_registered", "table_a", "size_col", true, false),
+                Arguments.of("system_column_not_registered", "RDB$PROCEDURES", "foo_column", false, false),
+                Arguments.of("system_table_not_registered", "RDB$FOO_TABLE", "RDB$ENGINE_NAME", false, false));
     }
 }

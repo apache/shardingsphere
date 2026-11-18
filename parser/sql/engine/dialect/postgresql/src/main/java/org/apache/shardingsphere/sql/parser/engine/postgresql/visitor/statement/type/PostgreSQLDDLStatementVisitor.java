@@ -193,6 +193,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Pr
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.QualifiedNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RefreshMatViewStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReindexContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelativeCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameTableSpecificationContext;
@@ -239,6 +240,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
@@ -418,6 +420,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
                 .table((SimpleTableSegment) visit(ctx.tableName()))
                 .ifNotExists(null != ctx.ifNotExists())
                 .selectStatement(selectStatement)
+                .executeStatement(null == ctx.executeStmt() ? null : (ExecuteStatement) visit(ctx.executeStmt()))
                 .columns(columns)
                 .columnDefinitions(columnDefinitions)
                 .constraintDefinitions(constraintDefinitions)
@@ -425,9 +428,8 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         if (null != selectStatement) {
             result.addParameterMarkers(selectStatement.getParameterMarkers());
         }
-        if (null != ctx.executeParamClause()) {
-            visit(ctx.executeParamClause().exprList());
-            result.addParameterMarkers(getParameterMarkerSegments());
+        if (result.getExecuteStatement().isPresent()) {
+            result.addParameterMarkers(result.getExecuteStatement().get().getParameterMarkers());
         }
         appendExpressionColumns(ctx, result.getColumnReferences());
         return result;
@@ -773,10 +775,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), null != ctx.ifExists(), containsCascade);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue(), Collections.emptyList());
+        Collection<SimpleTableSegment> tables = new ArrayList<>(ctx.relationExprList().relationExpr().size());
+        for (RelationExprContext each : ctx.relationExprList().relationExpr()) {
+            tables.add((SimpleTableSegment) visit(each.qualifiedName()));
+        }
+        return new TruncateStatement(getDatabaseType(), tables, Collections.emptyList());
     }
     
     @Override
