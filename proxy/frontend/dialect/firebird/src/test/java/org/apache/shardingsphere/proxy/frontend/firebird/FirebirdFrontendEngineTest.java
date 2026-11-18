@@ -124,7 +124,7 @@ class FirebirdFrontendEngineTest {
                 Arguments.of("skip when not in transaction", false, false, new Exception("error"), false),
                 Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true));
     }
-
+    
     private static Stream<Arguments> recoverableExceptionArguments() {
         return Stream.of(Arguments.of(new InTransactionException()), Arguments.of(new InvalidBatchStatementTypeException()), Arguments.of(new InvalidBatchHandleException(1)),
                 Arguments.of(new InvalidTransactionHandleException(42)));

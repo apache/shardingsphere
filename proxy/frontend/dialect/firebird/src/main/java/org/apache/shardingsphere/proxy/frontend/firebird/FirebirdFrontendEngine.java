@@ -54,7 +54,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
             connectionSession.getConnectionContext().getTransactionContext().setExceptionOccur(true);
         }
     }
-
+    
     /**
      * Judge whether an exception names something other than the session's own tracked transaction, so rejecting it never leaves that transaction
      * in error. An unknown transaction handle ({@link InvalidTransactionHandleException}) names a transaction other than the one this session is
