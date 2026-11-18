@@ -716,12 +716,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
         List<ExpressionSegment> children = Collections.emptyList();
         if (null != ctx.withinGroupClause()) {
-            Collection<SortbyContext> sortItems = ctx.withinGroupClause().sortClause().sortbyList().sortby();
-            children = new ArrayList<>(sortItems.size() + 2);
-            children.add((ExpressionSegment) result);
-            for (SortbyContext each : sortItems) {
-                children.add((ExpressionSegment) visit(each.aExpr()));
-            }
+            children = visitWithinGroupExpressions(ctx, (ExpressionSegment) result);
         }
         if (null == ctx.filterClause()) {
             return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
@@ -741,6 +736,22 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         FunctionSegment filtered = createFunctionSegment(ctx, function, null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause()));
         filtered.setFilter(filter);
         return filtered;
+    }
+    
+    private List<ExpressionSegment> visitWithinGroupExpressions(final FuncExprContext ctx, final ExpressionSegment aggregate) {
+        Collection<SortbyContext> sortItems = ctx.withinGroupClause().sortClause().sortbyList().sortby();
+        if (null == ctx.filterClause()) {
+            for (SortbyContext each : sortItems) {
+                visit(each.aExpr());
+            }
+            return Collections.emptyList();
+        }
+        List<ExpressionSegment> result = new ArrayList<>(sortItems.size() + 2);
+        result.add(aggregate);
+        for (SortbyContext each : sortItems) {
+            result.add((ExpressionSegment) visit(each.aExpr()));
+        }
+        return result;
     }
     
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
