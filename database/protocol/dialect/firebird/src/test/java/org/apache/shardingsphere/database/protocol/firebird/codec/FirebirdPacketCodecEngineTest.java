@@ -23,6 +23,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.util.ReferenceCountUtil;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
@@ -56,6 +57,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -156,6 +158,28 @@ class FirebirdPacketCodecEngineTest {
         assertThat(((ByteBuf) out.get(1)).getInt(0), is(FirebirdCommandPacketType.COMMIT.getValue()));
         assertNull(getPendingPacketType());
         assertTrue(getPendingMessages().isEmpty());
+    }
+    
+    @Test
+    void assertDecodeFragmentedExecuteImmediateWithFollowingPacket() {
+        ByteBuf in = Unpooled.buffer();
+        List<Object> actual = new ArrayList<>(2);
+        try {
+            in.writeInt(FirebirdCommandPacketType.EXEC_IMMEDIATE.getValue()).writeInt(0).writeInt(0).writeInt(3);
+            new FirebirdPacketPayload(in, StandardCharsets.UTF_8).writeString("SET TRANSACTION");
+            in.writeInt(0).writeInt(0);
+            int expectedLength = in.writerIndex();
+            in.writeInt(FirebirdCommandPacketType.COMMIT.getValue()).writeInt(1);
+            codecEngine.decode(context, in.readSlice(18), actual);
+            assertTrue(actual.isEmpty());
+            codecEngine.decode(context, in, actual);
+            assertThat(actual.size(), is(2));
+            assertThat(((ByteBuf) actual.get(0)).readableBytes(), is(expectedLength));
+            assertThat(((ByteBuf) actual.get(1)).readInt(), is(FirebirdCommandPacketType.COMMIT.getValue()));
+        } finally {
+            actual.forEach(ReferenceCountUtil::release);
+            in.release();
+        }
     }
     
     @Test
