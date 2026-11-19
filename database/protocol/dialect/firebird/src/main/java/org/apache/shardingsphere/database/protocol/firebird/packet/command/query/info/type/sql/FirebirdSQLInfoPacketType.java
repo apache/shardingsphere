@@ -19,10 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -80,16 +77,6 @@ public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
      */
     public static FirebirdSQLInfoPacketType valueOf(final int code) {
         return FIREBIRD_DATABASE_INFO_TYPE_CACHE.get(code);
-    }
-    
-    /**
-     * Creates info packet of this type.
-     *
-     * @param payload Firebird packet payload
-     * @return Firebird database info packet
-     */
-    public static FirebirdInfoPacket createPacket(final FirebirdPacketPayload payload) {
-        return new FirebirdInfoPacket(payload, FirebirdCommandPacketType.INFO_SQL);
     }
     
     @Override
