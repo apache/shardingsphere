@@ -91,10 +91,12 @@ firstSkipClause
 
 firstValue
     : LP_? (numberLiterals | parameterMarker) RP_?
+    | LP_ expr RP_
     ;
 
 skipValue
     : LP_? (numberLiterals | parameterMarker) RP_?
+    | LP_ expr RP_
     ;
 
 duplicateSpecification

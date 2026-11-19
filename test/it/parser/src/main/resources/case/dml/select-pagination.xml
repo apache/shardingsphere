@@ -2281,29 +2281,29 @@
         </limit>
     </select>
 
-<!--        <select sql-case-id="select_pagination_with_first_and_expr_value">-->
-<!--            <limit start-index="7" stop-index="17">-->
-<!--                <row-count value="1" start-index="13" stop-index="17"/>-->
-<!--            </limit>-->
-<!--            <projections start-index="19" stop-index="21">-->
-<!--                <expression-projection text="1" alias="a" start-index="15" stop-index="17"/>-->
-<!--            </projections>-->
-<!--            <from start-index="23" stop-index="34">-->
-<!--                <simple-table name="t_order" start-index="28" stop-index="34"/>-->
-<!--            </from>-->
-<!--        </select>-->
+    <select sql-case-id="select_pagination_with_first_and_expr_value">
+        <limit start-index="7" stop-index="17">
+            <row-count expression="1+1" start-index="13" stop-index="17" />
+        </limit>
+        <projections start-index="19" stop-index="21">
+            <expression-projection text="1" alias="a" start-index="19" stop-index="21" />
+        </projections>
+        <from start-index="23" stop-index="34">
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+    </select>
 
-<!--        <select sql-case-id="select_pagination_with_skip_and_expr_value">-->
-<!--            <limit start-index="7" stop-index="16">-->
-<!--                <offset value="(2+2)" start-index="12" stop-index="16" />-->
-<!--            </limit>-->
-<!--            <projections start-index="18" stop-index="20">-->
-<!--                <expression-projection text="1" alias="a" start-index="18" stop-index="20" />-->
-<!--            </projections>-->
-<!--            <from start-index="22" stop-index="33">-->
-<!--                <simple-table name="t_order" start-index="27" stop-index="33"/>-->
-<!--            </from>-->
-<!--        </select>-->
+    <select sql-case-id="select_pagination_with_skip_and_expr_value">
+        <limit start-index="7" stop-index="16">
+            <offset expression="2+2" start-index="12" stop-index="16" />
+        </limit>
+        <projections start-index="18" stop-index="20">
+            <expression-projection text="1" alias="a" start-index="18" stop-index="20" />
+        </projections>
+        <from start-index="22" stop-index="33">
+            <simple-table name="t_order" start-index="27" stop-index="33" />
+        </from>
+    </select>
 
     <select sql-case-id="select_fetch_implicit_only_postgresql_regression">
         <projections start-index="7" stop-index="8">
