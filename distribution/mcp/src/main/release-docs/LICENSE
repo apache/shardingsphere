@@ -219,16 +219,17 @@ license text is the Apache License 2.0 reproduced above.
     commons-lang3 3.18.0: https://commons.apache.org/proper/commons-lang/
     error_prone_annotations 2.22.0: https://github.com/google/error-prone
     failureaccess 1.0.3: https://github.com/google/guava
-    guava 33.4.8-jre: https://github.com/google/guava
+    groovy 4.0.33: https://groovy.apache.org/
+    guava 33.7.2-jre: https://github.com/google/guava
     itu 1.14.0: https://github.com/ethlo/itu
-    jackson-annotations 2.18.6: https://github.com/FasterXML/jackson-annotations
-    jackson-core 2.18.6: https://github.com/FasterXML/jackson-core
-    jackson-databind 2.18.6: https://github.com/FasterXML/jackson-databind
-    jackson-datatype-jdk8 2.18.6: https://github.com/FasterXML/jackson-modules-java8
-    jackson-datatype-jsr310 2.18.6: https://github.com/FasterXML/jackson-modules-java8
+    jackson-annotations 2.22: https://github.com/FasterXML/jackson-annotations
+    jackson-core 2.22.3: https://github.com/FasterXML/jackson-core
+    jackson-databind 2.22.3: https://github.com/FasterXML/jackson-databind
+    jackson-datatype-jdk8 2.22.3: https://github.com/FasterXML/jackson-modules-java8
+    jackson-datatype-jsr310 2.22.3: https://github.com/FasterXML/jackson-modules-java8
     jakarta.validation-api 2.0.2: https://beanvalidation.org/
     java-util 4.103.0: https://github.com/jdereg/java-util
-    jspecify 1.0.0: https://jspecify.dev/
+    jspecify 1.0.1: https://jspecify.dev/
     json-schema-validator 2.0.0: https://github.com/networknt/json-schema-validator
     reactor-core 3.7.0: https://github.com/reactor/reactor-core
     snakeyaml 2.2: https://bitbucket.org/snakeyaml/snakeyaml
@@ -236,14 +237,15 @@ license text is the Apache License 2.0 reproduced above.
     tomcat-embed-core 11.0.25: https://tomcat.apache.org/
     transmittable-thread-local 2.14.2: https://github.com/alibaba/transmittable-thread-local
 
-jackson-core contains a shaded copy of FastDoubleParser. Its applicable
-license and notice files are retained in the jackson-core JAR under
-META-INF/FastDoubleParser-LICENSE, META-INF/FastDoubleParser-NOTICE, and
-META-INF/thirdparty-LICENSE.
+jackson-core contains shaded FastDoubleParser code and Schubfach number-writing code under the MIT license.
+The applicable license and attribution texts are retained in the jackson-core JAR under META-INF/FastDoubleParser-LICENSE, META-INF/FastDoubleParser-ThirdParty-LICENSE, and META-INF/Schubfach-LICENSE.
 
 FastDoubleParser contains code derived from fast_double_parser under the
 Boost Software License 1.0. The license text is included at
 licenses/LICENSE-fast-double-parser.txt.
+
+Groovy contains shaded ANTLR 4 and ASM code under BSD-3-Clause licenses.
+Their license texts are retained in the groovy JAR under META-INF/licenses/antlr4-license.txt and META-INF/licenses/asm-license.txt.
 
 ========================================================================
 BSD Licenses
@@ -284,3 +286,19 @@ applicable license texts are included under licenses/.
     mcp-json-jackson2 1.1.2: https://github.com/modelcontextprotocol/java-sdk, MIT
     reactive-streams 1.0.4: https://github.com/reactive-streams/reactive-streams-jvm, MIT-0
     slf4j-api 2.0.17: https://www.slf4j.org/, MIT
+
+========================================================================
+Optional Presto JDBC Driver
+========================================================================
+
+For binary distributions that include presto-jdbc (https://prestodb.io/), its shaded components use BSD-3-Clause, MIT, MPL-2.0, GPL version 2 with the Classpath exception, and CDDL version 1.0.
+For those distributions, the license texts, notices, selected licenses, and source locations are described in licenses/LICENSE-presto-jdbc.txt.
+
+========================================================================
+Optional ClickHouse JDBC Driver
+========================================================================
+
+For binary distributions that include clickhouse-jdbc (https://github.com/ClickHouse/clickhouse-java), its shaded components include Apache-2.0 components, ANTLR under BSD-3-Clause, and native LZ4 and xxHash code under BSD-2-Clause.
+The native-code copyright notices and complete license texts are included at licenses/LICENSE-lz4.txt.
+The ASM license text is included at licenses/LICENSE-asm.txt, and the ANTLR license text is included at licenses/LICENSE-antlr4-runtime.txt.
+The corresponding Apache attribution notices are reproduced in NOTICE.

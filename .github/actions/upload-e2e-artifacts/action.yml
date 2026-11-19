@@ -36,7 +36,7 @@ inputs:
     required: false
     default: ''
   include-distribution:
-    description: 'Whether to package the MCP distribution home'
+    description: 'Whether to package the MCP binary distribution archive'
     required: false
     default: 'false'
 
@@ -75,17 +75,19 @@ runs:
           tar -czf "$ARTIFACT_DIR/maven-repo-output.tar.gz" -C "${MAVEN_REPOSITORY_DIR:-$HOME/.m2/repository}" org/apache/shardingsphere
         fi
         if [[ "$INCLUDE_DISTRIBUTION" == 'true' ]]; then
-          distribution_homes=()
-          for directory in distribution/mcp/target/apache-shardingsphere-mcp-*; do
-            if [[ -d "$directory" ]]; then
-              distribution_homes+=("$directory")
+          distribution_archives=()
+          for archive in distribution/mcp/target/apache-shardingsphere-*-shardingsphere-mcp-bin.tar.gz; do
+            if [[ -f "$archive" ]]; then
+              distribution_archives+=("$archive")
             fi
           done
-          if [[ "${#distribution_homes[@]}" != 1 ]]; then
-            echo '::error::Expected exactly one built MCP distribution home.'
+          if [[ "${#distribution_archives[@]}" != 1 ]]; then
+            echo '::error::Expected exactly one built MCP distribution archive.'
             exit 1
           fi
-          tar -czf "$ARTIFACT_DIR/mcp-distribution-home.tar.gz" -C distribution/mcp/target "${distribution_homes[0]##*/}"
+          distribution_archive="${distribution_archives[0]##*/}"
+          tar -czf "$ARTIFACT_DIR/mcp-distribution.tar.gz" -C distribution/mcp/target \
+            "$distribution_archive" "$distribution_archive.sha512"
         fi
     - name: Stage E2E Image
       if: inputs.image-archive != ''
