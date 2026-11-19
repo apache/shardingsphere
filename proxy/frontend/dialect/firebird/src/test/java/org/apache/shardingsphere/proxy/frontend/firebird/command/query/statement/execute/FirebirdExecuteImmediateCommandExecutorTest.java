@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -135,10 +134,13 @@ class FirebirdExecuteImmediateCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWhenTransactionAlreadyActive() {
-        transactionIds.nextTransactionId(CONNECTION_ID);
+    void assertExecuteWhenTransactionAlreadyActiveExpectsNextHandle() throws SQLException {
+        int firstTransactionId = transactionIds.nextTransactionId(CONNECTION_ID);
         mockParsedStatement("SET TRANSACTION", new SetTransactionStatement(DATABASE_TYPE));
-        assertThrows(ExcessTransactionsException.class, () -> new FirebirdExecuteImmediateCommandExecutor(packet, connectionSession).execute());
+        int actualHandle = executeAndGetResponseHandle();
+        assertThat(actualHandle, is(firstTransactionId + 1));
+        assertTrue(transactionIds.isTransactionActive(CONNECTION_ID, firstTransactionId));
+        assertTrue(transactionIds.isTransactionActive(CONNECTION_ID, actualHandle));
     }
     
     @Test

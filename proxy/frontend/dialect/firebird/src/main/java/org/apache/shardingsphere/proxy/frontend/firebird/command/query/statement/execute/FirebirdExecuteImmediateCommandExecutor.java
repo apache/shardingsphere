@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -86,12 +85,10 @@ public final class FirebirdExecuteImmediateCommandExecutor implements CommandExe
         int transactionId = packet.getTransactionId();
         ShardingSpherePreconditions.checkState(0 == transactionId, () -> new InvalidTransactionHandleException(transactionId));
         int connectionId = connectionSession.getConnectionId();
-        FirebirdTransactionIdGenerator transactionIds = FirebirdTransactionIdGenerator.getInstance();
-        ShardingSpherePreconditions.checkState(!transactionIds.hasActiveTransaction(connectionId), () -> new ExcessTransactionsException(1));
         connectionSession.setAutoCommit(false);
         connectionSession.setReadOnly(false);
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().orElse(TransactionIsolationLevel.REPEATABLE_READ));
-        return transactionIds.nextTransactionId(connectionId);
+        return FirebirdTransactionIdGenerator.getInstance().nextTransactionId(connectionId);
     }
     
     private void validateMessages(final SQLStatement sqlStatement) throws SQLException {
