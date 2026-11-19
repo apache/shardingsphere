@@ -39,9 +39,4 @@ class FirebirdBatchRegisterBlobCommandPacketTest {
         assertThat(actual.getBatchBlobId(), is(0xFEDCBA9876543210L));
         verify(payload).skipReserved(4);
     }
-    
-    @Test
-    void assertGetLength() {
-        assertThat(FirebirdBatchRegisterBlobCommandPacket.getLength(), is(24));
-    }
 }

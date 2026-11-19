@@ -23,14 +23,19 @@ import org.apache.shardingsphere.database.exception.core.exception.SQLDialectExc
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobContinuationBpbException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBpbTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchDefaultBpbChangeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentExceedsBlobException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchWithoutBlobsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchBlobPolicyException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBpbVersionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ParameterConversionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.RepeatedBatchBlobIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.TransliterationFailedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnknownBatchBlobIdException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
@@ -55,12 +60,17 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
     private static final Collection<Class<? extends SQLDialectException>> BATCH_BLOB_EXCEPTION_TYPES = Arrays.asList(
             BatchBlobContinuationBpbException.class,
             BatchBpbTooBigException.class,
+            BatchDefaultBpbChangeException.class,
             BatchSegmentExceedsBlobException.class,
             BatchSegmentTooBigException.class,
             BatchSmallDataException.class,
+            BatchTooBigException.class,
+            BatchWithoutBlobsException.class,
             BlobFilterNotFoundException.class,
+            InvalidBatchBlobPolicyException.class,
             InvalidBpbVersionException.class,
             ParameterConversionException.class,
+            RepeatedBatchBlobIdException.class,
             TransliterationFailedException.class,
             UnknownBatchBlobIdException.class);
     

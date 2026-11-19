@@ -82,6 +82,36 @@ class FirebirdBlobTransliteratorTest {
         assertThat(createTransliterator(WIN1251_ID, UTF8_ID).put(new byte[]{'a', (byte) 0x98}), is(new byte[]{'a', 0}));
     }
     
+    @Test
+    void assertRead() {
+        assertThat(createTransliterator(UTF8_ID, WIN1251_ID).read("Текст".getBytes(StandardCharsets.UTF_8)), is("Текст".getBytes(WIN1251)));
+    }
+    
+    @Test
+    void assertReadEmptyData() {
+        assertThat(createTransliterator(UTF8_ID, WIN1251_ID).read(new byte[0]), is(new byte[0]));
+    }
+    
+    @Test
+    void assertReadWithMalformedSuffix() {
+        assertThrows(TransliterationFailedException.class, () -> createTransliterator(UTF8_ID, WIN1251_ID).read(new byte[]{'a', (byte) 0xFF}));
+    }
+    
+    @Test
+    void assertReadWithIncompleteSuffix() {
+        assertThrows(TransliterationFailedException.class, () -> createTransliterator(UTF8_ID, WIN1251_ID).read(new byte[]{'a', (byte) 0xD0}));
+    }
+    
+    @Test
+    void assertReadWithUnmappableTargetCharacter() {
+        assertThrows(TransliterationFailedException.class, () -> createTransliterator(UTF8_ID, WIN1251_ID).read("a中".getBytes(StandardCharsets.UTF_8)));
+    }
+    
+    @Test
+    void assertReadWithUndefinedSourceByte() {
+        assertThat(createTransliterator(WIN1251_ID, UTF8_ID).read(new byte[]{'a', (byte) 0x98}), is(new byte[]{'a', 0}));
+    }
+    
     private FirebirdBlobTransliterator createTransliterator(final int sourceCharsetId, final int targetCharsetId) {
         byte[] bpb = {ISCConstants.isc_bpb_version1, ISCConstants.isc_bpb_source_type, 1, ISCConstants.BLOB_SUB_TYPE_TEXT, ISCConstants.isc_bpb_target_type, 1, ISCConstants.BLOB_SUB_TYPE_TEXT,
                 ISCConstants.isc_bpb_source_interp, 1, (byte) sourceCharsetId, ISCConstants.isc_bpb_target_interp, 1, (byte) targetCharsetId};

@@ -55,10 +55,14 @@ class FirebirdReturnColumnPacketTest {
     @Mock
     private FirebirdPacketPayload payload;
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetColumnTypeArguments")
-    void assertGetColumnType(final String name, final int dataType, final boolean blobColumn, final FirebirdBinaryColumnType expectedColumnType) {
-        assertThat(createPacket(Collections.emptyList(), dataType, null, blobColumn, null).getColumnType(), is(expectedColumnType));
+    @Test
+    void assertGetColumnTypeWithJdbcType() {
+        assertThat(createPacket(Collections.emptyList(), Types.VARCHAR, null, false, null).getColumnType(), is(FirebirdBinaryColumnType.VARYING));
+    }
+    
+    @Test
+    void assertGetColumnTypeWithBlobColumn() {
+        assertThat(createPacket(Collections.emptyList(), Types.VARCHAR, null, true, null).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
     }
     
     @Test
@@ -113,10 +117,6 @@ class FirebirdReturnColumnPacketTest {
         ShardingSphereColumn column = new ShardingSphereColumn("col", dataType, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         return new FirebirdReturnColumnPacket(requestedItems, 1, table, column, "t", "c", "o", columnLength, blobColumn, blobSubType);
-    }
-    
-    private static Stream<Arguments> assertGetColumnTypeArguments() {
-        return Stream.of(Arguments.of("jdbc_type", Types.VARCHAR, false, FirebirdBinaryColumnType.VARYING), Arguments.of("blob_column", Types.VARCHAR, true, FirebirdBinaryColumnType.BLOB));
     }
     
     private static Stream<Arguments> assertWriteLengthArguments() {

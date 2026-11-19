@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchWithoutBlobsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchBlobPolicyException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
@@ -44,8 +45,12 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobParameterBufferUtils;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobTransliterator;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Batch statement manager for Firebird.
@@ -136,12 +141,17 @@ public final class FirebirdBatchStatementManager {
      * @param connectionId connection ID
      * @param packet batch BLOB stream packet
      * @throws InvalidBatchHandleException if batch statement does not exist
+     * @throws BatchWithoutBlobsException if a nonempty stream has no BLOB fields
      * @throws InvalidBatchBlobPolicyException if BLOB policy of batch does not allow BLOB stream
      */
     @HighFrequencyInvocation
     void appendBlobStream(final int connectionId, final FirebirdBatchBlobStreamCommandPacket packet) {
         FirebirdBatchStatement batchStatement = getBatchStatement(connectionId, packet.getStatementHandle());
         ShardingSpherePreconditions.checkNotNull(batchStatement, () -> new InvalidBatchHandleException(packet.getStatementHandle()));
+        if (0L == packet.getLength()) {
+            return;
+        }
+        ShardingSpherePreconditions.checkState(batchStatement.hasBatchBlobIdColumn(), () -> new BatchWithoutBlobsException(packet.getStatementHandle()));
         ShardingSpherePreconditions.checkState(batchStatement.isBlobStreamAllowed(), () -> new InvalidBatchBlobPolicyException("addBlobStream"));
         batchStatement.appendBlobStream(packet.getData(), packet.getLength());
     }
@@ -181,11 +191,25 @@ public final class FirebirdBatchStatementManager {
     @HighFrequencyInvocation
     void registerStreamBlobs(final FirebirdBatchStatement batchStatement, final int connectionCharsetId) {
         for (FirebirdBatchStreamBlob each : batchStatement.readStreamBlobs()) {
-            byte[] data = each.getData().toByteArray();
-            byte[] content = FirebirdBlobParameterBufferUtils.createTransliterator(each.getBpb(), connectionCharsetId).map(transliterator -> transliterator.put(data)).orElse(data);
-            batchStatement.getStreamBlobContents().put(each.getBatchBlobId(), content);
+            batchStatement.getStreamBlobContents().put(each.getBatchBlobId(), getBlobContent(each, connectionCharsetId));
         }
         batchStatement.clearBlobStream();
+    }
+    
+    private byte[] getBlobContent(final FirebirdBatchStreamBlob blob, final int connectionCharsetId) {
+        byte[] data = blob.getData().toByteArray();
+        Optional<FirebirdBlobTransliterator> transliterator = FirebirdBlobParameterBufferUtils.createTransliterator(blob.getBpb(), connectionCharsetId);
+        if (!transliterator.isPresent()) {
+            return data;
+        }
+        ByteArrayOutputStream result = new ByteArrayOutputStream(data.length);
+        int start = 0;
+        for (int end = blob.getDataEnds().nextSetBit(0); end >= 0; end = blob.getDataEnds().nextSetBit(end + 1)) {
+            byte[] converted = transliterator.get().put(Arrays.copyOfRange(data, start, end));
+            result.write(converted, 0, converted.length);
+            start = end;
+        }
+        return result.toByteArray();
     }
     
     /**

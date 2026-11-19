@@ -17274,4 +17274,42 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_cast_parameters_firebird" parameters="1, 2">
+        <projections start-index="7" stop-index="61">
+            <expression-projection text="CAST(? AS INTEGER)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="CAST" text="CAST(? AS INTEGER)" start-index="7" stop-index="24">
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="12" stop-index="12" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="INTEGER" start-index="17" stop-index="23" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="CAST(CAST(? AS INTEGER) AS INTEGER)" start-index="27" stop-index="61">
+                <expr>
+                    <function function-name="CAST" text="CAST(CAST(? AS INTEGER) AS INTEGER)" start-index="27" stop-index="61">
+                        <parameter>
+                            <function function-name="CAST" text="CAST(? AS INTEGER)" start-index="32" stop-index="49">
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="1" start-index="37" stop-index="37" />
+                                </parameter>
+                                <parameter>
+                                    <data-type value="INTEGER" start-index="42" stop-index="48" />
+                                </parameter>
+                            </function>
+                        </parameter>
+                        <parameter>
+                            <data-type value="INTEGER" start-index="54" stop-index="60" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="68" stop-index="74" />
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -17,11 +17,19 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
@@ -58,12 +66,17 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCompletion;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchedStatementsExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -73,12 +86,15 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,8 +108,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -385,6 +404,118 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertThat(actualParameterColumns, is(actualReturnPacket.getDescribeBind()));
         assertThat(actualParameterColumns.get(0).getColumnType(), is(FirebirdBinaryColumnType.LONG));
         assertThat(actualParameterColumns.get(1).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
+    }
+    
+    @Test
+    void assertExecuteWithParametersWithoutDescribeBind() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id, content) VALUES (?, ?)");
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        List<FirebirdReturnColumnPacket> actual = connectionSession.getServerPreparedStatementRegistry().<FirebirdServerPreparedStatement>getPreparedStatement(1).getParameterColumns();
+        assertTrue(actualReturnPacket.getDescribeBind().isEmpty());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getColumnType(), is(FirebirdBinaryColumnType.LONG));
+        assertThat(actual.get(1).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
+    }
+    
+    @Test
+    void assertExecuteWithParametersWithoutInfo() throws Exception {
+        when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) VALUES (?)");
+        when(packet.nextItem()).thenReturn(false);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        List<FirebirdReturnColumnPacket> actual = connectionSession.getServerPreparedStatementRegistry().<FirebirdServerPreparedStatement>getPreparedStatement(1).getParameterColumns();
+        assertTrue(actualReturnPacket.getDescribeBind().isEmpty());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getColumnType(), is(FirebirdBinaryColumnType.LONG));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("expressionParameterInfoArguments")
+    void assertPrepareExpressionParametersForBatch(final String name, final String sql, final boolean describeBind, final boolean noInfo, final int blobColumnIndex) throws Exception {
+        assertPrepareParamsForBatch(sql, describeBind, noInfo, blobColumnIndex);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("castParameterInfoArguments")
+    void assertPrepareCastParametersForBatch(final String name, final String sql, final boolean describeBind, final boolean noInfo, final int blobColumnIndex) throws Exception {
+        try (MockedStatic<DataTypeRegistry> dataTypes = mockStatic(DataTypeRegistry.class)) {
+            dataTypes.when(() -> DataTypeRegistry.getDataType("Firebird", "INTEGER")).thenReturn(Optional.of(Types.INTEGER));
+            assertPrepareParamsForBatch(sql, describeBind, noInfo, blobColumnIndex);
+        }
+    }
+    
+    private static Stream<Arguments> castParameterInfoArguments() {
+        return Stream.of(
+                Arguments.of("update_describe_bind", "UPDATE foo_tbl SET id = CAST(? AS INTEGER), content = ?", true, false, 1),
+                Arguments.of("insert_no_info", "INSERT INTO foo_tbl(id, content) VALUES (CAST(? AS INTEGER), ?)", false, true, 1),
+                Arguments.of("where_alias_no_info", "UPDATE foo_tbl SET content = ? WHERE id = CAST(? AS INT)", false, true, 0),
+                Arguments.of("nested_statement_type_only", "UPDATE foo_tbl SET id = CAST(CAST(? AS INTEGER) AS INTEGER), content = ?", false, false, 1));
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void assertPrepareParamsForBatch(final String sql, final boolean describeBind, final boolean noInfo, final int blobColumnIndex) throws Exception {
+        if (describeBind) {
+            describeBind(sql);
+        } else {
+            when(packet.getSQL()).thenReturn(sql);
+            if (noInfo) {
+                when(packet.nextItem()).thenReturn(false);
+            }
+            new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute();
+        }
+        List<FirebirdReturnColumnPacket> actualColumns = connectionSession.getServerPreparedStatementRegistry().<FirebirdServerPreparedStatement>getPreparedStatement(1).getParameterColumns();
+        assertThat(actualColumns.size(), is(2));
+        int integerColumnIndex = 1 - blobColumnIndex;
+        assertThat(actualColumns.get(integerColumnIndex).getColumnType(), is(FirebirdBinaryColumnType.LONG));
+        assertThat(actualColumns.get(blobColumnIndex).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
+        FirebirdBatchRegistry.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        when(connectionSession.getAttributeMap().attr(FirebirdConstant.CONNECTION_CHARSET_ID).get()).thenReturn(4);
+        ByteBuf blr = Unpooled.buffer().writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0).writeShortLE(4);
+        for (int i = 0; i < 2; i++) {
+            blr.writeByte(BlrConstants.blr_blob2).writeShortLE(1).writeShortLE(4).writeByte(BlrConstants.blr_short).writeByte(0);
+        }
+        blr.writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
+        FirebirdBatchStatement batch = new FirebirdBatchStatement(1, FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields(), 1024L, false, false, true);
+        blr.release();
+        batch.getStreamBlobContents().put(1L, "2.5".getBytes(StandardCharsets.UTF_8));
+        batch.getStreamBlobContents().put(2L, "abc".getBytes(StandardCharsets.UTF_8));
+        batch.addParameterValues(0 == blobColumnIndex ? Arrays.asList(2L, 1L) : Arrays.asList(1L, 2L));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, 1, batch);
+        FirebirdBatchExecuteCommandPacket executePacket = mock(FirebirdBatchExecuteCommandPacket.class);
+        when(executePacket.getStatementHandle()).thenReturn(1);
+        int transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        when(executePacket.getTransactionHandle()).thenReturn(transactionId);
+        List<List<Object>> actualParams = new ArrayList<>(1);
+        try (MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class, (mock, context) -> {
+            actualParams.addAll((List<List<Object>>) context.arguments().get(2));
+            when(mock.executeBatch()).thenReturn(new FirebirdBatchCompletion(1, new int[]{1}));
+        })) {
+            new FirebirdBatchExecuteCommandExecutor(executePacket, connectionSession).execute();
+            assertThat(actualParams.size(), is(1));
+            assertThat(actualParams.get(0).get(integerColumnIndex), is(3));
+            assertThat((byte[]) actualParams.get(0).get(blobColumnIndex), is("abc".getBytes(StandardCharsets.UTF_8)));
+        } finally {
+            FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+            FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        }
+    }
+    
+    private static Stream<Arguments> expressionParameterInfoArguments() {
+        return Stream.of(
+                Arguments.of("describe_bind_coalesce", "UPDATE foo_tbl SET id = COALESCE(?, id), content = ?", true, false, 1),
+                Arguments.of("statement_type_only_coalesce", "UPDATE foo_tbl SET id = COALESCE(?, id), content = ?", false, false, 1),
+                Arguments.of("no_info_coalesce", "UPDATE foo_tbl SET id = COALESCE(?, id), content = ?", false, true, 1),
+                Arguments.of("describe_bind_reversed_predicate", "UPDATE foo_tbl SET content = ? WHERE ? = id", true, false, 0),
+                Arguments.of("statement_type_only_reversed_predicate", "UPDATE foo_tbl SET content = ? WHERE ? = id", false, false, 0),
+                Arguments.of("no_info_reversed_predicate", "UPDATE foo_tbl SET content = ? WHERE ? = id", false, true, 0));
+    }
+    
+    @Test
+    void assertDescribeBindKeepsFallbackParameterPosition() throws Exception {
+        FirebirdPrepareStatementReturnPacket actual = describeBind("SELECT COALESCE(?, 'x') FROM foo_tbl WHERE content = ?");
+        assertThat(actual.getDescribeBind().size(), is(2));
+        assertParameterType(actual.getDescribeBind().get(0), FirebirdBinaryColumnType.VARYING);
+        assertParameterType(actual.getDescribeBind().get(1), FirebirdBinaryColumnType.BLOB);
     }
     
     @Test

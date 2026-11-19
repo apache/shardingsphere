@@ -38,8 +38,10 @@ import java.util.Arrays;
  *
  * <p>Mirrors {@code Rsr::BatchStream} of the Firebird remote protocol. {@code op_batch_blob_stream} declares the length of the
  * client stream buffer, but the alignment padding is not sent, a segment length is sent as 4 bytes instead of 2 and the tail of a
- * BLOB header split by the client buffer is sent as part of the next packet. Reading a packet therefore depends on the state left
- * by the previous packets of the same batch. Only creating the batch resets the state, and cancelling the batch keeps it.</p>
+ * BLOB header split by the client buffer is sent as part of the next packet.
+ * Reading a packet therefore depends on the state left by previous packets of the same statement.
+ * Batch creation resets the continuation state, and cancelling the batch keeps it.
+ * Processing CREATE parameters resets the default BLOB kind separately from the current continuation.</p>
  *
  * <p>As Firebird does, the stream is read with unsigned 32-bit lengths and is rejected only when it cannot be decoded,
  * because Firebird checks the BLOBs restored from the stream when executing the batch.</p>
@@ -114,6 +116,13 @@ public final class FirebirdBatchBlobStream {
      */
     public void setDefaultBpb(final ByteBuf defaultBpb) {
         defaultSegmented = isSegmented(ByteBufUtil.getBytes(defaultBpb));
+    }
+    
+    /**
+     * Reset the default BLOB kind during CREATE without changing the current BLOB continuation.
+     */
+    public void resetDefaultBpb() {
+        defaultSegmented = false;
     }
     
     /**

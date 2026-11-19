@@ -85,7 +85,7 @@ class FirebirdStatusVectorTest {
                 Arrays.asList(new StatusVectorEntry(ISCConstants.isc_dsql_error, Collections.emptyList()), new StatusVectorEntry(ISCConstants.isc_batch_big_bpb, Arrays.asList(8, "0:63"))));
         FirebirdStatusVector vector = new FirebirdStatusVector(ex);
         assertThat(vector.getGdsCode(), is(ISCConstants.isc_dsql_error));
-        vector.write(payload);
+        vector.write((PacketPayload) payload);
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_dsql_error);

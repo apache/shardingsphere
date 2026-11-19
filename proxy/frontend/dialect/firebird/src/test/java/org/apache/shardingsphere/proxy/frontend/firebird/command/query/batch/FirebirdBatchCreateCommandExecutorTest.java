@@ -123,6 +123,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actualBatchStatement.getStatementHandle(), is(STATEMENT_ID));
         assertFalse(actualBatchStatement.isRecordCounts());
         assertFalse(actualBatchStatement.isMultiError());
+        assertFalse(actualBatchStatement.isBlobStreamAllowed());
         assertThat(actualBatchStatement.getColumnDescriptors().size(), is(1));
         assertThat(actualBatchStatement.getColumnDescriptors().get(0).getType(), is(FirebirdBinaryColumnType.LEGACY_TEXT));
         assertThat(actualBatchStatement.getColumnDescriptors().get(0).getLength(), is(4));
@@ -242,7 +243,27 @@ class FirebirdBatchCreateCommandExecutorTest {
     void assertExecuteWhenBatchBlrHasNoFields() {
         mockPreparedStatement();
         when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
         assertThrows(BatchParametersRequiredException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertTrue(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).isEmpty());
+    }
+    
+    @Test
+    void assertExecuteWhenEmptyBatchBlrMessageLengthMismatched() {
+        mockPreparedStatement();
+        when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(4L);
+        assertThrows(InvalidBatchMessageFormatException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @Test
+    void assertExecuteWhenEmptyBatchBlrParameterVersionMismatched() {
+        mockPreparedStatement();
+        when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{2}));
+        assertThrows(InvalidBatchParameterVersionException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertTrue(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).isEmpty());
     }
     
     @Test
@@ -280,7 +301,6 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertThat(actual.getBufferSize(), is(DEFAULT_BUFFER_SIZE));
         assertFalse(actual.isRecordCounts());
         assertFalse(actual.isMultiError());
-        assertFalse(actual.isBlobStreamAllowed());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -305,13 +325,6 @@ class FirebirdBatchCreateCommandExecutorTest {
     void assertParseBatchParametersWithDisabledMultiError() {
         FirebirdBatchCreateCommandExecutor.BatchParameters actual = FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_MULTIERROR, 0));
         assertFalse(actual.isMultiError());
-    }
-    
-    @Test
-    void assertParseBatchParametersWithBlobPolicy() {
-        FirebirdBatchCreateCommandExecutor.BatchParameters actual =
-                FirebirdBatchCreateCommandExecutor.BatchParameters.parse(createBatchParametersBuffer(TAG_BLOB_POLICY, BLOB_NONE));
-        assertTrue(actual.isBlobStreamAllowed());
     }
     
     @Test

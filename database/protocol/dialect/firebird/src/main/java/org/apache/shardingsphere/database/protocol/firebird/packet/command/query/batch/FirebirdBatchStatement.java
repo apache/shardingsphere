@@ -54,6 +54,8 @@ public final class FirebirdBatchStatement {
     
     private static final long BLOB_BUFFER_MEMORY_CACHE_SIZE = 128L * 1024L;
     
+    private static final int MAX_BLOB_PUT_LENGTH = 32768;
+    
     private final int statementHandle;
     
     private final List<FirebirdBatchColumnDescriptor> columnDescriptors;
@@ -198,11 +200,15 @@ public final class FirebirdBatchStatement {
      */
     public Collection<FirebirdBatchStreamBlob> readStreamBlobs() {
         ByteBuf buffer = Unpooled.wrappedBuffer(blobBuffer.toArray(new byte[0][]));
+        buffer.writerIndex(Math.min(buffer.capacity(), (int) BLOB_BUFFER_MEMORY_CACHE_SIZE));
         boolean defaultSegmented = FirebirdBatchBlobStream.isSegmented(defaultBpb);
         Map<Long, FirebirdBatchStreamBlob> result = new LinkedHashMap<>();
         FirebirdBatchStreamBlob currentBlob = null;
         long blobRemaining = 0L;
-        while (buffer.isReadable()) {
+        while (buffer.readerIndex() < buffer.capacity()) {
+            if (!buffer.isReadable()) {
+                refillBlobBuffer(buffer);
+            }
             if (0L != blobRemaining) {
                 blobRemaining = Integer.toUnsignedLong((int) (blobRemaining - readBlobData(buffer, currentBlob, blobRemaining)));
                 continue;
@@ -211,6 +217,9 @@ public final class FirebirdBatchStatement {
             if (padding > 0) {
                 buffer.skipBytes(padding);
                 continue;
+            }
+            if (buffer.readableBytes() < FirebirdBatchBlobStream.HEADER_LENGTH) {
+                refillBlobBuffer(buffer);
             }
             ShardingSpherePreconditions.checkState(buffer.readableBytes() >= FirebirdBatchBlobStream.HEADER_LENGTH, () -> new BatchSmallDataException("BLOB"));
             long batchBlobId = buffer.readUnsignedIntLE() << 32 | buffer.readUnsignedIntLE();
@@ -221,6 +230,9 @@ public final class FirebirdBatchStatement {
                 ShardingSpherePreconditions.checkNotNull(currentBlob, () -> new BatchBlobBufferFormatException(statementHandle));
                 continue;
             }
+            if (bpbLength > buffer.readableBytes()) {
+                refillBlobBuffer(buffer);
+            }
             ShardingSpherePreconditions.checkState(bpbLength <= buffer.readableBytes(), () -> new BatchBpbTooBigException(bpbLength, buffer.readableBytes()));
             byte[] bpb = 0L == bpbLength ? defaultBpb : ByteBufUtil.getBytes(buffer.readSlice((int) bpbLength));
             blobRemaining = Integer.toUnsignedLong((int) (blobRemaining - bpbLength));
@@ -230,6 +242,11 @@ public final class FirebirdBatchStatement {
             result.put(batchBlobId, currentBlob);
         }
         return result.values();
+    }
+    
+    private void refillBlobBuffer(final ByteBuf buffer) {
+        int length = (int) BLOB_BUFFER_MEMORY_CACHE_SIZE - FirebirdBatchBlobStream.getPadding(buffer.readableBytes(), FirebirdBatchBlobStream.ALIGNMENT);
+        buffer.writerIndex((int) Math.min(buffer.capacity(), (long) buffer.readerIndex() + length));
     }
     
     private int readBlobData(final ByteBuf buffer, final FirebirdBatchStreamBlob blob, final long blobRemaining) {
@@ -244,12 +261,20 @@ public final class FirebirdBatchStatement {
         int segmentLength = buffer.readUnsignedShortLE();
         long segmentBlobRemaining = Integer.toUnsignedLong((int) blobRemaining - FirebirdBatchBlobStream.SEGMENT_LENGTH_SIZE);
         ShardingSpherePreconditions.checkState(segmentLength <= segmentBlobRemaining, () -> new BatchSegmentExceedsBlobException(segmentLength, (int) segmentBlobRemaining));
+        if (segmentLength > buffer.readableBytes()) {
+            refillBlobBuffer(buffer);
+        }
         ShardingSpherePreconditions.checkState(segmentLength <= buffer.readableBytes(), () -> new BatchSegmentTooBigException(segmentLength, buffer.readableBytes()));
         return FirebirdBatchBlobStream.SEGMENT_LENGTH_SIZE + readBytes(buffer, blob, segmentLength);
     }
     
     private int readBytes(final ByteBuf buffer, final FirebirdBatchStreamBlob blob, final int length) {
-        blob.appendData(ByteBufUtil.getBytes(buffer.readSlice(length)));
+        int remaining = length;
+        while (remaining > 0) {
+            int putLength = Math.min(MAX_BLOB_PUT_LENGTH, remaining);
+            blob.appendData(ByteBufUtil.getBytes(buffer.readSlice(putLength)));
+            remaining -= putLength;
+        }
         return length;
     }
     

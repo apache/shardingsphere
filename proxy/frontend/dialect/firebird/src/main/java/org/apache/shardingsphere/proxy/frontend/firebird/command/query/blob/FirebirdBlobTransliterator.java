@@ -90,4 +90,18 @@ public final class FirebirdBlobTransliterator {
             throw new TransliterationFailedException();
         }
     }
+    
+    /**
+     * Read complete BLOB data.
+     *
+     * @param data BLOB data in the source character set
+     * @return converted BLOB data in the target character set
+     * @throws TransliterationFailedException if the data is malformed or cannot be represented in the target character set
+     */
+    public byte[] read(final byte[] data) {
+        ByteBuffer input = ByteBuffer.wrap(data);
+        CharBuffer chars = decode(input);
+        ShardingSpherePreconditions.checkState(!input.hasRemaining(), TransliterationFailedException::new);
+        return encode(chars);
+    }
 }

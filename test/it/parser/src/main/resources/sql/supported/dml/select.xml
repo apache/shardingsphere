@@ -691,4 +691,5 @@
     <sql-case id="select_postgresql_json_arrayagg_filter_window" value="SELECT JSON_ARRAYAGG(?) FILTER (WHERE ?) OVER ()" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="select_json_objectagg_filter_parameter_pg" value="SELECT JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="select_json_aggregate_filter_window_parameters_pg" value="SELECT JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_cast_parameters_firebird" value="SELECT CAST(? AS INTEGER), CAST(CAST(? AS INTEGER) AS INTEGER) FROM t_order" db-types="Firebird" case-types="Placeholder" />
 </sql-cases>

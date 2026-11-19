@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import com.google.common.base.Suppliers;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.datatype.DataTypeRegistry;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
@@ -66,6 +67,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdS
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementResourceCleaner;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -76,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -100,9 +103,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -178,6 +184,11 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 default:
                     throw new DatabaseProtocolException("Unknown statement info request type %d", packet.getCurrentItem());
             }
+        }
+        if (statementType.isBindDescribable() && serverPreparedStatement.getParameterColumns().isEmpty() && !sqlStatementContext.getSqlStatement().getParameterMarkers().isEmpty()) {
+            Supplier<ShardingSphereDatabase> database = Suppliers.memoize(() -> ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getCurrentDatabaseName()));
+            Supplier<Optional<ShardingSphereSchema>> schema = Suppliers.memoize(() -> database.get().findDefaultSchema());
+            processParameters(sqlStatementContext, database, schema, serverPreparedStatement.getParameterColumns(), Collections.emptyList());
         }
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
     }
@@ -358,46 +369,122 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processParameters(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                    final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
                                    final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+        Map<Integer, DataTypeSegment> castParams = findCastParameters(sqlStatementContext);
         if (sqlStatementContext instanceof InsertStatementContext) {
-            processInsertStatement((InsertStatementContext) sqlStatementContext, database, schema, describeColumns, requestedItems);
+            processInsertStatement((InsertStatementContext) sqlStatementContext, database, schema, describeColumns, requestedItems, castParams);
             return;
         }
-        Collection<ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
+        Map<Integer, ColumnSegment> affectedColumns = findAffectedColumns(sqlStatementContext);
         int parametersCount = sqlStatementContext.getSqlStatement().getParameterMarkers().size();
-        int columnCount = 0;
-        for (ColumnSegment columnSegment : affectedColumns) {
+        for (int i = 0; i < parametersCount; i++) {
+            if (processCastParameter(i, castParams, describeColumns, requestedItems)) {
+                continue;
+            }
+            ColumnSegment columnSegment = affectedColumns.get(i);
+            if (null == columnSegment) {
+                processCustomColumn(null, null, null, Types.VARCHAR, describeColumns, requestedItems, i + 1);
+                continue;
+            }
             ShardingSphereTable table = getTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue(), database, schema);
             ShardingSphereColumn column = table.getColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue());
-            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), ++columnCount);
+            processColumn(describeColumns, requestedItems, table, column, columnSegment.getOwner().map(OwnerSegment::getIdentifier).orElse(null), columnSegment.getIdentifier(), i + 1);
         }
-        for (int i = 0; i < parametersCount - affectedColumns.size(); i++) {
-            processCustomColumn(null, null, null, 12, describeColumns, requestedItems, ++columnCount);
+    }
+    
+    private Map<Integer, DataTypeSegment> findCastParameters(final SQLStatementContext sqlStatementContext) {
+        Map<Integer, DataTypeSegment> result = new HashMap<>(sqlStatementContext.getSqlStatement().getParameterMarkers().size(), 1F);
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            for (InsertValueContext each : ((InsertStatementContext) sqlStatementContext).getInsertValueContexts()) {
+                each.getValueExpressions().forEach(value -> findCastParameters(value, result));
+            }
         }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            for (ColumnAssignmentSegment each : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
+                findCastParameters(each.getValue(), result);
+            }
+        }
+        if (sqlStatementContext instanceof WhereContextAvailable) {
+            for (WhereSegment each : getWhereSegments((WhereContextAvailable) sqlStatementContext)) {
+                findCastParameters(each.getExpr(), result);
+            }
+        }
+        return result;
+    }
+    
+    private void findCastParameters(final ExpressionSegment expression, final Map<Integer, DataTypeSegment> castParams) {
+        if (expression instanceof FunctionSegment) {
+            FunctionSegment function = (FunctionSegment) expression;
+            findCastParameter(function, castParams);
+            function.getParameters().forEach(each -> findCastParameters(each, castParams));
+        } else if (expression instanceof BinaryOperationExpression) {
+            findCastParameters(((BinaryOperationExpression) expression).getLeft(), castParams);
+            findCastParameters(((BinaryOperationExpression) expression).getRight(), castParams);
+        }
+    }
+    
+    private void findCastParameter(final FunctionSegment function, final Map<Integer, DataTypeSegment> castParams) {
+        if (!"CAST".equalsIgnoreCase(function.getFunctionName()) || 2 != function.getParameters().size()) {
+            return;
+        }
+        Iterator<ExpressionSegment> args = function.getParameters().iterator();
+        ExpressionSegment source = args.next();
+        ExpressionSegment target = args.next();
+        if (source instanceof ParameterMarkerExpressionSegment && target instanceof DataTypeSegment) {
+            castParams.put(((ParameterMarkerExpressionSegment) source).getParameterMarkerIndex(), (DataTypeSegment) target);
+        }
+    }
+    
+    private boolean processCastParameter(final int index, final Map<Integer, DataTypeSegment> castParams, final Collection<FirebirdReturnColumnPacket> describeColumns,
+                                         final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+        DataTypeSegment target = castParams.get(index);
+        if (null == target) {
+            return false;
+        }
+        String typeName = "INT".equalsIgnoreCase(target.getDataTypeName()) ? "INTEGER" : target.getDataTypeName();
+        Optional<Integer> dataType = DataTypeRegistry.getDataType("Firebird", typeName);
+        if (!dataType.isPresent() || !isIntegerOrBooleanType(dataType.get())) {
+            return false;
+        }
+        processCustomColumn(null, null, null, dataType.get(), describeColumns, requestedItems, index + 1);
+        return true;
+    }
+    
+    private boolean isIntegerOrBooleanType(final int dataType) {
+        return Types.SMALLINT == dataType || Types.INTEGER == dataType || Types.BIGINT == dataType || Types.BOOLEAN == dataType;
     }
     
     private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                         final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                        final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                        final Collection<FirebirdSQLInfoPacketType> requestedItems, final Map<Integer, DataTypeSegment> castParams) {
         Collection<String> tableNames = getTableNames(sqlStatementContext);
-        Collection<String> affectedColumns = new LinkedList<>();
+        Map<Integer, String> affectedColumns = new HashMap<>(sqlStatementContext.getSqlStatement().getParameterMarkers().size(), 1F);
         for (InsertValueContext context : sqlStatementContext.getInsertValueContexts()) {
-            affectedColumns.addAll(processInsertValueContext(sqlStatementContext, context));
+            affectedColumns.putAll(processInsertValueContext(sqlStatementContext, context));
         }
         int columnCount = 0;
         for (String tableName : tableNames) {
             ShardingSphereTable table = getTable(tableName, database, schema);
-            for (String columnName : affectedColumns) {
+            for (int i = 0; i < sqlStatementContext.getSqlStatement().getParameterMarkers().size(); i++) {
+                if (processCastParameter(i, castParams, describeColumns, requestedItems)) {
+                    columnCount++;
+                    continue;
+                }
+                String columnName = affectedColumns.get(i);
+                if (null == columnName) {
+                    processCustomColumn(null, null, null, Types.VARCHAR, describeColumns, requestedItems, ++columnCount);
+                    continue;
+                }
                 ShardingSphereColumn column = table.getColumn(columnName);
                 processColumn(describeColumns, requestedItems, table, column, null, null, ++columnCount);
             }
         }
     }
     
-    private Collection<String> processInsertValueContext(final InsertStatementContext context, final InsertValueContext valueContext) {
-        Collection<String> result = new LinkedList<>();
+    private Map<Integer, String> processInsertValueContext(final InsertStatementContext context, final InsertValueContext valueContext) {
+        Map<Integer, String> result = new HashMap<>(valueContext.getParameterMarkerExpressions().size(), 1F);
         for (int i = 0; i < valueContext.getValueExpressions().size(); i++) {
             if (valueContext.getValueExpressions().get(i) instanceof ParameterMarkerExpressionSegment) {
-                result.add(context.getColumnNames().get(i));
+                result.put(((ParameterMarkerExpressionSegment) valueContext.getValueExpressions().get(i)).getParameterMarkerIndex(), context.getColumnNames().get(i));
             }
         }
         return result;
@@ -408,12 +495,14 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return null == tablesContext ? Collections.emptyList() : tablesContext.getTableNames();
     }
     
-    private Collection<ColumnSegment> findAffectedColumns(final SQLStatementContext sqlStatementContext) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+    private Map<Integer, ColumnSegment> findAffectedColumns(final SQLStatementContext sqlStatementContext) {
+        Map<Integer, ColumnSegment> result = new HashMap<>(sqlStatementContext.getSqlStatement().getParameterMarkers().size(), 1F);
         if (sqlStatementContext instanceof UpdateStatementContext) {
             for (ColumnAssignmentSegment segment : ((UpdateStatementContext) sqlStatementContext).getSqlStatement().getSetAssignment().getAssignments()) {
                 if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
-                    result.add(segment.getColumns().get(0));
+                    result.put(((ParameterMarkerExpressionSegment) segment.getValue()).getParameterMarkerIndex(), segment.getColumns().get(0));
+                } else {
+                    processExpr(segment.getValue(), result);
                 }
             }
         }
@@ -423,6 +512,47 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             }
         }
         return result;
+    }
+    
+    private boolean processExpr(final ExpressionSegment expr, final Map<Integer, ColumnSegment> affectedColumns) {
+        if (expr instanceof FunctionSegment && "coalesce".equalsIgnoreCase(((FunctionSegment) expr).getFunctionName())) {
+            Optional<ColumnSegment> column = findCoalesceColumn((FunctionSegment) expr);
+            if (column.isPresent()) {
+                for (ParameterMarkerExpressionSegment each : ExpressionExtractor.getParameterMarkerExpressions(Collections.singleton(expr))) {
+                    affectedColumns.put(each.getParameterMarkerIndex(), column.get());
+                }
+            }
+            return false;
+        }
+        if (!(expr instanceof BinaryOperationExpression)) {
+            return expr instanceof ParameterMarkerExpressionSegment;
+        }
+        BinaryOperationExpression binary = (BinaryOperationExpression) expr;
+        boolean leftIsParam = processExpr(binary.getLeft(), affectedColumns);
+        boolean rightIsParam = processExpr(binary.getRight(), affectedColumns);
+        if (rightIsParam && binary.getLeft() instanceof ColumnSegment) {
+            affectedColumns.put(((ParameterMarkerExpressionSegment) binary.getRight()).getParameterMarkerIndex(), (ColumnSegment) binary.getLeft());
+        } else if (leftIsParam && binary.getRight() instanceof ColumnSegment) {
+            affectedColumns.put(((ParameterMarkerExpressionSegment) binary.getLeft()).getParameterMarkerIndex(), (ColumnSegment) binary.getRight());
+        }
+        return false;
+    }
+    
+    private Optional<ColumnSegment> findCoalesceColumn(final FunctionSegment function) {
+        ColumnSegment result = null;
+        for (ExpressionSegment each : function.getParameters()) {
+            if (each instanceof ColumnSegment) {
+                ColumnSegment column = (ColumnSegment) each;
+                if (null != result && (!result.getColumnBoundInfo().getOriginalTable().getValue().equals(column.getColumnBoundInfo().getOriginalTable().getValue())
+                        || !result.getColumnBoundInfo().getOriginalColumn().getValue().equals(column.getColumnBoundInfo().getOriginalColumn().getValue()))) {
+                    return Optional.empty();
+                }
+                result = column;
+            } else if (!(each instanceof ParameterMarkerExpressionSegment)) {
+                return Optional.empty();
+            }
+        }
+        return Optional.ofNullable(result);
     }
     
     @HighFrequencyInvocation
@@ -446,19 +576,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void appendBranchWhereSegments(final SelectStatement branch, final Collection<WhereSegment> whereSegments) {
         branch.getWhere().filter(whereSegment -> !whereSegments.contains(whereSegment)).ifPresent(whereSegments::add);
         appendCombineWhereSegments(branch, whereSegments);
-    }
-    
-    private boolean processExpr(final ExpressionSegment expr, final Collection<ColumnSegment> affectedColumns) {
-        if (!(expr instanceof BinaryOperationExpression)) {
-            return expr instanceof ParameterMarkerExpressionSegment;
-        }
-        BinaryOperationExpression binary = (BinaryOperationExpression) expr;
-        processExpr(binary.getLeft(), affectedColumns);
-        boolean rightIsParam = processExpr(binary.getRight(), affectedColumns);
-        if (rightIsParam && binary.getLeft() instanceof ColumnSegment) {
-            affectedColumns.add((ColumnSegment) binary.getLeft());
-        }
-        return false;
     }
     
     private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,

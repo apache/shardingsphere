@@ -99,6 +99,20 @@ class FirebirdBatchRegisterBlobCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWithDuplicateStreamBlob() {
+        when(batchRegistry.getBatchStatement(9, 7)).thenReturn(batchStatement);
+        when(batchStatement.hasBatchBlobIdColumn()).thenReturn(true);
+        byte[] content = {1, 2};
+        Map<Long, byte[]> streamBlobContents = Collections.singletonMap(1L, content);
+        when(batchStatement.getStreamBlobContents()).thenReturn(streamBlobContents);
+        when(packet.getBatchBlobId()).thenReturn(1L);
+        RepeatedBatchBlobIdException actual = assertThrows(RepeatedBatchBlobIdException.class, () -> new FirebirdBatchRegisterBlobCommandExecutor(packet, connectionSession).execute());
+        assertThat(actual.getBatchBlobId(), is(1L));
+        assertThat(streamBlobContents.get(1L), is(content));
+        verify(batchStatement, never()).getBlobIds();
+    }
+    
+    @Test
     void assertExecuteWithoutBlobColumns() {
         when(batchRegistry.getBatchStatement(9, 7)).thenReturn(batchStatement);
         BatchWithoutBlobsException actual = assertThrows(BatchWithoutBlobsException.class, () -> new FirebirdBatchRegisterBlobCommandExecutor(packet, connectionSession).execute());

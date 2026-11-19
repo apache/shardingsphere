@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry.BatchCreatePhase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,43 @@ class FirebirdBatchRegistryTest {
     @AfterEach
     void tearDown() {
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
+    }
+    
+    @Test
+    void assertConsumeBatchCreatePhase() {
+        FirebirdBatchRegistry registry = FirebirdBatchRegistry.getInstance();
+        registry.registerConnection(CONNECTION_ID);
+        assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID), is(BatchCreatePhase.NONE));
+        registry.markBatchStreamDefaultsReset(CONNECTION_ID);
+        assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID), is(BatchCreatePhase.DEFAULTS_RESET));
+        registry.markBatchStreamDefaultsReset(CONNECTION_ID);
+        registry.markBatchCreationAttempt(CONNECTION_ID);
+        assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID), is(BatchCreatePhase.API_INVOKED));
+        assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID), is(BatchCreatePhase.NONE));
+    }
+    
+    @Test
+    void assertBatchCreationAttemptIsConnectionScoped() {
+        FirebirdBatchRegistry registry = FirebirdBatchRegistry.getInstance();
+        registry.registerConnection(CONNECTION_ID);
+        registry.registerConnection(CONNECTION_ID + 1);
+        try {
+            registry.markBatchCreationAttempt(CONNECTION_ID);
+            assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID + 1), is(BatchCreatePhase.NONE));
+            assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID), is(BatchCreatePhase.API_INVOKED));
+        } finally {
+            registry.unregisterConnection(CONNECTION_ID + 1);
+        }
+    }
+    
+    @Test
+    void assertBatchCreationAttemptReleasedWithConnection() {
+        FirebirdBatchRegistry registry = FirebirdBatchRegistry.getInstance();
+        registry.registerConnection(CONNECTION_ID);
+        registry.markBatchCreationAttempt(CONNECTION_ID);
+        registry.unregisterConnection(CONNECTION_ID);
+        registry.registerConnection(CONNECTION_ID);
+        assertThat(registry.consumeBatchCreatePhase(CONNECTION_ID), is(BatchCreatePhase.NONE));
     }
     
     @Test

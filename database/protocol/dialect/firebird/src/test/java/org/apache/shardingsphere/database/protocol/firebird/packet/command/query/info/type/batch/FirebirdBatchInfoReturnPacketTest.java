@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,7 +54,7 @@ class FirebirdBatchInfoReturnPacketTest {
     
     private String write(final List<FirebirdInfoPacketType> infoItems, final FirebirdBatchStatement batchStatement, final int maxLength) {
         ByteBuf result = Unpooled.buffer();
-        new FirebirdBatchInfoReturnPacket(infoItems, batchStatement, maxLength).write(new FirebirdPacketPayload(result, StandardCharsets.UTF_8));
+        new FirebirdBatchInfoReturnPacket(infoItems, batchStatement, maxLength).write((PacketPayload) new FirebirdPacketPayload(result, StandardCharsets.UTF_8));
         return ByteBufUtil.hexDump(result);
     }
     

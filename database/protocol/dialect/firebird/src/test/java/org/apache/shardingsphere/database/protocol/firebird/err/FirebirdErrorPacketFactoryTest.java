@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnknownBatchBlobIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -75,7 +76,7 @@ class FirebirdErrorPacketFactoryTest {
     
     private String writeStatusVector(final Exception cause) {
         ByteBuf result = Unpooled.buffer();
-        ((FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(cause)).getStatusVector().write(new FirebirdPacketPayload(result, StandardCharsets.UTF_8));
+        ((FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(cause)).getStatusVector().write((PacketPayload) new FirebirdPacketPayload(result, StandardCharsets.UTF_8));
         return ByteBufUtil.hexDump(result);
     }
 }

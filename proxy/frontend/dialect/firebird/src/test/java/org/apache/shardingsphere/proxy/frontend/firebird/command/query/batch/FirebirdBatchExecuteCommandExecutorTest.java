@@ -19,19 +19,26 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobBufferFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BlobFilterNotFoundException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ConversionErrorException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.MalformedStringException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ParameterConversionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.RepeatedBatchBlobIdException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.StringTruncationException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.TransliterationFailedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnknownBatchBlobIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedBlobFilterException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegisterBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
@@ -785,15 +792,15 @@ class FirebirdBatchExecuteCommandExecutorTest {
         }
     }
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transliteratedStreamBlobArguments")
     @SuppressWarnings("unchecked")
-    void assertExecuteWithTransliteratedStreamBlob() throws SQLException {
+    void assertExecuteWithTransliteratedStreamBlob(final String name, final ByteBuf blobStream, final long length, final byte[] expected) throws SQLException {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(connectionSession.getAttributeMap().attr(FirebirdConstant.CONNECTION_CHARSET_ID).get()).thenReturn(4);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getTransactionHandle()).thenReturn(transactionId);
-        byte[] data = "é".getBytes(StandardCharsets.UTF_8);
-        FirebirdBatchStatement batchStatement = createStreamBlobBatchStatement(Unpooled.buffer().writeLong(1L).writeInt(data.length).writeInt(0).writeBytes(data), 20L);
+        FirebirdBatchStatement batchStatement = createStreamBlobBatchStatement(blobStream, length);
         batchStatement.setDefaultBpb(new byte[]{1, 1, 1, 1, 2, 1, 1, 4, 1, 4, 5, 1, 53, 3, 1, 1});
         batchStatement.addParameterValues(Collections.singletonList(1L));
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
@@ -805,15 +812,126 @@ class FirebirdBatchExecuteCommandExecutorTest {
         })) {
             new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute();
             assertThat(actualParams.size(), is(1));
-            assertThat((byte[]) actualParams.get(0).get(0), is("é".getBytes(Charset.forName("windows-1252"))));
+            assertThat((byte[]) actualParams.get(0).get(0), is(expected));
         }
+    }
+    
+    private static Stream<Arguments> transliteratedStreamBlobArguments() {
+        byte[] bpb = {1, 1, 1, 1, 2, 1, 1, 4, 1, 4, 5, 1, 53, 3, 1, 0};
+        return Stream.of(
+                Arguments.of("default_bpb", Unpooled.buffer().writeLong(1L).writeInt(2).writeInt(0).writeBytes("é".getBytes(StandardCharsets.UTF_8)),
+                        20L, "é".getBytes(Charset.forName("windows-1252"))),
+                Arguments.of("continued_character",
+                        Unpooled.buffer().writeLong(1L).writeInt(23).writeInt(bpb.length).writeBytes(bpb).writeInt(2).writeByte('a').writeByte(0xC3).writeInt(1).writeByte(0xA9), 40L,
+                        new byte[]{'a', (byte) 0xE9}),
+                Arguments.of("empty_blob", Unpooled.buffer().writeLong(1L).writeInt(0).writeInt(0), 16L, new byte[0]));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidTransliteratedStreamBlobArguments")
+    void assertExecuteWithInvalidTransliteratedStreamBlob(final String name, final ByteBuf blobStream, final long length) {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getAttributeMap().attr(FirebirdConstant.CONNECTION_CHARSET_ID).get()).thenReturn(4);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
+        FirebirdBatchStatement batchStatement = createStreamBlobBatchStatement(blobStream, length);
+        batchStatement.addParameterValues(Collections.singletonList(1L));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
+        try (MockedConstruction<FirebirdBatchedStatementsExecutor> mockedExecutor = mockConstruction(FirebirdBatchedStatementsExecutor.class)) {
+            assertThrows(TransliterationFailedException.class, () -> new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute());
+            assertTrue(mockedExecutor.constructed().isEmpty());
+            assertTrue(batchStatement.getBlobBuffer().isEmpty());
+            assertTrue(batchStatement.getParameterValues().isEmpty());
+        }
+    }
+    
+    private static Stream<Arguments> invalidTransliteratedStreamBlobArguments() {
+        byte[] segmentedBpb = {1, 1, 1, 1, 2, 1, 1, 4, 1, 4, 5, 1, 52, 3, 1, 0};
+        byte[] streamBpb = {1, 1, 1, 1, 2, 1, 1, 4, 1, 4, 5, 1, 52, 3, 1, 1};
+        return Stream.of(
+                Arguments.of("split_first_character",
+                        Unpooled.buffer().writeLong(1L).writeInt(23).writeInt(segmentedBpb.length).writeBytes(segmentedBpb).writeInt(1).writeByte(0xD0).writeInt(1).writeByte(0xB2), 40L),
+                Arguments.of("invalid_second_segment",
+                        Unpooled.buffer().writeLong(1L).writeInt(23).writeInt(segmentedBpb.length).writeBytes(segmentedBpb).writeInt(1).writeByte('a').writeInt(1).writeByte(0xFF), 40L),
+                Arguments.of("native_put_boundary", Unpooled.buffer().writeLong(1L).writeInt(32785).writeInt(streamBpb.length).writeBytes(streamBpb).writeZero(32768).writeByte(0xFF), 32804L));
     }
     
     private FirebirdBatchStatement createStreamBlobBatchStatement(final ByteBuf blobStream, final long length) {
         FirebirdBatchColumnDescriptor columnDescriptor = createBlobColumnDescriptor(true);
-        FirebirdBatchStatement result = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(columnDescriptor), 1024L, false, false, true);
+        FirebirdBatchStatement result = new FirebirdBatchStatement(STATEMENT_ID, Collections.singletonList(columnDescriptor), Math.max(1024L, length), false, false, true);
         result.appendBlobStream(blobStream, length);
         return result;
+    }
+    
+    @Test
+    void assertStreamBlobIdRemainsUniqueAfterUnknownIdFailure() {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getAttributeMap().attr(FirebirdConstant.CONNECTION_CHARSET_ID).get()).thenReturn(4);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        ByteBuf data = Unpooled.buffer().writeLong(1L).writeInt(0).writeInt(0);
+        FirebirdBatchStatement batch = createStreamBlobBatchStatement(data, 16L);
+        data.release();
+        batch.addParameterValues(Collections.singletonList(2L));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batch);
+        assertThrows(UnknownBatchBlobIdException.class, () -> new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute());
+        FirebirdBatchRegisterBlobCommandPacket registerPacket = mock(FirebirdBatchRegisterBlobCommandPacket.class);
+        when(registerPacket.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(registerPacket.getBatchBlobId()).thenReturn(1L);
+        RepeatedBatchBlobIdException actual = assertThrows(RepeatedBatchBlobIdException.class, () -> new FirebirdBatchRegisterBlobCommandExecutor(registerPacket, connectionSession).execute());
+        assertThat(actual.getBatchBlobId(), is(1L));
+        assertTrue(batch.getBlobIds().isEmpty());
+        assertTrue(batch.getStreamBlobContents().containsKey(1L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidReadBlobArguments")
+    void assertExecuteRejectsReadBlobConversion(final String name, final int sourceSubType, final int targetSubType, final int sourceCharsetId, final int connectionCharsetId, final byte[] content,
+                                                final int targetType, final Class<? extends SQLDialectException> expectedErrorType) {
+        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(connectionSession.getAttributeMap().attr(FirebirdConstant.CONNECTION_CHARSET_ID).get()).thenReturn(connectionCharsetId);
+        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getTransactionHandle()).thenReturn(transactionId);
+        when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
+        ByteBuf blr = Unpooled.buffer().writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0).writeShortLE(2)
+                .writeByte(BlrConstants.blr_blob2).writeShortLE(sourceSubType).writeShortLE(sourceCharsetId).writeByte(BlrConstants.blr_short).writeByte(0).writeByte(BlrConstants.blr_end)
+                .writeByte(BlrConstants.blr_eoc);
+        FirebirdBatchStatement batch = new FirebirdBatchStatement(STATEMENT_ID, FirebirdParseBatchBlr.parse(blr, blr.readableBytes()).getFields(), 1024L, true, false, true);
+        blr.release();
+        ByteBuf data = Unpooled.buffer().writeLong(1L).writeInt(content.length).writeInt(0).writeBytes(content);
+        byte[] nextContent = Types.BOOLEAN == targetType ? "TRUE".getBytes(StandardCharsets.US_ASCII) : new byte[]{'a'};
+        data.writeLong(2L).writeInt(nextContent.length).writeInt(0).writeBytes(nextContent);
+        batch.appendBlobStream(data, (16L + content.length + 3 & ~3L) + (16L + nextContent.length + 3 & ~3L));
+        data.release();
+        batch.addParameterValues(Collections.singletonList(1L));
+        batch.addParameterValues(Collections.singletonList(2L));
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batch);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", targetType, false, false, true, true, false, true);
+        when(preparedStatement.getParameterColumns()).thenReturn(Collections.singletonList(
+                new FirebirdReturnColumnPacket(Collections.emptyList(), 1, table, column, null, null, null, null, Types.BLOB == targetType, targetSubType)));
+        try (MockedConstruction<FirebirdBatchedStatementsExecutor> mockedExecutor = mockConstruction(FirebirdBatchedStatementsExecutor.class)) {
+            ParameterConversionException actual = assertThrows(ParameterConversionException.class, () -> new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute());
+            assertThat(actual.getConversionError(), isA(expectedErrorType));
+            assertTrue(mockedExecutor.constructed().isEmpty());
+        }
+    }
+    
+    private static Stream<Arguments> invalidReadBlobArguments() {
+        return Stream.of(
+                Arguments.of("native_charset_without_java_decoder", 1, 1, 19, 4, new byte[]{(byte) 0xC3, (byte) 0xA9}, Types.BLOB, UnsupportedBlobFilterException.class),
+                Arguments.of("malformed_suffix", 1, 1, 4, 52, new byte[]{'a', (byte) 0xFF}, Types.BLOB, TransliterationFailedException.class),
+                Arguments.of("incomplete_suffix", 1, 1, 4, 52, new byte[]{'a', (byte) 0xD0}, Types.BLOB, TransliterationFailedException.class),
+                Arguments.of("malformed_none_charset", 1, 1, 0, 4, new byte[]{(byte) 0xFF}, Types.BLOB, MalformedStringException.class),
+                Arguments.of("malformed_binary_charset", 1, 1, 1, 4, new byte[]{(byte) 0xFF}, Types.BLOB, MalformedStringException.class),
+                Arguments.of("incomplete_none_charset", 1, 1, 0, 4, new byte[]{'a', (byte) 0xD0}, Types.BLOB, MalformedStringException.class),
+                Arguments.of("gb2312_bad_tail", 1, 1, 0, 57, new byte[]{(byte) 0xA1, (byte) 0x80}, Types.BLOB, MalformedStringException.class),
+                Arguments.of("invalid_boolean_word", 1, 0, 4, 4, "garbage".getBytes(StandardCharsets.US_ASCII), Types.BOOLEAN, ConversionErrorException.class),
+                Arguments.of("invalid_boolean_number", 1, 0, 4, 4, new byte[]{'1'}, Types.BOOLEAN, ConversionErrorException.class),
+                Arguments.of("empty_boolean", 1, 0, 4, 4, new byte[0], Types.BOOLEAN, ConversionErrorException.class),
+                Arguments.of("internal_subtype_to_text", 2, 1, 4, 4, new byte[]{'a', 'b'}, Types.BLOB, UnsupportedBlobFilterException.class),
+                Arguments.of("text_to_other_subtype", 1, 2, 4, 4, new byte[]{'a', 'b'}, Types.BLOB, BlobFilterNotFoundException.class));
     }
     
     @Test
