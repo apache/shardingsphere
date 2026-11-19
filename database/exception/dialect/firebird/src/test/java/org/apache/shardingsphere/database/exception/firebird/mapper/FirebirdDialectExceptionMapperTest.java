@@ -33,7 +33,6 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.CannotUpdateOldBlobException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
@@ -103,7 +102,6 @@ class FirebirdDialectExceptionMapperTest {
                 Arguments.of("invalid_batch_message_format", new InvalidBatchMessageFormatException("invalid message length"), FirebirdVendorError.SQLDA_ERROR, new Object[0]),
                 Arguments.of("invalid_statement_handle", new InvalidStatementHandleException(42), FirebirdVendorError.INVALID_STATEMENT_HANDLE, new Object[0]),
                 Arguments.of("invalid_transaction_handle", new InvalidTransactionHandleException(42), FirebirdVendorError.INVALID_TRANSACTION_HANDLE, new Object[0]),
-                Arguments.of("excess_transactions", new ExcessTransactionsException(1), FirebirdVendorError.EXCESS_TRANSACTIONS, new Object[]{1}),
                 Arguments.of("invalid_parameter_value", new InvalidParameterValueException("names", "foo_charset"), FirebirdVendorError.CHARSET_NOT_FOUND, new Object[]{"foo_charset"}),
                 Arguments.of("invalid_segstr_handle", new InvalidSegstrHandleException(42), FirebirdVendorError.INVALID_SEGSTR_HANDLE, new Object[0]),
                 Arguments.of("invalid_segstr_id", new InvalidSegstrIdException(99L), FirebirdVendorError.INVALID_SEGSTR_ID, new Object[0]),
