@@ -23,13 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Utility class for pipeline data source configuration.
@@ -37,6 +41,8 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.NONE)
 @Slf4j
 public final class PipelineDataSourceConfigurationUtils {
+    
+    private static final String MAX_POOL_SIZE = "maxPoolSize";
     
     /**
      * Transform the given pipeline data source properties.
@@ -111,19 +117,41 @@ public final class PipelineDataSourceConfigurationUtils {
         if (null == storageUnits || storageUnits.isEmpty()) {
             return pipelineDataSourceConfig;
         }
+        Map<String, Map<String, Object>> savedDataSources = YamlEngine.unmarshal(pipelineDataSourceConfig.getParameter(), YamlRootConfiguration.class, true).getDataSources();
         for (Entry<String, DataSourcePoolProperties> entry : pipelineDataSourceConfig.getDataSourcePoolPropertiesMap().entrySet()) {
             StorageUnit storageUnit = storageUnits.get(entry.getKey());
             if (null == storageUnit) {
                 continue;
             }
-            DataSourcePoolProperties dataSourcePoolProps = entry.getValue();
-            Map<String, Object> jobDataSourceProps = dataSourcePoolProps.getAllLocalProperties();
-            Map<String, Object> storageUnitStandardProps = storageUnit.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties();
-            logTransformPoolSize(jobId, entry.getKey(), jobDataSourceProps, storageUnitStandardProps);
-            transformPoolSize(jobDataSourceProps, storageUnitStandardProps);
-            entry.setValue(new DataSourcePoolProperties(dataSourcePoolProps.getPoolClassName(), jobDataSourceProps));
+            Map<String, Object> savedProps = savedDataSources.get(entry.getKey());
+            DataSourcePoolProperties livePoolProps = storageUnit.getDataSourcePoolProperties();
+            if (!Objects.equals(savedProps.getOrDefault("url", savedProps.get("jdbcUrl")), livePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url"))) {
+                continue;
+            }
+            DataSourcePoolProperties jobPoolProps = entry.getValue();
+            getChangedMaxPoolSize(jobPoolProps, livePoolProps).ifPresent(maxPoolSize -> {
+                Map<String, Object> props = jobPoolProps.getAllLocalProperties();
+                updateMaxPoolSize(jobId, entry.getKey(), jobPoolProps, props, maxPoolSize);
+                entry.setValue(new DataSourcePoolProperties(jobPoolProps.getPoolClassName(), props));
+            });
         }
         return pipelineDataSourceConfig;
+    }
+    
+    private static Optional<Object> getChangedMaxPoolSize(final DataSourcePoolProperties jobPoolProps, final DataSourcePoolProperties currentPoolProps) {
+        Optional<Object> maxPoolSize = Optional.ofNullable(currentPoolProps.getPoolPropertySynonyms().getStandardProperties().get(MAX_POOL_SIZE));
+        if (!maxPoolSize.isPresent()) {
+            maxPoolSize = TypedSPILoader.findService(DataSourcePoolMetaData.class, currentPoolProps.getPoolClassName())
+                    .map(optional -> optional.getDefaultProperties().get(optional.getPropertySynonyms().getOrDefault(MAX_POOL_SIZE, MAX_POOL_SIZE)));
+        }
+        Object oldMaxPoolSize = jobPoolProps.getPoolPropertySynonyms().getStandardProperties().get(MAX_POOL_SIZE);
+        return maxPoolSize.filter(size -> !String.valueOf(size).equals(String.valueOf(oldMaxPoolSize)));
+    }
+    
+    private static void updateMaxPoolSize(final String jobId, final String dataSourceName, final DataSourcePoolProperties jobPoolProps, final Map<String, Object> props, final Object maxPoolSize) {
+        log.info("Transform maxPoolSize from '{}' to '{}' for {} data source: {}", jobPoolProps.getPoolPropertySynonyms().getStandardProperties().get(MAX_POOL_SIZE), maxPoolSize, jobId,
+                dataSourceName);
+        props.put(MAX_POOL_SIZE, maxPoolSize);
     }
     
     private static PipelineDataSourceConfiguration transformStandardPipelineDataSourceConfiguration(final String jobId, final String dataSourceName,
@@ -132,45 +160,21 @@ public final class PipelineDataSourceConfigurationUtils {
         return transformStandardPipelineDataSourceConfiguration(jobId, dataSourceName, pipelineDataSourceConfig, storageUnit.getDataSourcePoolProperties());
     }
     
+    @SuppressWarnings("unchecked")
     private static PipelineDataSourceConfiguration transformStandardPipelineDataSourceConfiguration(final String jobId, final String dataSourceName,
                                                                                                     final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
                                                                                                     final DataSourcePoolProperties dataSourcePoolProps) {
-        DataSourcePoolProperties jobDataSourcePoolProps = (DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration();
-        Map<String, Object> jobStandardProps = jobDataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
-        Map<String, Object> currentStandardProps = dataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
-        if (!isPoolSizeChanged(jobStandardProps, currentStandardProps)) {
+        DataSourcePoolProperties jobPoolProps = (DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration();
+        Optional<Object> maxPoolSize = getChangedMaxPoolSize(jobPoolProps, dataSourcePoolProps);
+        if (!maxPoolSize.isPresent()) {
             return pipelineDataSourceConfig;
         }
-        logTransformPoolSize(jobId, dataSourceName, jobStandardProps, currentStandardProps);
-        return new StandardPipelineDataSourceConfiguration(new YamlDataSourceConfigurationSwapper().swapToMap(dataSourcePoolProps));
-    }
-    
-    private static boolean isPoolSizeChanged(final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
-        return isPoolSizeChanged("maxPoolSize", jobDataSourceProps, storageUnitStandardProps)
-                || isPoolSizeChanged("maximumPoolSize", jobDataSourceProps, storageUnitStandardProps);
-    }
-    
-    private static boolean isPoolSizeChanged(final String key, final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
-        return storageUnitStandardProps.containsKey(key) && !Objects.equals(String.valueOf(jobDataSourceProps.get(key)), String.valueOf(storageUnitStandardProps.get(key)));
-    }
-    
-    private static void logTransformPoolSize(final String jobId, final String dataSourceName, final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
-        if (storageUnitStandardProps.containsKey("maxPoolSize")) {
-            log.info("Transform maxPoolSize from '{}' to '{}' for {} data source: {}",
-                    jobDataSourceProps.get("maxPoolSize"), storageUnitStandardProps.get("maxPoolSize"), jobId, dataSourceName);
+        Map<String, Object> props = YamlEngine.unmarshal(pipelineDataSourceConfig.getParameter(), Map.class);
+        if (!Objects.equals(props.getOrDefault("jdbcUrl", props.get("url")), dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url"))) {
+            return pipelineDataSourceConfig;
         }
-        if (storageUnitStandardProps.containsKey("maximumPoolSize")) {
-            log.info("Transform maximumPoolSize from '{}' to '{}' for {} data source: {}",
-                    jobDataSourceProps.get("maximumPoolSize"), storageUnitStandardProps.get("maximumPoolSize"), jobId, dataSourceName);
-        }
-    }
-    
-    private static void transformPoolSize(final Map<String, Object> jobDataSourceProps, final Map<String, Object> storageUnitStandardProps) {
-        if (storageUnitStandardProps.containsKey("maxPoolSize")) {
-            jobDataSourceProps.put("maxPoolSize", storageUnitStandardProps.get("maxPoolSize"));
-        }
-        if (storageUnitStandardProps.containsKey("maximumPoolSize")) {
-            jobDataSourceProps.put("maximumPoolSize", storageUnitStandardProps.get("maximumPoolSize"));
-        }
+        updateMaxPoolSize(jobId, dataSourceName, jobPoolProps, props, maxPoolSize.get());
+        props.remove("maximumPoolSize");
+        return new StandardPipelineDataSourceConfiguration(props);
     }
 }

@@ -374,6 +374,7 @@ unreservedWord
     | RELATIVE
     | RELEASE
     | RENAME
+    | REPACK
     | REPEATABLE
     | REPLACE
     | REPLICA
@@ -1129,7 +1130,8 @@ xmlNamespaceEl
 
 funcExpr
     : jsonAggregateFunction filterClause? overClause?
-    | funcApplication withinGroupClause? filterClause? nullTreatment? overClause?
+    | funcApplication ({null == $funcApplication.ctx.DISTINCT() && null == $funcApplication.ctx.VARIADIC() && null == $funcApplication.ctx.sortClause()}? withinGroupClause)?
+      filterClause? nullTreatment? overClause?
     | functionExprCommonSubexpr
     ;
 

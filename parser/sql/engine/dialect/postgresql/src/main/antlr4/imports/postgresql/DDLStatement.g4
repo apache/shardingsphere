@@ -233,7 +233,11 @@ checkOption
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | aExpr
+    : CURRENT_TIMESTAMP | defaultComparison (IS NOT? DISTINCT FROM defaultComparison)?
+    ;
+
+defaultComparison
+    : bExpr (comparisonOperator bExpr)?
     ;
 
 sequenceOptions
@@ -1221,6 +1225,18 @@ close
     : CLOSE (cursorName | ALL)
     ;
 
+repack
+    : REPACK repackOptions? (qualifiedName (LP_ columnList RP_)? (USING INDEX indexName?)? | USING INDEX)?
+    ;
+
+repackOptions
+    : LP_ repackOption (COMMA_ repackOption)* RP_
+    ;
+
+repackOption
+    : (nonReservedWord | analyzeKeyword) (booleanOrString | numericOnly)?
+    ;
+
 cluster
     : CLUSTER clusterVerboseSpecification? (tableName clusterIndexSpecification? | indexName ON tableName)?
     ;
@@ -1653,7 +1669,11 @@ createServer
     ;
 
 createStatistics
-    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON exprList FROM fromList
+    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON statisticsExpression (COMMA_ statisticsExpression)* FROM fromList
+    ;
+
+statisticsExpression
+    : colId | funcExprWindowless | LP_ aExpr RP_
     ;
 
 createSubscription

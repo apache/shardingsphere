@@ -692,4 +692,17 @@
     <sql-case id="select_json_objectagg_filter_parameter_pg" value="SELECT JSON_OBJECTAGG('foo' VALUE ?) FILTER (WHERE ?)" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="select_json_aggregate_filter_window_parameters_pg" value="SELECT JSON_ARRAYAGG($1 RETURNING jsonb) FILTER (WHERE $2) OVER (ORDER BY $3)" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="select_cast_parameters_firebird" value="SELECT CAST(? AS INTEGER), CAST(CAST(? AS INTEGER) AS INTEGER) FROM t_order" db-types="Firebird" case-types="Placeholder" />
+    <sql-case id="select_function_row_expansion_pg" value="SELECT (f(1)).* FROM t" db-types="PostgreSQL" />
+    <sql-case id="select_parameter_row_expansion_pg" value="SELECT ($1::rec).*" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_constructor_row_expansion_pg" value="SELECT (ROW(1, 2)).*" db-types="PostgreSQL" />
+    <sql-case id="select_row_fields_and_expansion_pg" value="SELECT (r).a, (r).* FROM t" db-types="PostgreSQL" />
+    <sql-case id="select_function_field_expansion_pg" value="SELECT ((f()).a).* FROM t" db-types="PostgreSQL" />
+    <sql-case id="select_subquery_field_expansion_pg" value="SELECT ((SELECT r FROM t).a).*" db-types="PostgreSQL" />
+    <sql-case id="select_split_row_expansion_pg" value="SELECT (f()). /*comment*/ * FROM t" db-types="PostgreSQL" />
+    <sql-case id="select_quoted_row_field_pg" value="SELECT (r).&quot;a&quot; FROM t" db-types="PostgreSQL" />
+    <sql-case id="select_row_field_chain_pg" value="SELECT (r).a.b FROM t" db-types="PostgreSQL" />
+    <sql-case id="select_whole_row_argument_pg" value="SELECT f(j.*) FROM t AS j" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_aggregate_filter" value="SELECT SUM(order_id) FILTER (WHERE user_id &gt; 0) FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_function_filter" value="SELECT any_value(order_id) FILTER (WHERE user_id &gt; 0) FROM t_order" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_aggregate_filter_window" value="SELECT COUNT(*) FILTER (WHERE $1) OVER (ORDER BY $2)" db-types="PostgreSQL" case-types="Placeholder" />
 </sql-cases>

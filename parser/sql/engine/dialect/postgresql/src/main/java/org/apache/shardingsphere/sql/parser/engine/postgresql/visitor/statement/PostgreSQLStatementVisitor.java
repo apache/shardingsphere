@@ -260,6 +260,7 @@ import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -712,16 +713,45 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        ShardingSpherePreconditions.checkState(null == ctx.filterClause() || null != ctx.jsonAggregateFunction(), () -> new SQLParsingException("FILTER clauses are not supported"));
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
-        if (null != ctx.filterClause()) {
-            FunctionSegment function = (FunctionSegment) result;
-            FunctionSegment filtered = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), function.getFunctionName(), getOriginalText(ctx));
-            filtered.getParameters().addAll(function.getParameters());
-            filtered.setFilter((ExpressionSegment) visit(ctx.filterClause().aExpr()));
-            result = filtered;
+        List<ExpressionSegment> children = Collections.emptyList();
+        if (null != ctx.withinGroupClause()) {
+            children = visitWithinGroupExpressions(ctx, (ExpressionSegment) result);
         }
-        return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
+        if (null == ctx.filterClause()) {
+            return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
+        }
+        ExpressionSegment filter = (ExpressionSegment) visit(ctx.filterClause().aExpr());
+        if (null == ctx.jsonAggregateFunction()) {
+            ExpressionSegment aggregate = (ExpressionSegment) (null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result));
+            if (children.isEmpty()) {
+                children = Arrays.asList(aggregate, filter);
+            } else {
+                children.set(0, aggregate);
+                children.add(filter);
+            }
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
+        }
+        FunctionSegment function = (FunctionSegment) result;
+        FunctionSegment filtered = createFunctionSegment(ctx, function, null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause()));
+        filtered.setFilter(filter);
+        return filtered;
+    }
+    
+    private List<ExpressionSegment> visitWithinGroupExpressions(final FuncExprContext ctx, final ExpressionSegment aggregate) {
+        Collection<SortbyContext> sortItems = ctx.withinGroupClause().sortClause().sortbyList().sortby();
+        if (null == ctx.filterClause()) {
+            for (SortbyContext each : sortItems) {
+                visit(each.aExpr());
+            }
+            return Collections.emptyList();
+        }
+        List<ExpressionSegment> result = new ArrayList<>(sortItems.size() + 2);
+        result.add(aggregate);
+        for (SortbyContext each : sortItems) {
+            result.add((ExpressionSegment) visit(each.aExpr()));
+        }
+        return result;
     }
     
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {

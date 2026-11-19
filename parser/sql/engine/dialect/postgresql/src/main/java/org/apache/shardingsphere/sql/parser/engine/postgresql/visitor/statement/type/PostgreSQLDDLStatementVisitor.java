@@ -77,6 +77,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Cl
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnElemContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnrefContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommentContext;
@@ -197,6 +198,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelativeCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RenameTableSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RepackContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RepackOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SecurityLabelStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableConstraintOptionContext;
@@ -226,6 +229,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.Cu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.cursor.DirectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.SetSchemaDefinitionSegment;
@@ -323,6 +328,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLI
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLOpenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLRepackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.accessmethod.PostgreSQLCreateAccessMethodStatement;
@@ -380,6 +386,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -1452,6 +1459,42 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     public ASTNode visitCursorName(final CursorNameContext ctx) {
         return null == ctx.name() ? new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.hostVariable()))
                 : new CursorNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.name()));
+    }
+    
+    @Override
+    public ASTNode visitRepack(final RepackContext ctx) {
+        List<ColumnSegment> columns = new LinkedList<>();
+        if (null != ctx.columnList()) {
+            for (ColumnElemContext each : ctx.columnList().columnElem()) {
+                columns.add(new ColumnSegment(each.start.getStartIndex(), each.stop.getStopIndex(), createIdentifierValue(each.colId().getText())));
+            }
+        }
+        PropertiesSegment options = null;
+        if (null != ctx.repackOptions()) {
+            options = new PropertiesSegment(ctx.repackOptions().start.getStartIndex(), ctx.repackOptions().stop.getStopIndex());
+            for (RepackOptionContext each : ctx.repackOptions().repackOption()) {
+                String key = getRepackOptionKey(each);
+                String value = getRepackOptionValue(each);
+                options.getProperties().add(new PropertySegment(each.start.getStartIndex(), each.stop.getStopIndex(), key, value));
+            }
+        }
+        return new PostgreSQLRepackStatement(getDatabaseType(), null == ctx.qualifiedName() ? null : (SimpleTableSegment) visit(ctx.qualifiedName()),
+                null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()), null != ctx.INDEX(), columns, options);
+    }
+    
+    private String getRepackOptionKey(final RepackOptionContext ctx) {
+        if (null != ctx.analyzeKeyword()) {
+            return "analyze";
+        }
+        IdentifierValue key = createIdentifierValue(ctx.nonReservedWord().getText());
+        return key.getQuoteCharacter().getStartDelimiter().isEmpty() ? key.getValue().toLowerCase(Locale.ENGLISH) : key.getValue();
+    }
+    
+    private String getRepackOptionValue(final RepackOptionContext ctx) {
+        if (null != ctx.booleanOrString()) {
+            return ctx.booleanOrString().getText();
+        }
+        return null == ctx.numericOnly() ? "true" : ctx.numericOnly().getText();
     }
     
     @Override

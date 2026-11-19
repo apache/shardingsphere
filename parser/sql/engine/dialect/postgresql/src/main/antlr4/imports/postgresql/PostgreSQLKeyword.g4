@@ -171,6 +171,10 @@ CHARACTERISTICS
     : C H A R A C T E R I S T I C S
     ;
 
+REPACK
+    : R E P A C K
+    ;
+
 CLUSTER
     : C L U S T E R
     ;
