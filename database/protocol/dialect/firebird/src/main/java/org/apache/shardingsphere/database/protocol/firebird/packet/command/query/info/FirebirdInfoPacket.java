@@ -102,15 +102,6 @@ public final class FirebirdInfoPacket extends FirebirdCommandPacket {
         return items;
     }
     
-    /**
-     * Get the requested response buffer length.
-     *
-     * @return response buffer length
-     */
-    public int getMaxLength() {
-        return bufferLength;
-    }
-    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
     }
