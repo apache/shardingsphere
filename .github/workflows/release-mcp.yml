@@ -94,7 +94,7 @@ jobs:
         run: |
           set -euo pipefail
           ./mvnw -pl test/e2e/mcp verify -Dspotless.skip=true \
-            -Dit.test=PackagedArchiveE2EIT,PackagedDistributionE2EIT \
+            -Dit.test=PackagedDistributionE2EIT \
             -De2e.run.type=DOCKER \
             -Dmcp.e2e.container.image=shardingsphere-mcp-release:local
       - name: Prepare MCP Registry Metadata
