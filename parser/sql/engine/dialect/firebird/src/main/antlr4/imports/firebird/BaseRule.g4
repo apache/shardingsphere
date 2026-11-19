@@ -352,7 +352,7 @@ regularFunction
     ;
 
 completeRegularFunction
-    : regularFunctionName LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_
+    : regularFunctionName (LP_ (expr (COMMA_ expr)* | ASTERISK_)? RP_)
     ;
 
 regularFunctionName
@@ -361,6 +361,8 @@ regularFunctionName
     | UPPER | LOWER
     | NULLIF
     | COALESCE
+    | LEFT | RIGHT
+    | GEN_UUID
     ;
 
 matchExpression
