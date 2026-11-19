@@ -20,12 +20,10 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 
 /**
@@ -51,21 +49,7 @@ public final class DeferredMetaDataRefreshContext {
      * @param tableName table name
      */
     public void add(final String databaseName, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName) {
-        add(databaseName, schemaName, logicDataSourceName, tableName, Collections.emptyList());
-    }
-    
-    /**
-     * Add a table to be reloaded when current transaction ends.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param logicDataSourceName logic data source name the table is routed to
-     * @param tableName table name
-     * @param revisionCandidateIndexes index-name candidates from the statement that created this table, empty when it was not just created
-     */
-    public void add(final String databaseName, final String schemaName, final String logicDataSourceName, final IdentifierValue tableName,
-                    final Collection<ShardingSphereIndex> revisionCandidateIndexes) {
-        DeferredTable deferredTable = new DeferredTable(databaseName, schemaName, logicDataSourceName, tableName, revisionCandidateIndexes);
+        DeferredTable deferredTable = new DeferredTable(databaseName, schemaName, logicDataSourceName, tableName);
         deferredTables.remove(deferredTable);
         deferredTables.add(deferredTable);
     }
@@ -81,7 +65,7 @@ public final class DeferredMetaDataRefreshContext {
             if (null == database) {
                 continue;
             }
-            contextManager.reconcileTable(database, each.schemaName, each.logicDataSourceName, each.tableName, each.revisionCandidateIndexes);
+            contextManager.reconcileTable(database, each.schemaName, each.logicDataSourceName, each.tableName);
         }
     }
     
@@ -112,8 +96,5 @@ public final class DeferredMetaDataRefreshContext {
         private final String logicDataSourceName;
         
         private final IdentifierValue tableName;
-        
-        @EqualsAndHashCode.Exclude
-        private final Collection<ShardingSphereIndex> revisionCandidateIndexes;
     }
 }

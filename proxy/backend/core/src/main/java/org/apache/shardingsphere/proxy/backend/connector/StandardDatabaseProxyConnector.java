@@ -55,7 +55,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.stream.IteratorStreamMe
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -67,7 +66,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefreshEngine;
-import org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.table.CreateTablePushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.ProxyJDBCExecutorCallback;
@@ -342,17 +340,12 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private void deferMetaDataRefresh(final Collection<RouteUnit> routeUnits) {
         String defaultSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(database.getDefaultSchemaName()));
         Map<SimpleTableSegment, SimpleTableSegment> renameSchemaSources = getRenameSchemaSources();
-        SimpleTableSegment createdTable = getCreatedTable();
         for (SimpleTableSegment each : getDeferrableTables()) {
             IdentifierValue tableName = each.getTableName().getIdentifier();
             SimpleTableSegment schemaSource = renameSchemaSources.getOrDefault(each, each);
             String schemaName = getBoundSchemaName(schemaSource).map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional)).orElse(defaultSchemaName);
             String logicDataSourceName = findLogicDataSourceName(routeUnits, schemaName, tableName);
-            if (each == createdTable) {
-                databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, logicDataSourceName, tableName, getRevisionCandidateIndexes());
-            } else {
-                databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, logicDataSourceName, tableName);
-            }
+            databaseConnectionManager.getDeferredMetaDataRefreshContext().add(database.getName(), schemaName, logicDataSourceName, tableName);
         }
     }
     
@@ -381,11 +374,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             return result;
         }
         return Collections.emptyMap();
-    }
-    
-    private SimpleTableSegment getCreatedTable() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        return sqlStatement instanceof CreateTableStatement ? ((CreateTableStatement) sqlStatement).getTable() : null;
     }
     
     /**
@@ -436,17 +424,6 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
             }
         }
         return routeUnits.iterator().next().getDataSourceMapper().getLogicName();
-    }
-    
-    /**
-     * Get the index-name candidates this CREATE TABLE statement declared, for recovering a logical index name a
-     * storage-imposed identifier-length limit shortened.
-     *
-     * @return index-name candidates, empty when this statement does not create a table
-     */
-    private Collection<ShardingSphereIndex> getRevisionCandidateIndexes() {
-        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
-        return sqlStatement instanceof CreateTableStatement ? CreateTablePushDownMetaDataRefresher.createRevisionCandidateIndexes((CreateTableStatement) sqlStatement) : Collections.emptyList();
     }
     
     private ResponseHeader doExecuteFederation() throws SQLException {
