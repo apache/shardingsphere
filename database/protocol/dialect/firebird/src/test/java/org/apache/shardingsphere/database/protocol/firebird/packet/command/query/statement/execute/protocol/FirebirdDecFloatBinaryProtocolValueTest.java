@@ -40,20 +40,25 @@ class FirebirdDecFloatBinaryProtocolValueTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteArguments")
-    void assertWrite(final String name, final FirebirdBinaryColumnType columnType, final BigDecimal value, final int expectedLength) {
+    void assertWrite(final String name, final FirebirdBinaryColumnType columnType, final Number value, final int expectedLength) {
         ByteBuf byteBuf = Unpooled.buffer();
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
         new FirebirdDecFloatBinaryProtocolValue(columnType).write(payload, value);
         byte[] actual = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(actual);
+        BigDecimal expectedDecimal = value instanceof BigDecimal ? (BigDecimal) value : new BigDecimal(value.toString());
+        byte[] expected = FirebirdBinaryColumnType.DEC16 == columnType ? Decimal64.valueOf(expectedDecimal).toBytes() : Decimal128.valueOf(expectedDecimal).toBytes();
         assertThat(actual.length, is(expectedLength));
-        assertThat(actual, is(FirebirdBinaryColumnType.DEC16 == columnType ? Decimal64.valueOf(value).toBytes() : Decimal128.valueOf(value).toBytes()));
+        assertThat(actual, is(expected));
     }
     
     private static Stream<Arguments> assertWriteArguments() {
         return Stream.of(
                 Arguments.of("dec16", FirebirdBinaryColumnType.DEC16, new BigDecimal("1.234567890123456"), 8),
-                Arguments.of("dec34", FirebirdBinaryColumnType.DEC34, new BigDecimal("1.234567890123456789012345678901234"), 16));
+                Arguments.of("dec34", FirebirdBinaryColumnType.DEC34, new BigDecimal("1.234567890123456789012345678901234"), 16),
+                Arguments.of("dec16_finite_double", FirebirdBinaryColumnType.DEC16, 0.1D, 8),
+                Arguments.of("dec34_finite_float", FirebirdBinaryColumnType.DEC34, 0.2F, 16),
+                Arguments.of("dec34_finite_double", FirebirdBinaryColumnType.DEC34, 1.5D, 16));
     }
     
     @Test

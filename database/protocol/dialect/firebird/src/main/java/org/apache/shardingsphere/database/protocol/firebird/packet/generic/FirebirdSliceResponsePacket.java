@@ -29,7 +29,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdDoubleBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdInt8BinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimeTZBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimeTZExBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimestampTZBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdTimestampTZExBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.math.BigDecimal;
@@ -50,14 +52,16 @@ import java.util.Collection;
  * <p>The server walks the elements of a slice with {@code xdr_slice} and writes every one of them with {@code xdr_datum}, see
  * src/remote/protocol.cpp of the Firebird server, so each element keeps the wire form of its own data type. The wire length of an
  * element is decided by that data type and not by the descriptor storage length, for instance a TIME_TZ element occupies 8 bytes and
- * a DEC34 element 16 bytes.</p>
+ * a DEC34 element 16 bytes. The extended time zone types carry an additional short with the extended offset in minutes, so a
+ * TIME_TZ_EX element occupies 12 bytes and a TIMESTAMP_TZ_EX element 16 bytes.</p>
  *
  * <p>The encoder of an element is selected by this packet rather than by {@code FirebirdBinaryProtocolValueFactory}.
  * That factory also encodes the row values of a query result, so changing a registration there would change row value encoding too.
  * Row value encoding is a different path, so the pre-existing factory defects for DEC16, DEC34, INT128 and TIME_TZ stay untouched here.</p>
  *
- * <p>DEC16, DEC34, INT128 and TIME_TZ are encoded here per the XDR contract of their data types, namely 8, 16, 16 and 8 bytes.
- * Every other element type still uses the value returned by the factory.</p>
+ * <p>DEC16, DEC34, INT128, TIME_TZ and TIMESTAMP_TZ are encoded here per the XDR contract of their data types, namely 8, 16, 16,
+ * 8 and 12 bytes, and the extended time zone types additionally write the extended offset short, so TIME_TZ_EX occupies 12 bytes and
+ * TIMESTAMP_TZ_EX 16 bytes. Every other element type still uses the value returned by the factory.</p>
  *
  * <p>A text array element is the exception spelled out by {@code xdr_datum}: it is written as fixed length opaque data of its
  * storage length, without the leading length field that a variable length value carries, so {@code elementLength} is what decides how
@@ -147,11 +151,17 @@ public final class FirebirdSliceResponsePacket extends FirebirdPacket {
         if (FirebirdBinaryColumnType.DEC34 == columnType) {
             return new FirebirdDecFloatBinaryProtocolValue(FirebirdBinaryColumnType.DEC34);
         }
-        if (FirebirdBinaryColumnType.TIME_TZ == columnType || FirebirdBinaryColumnType.TIME_TZ_EX == columnType) {
+        if (FirebirdBinaryColumnType.TIME_TZ == columnType) {
             return new FirebirdTimeTZBinaryProtocolValue();
         }
-        if (FirebirdBinaryColumnType.TIMESTAMP_TZ == columnType || FirebirdBinaryColumnType.TIMESTAMP_TZ_EX == columnType) {
+        if (FirebirdBinaryColumnType.TIME_TZ_EX == columnType) {
+            return new FirebirdTimeTZExBinaryProtocolValue();
+        }
+        if (FirebirdBinaryColumnType.TIMESTAMP_TZ == columnType) {
             return new FirebirdTimestampTZBinaryProtocolValue();
+        }
+        if (FirebirdBinaryColumnType.TIMESTAMP_TZ_EX == columnType) {
+            return new FirebirdTimestampTZExBinaryProtocolValue();
         }
         if (FirebirdBinaryColumnType.D_FLOAT == columnType) {
             return new FirebirdDoubleBinaryProtocolValue();

@@ -132,14 +132,21 @@ class FirebirdSliceResponsePacketTest {
                 Arguments.of("int128_integer", 16, FirebirdBinaryColumnType.INT128, 7, 16, new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7}),
                 Arguments.of("int128_long", 16, FirebirdBinaryColumnType.INT128, -3L, 16, repeatedSignBytes(16, (byte) -3)),
                 Arguments.of("time_tz", 6, FirebirdBinaryColumnType.TIME_TZ, OffsetTime.parse("01:02:03+02:00"), 6, new byte[]{0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17}),
-                Arguments.of("time_tz_ex", 6, FirebirdBinaryColumnType.TIME_TZ_EX, OffsetTime.parse("01:02:03+02:00"), 6, new byte[]{0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17}),
+                Arguments.of("time_tz_ex", 8, FirebirdBinaryColumnType.TIME_TZ_EX, OffsetTime.parse("01:02:03+02:00"), 8, new byte[]{0x31, 0x6d, 0x0b, (byte) 0xB0, 0, 0, 0x06, 0x17, 0, 0, 0, 0x78}),
                 Arguments.of("timestamp_tz", 12, FirebirdBinaryColumnType.TIMESTAMP_TZ, TIMESTAMP_TZ_VALUE, 12, timestampTzBytes()),
-                Arguments.of("timestamp_tz_ex", 12, FirebirdBinaryColumnType.TIMESTAMP_TZ_EX, TIMESTAMP_TZ_VALUE, 12, timestampTzBytes()),
+                Arguments.of("timestamp_tz_ex", 12, FirebirdBinaryColumnType.TIMESTAMP_TZ_EX, TIMESTAMP_TZ_VALUE, 12, timestampTzExBytes()),
                 Arguments.of("d_float", 8, FirebirdBinaryColumnType.D_FLOAT, 1.5D, 8, new byte[]{0x3F, (byte) 0xF8, 0, 0, 0, 0, 0, 0}),
                 Arguments.of("quad", 8, FirebirdBinaryColumnType.QUAD, 5L, 8, new byte[]{0, 0, 0, 0, 0, 0, 0, 5}),
                 Arguments.of("dec16", 8, FirebirdBinaryColumnType.DEC16, value, 8, Decimal64.valueOf(value).toBytes()),
                 Arguments.of("dec34", 16, FirebirdBinaryColumnType.DEC34, value, 16, Decimal128.valueOf(value).toBytes()),
                 Arguments.of("binary_element", 1, FirebirdBinaryColumnType.TEXT, new byte[]{(byte) 0xFF}, 1, new byte[]{(byte) 0xFF, 0, 0, 0}));
+    }
+    
+    private static byte[] repeatedSignBytes(final int length, final byte lastByte) {
+        byte[] result = new byte[length];
+        Arrays.fill(result, (byte) -1);
+        result[length - 1] = lastByte;
+        return result;
     }
     
     private static byte[] timestampTzBytes() {
@@ -151,11 +158,11 @@ class FirebirdSliceResponsePacketTest {
         return result.array();
     }
     
-    private static byte[] repeatedSignBytes(final int length, final byte lastByte) {
-        byte[] result = new byte[length];
-        Arrays.fill(result, (byte) -1);
-        result[length - 1] = lastByte;
-        return result;
+    private static byte[] timestampTzExBytes() {
+        ByteBuffer result = ByteBuffer.allocate(16);
+        result.put(timestampTzBytes());
+        result.putInt(TIMESTAMP_TZ_VALUE.getOffset().getTotalSeconds() / 60);
+        return result.array();
     }
     
     @Test
