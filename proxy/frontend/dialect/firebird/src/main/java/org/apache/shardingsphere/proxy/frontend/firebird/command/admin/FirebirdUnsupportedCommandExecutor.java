@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandExecutorException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandPacketException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
@@ -43,8 +42,8 @@ public final class FirebirdUnsupportedCommandExecutor implements CommandExecutor
     @Override
     public Collection<DatabasePacket> execute() {
         Exception cause = commandPacket instanceof FirebirdUnsupportedCommandPacket
-                ? new UnsupportedCommandPacketException(commandPacketType.name())
-                : new UnsupportedCommandExecutorException(commandPacketType.name());
+                ? UnsupportedCommandException.forCommandPacket(commandPacketType.name())
+                : UnsupportedCommandException.forCommandExecutor(commandPacketType.name());
         return Collections.singleton(FirebirdErrorPacketFactory.newInstance(cause));
     }
 }

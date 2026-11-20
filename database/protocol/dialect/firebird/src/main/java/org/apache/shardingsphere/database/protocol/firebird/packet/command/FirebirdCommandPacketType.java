@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacketType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -200,7 +201,7 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
      */
     public static FirebirdCommandPacketType valueOf(final int value) {
         FirebirdCommandPacketType result = FIREBIRD_COMMAND_PACKET_TYPE_CACHE.get(value);
-        Preconditions.checkNotNull(result, "Cannot find '%s' in command packet type", value);
+        ShardingSpherePreconditions.checkNotNull(result, () -> UnsupportedCommandException.forCommandPacketType(value));
         return result;
     }
 }

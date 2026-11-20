@@ -41,8 +41,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandExecutorException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandPacketException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.exception.generic.UnknownSQLException;
@@ -123,10 +122,7 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         if (sqlDialectException instanceof InvalidSegstrTypeException) {
             return toSQLException(FirebirdVendorError.INVALID_SEGSTR_TYPE);
         }
-        if (sqlDialectException instanceof UnsupportedCommandPacketException) {
-            return toSQLException(FirebirdVendorError.FEATURE_NOT_SUPPORTED, sqlDialectException.getMessage());
-        }
-        if (sqlDialectException instanceof UnsupportedCommandExecutorException) {
+        if (sqlDialectException instanceof UnsupportedCommandException) {
             return toSQLException(FirebirdVendorError.FEATURE_NOT_SUPPORTED, sqlDialectException.getMessage());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
