@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTok
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -89,7 +90,10 @@ public final class SQLRewriteContext {
             }
             appendOnConflictTargetParameters(insertStatementContext, afterGenericParams);
             afterGenericParams.addAll(insertStatementContext.getOnDuplicateKeyUpdateParameters());
-            appendWherePredicateParameters(insertStatementContext, afterGenericParams);
+            insertStatementContext.getSqlStatement().getWhere().ifPresent(where -> appendSegmentParameters(insertStatementContext, where, afterGenericParams));
+            if (!parameters.isEmpty()) {
+                insertStatementContext.getSqlStatement().getReturning().ifPresent(returning -> appendSegmentParameters(insertStatementContext, returning, afterGenericParams));
+            }
         }
         return new GroupedParameterBuilder(groupedParams, beforeGenericParams, afterGenericParams);
     }
@@ -119,13 +123,9 @@ public final class SQLRewriteContext {
         }
     }
     
-    private void appendWherePredicateParameters(final InsertStatementContext insertStatementContext, final List<Object> afterGenericParams) {
-        if (!insertStatementContext.getSqlStatement().getWhere().isPresent()) {
-            return;
-        }
-        WhereSegment where = insertStatementContext.getSqlStatement().getWhere().get();
+    private void appendSegmentParameters(final InsertStatementContext insertStatementContext, final SQLSegment segment, final Collection<Object> afterGenericParams) {
         for (ParameterMarkerSegment each : insertStatementContext.getSqlStatement().getParameterMarkers()) {
-            if (each.getStartIndex() >= where.getStartIndex() && each.getStopIndex() <= where.getStopIndex()) {
+            if (each.getStartIndex() >= segment.getStartIndex() && each.getStopIndex() <= segment.getStopIndex()) {
                 afterGenericParams.add(parameters.get(each.getParameterIndex()));
             }
         }

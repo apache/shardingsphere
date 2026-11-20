@@ -31,11 +31,13 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.Option
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -65,6 +67,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -151,13 +154,25 @@ class SQLRewriteContextTest {
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         when(statementContext.getSqlStatement().getTable().isPresent()).thenReturn(true);
         when(statementContext.getSqlStatement().getTable().get().getStartIndex()).thenReturn(40);
-        when(statementContext.getSqlStatement().getParameterMarkers())
-                .thenReturn(Collections.singletonList(new ParameterMarkerExpressionSegment(5, 5, 0)));
+        when(statementContext.getSqlStatement().getReturning()).thenReturn(Optional.of(new ReturningSegment(50, 60, new ProjectionsSegment(60, 60))));
+        when(statementContext.getSqlStatement().getParameterMarkers()).thenReturn(Arrays.asList(new ParameterMarkerExpressionSegment(5, 5, 0), new ParameterMarkerExpressionSegment(60, 60, 1)));
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
-        when(queryContext.getParameters()).thenReturn(Collections.singletonList("foo_cte"));
+        when(queryContext.getParameters()).thenReturn(Arrays.asList("foo_cte", "bar_returning"));
         SQLRewriteContext actual = new SQLRewriteContext(database, queryContext);
-        assertThat(actual.getParameterBuilder().getParameters(), is(Collections.singletonList("foo_cte")));
+        assertThat(actual.getParameterBuilder().getParameters(), is(Arrays.asList("foo_cte", "bar_returning")));
+    }
+    
+    @Test
+    void assertInsertReturningWithoutBoundParameters() {
+        InsertStatement statement = InsertStatement.builder().databaseType(databaseType).returning(new ReturningSegment(30, 45, new ProjectionsSegment(40, 45))).build();
+        statement.addParameterMarkers(Collections.singletonList(new ParameterMarkerExpressionSegment(45, 45, 0)));
+        InsertStatementContext statementContext = mock(InsertStatementContext.class);
+        when(statementContext.getSqlStatement()).thenReturn(statement);
+        QueryContext queryContext = mock(QueryContext.class);
+        when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
+        SQLRewriteContext actual = new SQLRewriteContext(database, queryContext);
+        assertTrue(actual.getParameterBuilder().getParameters().isEmpty());
     }
     
     @Test
@@ -169,14 +184,15 @@ class SQLRewriteContextTest {
         InsertStatement insertStatement = mock(InsertStatement.class);
         ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(50, 55, Collections.emptyList(), new ParameterMarkerExpressionSegment(54, 54, 2));
         when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.of(new OnDuplicateKeyColumnsSegment(25, 60, Collections.singletonList(assignment))));
-        when(insertStatement.getParameterMarkers()).thenReturn(Arrays.asList(new ParameterMarkerExpressionSegment(12, 12, 0),
-                new ParameterMarkerExpressionSegment(35, 35, 1), new ParameterMarkerExpressionSegment(54, 54, 2)));
+        when(insertStatement.getReturning()).thenReturn(Optional.of(new ReturningSegment(65, 75, new ProjectionsSegment(75, 75))));
+        when(insertStatement.getParameterMarkers()).thenReturn(Arrays.asList(new ParameterMarkerExpressionSegment(12, 12, 0), new ParameterMarkerExpressionSegment(35, 35, 1),
+                new ParameterMarkerExpressionSegment(54, 54, 2), new ParameterMarkerExpressionSegment(75, 75, 3)));
         when(statementContext.getSqlStatement()).thenReturn(insertStatement);
         QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
         when(queryContext.getSqlStatementContext()).thenReturn(statementContext);
-        when(queryContext.getParameters()).thenReturn(Arrays.asList(1, 2, 3));
+        when(queryContext.getParameters()).thenReturn(Arrays.asList(1, 2, 3, 4));
         SQLRewriteContext actual = new SQLRewriteContext(database, queryContext);
-        assertThat(actual.getParameterBuilder().getParameters(), is(Arrays.asList(1, 2, 3)));
+        assertThat(actual.getParameterBuilder().getParameters(), is(Arrays.asList(1, 2, 3, 4)));
     }
     
     @ParameterizedTest(name = "{0}")
