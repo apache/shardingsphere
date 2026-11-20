@@ -171,6 +171,10 @@ CHARACTERISTICS
     : C H A R A C T E R I S T I C S
     ;
 
+REPACK
+    : R E P A C K
+    ;
+
 CLUSTER
     : C L U S T E R
     ;
@@ -1521,18 +1525,7 @@ DESCRIPTOR
     : D E S C R I P T O R
     ;
 
-ATOMIC
-    : A T O M I C
-    ;
 
-RETURN
-    : R E T U R N
-    ;
+PLAN: P L A N;
 
-SOURCE
-    : S O U R C E
-    ;
-
-TARGET
-    : T A R G E T
-    ;
+RESPECT: R E S P E C T;

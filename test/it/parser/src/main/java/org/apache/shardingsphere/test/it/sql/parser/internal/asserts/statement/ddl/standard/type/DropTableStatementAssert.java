@@ -26,6 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Drop table statement assert.
@@ -41,6 +43,11 @@ public final class DropTableStatementAssert {
      * @param expected expected drop table statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropTableStatement actual, final DropTableStatementTestCase expected) {
+        if (Boolean.TRUE.equals(expected.getIfExists())) {
+            assertTrue(actual.isIfExists(), assertContext.getText("Conditional table flag assertion error: "));
+        } else if (Boolean.FALSE.equals(expected.getIfExists())) {
+            assertFalse(actual.isIfExists(), assertContext.getText("Conditional table flag assertion error: "));
+        }
         if (null != expected.getTemporary()) {
             assertThat(assertContext.getText("Temporary table assertion error: "), actual.isTemporary(), is(expected.getTemporary()));
         }

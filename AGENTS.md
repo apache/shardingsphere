@@ -13,7 +13,7 @@ Follow this guide; paths are repository-relative.
 6. Before classifying an artifact as unused or removable, read and apply the complete removal and contract-impact rules.
 7. For runtime diagnosis, read `.codex/context/runtime-triage.md`; an authorized fix activates `code-implementation` before its first write.
 8. Select optional Skills from their catalog triggers. Read `.codex/context/cross-cutting-skills.md` only when a matching trigger may apply, and use the smallest matching Skill set.
-9. Before running or assessing a repository verification command, read the verification rules. For an authorized change, read `.codex/context/change-completion.md` before completion review or handoff.
+9. Before running or assessing a repository verification command, read the verification rules. For an authorized change, read `.codex/context/change-completion.md` before the first write, then follow it through review and handoff.
 10. Before revising documentation, Skills, prompts, comments, or configuration prose, read `.codex/context/documentation-wording.md`.
 11. Keep task-specific notes outside repository Skills.
 
@@ -23,7 +23,8 @@ Before changing this guide, a canonical policy source, or its harness, read `.co
 
 ## Response Style
 
-- Restrain the urge to elaborate: complete all required task actions and keep required evidence, risks, verification results, and output formats while limiting the reply's length.
+- Strictly follow Grice's Cooperative Principle: quantity, quality, relevance and clarity.
+- Complete all required task actions; keep required evidence, risks, verification results, and output formats.
 - Analyze the issue thoroughly, lead with the conclusion, and give the shortest complete answer in plain language; match detail to the question and context.
 - For details, lead with the answer, then `---`; otherwise omit it.
 
@@ -94,7 +95,7 @@ Optional Skills never waive gates or expand authority or scope.
 
 ## Change Completion Gate
 
-Every authorized code-writing task follows `.codex/context/change-completion.md`, including a restoration or rollback that changes production, test, script, build, generated, or behavior-affecting configuration artifacts.
+After making authorized changes reported by Git, follow `.codex/context/change-completion.md`, including prose, policy, restoration, and rollback.
 
 ## Functional and Performance Non-Regression Gate
 

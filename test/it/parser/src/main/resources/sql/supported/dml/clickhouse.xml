@@ -57,4 +57,27 @@
     <sql-case id="clickhouse_select_sum_distinct_expr" value="SELECT SUM(DISTINCT amount + 1) FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_cast_literal" value="SELECT CAST(1 AS INT8) FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_null_without_alias" value="SELECT NULL" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_cast_nullable" value="SELECT CAST(NULL AS Nullable(Int32)), CAST(7 AS Nullable(Int32))" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_numbers" value="SELECT number FROM numbers(3)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_numbers_alias" value="SELECT n.number FROM numbers(0) AS n" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_values_header" value="INSERT INTO foo_protocol VALUES" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_values_columns" value="INSERT INTO foo_protocol (id, payload) VALUES" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_format_header" value="INSERT INTO foo_protocol FORMAT Native" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_format_columns" value="INSERT INTO default.foo_protocol (id, payload) FORMAT Native" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_native_bare_header" value="INSERT INTO foo_protocol" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_select_numbers" value="INSERT INTO foo_protocol (id) SELECT number FROM numbers(2)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_cancel_aggregate_comment" value="SELECT sum(number % 7919) FROM numbers(10000000000) /* foo_cancel_probe */" db-types="ClickHouse" />
+    <sql-case id="clickhouse_leading_comment" value="/* foo_marker */ SELECT 1" db-types="ClickHouse" />
+    <sql-case id="clickhouse_trailing_line_comment" value="SELECT 1 -- foo_marker" db-types="ClickHouse" />
+    <sql-case id="clickhouse_function_argument_comment" value="SELECT number FROM numbers(/* foo_arg */ 3)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_window_row_number" value="SELECT number AS foo_value,row_number() OVER (ORDER BY number) AS foo_rank FROM numbers(5) ORDER BY number" db-types="ClickHouse" />
+    <sql-case id="clickhouse_window_aggregate" value="SELECT sum(number) OVER (PARTITION BY number ORDER BY number DESC) FROM numbers(3)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_window_distinct" value="SELECT sum(DISTINCT number) OVER () FROM numbers(3)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_array_empty_cast" value="SELECT CAST([] AS Array(UInt64)) AS foo_empty" db-types="ClickHouse" />
+    <sql-case id="clickhouse_array_nested" value="SELECT [[1,2],[]] AS foo_nested" db-types="ClickHouse" />
+    <sql-case id="clickhouse_array_parameter" value="SELECT [?,1] AS foo_values" db-types="ClickHouse" case-types="PLACEHOLDER" />
+    <sql-case id="clickhouse_array_unaliased" value="SELECT [1,2]" db-types="ClickHouse" />
+    <sql-case id="clickhouse_with_constant" value="WITH 2 AS foo_limit SELECT number AS foo_value FROM numbers(5) WHERE number &lt; foo_limit ORDER BY number" db-types="ClickHouse" />
+    <sql-case id="clickhouse_with_parameters" value="WITH ? AS foo_limit SELECT number FROM numbers(3) WHERE number &lt; ?" db-types="ClickHouse" case-types="PLACEHOLDER" />
+    <sql-case id="clickhouse_with_multiple_constants" value="WITH 'foo_value' AS foo_text, NULL AS foo_nullable SELECT foo_text,foo_nullable" db-types="ClickHouse" />
 </sql-cases>

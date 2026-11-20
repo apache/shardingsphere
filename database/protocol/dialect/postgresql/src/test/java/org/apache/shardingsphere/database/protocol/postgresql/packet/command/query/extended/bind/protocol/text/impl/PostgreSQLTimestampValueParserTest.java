@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -37,12 +38,25 @@ class PostgreSQLTimestampValueParserTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("parseSuccessArguments")
     void assertParse(final String name, final String input, final Timestamp expected) {
-        assertThat(new PostgreSQLTimestampValueParser().parse(input), is(expected));
+        assertThat(new PostgreSQLTimestampValueParser("timestamp").parse(input), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}: {1}")
+    @MethodSource("specialValueArguments")
+    void assertParseWithSpecialValue(final String typeName, final String input) {
+        PGobject actual = (PGobject) new PostgreSQLTimestampValueParser(typeName).parse(input);
+        assertThat(actual.getType(), is(typeName));
+        assertThat(actual.getValue(), is(input));
     }
     
     @Test
     void assertParseWithTimestampUtilsException() {
-        assertThat(assertThrows(SQLWrapperException.class, () -> new PostgreSQLTimestampValueParser().parse("bad")).getCause(), isA(SQLException.class));
+        assertThat(assertThrows(SQLWrapperException.class, () -> new PostgreSQLTimestampValueParser("timestamp").parse("bad")).getCause(), isA(SQLException.class));
+    }
+    
+    private static Stream<Arguments> specialValueArguments() {
+        return Stream.of("timestamp", "timestamptz")
+                .flatMap(typeName -> Stream.of("epoch", "today", "tomorrow", "now", "yesterday", "ToDaY", " tomorrow ").map(input -> Arguments.of(typeName, input)));
     }
     
     private static Stream<Arguments> parseSuccessArguments() {

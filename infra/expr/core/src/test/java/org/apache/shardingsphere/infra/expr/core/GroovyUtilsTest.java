@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.expr.core;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,5 +39,11 @@ class GroovyUtilsTest {
         assertThat(GroovyUtils.split("t_order_${0..2},t_order_item_${0..1}"), is(Arrays.asList("t_order_${0..2}", "t_order_item_${0..1}")));
         assertThat(GroovyUtils.split("t_${[\"new${1+2}\",'old']}_order_${1..2}"), is(Collections.singletonList("t_${[\"new${1+2}\",'old']}_order_${1..2}")));
         assertThat(GroovyUtils.split("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}"), is(Collections.singletonList("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"ds_${0..1}.t_order_\\$", "ds_${0..1}.t\\$1", "ds_${0..1}.t\\$ab"})
+    void assertSplitWithTrailingEscapedDollarSign(final String inlineExpression) {
+        assertThat(GroovyUtils.split(inlineExpression), is(Collections.singletonList(inlineExpression)));
     }
 }

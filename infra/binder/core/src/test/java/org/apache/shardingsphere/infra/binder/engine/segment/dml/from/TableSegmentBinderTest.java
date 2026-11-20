@@ -37,6 +37,8 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -56,5 +58,29 @@ class TableSegmentBinderTest {
         assertTrue(actualProjection.isPresent());
         assertThat(actualProjection.get(), isA(ColumnProjectionSegment.class));
         assertThat(actualProjection.get().getColumnLabel(), is("item_value"));
+        assertThat(actualBinderContext.getOriginalOwner().get().getIdentifier(), sameInstance(functionTableSegment.getAlias().get()));
+    }
+    
+    @Test
+    void assertBindFunctionTableWithImplicitColumns() {
+        FunctionTableSegment function = new FunctionTableSegment(0, 30, new FunctionSegment(0, 20, "foo_function", "foo_function()"));
+        function.setAlias(new AliasSegment(23, 30, new IdentifierValue("\"foo_source\"")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> contexts = LinkedHashMultimap.create();
+        TableSegment actual = TableSegmentBinder.bind(function, mock(SQLStatementBinderContext.class), contexts, LinkedHashMultimap.create());
+        assertThat(actual, sameInstance(function));
+        TableSegmentBinderContext actualContext = contexts.get(CaseInsensitiveString.of("foo_source")).iterator().next();
+        assertTrue(actualContext.getProjectionSegments().isEmpty());
+        assertThat(actualContext.getOriginalOwner().get().getIdentifier(), sameInstance(function.getAlias().get()));
+        assertThat(actualContext.getOriginalOwner().get().getStartIndex(), is(23));
+        assertThat(actualContext.getOriginalOwner().get().getStopIndex(), is(30));
+    }
+    
+    @Test
+    void assertBindFunctionTableWithoutAlias() {
+        FunctionTableSegment function = new FunctionTableSegment(0, 20, new FunctionSegment(0, 20, "foo_function", "foo_function()"));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> contexts = LinkedHashMultimap.create();
+        TableSegment actual = TableSegmentBinder.bind(function, mock(SQLStatementBinderContext.class), contexts, LinkedHashMultimap.create());
+        assertThat(actual, sameInstance(function));
+        assertFalse(contexts.get(CaseInsensitiveString.of("foo_function()")).iterator().next().getOriginalOwner().isPresent());
     }
 }

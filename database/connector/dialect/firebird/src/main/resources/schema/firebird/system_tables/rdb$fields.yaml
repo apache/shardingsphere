@@ -192,6 +192,13 @@ columns:
     name: RDB$CHARACTER_LENGTH
     primaryKey: false
     visible: true
+  RDB$COLLATION_ID:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$COLLATION_ID
+    primaryKey: false
+    visible: true
   RDB$CHARACTER_SET_ID:
     caseSensitive: false
     dataType: 5

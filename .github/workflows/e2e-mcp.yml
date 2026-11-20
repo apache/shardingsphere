@@ -78,7 +78,7 @@ jobs:
           type: source
           image: apache/shardingsphere-mcp-e2e
       - name: Build MCP E2E Test Dependencies and Distribution
-        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true
+        run: ./mvnw -Dmaven.repo.local="$E2E_MAVEN_REPOSITORY" -pl test/e2e/mcp,distribution/mcp -Prelease,default-dep -am install -DskipTests -DskipITs -Dspotless.skip=true
       - name: Build MCP Distribution Image
         if: steps.prepare-image.outputs.cache-hit != 'true'
         env:

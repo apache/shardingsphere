@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
-import io.modelcontextprotocol.json.McpJsonMapper;
-import io.modelcontextprotocol.json.TypeRef;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.infra.util.json.JsonEngine;
+import org.apache.shardingsphere.infra.util.json.JsonException;
+import org.apache.shardingsphere.infra.util.json.JsonTypeReference;
 import org.apache.shardingsphere.test.e2e.mcp.support.artifact.MCPArtifactUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
@@ -52,8 +52,6 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     private static final int STDERR_DIAGNOSTIC_MAX_CHARS = 4096;
     
     private static final String INITIALIZE_REQUEST_ID = "init-1";
-    
-    private static final McpJsonMapper JSON_MAPPER = MCPTransportJsonMapperFactory.create();
     
     private final List<String> stdErrorMessages = new CopyOnWriteArrayList<>();
     
@@ -154,7 +152,11 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     }
     
     private void writeJsonRpcMessage(final Map<String, Object> payload) throws IOException {
-        writer.write(JSON_MAPPER.writeValueAsString(payload));
+        try {
+            writer.write(JsonEngine.marshal(payload));
+        } catch (final JsonException ex) {
+            throw new IOException(ex.getMessage(), ex);
+        }
         writer.newLine();
         writer.flush();
     }
@@ -166,8 +168,13 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
             if (line.isBlank()) {
                 continue;
             }
-            Map<String, Object> result = JSON_MAPPER.readValue(line, new TypeRef<>() {
-            });
+            Map<String, Object> result;
+            try {
+                result = JsonEngine.unmarshal(line, new JsonTypeReference<Map<String, Object>>() {
+                });
+            } catch (final JsonException ex) {
+                throw new IOException(ex.getMessage(), ex);
+            }
             if (requestId.equals(String.valueOf(result.get("id")))) {
                 return result;
             }

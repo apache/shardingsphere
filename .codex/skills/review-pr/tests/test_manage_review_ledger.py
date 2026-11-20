@@ -285,6 +285,112 @@ class ManageReviewLedgerTest(unittest.TestCase):
         self.assertIn("F1 confirmed finding is missing scope proof", errors)
         self.assertIn("F1 confirmed finding is missing scope files", errors)
 
+    def test_actual_value_finding_requires_applicability(self):
+        actual = self.create_valid_ledger()
+        finding = self.create_confirmed_finding("F1")
+        finding["rule"] = ledger.ACTUAL_VALUE_RULE
+        actual["findings"] = [finding]
+        self.assertIn("F1 actual-value naming requires applicability evidence", ledger.validate_ledger(actual))
+
+    def test_actual_value_finding_distinguishes_preparation_from_output(self):
+        actual = self.create_valid_ledger()
+        finding = self.create_confirmed_finding("F1")
+        finding.update({"rule": ledger.ACTUAL_VALUE_RULE, "applicability": [self.actual_value_applicability()]})
+        actual["findings"] = [finding]
+        self.assertEqual([], ledger.validate_ledger(actual))
+        for role in ("setup", "expected", "unknown"):
+            with self.subTest(role=role):
+                finding["applicability"][0]["role"] = role
+                self.assertIn(f"F1 cannot confirm actual-value naming for a {role} variable: mapping", ledger.validate_ledger(actual))
+                finding["status"] = "withdrawn"
+                self.assertEqual([], ledger.validate_ledger(actual))
+                finding["status"] = "candidate"
+                self.assertEqual(["F1 is still a candidate"], ledger.validate_ledger(actual))
+                finding["status"] = "confirmed"
+
+    def test_actual_value_finding_checks_each_variable_without_deduplicating_names(self):
+        actual = self.create_valid_ledger()
+        finding = self.create_confirmed_finding("F1")
+        finding.update({"rule": ledger.ACTUAL_VALUE_RULE,
+                        "applicability": [self.actual_value_applicability(), self.actual_value_applicability()]})
+        finding["applicability"][1]["operation"] = "OtherResolver.create"
+        actual["findings"] = [finding]
+        self.assertEqual([], ledger.validate_ledger(actual))
+        finding["applicability"][1]["role"] = "setup"
+        self.assertIn("F1 cannot confirm actual-value naming for a setup variable: mapping", ledger.validate_ledger(actual))
+
+    def test_actual_value_finding_requires_named_operation_and_indexed_evidence(self):
+        actual = self.create_valid_ledger()
+        finding = self.create_confirmed_finding("F1")
+        finding["rule"] = ledger.ACTUAL_VALUE_RULE
+        actual["findings"] = [finding]
+        for field in ("variable", "operation", "role", "declaration", "operation_call", "use"):
+            with self.subTest(field=field):
+                proof = self.actual_value_applicability()
+                del proof[field]
+                finding["applicability"] = [proof]
+                self.assertIn("F1 applicability[0] needs variable, operation, role and declaration/operation_call/use anchor indexes",
+                              ledger.validate_ledger(actual))
+        for position in (-1, 2, True):
+            with self.subTest(position=position):
+                proof = self.actual_value_applicability()
+                proof["use"] = position
+                finding["applicability"] = [proof]
+                self.assertTrue(any("applicability[0]" in each for each in ledger.validate_ledger(actual)))
+
+    def test_actual_value_finding_rejects_base_policy_and_whole_object_evidence(self):
+        actual = self.create_valid_ledger()
+        finding = self.create_confirmed_finding("F1")
+        finding["rule"] = ledger.ACTUAL_VALUE_RULE
+        actual["findings"] = [finding]
+        materials = [
+            {"side": "base", "path": self.source_path, "start_line": 2, "end_line": 2},
+            {"side": "source", "origin": "repository:Rules.md", "path": "Rules.md", "start_line": 1, "end_line": 1},
+            {"side": "candidate", "path": self.source_path},
+        ]
+        for material in materials:
+            for field in ("declaration", "operation_call", "use"):
+                with self.subTest(material=material, field=field):
+                    proof = self.actual_value_applicability()
+                    proof[field] = 2
+                    finding["anchors"] = self.create_confirmed_finding("F1")["anchors"] + [ledger.capture_anchor(material, actual)]
+                    finding["applicability"] = [proof]
+                    self.assertIn(f"F1 applicability[0] {field} must reference current candidate lines", ledger.validate_ledger(actual))
+
+    def test_actual_value_candidate_cannot_be_confirmed_by_omitting_rule(self):
+        self.create_valid_ledger()
+        arguments = ["add-finding", "--ledger", str(self.ledger_file), "--id", "F1"]
+        with redirect_stdout(StringIO()):
+            ledger.cmd_add_finding(ledger.build_parser().parse_args([*arguments, "--status", "candidate", "--rule", ledger.ACTUAL_VALUE_RULE]))
+        original = self.ledger_file.read_bytes()
+        with self.assertRaisesRegex(RuntimeError, "actual-value naming requires applicability evidence"):
+            ledger.cmd_add_finding(ledger.build_parser().parse_args([*arguments, "--status", "confirmed"]))
+        self.assertEqual(original, self.ledger_file.read_bytes())
+
+    def test_actual_value_applicability_file_is_checked_before_confirmation(self):
+        self.create_valid_ledger()
+        anchors_file = self.private_root / "actual-anchors.json"
+        anchors_file.write_text(json.dumps(self.create_confirmed_finding("F1")["anchors"]), encoding="utf-8")
+        proof_file = self.private_root / "applicability.json"
+        arguments = ledger.build_parser().parse_args([
+            "add-finding", "--ledger", str(self.ledger_file), "--id", "F1", "--status", "confirmed", "--rule", ledger.ACTUAL_VALUE_RULE,
+            "--anchors", str(anchors_file), "--applicability", str(proof_file),
+        ])
+        original = self.ledger_file.read_bytes()
+        proof_file.write_text("{}", encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "Finding applicability material must be a list"):
+            ledger.cmd_add_finding(arguments)
+        proof_file.write_text('["unstructured proof"]', encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "needs variable, operation, role"):
+            ledger.cmd_add_finding(arguments)
+        self.assertEqual(original, self.ledger_file.read_bytes())
+        proof_file.write_text(json.dumps([self.actual_value_applicability()]), encoding="utf-8")
+        with redirect_stdout(StringIO()):
+            self.assertEqual(0, ledger.cmd_add_finding(arguments))
+        finding = ledger.read_ledger(self.ledger_file)["findings"][0]
+        self.assertEqual(ledger.ACTUAL_VALUE_RULE, finding["rule"])
+        self.assertEqual([self.actual_value_applicability()], finding["applicability"])
+
     def test_malformed_ledger_is_rejected(self):
         actual_ledger = self.create_valid_ledger()
         del actual_ledger["files"]
@@ -835,6 +941,51 @@ class ManageReviewLedgerTest(unittest.TestCase):
                     self.assert_session_cli_rejected(actual)
                 else:
                     self.assertTrue(ledger.validate_session(actual))
+
+    def test_session_requires_independent_actual_value_applicability(self):
+        actual = self.create_session([[("F1", "confirmed")], [("F1", "confirmed")]])
+        for index, entry in enumerate(actual["reviews"]):
+            report = json.loads(Path(entry["path"]).read_text(encoding="utf-8"))
+            original = ledger.read_ledger(report["ledger"])
+            original["findings"][0].update({"rule": ledger.ACTUAL_VALUE_RULE, "applicability": [self.actual_value_applicability()]})
+            self.update_session_basis(actual, index, original, json.loads(self.basis_file.read_text(encoding="utf-8")))
+        finding = actual["rounds"][0]["findings"][0]
+        self.assertIn("normalized-F1 actual-value naming requires applicability evidence", ledger.validate_session(actual))
+        finding["applicability"] = [self.actual_value_applicability()]
+        self.assertEqual([], ledger.validate_session(actual))
+        finding["applicability"][0]["role"] = "setup"
+        self.assertIn("normalized-F1 cannot confirm actual-value naming for a setup variable: mapping", ledger.validate_session(actual))
+        finding["status"] = "withdrawn"
+        actual.update({"result": "Mergeable", "feedback_mode": ""})
+        actual["rounds"][0].update({"result": "Mergeable", "feedback_mode": ""})
+        self.assertEqual([], ledger.validate_session(actual))
+
+    def test_session_checks_actual_value_finding_discovered_by_coordinator(self):
+        actual = self.create_session([[], []])
+        finding = {"id": "coordinator-F1", "members": [], "status": "confirmed", "classification": "standards",
+                   "reason": "Checked the tested operation and asserted result.", "counter_evidence": "Checked preparation roles.",
+                   "evidence": actual["rounds"][0]["report_reviews"][0]["evidence"], "rule": ledger.ACTUAL_VALUE_RULE}
+        actual["rounds"][0]["findings"] = [finding]
+        actual.update({"result": "Not Mergeable", "feedback_mode": "Change Request"})
+        actual["rounds"][0].update({"result": "Not Mergeable", "feedback_mode": "Change Request"})
+        self.assertIn("coordinator-F1 actual-value naming requires applicability evidence", ledger.validate_session(actual))
+        finding["applicability"] = [self.actual_value_applicability()]
+        self.assertEqual([], ledger.validate_session(actual))
+        finding["applicability"][0]["declaration"] = 1
+        self.assertIn("coordinator-F1 applicability[0] declaration anchor index is outside the evidence list", ledger.validate_session(actual))
+
+    def test_session_retains_actual_rule_for_coordinator_finding_across_stages(self):
+        actual = self.create_session([[], [], []])
+        for stage in actual["rounds"]:
+            stage.update({"result": "Not Mergeable", "feedback_mode": "Change Request"})
+            stage["findings"] = [{"id": "coordinator-F1", "members": [], "status": "confirmed", "classification": "standards",
+                                  "reason": "Checked the tested operation and asserted result.", "counter_evidence": "Checked preparation roles.",
+                                  "evidence": stage["report_reviews"][0]["evidence"], "applicability": [self.actual_value_applicability()]}]
+        actual["rounds"][0]["findings"][0]["rule"] = ledger.ACTUAL_VALUE_RULE
+        actual.update({"result": "Not Mergeable", "feedback_mode": "Change Request"})
+        self.assertEqual([], ledger.validate_session(actual))
+        actual["rounds"][1]["findings"][0].pop("applicability")
+        self.assertIn("coordinator-F1 actual-value naming requires applicability evidence", ledger.validate_session(actual))
 
     def test_session_normalizes_matching_root_causes(self):
         actual = self.create_session([[("F1", "confirmed")], [("F2", "confirmed")]])
@@ -1415,7 +1566,13 @@ class ManageReviewLedgerTest(unittest.TestCase):
             "files": ["src/main/java/Foo.java"],
             "reason": "",
             "anchors": ledger.read_ledger(self.ledger_file)["files"][0]["coverage"][0]["anchors"],
+            "rule": "",
+            "applicability": [],
         }
+
+    def actual_value_applicability(self):
+        return {"variable": "mapping", "operation": "Resolver.create", "role": "actual-value",
+                "declaration": 0, "operation_call": 0, "use": 0}
 
     def create_incomplete_gap(self):
         return {
@@ -1430,6 +1587,8 @@ class ManageReviewLedgerTest(unittest.TestCase):
             "scope_proof": "The reviewed file invokes the version-specific behavior.",
             "files": ["src/main/java/Foo.java"],
             "reason": "The target tool version is unavailable.",
+            "rule": "",
+            "applicability": [],
             "anchors": [ledger.capture_anchor({"side": "source", "path": str(self.attempt_log), "origin": "attempt:target-version", "start_line": 1, "end_line": 1},
                                                ledger.read_ledger(self.ledger_file))],
         }

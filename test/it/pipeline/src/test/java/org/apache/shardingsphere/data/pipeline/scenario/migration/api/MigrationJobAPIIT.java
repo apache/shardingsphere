@@ -19,8 +19,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.api;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.datanode.JobDataNodeLine;
@@ -47,6 +49,8 @@ import org.apache.shardingsphere.data.pipeline.core.pojo.TransmissionJobItemInfo
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.config.YamlMigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.yaml.swapper.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.PipelineDataSourceCreator;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -57,6 +61,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
@@ -68,6 +73,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -166,6 +172,67 @@ final class MigrationJobAPIIT {
         when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.rollback(jobConfig.getJobId());
         assertNull(getJobConfigurationPOJO(jobConfig.getJobId()));
+    }
+    
+    @Test
+    void assertRetryRollbackWithIncreasedTargetStorageUnitPoolSize() throws SQLException {
+        assertRetryRollbackWithUpdatedTargetStorageUnitPoolSize(false);
+    }
+    
+    private void assertRetryRollbackWithUpdatedTargetStorageUnitPoolSize(final boolean restoreDefault) throws SQLException {
+        YamlMigrationJobConfiguration yamlJobConfig = JobConfigurationBuilder.createYamlMigrationJobConfiguration();
+        DataSourcePoolProperties livePoolProps = PipelineContextManager.getProxyContext().getStorageUnits(yamlJobConfig.getTargetDatabaseName()).get("ds_0").getDataSourcePoolProperties();
+        String targetUrl = livePoolProps.getConnectionPropertySynonyms().getStandardProperties().get("url").toString();
+        String targetParam = yamlJobConfig.getTarget().getParameter().replace("ds_1:", "ds_0:").replace("ds_$->{1..2}.", "ds_0.").replace("t_order_$", "t_pool_rollback_$");
+        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(targetParam, YamlRootConfiguration.class, true);
+        Map<String, Object> savedPoolProps = rootConfig.getDataSources().get("ds_0");
+        savedPoolProps.put("url", targetUrl);
+        savedPoolProps.put("maxPoolSize", 1);
+        savedPoolProps.put("connectionTimeoutMilliseconds", 250);
+        yamlJobConfig.getTarget().setParameter(new ShardingSpherePipelineDataSourceConfiguration(rootConfig).getParameter());
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(yamlJobConfig);
+        String jobId = jobConfig.getJobId();
+        Map<String, Object> liveProps = livePoolProps.getPoolPropertySynonyms().getStandardProperties();
+        Object previousMaxPoolSize = liveProps.put("maxPoolSize", 1);
+        PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
+        try (Connection connection = DriverManager.getConnection(targetUrl, "root", "root"); Statement statement = connection.createStatement()) {
+            try {
+                statement.execute("CREATE TABLE t_pool_rollback_0 (order_id INT PRIMARY KEY)");
+                statement.execute("CREATE TABLE t_pool_rollback_1 (order_id INT PRIMARY KEY)");
+                jobManager.start(jobConfig);
+                String jobParameter = getJobConfigurationPOJO(jobId).getJobParameter();
+                SQLException actual = assertThrows(SQLException.class, () -> jobAPI.rollback(jobId));
+                assertTrue(actual.getMessage().contains("Can not get 2 connections one time"), actual::getMessage);
+                if (restoreDefault) {
+                    liveProps.remove("maxPoolSize");
+                } else {
+                    liveProps.put("maxPoolSize", 2);
+                }
+                assertThat(getJobConfigurationPOJO(jobId).getJobParameter(), is(jobParameter));
+                jobAPI.rollback(jobId);
+                assertNull(getJobConfigurationPOJO(jobId));
+                assertThrows(SQLException.class, () -> statement.executeQuery("SELECT * FROM t_pool_rollback_0"));
+                assertThrows(SQLException.class, () -> statement.executeQuery("SELECT * FROM t_pool_rollback_1"));
+            } finally {
+                statement.execute("DROP TABLE IF EXISTS t_pool_rollback_0");
+                statement.execute("DROP TABLE IF EXISTS t_pool_rollback_1");
+            }
+        } finally {
+            if (null == previousMaxPoolSize) {
+                liveProps.remove("maxPoolSize");
+            } else {
+                liveProps.put("maxPoolSize", previousMaxPoolSize);
+            }
+            if (null != getJobConfigurationPOJO(jobId)) {
+                jobManager.drop(jobId);
+            }
+        }
+    }
+    
+    @Test
+    void assertRetryRollbackWithDefaultTargetStorageUnitPoolSize() throws SQLException {
+        assertRetryRollbackWithUpdatedTargetStorageUnitPoolSize(true);
     }
     
     @Test

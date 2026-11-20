@@ -64,7 +64,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
      * @return result inline expression with {@code $}
      */
     private String handlePlaceHolder(final String inlineExpression) {
-        return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\${") : inlineExpression;
+        return inlineExpression.replace("$->{", "${");
     }
     
     @Override

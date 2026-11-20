@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -24,14 +26,20 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,6 +50,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MySQLQueryHeaderBuilderTest {
+    
+    private final QueryHeaderBuilder queryHeaderBuilder = DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("timePrecisionArguments")
+    void assertBuildWithTimePrecision(final String name, final int columnType, final int columnLength, final int decimals, final int expected) throws SQLException {
+        ShardingSphereResultSetMetaData metaData = mock(ShardingSphereResultSetMetaData.class);
+        when(metaData.getColumnType(1)).thenReturn(columnType);
+        when(metaData.getColumnDisplaySize(1)).thenReturn(columnLength);
+        when(metaData.getScale(1)).thenReturn(decimals);
+        assertThat(queryHeaderBuilder.build(metaData, null, "foo_time", "foo_time", 1).getDecimals(), is(expected));
+    }
+    
+    private static Stream<Arguments> timePrecisionArguments() {
+        return Stream.of(
+                Arguments.of("whole-second", Types.TIME, 10, 0, 0),
+                Arguments.of("milliseconds", Types.TIME, 14, 0, 3),
+                Arguments.of("microseconds", Types.TIME, 17, 0, 6),
+                Arguments.of("explicit-scale", Types.TIME, 17, 3, 3),
+                Arguments.of("unknown-width", Types.TIME, 0, 0, 0),
+                Arguments.of("excessive-width", Types.TIME, 18, 0, 0),
+                Arguments.of("non-time", Types.INTEGER, 14, 0, 0));
+    }
     
     @Test
     void assertBuild() throws SQLException {

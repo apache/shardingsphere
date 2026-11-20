@@ -31,12 +31,14 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -46,6 +48,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -162,6 +165,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(preparedStatement.getSql(), is("SELECT 1"));
         assertThat(preparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
+    }
+    
+    @Test
+    void assertExecuteWithUnsupportedStatement() {
+        when(packet.getSQL()).thenReturn("DROP ROLE foo_role");
+        assertThrows(UnsupportedSQLOperationException.class, () -> new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute());
     }
     
     private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {
@@ -435,6 +444,33 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("System table without default schema", "SELECT RDB$RELATION_ID FROM RDB$DATABASE", false, FirebirdBinaryColumnType.SHORT));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("systemTextColumnArguments")
+    void assertDescribeSystemTextColumnWithoutUserTables(final String name, final String sql) throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        database.dropSchema("foo_db");
+        doReturn(Optional.empty()).when(database).findDefaultSchema();
+        SystemSchemaBuilder.build("foo_db", databaseType, new ConfigurationProperties(PropertiesBuilder.build())).values().forEach(database::addSchema);
+        assertThat(database.getSchema("system_tables").getTable("RDB$PROCEDURES").getColumn("RDB$ENGINE_NAME").getDataType(), is(Types.CHAR));
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actual = executeAndGetReturnPacket();
+        assertThat(actual.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.getDescribeSelect().get(0).write(payload);
+        verify(payload).writeInt1(FirebirdSQLInfoPacketType.LENGTH.getCode());
+        verify(payload).writeInt4LE(63);
+    }
+    
+    private static Stream<Arguments> systemTextColumnArguments() {
+        return Stream.of(
+                Arguments.of("procedure engine", "SELECT RDB$ENGINE_NAME FROM RDB$PROCEDURES"),
+                Arguments.of("empty result", "SELECT RDB$ENGINE_NAME FROM RDB$PROCEDURES WHERE 1 = 0"),
+                Arguments.of("aliased procedure engine", "SELECT p.RDB$ENGINE_NAME AS foo_engine FROM RDB$PROCEDURES p"));
+    }
+    
     @Test
     void assertDescribeSystemTableParameterWithoutDefaultSchema() throws Exception {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
@@ -473,6 +509,92 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdPacketPayload contentPayload = mock(FirebirdPacketPayload.class);
         actualReturnPacket.getDescribeSelect().get(1).write(contentPayload);
         verify(contentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeHintedOrdinaryTableWildcard() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT * FROM foo_tbl");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeHintedQualifiedWildcard() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT foo_tbl.* FROM foo_tbl");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeHintedJoinWithQualifiedWildcard() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        addSystemSchema(database);
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereColumn blobColumn = new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true);
+        ShardingSphereColumn nameColumn = new ShardingSphereColumn("name", Types.VARCHAR, false, false, true, true, false, true);
+        ShardingSphereTable fooTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, blobColumn), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable barTable = new ShardingSphereTable("bar_tbl", Arrays.asList(idColumn, nameColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Arrays.asList(fooTable, barTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        when(packet.getSQL()).thenReturn("SELECT bar_tbl.* FROM foo_tbl JOIN bar_tbl ON foo_tbl.id = bar_tbl.id");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(idPayload);
+        verify(idPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload namePayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(namePayload);
+        verify(namePayload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getValue() + 1);
+    }
+    
+    @Test
+    void assertDescribeDerivedTableShorthand() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereTable originalTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true)),
+                Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable derivedTable = new ShardingSphereTable("s", Collections.singleton(idColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Arrays.asList(originalTable, derivedTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        when(packet.getSQL()).thenReturn("SELECT s.* FROM (SELECT id FROM foo_tbl) s");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+    }
+    
+    @Test
+    void assertDescribeUnqualifiedDerivedTableShorthand() throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
+        ShardingSphereTable originalTable = new ShardingSphereTable("foo_tbl", Arrays.asList(idColumn, new ShardingSphereColumn("content", Types.BLOB, false, false, true, true, false, true)),
+                Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable derivedTable = new ShardingSphereTable("s", Collections.singleton(idColumn), Collections.emptyList(), Collections.emptyList());
+        database.addSchema(new ShardingSphereSchema("foo_db", databaseType, Arrays.asList(originalTable, derivedTable), Collections.emptyList()));
+        when(database.findDefaultSchema()).thenCallRealMethod();
+        when(packet.getSQL()).thenReturn("SELECT * FROM (SELECT id FROM foo_tbl) s");
+        when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+    }
+    
+    private HintValueContext createDataSourceHintValueContext() {
+        HintValueContext result = new HintValueContext();
+        result.setDataSourceName("foo_ds");
+        return result;
     }
     
     @ParameterizedTest(name = "{0}")
@@ -514,6 +636,26 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Select columns", "SELECT id, code FROM foo_tbl", FirebirdSQLInfoPacketType.SELECT),
                 Arguments.of("Bind parameters", "SELECT id, code FROM foo_tbl WHERE id = ? AND code = ?", FirebirdSQLInfoPacketType.BIND),
                 Arguments.of("Returning shorthand", "INSERT INTO foo_tbl (id, code) VALUES (1, 2) RETURNING *", FirebirdSQLInfoPacketType.SELECT));
+    }
+    
+    @Test
+    void assertDescribeReturningOldAndNewShorthandColumnTypes() throws Exception {
+        when(packet.getSQL()).thenReturn("UPDATE foo_tbl SET id = 1 RETURNING OLD.*, NEW.*");
+        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
+        FirebirdPacketPayload oldIdPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(0).write(oldIdPayload);
+        verify(oldIdPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload oldContentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(1).write(oldContentPayload);
+        verify(oldContentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
+        FirebirdPacketPayload newIdPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(2).write(newIdPayload);
+        verify(newIdPayload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
+        FirebirdPacketPayload newContentPayload = mock(FirebirdPacketPayload.class);
+        actualReturnPacket.getDescribeSelect().get(3).write(newContentPayload);
+        verify(newContentPayload).writeInt4LE(FirebirdBinaryColumnType.BLOB.getValue() + 1);
     }
     
     @Test

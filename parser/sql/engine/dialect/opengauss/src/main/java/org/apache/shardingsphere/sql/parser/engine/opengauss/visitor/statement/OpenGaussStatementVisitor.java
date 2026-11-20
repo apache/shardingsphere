@@ -216,8 +216,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Statement visitor for openGauss.
@@ -225,6 +225,8 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParserBaseVisitor<ASTNode> {
+    
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     
     private final DatabaseType databaseType;
     
@@ -611,14 +613,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
         CollectionValue<ExpressionSegment> result = new CollectionValue<>();
-        if (null != ctx.exprList()) {
-            result.combine((CollectionValue<ExpressionSegment>) visitExprList(ctx.exprList()));
+        for (AExprContext each : ctx.aExpr()) {
+            result.getValue().add((ExpressionSegment) visit(each));
         }
-        result.getValue().add((ExpressionSegment) visit(ctx.aExpr()));
         return result;
     }
     
@@ -679,10 +679,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        IdentifierContext identifierContext = ctx.identifier();
-        return new KeywordValue(null == identifierContext
-                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
-                : identifierContext.getText());
+        return new KeywordValue(null != ctx.numericTypeName() && null != ctx.numericTypeName().DOUBLE()
+                ? String.join(" ", ctx.numericTypeName().DOUBLE().getText(), ctx.numericTypeName().PRECISION().getText())
+                : ctx.getChild(0).getText());
     }
     
     @Override
@@ -902,12 +901,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     private Collection<ExpressionSegment> createInsertValuesSegments(final ExprListContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        if (null != ctx.exprList()) {
-            Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
-            result.addAll(tmpResult);
+        for (AExprContext each : ctx.aExpr()) {
+            result.add((ExpressionSegment) visit(each));
         }
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
-        result.add(expr);
         return result;
     }
     
@@ -1206,7 +1202,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         if (null == groupByItem.aExpr()) {
             return false;
         }
-        String expression = getOriginalText(groupByItem.aExpr()).replaceAll("\\s+", "").toUpperCase(Locale.ROOT);
+        String expression = WHITESPACE_PATTERN.matcher(getOriginalText(groupByItem.aExpr())).replaceAll("").toUpperCase(Locale.ROOT);
         return (expression.startsWith("CUBE(") || expression.startsWith("ROLLUP(")) && expression.endsWith(")");
     }
     

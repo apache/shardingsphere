@@ -46,6 +46,9 @@ public final class ColumnDefinitionAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {
         assertColumnName(assertContext, actual, expected);
+        if (null != expected.getText()) {
+            assertThat(assertContext.getText("Column definition text assertion error: "), actual.getText(), is(expected.getText()));
+        }
         if (null != expected.getType()) {
             assertNotNull(actual.getDataType(), assertContext.getText("Column definition data type should exist."));
             assertThat(assertContext.getText("Column definition data type assertion error: "), actual.getDataType().getDataTypeName(), is(expected.getType()));

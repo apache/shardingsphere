@@ -94,6 +94,23 @@ public final class ProjectionsContext {
     }
     
     /**
+     * Judge whether projections contain an unexpanded shorthand projection.
+     *
+     * <p>A shorthand projection is unexpanded when SQL binding was skipped (e.g. data-source hint)
+     * and its {@code actualColumns} remain empty.</p>
+     *
+     * @return contains unexpanded shorthand projection or not
+     */
+    public boolean containsUnexpandedShorthandProjection() {
+        for (Projection each : projections) {
+            if (each instanceof ShorthandProjection && ((ShorthandProjection) each).getActualColumns().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Judge is unqualified shorthand projection or not.
      *
      * @return is unqualified shorthand projection or not
@@ -179,7 +196,8 @@ public final class ProjectionsContext {
         Map<String, Integer> result = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
         for (int columnIndex = expandProjections.size(); columnIndex > 0; columnIndex--) {
             Projection projection = expandProjections.get(columnIndex - 1);
-            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
+            boolean isInternalDerivedLabel = projection instanceof AggregationDistinctProjection && DerivedColumn.isDerivedColumnName(projection.getColumnLabel());
+            result.put(isInternalDerivedLabel ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
         }
         return result;
     }

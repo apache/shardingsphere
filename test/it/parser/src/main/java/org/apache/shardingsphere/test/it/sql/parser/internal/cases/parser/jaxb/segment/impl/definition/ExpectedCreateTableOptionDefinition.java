@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.comments.ExpectedComment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.engine.ExpectedEngineClause;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -28,6 +29,15 @@ import javax.xml.bind.annotation.XmlElement;
  */
 @Getter
 public final class ExpectedCreateTableOptionDefinition {
+    
+    @XmlAttribute(name = "assert-indices")
+    private boolean assertIndices;
+    
+    @XmlAttribute(name = "start-index")
+    private int startIndex;
+    
+    @XmlAttribute(name = "stop-index")
+    private int stopIndex;
     
     @XmlElement(name = "engine")
     private ExpectedEngineClause engine;

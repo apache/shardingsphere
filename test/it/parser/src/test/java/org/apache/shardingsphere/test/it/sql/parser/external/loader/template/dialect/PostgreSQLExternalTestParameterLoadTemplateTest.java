@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.it.sql.parser.external.loader.template.dialect;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLTestParameter.ParseExpectation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -47,6 +48,34 @@ class PostgreSQLExternalTestParameterLoadTemplateTest {
         assertThat(actual.stream().map(ExternalSQLTestParameter::getSql).collect(Collectors.toList()), is(expectedSQL));
         assertThat(actual.stream().map(ExternalSQLTestParameter::getSqlCaseId).collect(Collectors.toList()),
                 is(IntStream.rangeClosed(1, expectedSQL.size()).mapToObj(index -> "sample" + index).collect(Collectors.toList())));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nativeParseExpectations")
+    void assertLoadNativeParseExpectation(final String name, final String script, final String sql, final String error, final ParseExpectation expected) {
+        String command = "\\pset format aligned";
+        Collection<ExternalSQLTestParameter> actual = template.load(script, Arrays.asList(command, sql), Arrays.asList(command, sql, error), "PostgreSQL", "CSV");
+        assertThat(actual.stream().map(ExternalSQLTestParameter::getParseExpectation).collect(Collectors.toList()), is(Collections.singletonList(expected)));
+    }
+    
+    private static Stream<Arguments> nativeParseExpectations() {
+        String terseError = "ERROR:  syntax error at or near \";\" at character 15";
+        return Stream.of(
+                Arguments.of("verified TERSE SQL rejection", "psql", "SELECT 1 UNION;", terseError, ParseExpectation.NATIVE_REJECTION),
+                Arguments.of("different script", "other", "SELECT 1 UNION;", terseError, ParseExpectation.SUPPORTED),
+                Arguments.of("changed diagnostic", "psql", "SELECT 1 UNION;", "ERROR:  division by zero", ParseExpectation.SUPPORTED),
+                Arguments.of("TERSE diagnostic from another statement", "psql", "DO $$ BEGIN EXECUTE 'SELECT 1 UNION;'; END $$;", terseError, ParseExpectation.SUPPORTED),
+                Arguments.of("native analyzer rejects but parser retains the syntax", "aggregates", "select max(min(unique1)) from tenk1;",
+                        "ERROR:  aggregate function calls cannot be nested", ParseExpectation.NATIVE_NEGATIVE_ACCEPTED));
+    }
+    
+    @Test
+    void assertResultTextDoesNotBecomeNativeRejection() {
+        String sql = "SELECT E'ERROR:  syntax error at or near \"demo\"\\nLINE 1: SELECT';";
+        Collection<ExternalSQLTestParameter> actual = template.load("psql", Arrays.asList("\\pset format unaligned", "\\pset tuples_only on", sql),
+                Arrays.asList("\\pset format unaligned", "Output format is unaligned.", "\\pset tuples_only on", sql, "ERROR:  syntax error at or near \"demo\"", "LINE 1: SELECT"),
+                "PostgreSQL", "CSV");
+        assertThat(actual.stream().map(ExternalSQLTestParameter::getParseExpectation).collect(Collectors.toList()), is(Collections.singletonList(ParseExpectation.SUPPORTED)));
     }
     
     private static Stream<Arguments> sqlCases() {

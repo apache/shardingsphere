@@ -33,7 +33,7 @@ You could search JDK installation guide for your platform on Google.
 
 Optional. You could use `mvn` command if Maven is ready, else use `mvnw` instead (download and install Maven automatically, use version defined in `.mvn/wrapper/maven-wrapper.properties`).
 
-Use 3.6+.
+Use Maven 3.9.0 or higher.
 
 You could download Maven from [Downloading Apache Maven]( https://maven.apache.org/download.html ).
 

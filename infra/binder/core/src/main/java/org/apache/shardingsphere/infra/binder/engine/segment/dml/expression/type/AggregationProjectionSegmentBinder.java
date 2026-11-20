@@ -50,6 +50,7 @@ public final class AggregationProjectionSegmentBinder {
                 segment.getStartIndex(), segment.getStopIndex(), segment.getType(), segment.getExpression(), segment.getSeparator().orElse(null));
         segment.getParameters().forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         segment.getWindow().ifPresent(optional -> result.setWindow(WindowItemSegmentBinder.bind(optional, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getFilter().ifPresent(filter -> result.setFilter(ExpressionSegmentBinder.bind(filter, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
 }

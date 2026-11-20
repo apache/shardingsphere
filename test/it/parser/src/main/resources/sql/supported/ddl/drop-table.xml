@@ -46,4 +46,7 @@
     <sql-case id="drop_table_firebird" value="DROP TABLE t_firebird_drop" db-types="Firebird"/>
     <sql-case id="drop_table_sql92" value="DROP TABLE t_drop" db-types="SQL92" />
     <sql-case id="drop_multiple_tables_sql92" value="DROP TABLE t_drop_a, t_drop_b" db-types="SQL92" />
+    <sql-case id="clickhouse_drop_table" value="DROP TABLE foo_protocol" db-types="ClickHouse" />
+    <sql-case id="clickhouse_drop_temporary_if_exists" value="DROP TEMPORARY TABLE IF EXISTS foo_protocol" db-types="ClickHouse" />
+    <sql-case id="clickhouse_drop_temporary_if_exists_sync" value="DROP TEMPORARY TABLE IF EXISTS foo_protocol SYNC" db-types="ClickHouse" />
 </sql-cases>

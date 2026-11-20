@@ -26,6 +26,7 @@ Use this mode only when the user explicitly asks to audit, check, or report codi
 - When the scope contains a `pom.xml`, read the [Maven dependency version rules](rules/maven-dependencies.md) through EOF.
 - Check every target POM only within the exact user-specified Maven audit scope.
 - When the scope contains Java, read the [Java naming rules](rules/java-naming.md), [Java type rules](rules/java-types.md), [Java constructor rules](rules/java-constructors.md), [Java expression rules](rules/java-expressions.md), and [Java line-wrapping rules](rules/java-line-wrapping.md) through EOF.
+- When the scope contains Java declarations or Javadocs, read the [Java Javadoc rules](rules/java-javadoc.md) through EOF.
 - When the scope contains a Java declaration with at least two covered declaration annotations, read the [Java declaration annotation order rules](rules/java-annotation-order.md) through EOF.
 - When the scope contains Java `throw` statements, conditional exception paths, validation or precondition calls, or calls to `ShardingSpherePreconditions`, read the [Java precondition rules](rules/java-preconditions.md) through EOF.
 - When the scope contains Java methods annotated with `lombok.SneakyThrows`, read the [Java exception handling rules](rules/java-exceptions.md) through EOF.

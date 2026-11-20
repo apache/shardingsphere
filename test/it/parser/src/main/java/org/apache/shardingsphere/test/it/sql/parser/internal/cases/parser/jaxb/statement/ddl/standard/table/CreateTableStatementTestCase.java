@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedCreateTableOptionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.rollup.ExpectedRollup;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.ExecuteStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -39,6 +40,9 @@ import java.util.List;
 @Getter
 @Setter
 public final class CreateTableStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "if-not-exists")
+    private Boolean ifNotExists;
     
     @XmlAttribute
     private Boolean temporary;
@@ -57,6 +61,9 @@ public final class CreateTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase createTableAsSelectStatement;
+    
+    @XmlElement(name = "execute")
+    private ExecuteStatementTestCase createTableAsExecuteStatement;
     
     @XmlElement(name = "like-table")
     private ExpectedSimpleTable likeTable;

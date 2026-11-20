@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.ReturningSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.column.InsertColumnsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
@@ -71,11 +72,14 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         InsertStatement result = InsertStatement.builder().databaseType(sqlStatement.getDatabaseType()).table(boundTable).insertColumns(boundInsertColumns)
                 .insertSelect(boundInsertSelect).setAssignment(boundSetAssignment).onDuplicateKeyColumns(boundOnDuplicateKeyColumns)
-                .valueReference(sqlStatement.getValueReference().orElse(null)).returning(sqlStatement.getReturning().orElse(null))
+                .valueReference(sqlStatement.getValueReference().orElse(null))
+                .returning(sqlStatement.getReturning().map(optional -> ReturningSegmentBinder.bind(optional, binderContext, boundTable, tableBinderContexts, outerTableBinderContexts)).orElse(null))
                 .errorLogging(sqlStatement.getErrorLogging().orElse(null))
                 .output(sqlStatement.getOutput().orElse(null)).with(boundWith).multiTableInsertType(sqlStatement.getMultiTableInsertType().orElse(null))
                 .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null)).multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
-                .where(sqlStatement.getWhere().orElse(null)).exec(sqlStatement.getExec().orElse(null)).withTableHint(sqlStatement.getWithTableHint().orElse(null))
+                .where(sqlStatement.getWhere().map(optional -> org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder.bind(
+                        optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null))
+                .exec(sqlStatement.getExec().orElse(null)).withTableHint(sqlStatement.getWithTableHint().orElse(null))
                 .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null)).ignore(sqlStatement.isIgnore()).replace(sqlStatement.isReplace())
                 .overwrite(sqlStatement.isOverwrite()).values(new LinkedList<>(boundValues)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
