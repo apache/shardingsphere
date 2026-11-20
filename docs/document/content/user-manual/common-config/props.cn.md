@@ -17,7 +17,7 @@ Apache ShardingSphere 提供属性配置来设置系统级行为。
 | kernel-executor-size (?)                            | int     | SQL 执行工作线程池大小。每个 ShardingSphereDataSource 使用独立线程池，同一个 JVM 的不同数据源不共享线程池。`0` 表示不限制。                              | 0               |
 | max-connections-size-per-query (?)                  | int     | 一次查询请求在每个数据库实例中所能使用的最大连接数。                                                                                                  | 1               |
 | max-union-size-per-datasource (?)                   | int     | 每个数据源允许合并的最大 UNION ALL 数量。当路由到同一数据源的路由单元数量超过此值时，将分批合并以恢复并行执行能力。                                      | Integer.MAX_VALUE |
-| check-table-metadata-enabled (?)                    | boolean | 应用启动或元数据更新时，是否校验表元数据一致性。                                                                                                    | false           |
+| check-table-metadata-enabled (?)                    | boolean | 应用启动或自动更新元数据时，是否校验表元数据一致性。显式刷新元数据始终校验所有相关物理表。                                                                                                    | false           |
 | load-table-metadata-batch-size (?)                  | int     | 应用启动或刷新表元数据时，单个批次加载表元数据的数量。                                                                                                 | 1000            |
 | agent-plugins-enabled (?)                           | boolean | 是否启用 Agent 插件。                                                                                                             | true            |
 | metadata-identifier-case-sensitivity (?)            | String  | 元数据标识符大小写敏感策略。可选值为 `DATABASE` 和 `INSENSITIVE`。`DATABASE` 表示使用数据库特定的标识符规则。                                            | DATABASE        |

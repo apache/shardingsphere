@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import ch.qos.logback.classic.Level;
+import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -57,6 +59,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,10 +73,13 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith({AutoMockExtension.class, LogCaptureExtension.class})
@@ -278,6 +284,240 @@ class GenericSchemaBuilderTest {
         if (!expectedMissing.isEmpty()) {
             logCaptureAssertion.assertLogContent(0, Level.WARN, "The following tables are missing from loaded metadata: " + expectedMissing, true);
         }
+    }
+    
+    @Test
+    void assertBuildForRefreshLoadsEveryStorageUnit() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "foo_db", "foo_tbl");
+        DataNode secondTable = new DataNode("bar_ds", "foo_db", "foo_tbl");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(MYSQL_DATABASE_TYPE, "foo_db", Arrays.asList(firstTable, secondTable), false);
+        when(MetaDataLoader.load(any())).thenAnswer(invocation -> {
+            Collection<MetaDataLoaderMaterial> actualMaterials = invocation.getArgument(0);
+            assertThat(actualMaterials.stream().map(MetaDataLoaderMaterial::getStorageUnitName).collect(Collectors.toList()), is(Arrays.asList("foo_ds", "bar_ds")));
+            return Collections.singletonMap("foo_db", createInventorySchema("foo_db", firstTable, secondTable));
+        });
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.buildForRefresh(MYSQL_DATABASE_TYPE, refreshMaterial);
+        assertSchemaTable(actual, "foo_db", "foo_tbl");
+        assertFalse(refreshMaterial.getProps().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
+    }
+    
+    @Test
+    void assertBuildForRefreshWithMissingPhysicalTable() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "foo_db", "foo_tbl");
+        DataNode secondTable = new DataNode("bar_ds", "foo_db", "foo_tbl");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(MYSQL_DATABASE_TYPE, "foo_db", Arrays.asList(firstTable, secondTable), false);
+        when(refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class).isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("foo_db", createInventorySchema("foo_db", firstTable)));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, refreshMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': bar_ds.foo_db.foo_tbl."));
+    }
+    
+    @Test
+    void assertBuildForRefreshWhenEveryPhysicalTableWasDropped() throws SQLException {
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(MYSQL_DATABASE_TYPE, "foo_db",
+                Arrays.asList(new DataNode("foo_ds", "foo_db", "foo_tbl"), new DataNode("bar_ds", "foo_db", "foo_tbl")), false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.emptyMap());
+        assertTrue(GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, refreshMaterial).values().stream().allMatch(each -> each.getAllTables().isEmpty()));
+    }
+    
+    @Test
+    void assertBuildForRefreshWithMissingPhysicalSchema() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "public", "foo_tbl");
+        DataNode secondTable = new DataNode("foo_ds", "archive", "foo_tbl");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        when(refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class).isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createInventorySchema("public", firstTable)));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': foo_ds.archive.foo_tbl."));
+    }
+    
+    @Test
+    void assertBuildForRefreshPreservesCaseDistinctPhysicalTables() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "public", "foo_tbl");
+        DataNode secondTable = new DataNode("foo_ds", "public", "FOO_TBL");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createInventorySchema("public", firstTable)));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': foo_ds.public.FOO_TBL."));
+    }
+    
+    @Test
+    void assertBuildForRefreshWithNormalizedPhysicalNamesAndWildcardSchema() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "*", "FOO_TBL_0");
+        DataNode secondTable = new DataNode("bar_ds", "*", "FOO_TBL_1");
+        GenericSchemaBuilderMaterial inventoryMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = inventoryMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        GenericSchemaBuilderMaterial refreshMaterial = new GenericSchemaBuilderMaterial(inventoryMaterial.getStorageUnits(), inventoryMaterial.getRules(), inventoryMaterial.getProps(), "public",
+                DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), inventoryMaterial.getStorageUnits()), inventoryMaterial.getProps()));
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("archive", createInventorySchema("archive", new DataNode("foo_ds", "archive", "foo_tbl_0"))));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, refreshMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': bar_ds.archive.FOO_TBL_1."));
+    }
+    
+    @Test
+    void assertBuildForRefreshKeepsIndependentSingleTablesInDifferentSchemas() throws SQLException {
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public",
+                Arrays.asList(new DataNode("foo_ds", "public", "foo_tbl"), new DataNode("foo_ds", "archive", "foo_tbl")), false);
+        TableMetaData publicTable = new TableMetaData("foo_tbl",
+                Collections.singleton(new ColumnMetaData("id", Types.INTEGER, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
+        publicTable.setStorageUnitName("foo_ds");
+        TableMetaData archiveTable = new TableMetaData("foo_tbl",
+                Collections.singleton(new ColumnMetaData("id", Types.VARCHAR, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
+        archiveTable.setStorageUnitName("foo_ds");
+        Map<String, SchemaMetaData> schemas = new LinkedHashMap<>();
+        schemas.put("public", new SchemaMetaData("public", Collections.singleton(publicTable)));
+        schemas.put("archive", new SchemaMetaData("archive", Collections.singleton(archiveTable)));
+        when(MetaDataLoader.load(any())).thenReturn(schemas);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial);
+        assertThat(actual.get("public").getTable("foo_tbl").getColumn("id").getDataType(), is(Types.INTEGER));
+        assertThat(actual.get("archive").getTable("foo_tbl").getColumn("id").getDataType(), is(Types.VARCHAR));
+    }
+    
+    @Test
+    void assertBuildForRefreshRejectsMissingH2TableWithNativeNames() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "foo_db", "foo_tbl_0");
+        DataNode secondTable = new DataNode("foo_ds", "foo_db", "foo_tbl_1");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(H2_DATABASE_TYPE, "foo_db", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("foo_db", createInventorySchema("foo_db", new DataNode("foo_ds", "foo_db", "FOO_TBL_0"))));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), H2_DATABASE_TYPE, refreshMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': foo_ds.foo_db.foo_tbl_1."));
+    }
+    
+    @Test
+    void assertBuildForRefreshAcceptsCompleteH2TablesWithNativeNames() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "foo_db", "foo_tbl_0");
+        DataNode secondTable = new DataNode("foo_ds", "foo_db", "foo_tbl_1");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(H2_DATABASE_TYPE, "foo_db", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("foo_db", createInventorySchema("foo_db",
+                new DataNode("foo_ds", "foo_db", "FOO_TBL_0"), new DataNode("foo_ds", "foo_db", "FOO_TBL_1"))));
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), H2_DATABASE_TYPE, refreshMaterial);
+        assertThat(actual.get("foo_db").getAllTables().size(), is(2));
+        assertTrue(actual.get("foo_db").containsTable("FOO_TBL_0"));
+        assertTrue(actual.get("foo_db").containsTable("FOO_TBL_1"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("caseCollisionArgs")
+    void assertBuildForRefreshWithCaseCollision(final String name, final DataNode firstTable, final DataNode secondTable) throws SQLException {
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createInventorySchema("public", new DataNode("foo_ds", "public", "foo_tbl"))));
+        assertThrows(RuleAndStorageMetaDataMismatchedException.class, () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial));
+    }
+    
+    private static Stream<Arguments> caseCollisionArgs() {
+        return Stream.of(
+                Arguments.of("upper and lower table names", new DataNode("foo_ds", "public", "FOO_TBL"), new DataNode("foo_ds", "public", "foo_tbl")),
+                Arguments.of("mixed and upper table names", new DataNode("foo_ds", "public", "Foo_Tbl"), new DataNode("foo_ds", "public", "FOO_TBL")),
+                Arguments.of("upper and lower schema names", new DataNode("foo_ds", "PUBLIC", "foo_tbl"), new DataNode("foo_ds", "public", "foo_tbl")),
+                Arguments.of("mixed and upper schema names", new DataNode("foo_ds", "Public", "foo_tbl"), new DataNode("foo_ds", "PUBLIC", "foo_tbl")));
+    }
+    
+    @Test
+    void assertBuildForRefreshRejectsMissingTableWithNativeSchemaName() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "PUBLIC", "foo_tbl_0");
+        DataNode secondTable = new DataNode("foo_ds", "PUBLIC", "foo_tbl_1");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createInventorySchema("public", new DataNode("foo_ds", "public", "foo_tbl_0"))));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': foo_ds.PUBLIC.foo_tbl_1."));
+    }
+    
+    @Test
+    void assertBuildForRefreshAcceptsCompleteTablesWithNativeSchemaName() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "PUBLIC", "foo_tbl_0");
+        DataNode secondTable = new DataNode("foo_ds", "PUBLIC", "foo_tbl_1");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        DataNodeRuleAttribute dataNodes = refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class);
+        when(dataNodes.getDataNodesByTableName("foo_tbl")).thenReturn(Arrays.asList(firstTable, secondTable));
+        when(dataNodes.isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createInventorySchema("public",
+                new DataNode("foo_ds", "public", "foo_tbl_0"), new DataNode("foo_ds", "public", "foo_tbl_1"))));
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial);
+        assertThat(actual.get("public").getAllTables().size(), is(2));
+        assertTrue(actual.get("public").containsTable("foo_tbl_0"));
+        assertTrue(actual.get("public").containsTable("foo_tbl_1"));
+    }
+    
+    @Test
+    void assertBuildForRefreshKeepsExactCaseDistinctSchemas() throws SQLException {
+        DataNode firstTable = new DataNode("foo_ds", "Public", "foo_tbl");
+        DataNode secondTable = new DataNode("foo_ds", "public", "foo_tbl");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Arrays.asList(firstTable, secondTable), false);
+        when(refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class).isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        Map<String, SchemaMetaData> schemas = new LinkedHashMap<>();
+        schemas.put("Public", createInventorySchema("Public", firstTable));
+        schemas.put("public", createInventorySchema("public", secondTable));
+        when(MetaDataLoader.load(any())).thenReturn(schemas);
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial);
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.get("Public").containsTable("foo_tbl"));
+        assertTrue(actual.get("public").containsTable("foo_tbl"));
+    }
+    
+    @Test
+    void assertBuildForRefreshAfterWildcardSchemaRemoval() throws SQLException {
+        DataNode table = new DataNode("foo_db", POSTGRESQL_DATABASE_TYPE, "foo_ds.foo_tbl");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(POSTGRESQL_DATABASE_TYPE, "public", Collections.singleton(table), false);
+        when(refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class).isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        Map<String, SchemaMetaData> schemas = new LinkedHashMap<>(2, 1F);
+        schemas.put("public", createInventorySchema("public", new DataNode("foo_ds", "public", "foo_tbl")));
+        schemas.put("archive", createInventorySchema("archive", new DataNode("foo_ds", "archive", "foo_tbl")));
+        when(MetaDataLoader.load(any())).thenReturn(schemas);
+        Map<String, ShardingSphereSchema> actualSchemas = GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, refreshMaterial);
+        assertThat(actualSchemas.size(), is(2));
+        assertThat(actualSchemas.get("public").getAllTables().size(), is(1));
+        assertTrue(actualSchemas.get("public").containsTable("foo_tbl"));
+        assertThat(actualSchemas.get("archive").getAllTables().size(), is(1));
+        assertTrue(actualSchemas.get("archive").containsTable("foo_tbl"));
+        Collection<ShardingSphereSchema> revisionSchemas = new ArrayList<>(actualSchemas.values());
+        revisionSchemas.add(new ShardingSphereSchema("unrelated", POSTGRESQL_DATABASE_TYPE));
+        GenericSchemaBuilderMaterial revisionMaterial = new GenericSchemaBuilderMaterial(refreshMaterial.getStorageUnits(), refreshMaterial.getRules(), refreshMaterial.getProps(),
+                refreshMaterial.getDefaultSchemaName(), refreshMaterial.getIdentifierContext(), revisionSchemas);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("public", createInventorySchema("public", new DataNode("foo_ds", "public", "foo_tbl"))));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), POSTGRESQL_DATABASE_TYPE, revisionMaterial));
+        assertThat(actual.getMessage(), is("Rule and storage meta data mismatched, reason is: Missing physical table metadata for 'foo_tbl': foo_ds.archive.foo_tbl."));
+        assertFalse(refreshMaterial.getProps().<Boolean>getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
+    }
+    
+    @Test
+    void assertBuildForRefreshDoesNotConnectToUnrelatedStorageUnit() throws SQLException {
+        DataNode table = new DataNode("foo_ds", "foo_db", "foo_tbl");
+        GenericSchemaBuilderMaterial refreshMaterial = createInventoryMaterial(MYSQL_DATABASE_TYPE, "foo_db", Collections.singleton(table), false);
+        when(refreshMaterial.getRules().iterator().next().getAttributes().getAttribute(DataNodeRuleAttribute.class).isDataNodeTableNameLoadedFromStorage()).thenReturn(false);
+        DataSource unrelatedDataSource = mock(DataSource.class);
+        when(unrelatedDataSource.getConnection()).thenThrow(new AssertionError("unrelated storage unit must not be connected"));
+        StorageUnit unrelatedStorageUnit = mock(StorageUnit.class);
+        when(unrelatedStorageUnit.getStorageType()).thenReturn(MYSQL_DATABASE_TYPE);
+        when(unrelatedStorageUnit.getDataSource()).thenReturn(unrelatedDataSource);
+        refreshMaterial.getStorageUnits().put("unrelated_ds", unrelatedStorageUnit);
+        when(MetaDataLoader.load(any())).thenReturn(Collections.singletonMap("foo_db", createInventorySchema("foo_db", table)));
+        Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.buildForRefresh(Collections.singleton("foo_tbl"), MYSQL_DATABASE_TYPE, refreshMaterial);
+        assertSchemaTable(actual, "foo_db", "foo_tbl");
+        verify(unrelatedDataSource, never()).getConnection();
     }
     
     private GenericSchemaBuilderMaterial createInventoryMaterial(final DatabaseType storageType, final String defaultSchemaName, final Collection<DataNode> inventory,

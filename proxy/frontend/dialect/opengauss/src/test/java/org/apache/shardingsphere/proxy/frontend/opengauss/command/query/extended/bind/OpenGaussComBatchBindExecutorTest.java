@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -188,6 +189,7 @@ class OpenGaussComBatchBindExecutorTest {
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
         SQLStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         return result;
     }
     

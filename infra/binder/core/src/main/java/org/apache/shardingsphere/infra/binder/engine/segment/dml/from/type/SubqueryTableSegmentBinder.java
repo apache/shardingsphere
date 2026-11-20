@@ -77,6 +77,7 @@ public final class SubqueryTableSegmentBinder {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> subqueryOuterTableBinderContexts = LinkedHashMultimap.create(outerTableBinderContexts);
         subqueryOuterTableBinderContexts.putAll(tableBinderContexts);
         SelectStatement boundSubSelect = new SelectStatementBinder(subqueryOuterTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
+        binderContext.getBoundTables().addAll(subqueryBinderContext.getBoundTables());
         binderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSubSelect, segment.getSubquery().getText());
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));

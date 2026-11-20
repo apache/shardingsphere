@@ -26,6 +26,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -42,6 +44,8 @@ import java.util.LinkedList;
 public final class SQLStatementBinderContext {
     
     private final ShardingSphereMetaData metaData;
+    
+    private final Collection<ShardingSphereTable> boundTables = new LinkedHashSet<>();
     
     private final String currentDatabaseName;
     

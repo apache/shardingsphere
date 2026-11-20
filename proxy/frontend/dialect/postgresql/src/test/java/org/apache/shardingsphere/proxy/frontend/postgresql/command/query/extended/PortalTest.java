@@ -32,12 +32,16 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -92,6 +96,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -196,6 +201,59 @@ class PortalTest {
         Portal result = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
         result.bind();
         return result;
+    }
+    
+    @Test
+    void assertCreatePortalWithStaleMetadata() {
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(InsertStatement.builder().databaseType(databaseType).build());
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t VALUES (1)", sqlStatementContext, new HintValueContext(), Collections.emptyList(),
+                Collections.emptyList());
+        schema.removeTable("t");
+        assertThrows(StaleStatementMetadataException.class, () -> new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager));
+        verify(sqlStatementContext, never()).bindParameters(Collections.emptyList());
+    }
+    
+    private ShardingSphereSchema createSchema(final SQLStatementContext sqlStatementContext) {
+        TablesContext tablesContext = new TablesContext(Collections.emptyList());
+        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
+        ShardingSphereTable table = new ShardingSphereTable("t", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        tablesContext.getBoundTables().add(table);
+        return new ShardingSphereSchema("public", databaseType, Collections.singleton(table), Collections.emptyList());
+    }
+    
+    @Test
+    void assertBindPortalAfterMetadataChanges() throws SQLException {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT * FROM t", sqlStatementContext, new HintValueContext(), Collections.emptyList(),
+                Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        schema.removeTable("t");
+        assertThrows(StaleStatementMetadataException.class, portal::bind);
+        verify(proxyBackendHandler, never()).execute();
+    }
+    
+    @Test
+    void assertReadBoundPortalAfterMetadataChanges() throws SQLException {
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.emptyList()));
+        when(proxyBackendHandler.next()).thenReturn(true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        portal.bind();
+        schema.removeTable("t");
+        assertThat(portal.describe(), isA(PostgreSQLRowDescriptionPacket.class));
+        List<DatabasePacket> actual = portal.execute(0);
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actual.get(1), isA(PostgreSQLCommandCompletePacket.class));
+        verify(proxyBackendHandler).execute();
     }
     
     @Test

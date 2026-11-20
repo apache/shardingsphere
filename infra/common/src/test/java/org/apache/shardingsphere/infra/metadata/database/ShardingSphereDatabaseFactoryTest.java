@@ -129,6 +129,28 @@ class ShardingSphereDatabaseFactoryTest {
     }
     
     @Test
+    void assertCreateForRefresh() throws SQLException {
+        DatabaseType protocolType = mock(DatabaseType.class);
+        ShardingSphereSchema candidateSchema = new ShardingSphereSchema("candidate_schema", protocolType);
+        try (
+                MockedStatic<DefaultSchemaNameResolver> mockedDefaultSchemaNameResolver = mockStatic(DefaultSchemaNameResolver.class);
+                MockedStatic<DatabaseRulesBuilder> mockedRulesBuilder = mockStatic(DatabaseRulesBuilder.class);
+                MockedStatic<GenericSchemaBuilder> mockedGenericSchemaBuilder = mockStatic(GenericSchemaBuilder.class);
+                MockedStatic<SystemSchemaBuilder> mockedSystemSchemaBuilder = mockStatic(SystemSchemaBuilder.class)) {
+            ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
+            mockedDefaultSchemaNameResolver.when(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db")).thenReturn("foo_schema");
+            mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
+                    .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
+            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.buildForRefresh(eq(protocolType), argThat(material -> material.getRevisionCandidateSchemas().contains(candidateSchema))))
+                    .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
+            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createForRefresh(
+                    "foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext, Collections.singleton(candidateSchema));
+            assertTrue(actual.containsSchema("foo_schema"));
+            mockedGenericSchemaBuilder.verify(() -> GenericSchemaBuilder.buildForRefresh(eq(protocolType), any(GenericSchemaBuilderMaterial.class)));
+        }
+    }
+    
+    @Test
     void assertCreateWithSchemas() {
         ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create(
                 "foo_db", databaseType, databaseConfig, mock(), Collections.singletonList(new ShardingSphereSchema("foo_schema", databaseType)));

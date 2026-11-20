@@ -68,6 +68,7 @@ public final class CommonTableExpressionDataModificationBinder {
         childContext.getExternalTableBinderContexts().putAll(tableContexts);
         childContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(context.getCommonTableExpressionsSegmentsUniqueAliases());
         DMLStatement statement = new DMLStatementBindEngine().bind(segment.getDataModification(), childContext);
+        context.getBoundTables().addAll(childContext.getBoundTables());
         context.getCommonTableExpressionsSegmentsUniqueAliases().addAll(childContext.getCommonTableExpressionsSegmentsUniqueAliases());
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAliasSegment().orElse(null), null, statement);
         Collection<ProjectionSegment> outputs = new ArrayList<>();

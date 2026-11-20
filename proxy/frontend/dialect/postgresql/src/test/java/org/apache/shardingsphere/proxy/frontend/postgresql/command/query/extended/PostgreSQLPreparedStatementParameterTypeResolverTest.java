@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -89,6 +90,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     void assertResolveParameterTypesWithConnectionSession() throws SQLException {
         SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
         when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");

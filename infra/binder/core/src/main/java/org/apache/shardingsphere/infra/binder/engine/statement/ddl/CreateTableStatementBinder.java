@@ -52,14 +52,20 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
         SimpleTableSegment boundTable = SimpleTableSegmentBinder.bind(sqlStatement.getTable(), createTableBinderContext, tableBinderContexts);
         Collection<ColumnDefinitionSegment> boundColumnDefinitions = sqlStatement.getColumnDefinitions().stream()
                 .map(each -> ColumnDefinitionSegmentBinder.bind(each, createTableBinderContext, tableBinderContexts)).collect(Collectors.toList());
+        binderContext.getBoundTables().addAll(createTableBinderContext.getBoundTables());
         return copy(sqlStatement, boundTable, boundSelectStatement, boundColumnDefinitions);
     }
     
     private SelectStatement bindSelectStatement(final CreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext) {
-        return sqlStatement.getSelectStatement().map(optional -> new SelectStatementBinder().bind(optional,
-                new SQLStatementBinderContext(binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), optional,
-                        binderContext.getCurrentSchema())))
-                .orElse(null);
+        return sqlStatement.getSelectStatement().map(optional -> bindSelectStatement(optional, binderContext)).orElse(null);
+    }
+    
+    private SelectStatement bindSelectStatement(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        SQLStatementBinderContext selectBinderContext = new SQLStatementBinderContext(
+                binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), sqlStatement, binderContext.getCurrentSchema());
+        SelectStatement result = new SelectStatementBinder().bind(sqlStatement, selectBinderContext);
+        binderContext.getBoundTables().addAll(selectBinderContext.getBoundTables());
+        return result;
     }
     
     private SQLStatementBinderContext createCreateTableBinderContext(final CreateTableStatement sqlStatement, final SQLStatementBinderContext binderContext,

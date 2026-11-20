@@ -486,7 +486,9 @@ public final class SimpleTableSegmentBinder {
                                                                                                                final SQLStatementBinderContext binderContext, final IdentifierValue tableName) {
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
         QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
-        for (ShardingSphereColumn each : schema.getTable(tableName).getAllColumns()) {
+        ShardingSphereTable table = schema.getTable(tableName);
+        binderContext.getBoundTables().add(table);
+        for (ShardingSphereColumn each : table.getAllColumns()) {
             ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(createColumnSegment(segment, databaseName, schemaName, each, quoteCharacter, tableName));
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);

@@ -41,6 +41,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -177,6 +178,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public ResultSet executeQuery() throws SQLException {
         try {
+            sqlStatementContext.getTablesContext().checkMetadata();
             if (statementsCacheable && !statements.isEmpty()) {
                 resetParameters();
                 return statements.iterator().next().executeQuery();
@@ -220,6 +222,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public int executeUpdate() throws SQLException {
         try {
+            sqlStatementContext.getTablesContext().checkMetadata();
             if (statementsCacheable && !statements.isEmpty()) {
                 resetParameters();
                 return statements.iterator().next().executeUpdate();
@@ -250,6 +253,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public boolean execute() throws SQLException {
         try {
+            sqlStatementContext.getTablesContext().checkMetadata();
             if (statementsCacheable && !statements.isEmpty()) {
                 resetParameters();
                 return statements.iterator().next().execute();
@@ -296,6 +300,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     private QueryContext createQueryContext() {
+        sqlStatementContext.getTablesContext().checkMetadata();
         List<Object> params = new ArrayList<>(getParameters());
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
@@ -366,22 +371,27 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     @Override
-    public void addBatch() {
-        if (!hasBatchGeneratedValues) {
-            generatedValues.clear();
-            hasBatchGeneratedValues = true;
+    public void addBatch() throws SQLException {
+        try {
+            if (!hasBatchGeneratedValues) {
+                generatedValues.clear();
+                hasBatchGeneratedValues = true;
+            }
+            currentResultSet = null;
+            this.queryContext = createQueryContext();
+            executeBatchExecutor.addBatch(queryContext, usedDatabase);
+            findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
+            clearParameters();
+        } catch (final StaleStatementMetadataException ex) {
+            throw ex.toSQLException();
         }
-        currentResultSet = null;
-        this.queryContext = createQueryContext();
-        executeBatchExecutor.addBatch(queryContext, usedDatabase);
-        findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
-        clearParameters();
     }
     
     @Override
     public int[] executeBatch() throws SQLException {
         setLocalUpdateCount(-1);
         try {
+            sqlStatementContext.getTablesContext().checkMetadata();
             if (!hasBatchGeneratedValues) {
                 generatedValues.clear();
             }

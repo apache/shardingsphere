@@ -134,13 +134,39 @@ public final class ShardingSphereDatabaseFactory {
     public static ShardingSphereDatabase createWithRevisionCandidateSchemas(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext,
                                                                             final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
+        return createWithRevisionCandidateSchemas(name, protocolType, databaseConfig, props, computeNodeInstanceContext, revisionCandidateSchemas, false);
+    }
+    
+    private static ShardingSphereDatabase createWithRevisionCandidateSchemas(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
+                                                                             final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext,
+                                                                             final Collection<ShardingSphereSchema> revisionCandidateSchemas, final boolean refresh) throws SQLException {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.buildWithInventoryCheck(protocolType,
-                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, DefaultSchemaNameResolver.resolveProtocol(protocolType, name),
-                        identifierContext, revisionCandidateSchemas)));
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props,
+                DefaultSchemaNameResolver.resolveProtocol(protocolType, name), identifierContext, revisionCandidateSchemas);
+        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(refresh
+                ? GenericSchemaBuilder.buildForRefresh(protocolType, material)
+                : GenericSchemaBuilder.buildWithInventoryCheck(protocolType, material));
         SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values(), props);
+    }
+    
+    /**
+     * Create a database for explicit metadata refresh after validating its physical tables.
+     *
+     * @param name database name
+     * @param protocolType database protocol type
+     * @param databaseConfig database configuration
+     * @param props configuration properties
+     * @param computeNodeInstanceContext compute node instance context
+     * @param revisionCandidateSchemas revision candidate schemas
+     * @return created database
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereDatabase createForRefresh(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
+                                                          final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext,
+                                                          final Collection<ShardingSphereSchema> revisionCandidateSchemas) throws SQLException {
+        return createWithRevisionCandidateSchemas(name, protocolType, databaseConfig, props, computeNodeInstanceContext, revisionCandidateSchemas, true);
     }
 }
