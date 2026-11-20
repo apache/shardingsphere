@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.err;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.FirebirdSQLException;
+import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.ISCConstants;
@@ -27,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
+import java.util.Locale;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -71,6 +74,44 @@ class FirebirdStatusVectorTest {
         inOrder.verify(payload).writeInt4(ISCConstants.isc_random);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_string);
         inOrder.verify(payload).writeString("Problematic key value is (\"COL1\" = 1)");
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteBatchParameterVersionWithNumberArguments() {
+        FirebirdStatusVector vector = new FirebirdStatusVector(new FirebirdSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, 2, 1));
+        assertThat(vector.getGdsCode(), is(ISCConstants.isc_batch_param_version));
+        vector.write((PacketPayload) payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_batch_param_version);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(2);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(1);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
+        verifyNoMoreInteractions(payload);
+    }
+    
+    @Test
+    void assertWriteBatchParameterVersionWithNumberArgumentsUnderNonLatinDefaultFormatLocale() {
+        Locale originalLocale = Locale.getDefault(Locale.Category.FORMAT);
+        Locale.setDefault(Locale.Category.FORMAT, Locale.forLanguageTag("ar-EG"));
+        FirebirdStatusVector vector;
+        try {
+            vector = new FirebirdStatusVector(new FirebirdSQLException(FirebirdVendorError.INVALID_BATCH_PARAMETER_VERSION, 2, 1));
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, originalLocale);
+        }
+        vector.write((PacketPayload) payload);
+        InOrder inOrder = inOrder(payload);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_gds);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_batch_param_version);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(2);
+        inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_number);
+        inOrder.verify(payload).writeInt4(1);
         inOrder.verify(payload).writeInt4(ISCConstants.isc_arg_end);
         verifyNoMoreInteractions(payload);
     }
