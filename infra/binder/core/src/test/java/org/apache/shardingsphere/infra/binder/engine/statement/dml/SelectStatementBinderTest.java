@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -33,12 +38,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -65,11 +74,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedStatic;
 
 import java.sql.Types;
@@ -78,12 +89,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
@@ -95,6 +108,79 @@ import static org.mockito.Mockito.when;
 class SelectStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @Test
+    void assertBindWithUnusedDataModifyingCTE() {
+        ProjectionsSegment returnedColumns = new ProjectionsSegment(0, 0);
+        returnedColumns.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))))
+                .returning(new ReturningSegment(0, 0, returnedColumns)).build();
+        CommonTableExpressionSegment cte = new CommonTableExpressionSegment(0, 0, new AliasSegment(0, 0, new IdentifierValue("foo_deleted")), null, deleteStatement);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        SelectStatement statement = SelectStatement.builder().databaseType(databaseType)
+                .with(new WithSegment(0, 0, Collections.singleton(cte), false)).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(statement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+        ColumnSegment actualColumn = ((ColumnProjectionSegment) actual.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(actualColumn.getColumnBoundInfo().getTableSourceType(), is(TableSourceType.PHYSICAL_TABLE));
+    }
+    
+    @Test
+    void assertBindDistinctOnProjectionAlias() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 20);
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 8, new IdentifierValue("user_name")));
+        column.setAlias(new AliasSegment(12, 18, new IdentifierValue("foo_name")));
+        projections.getProjections().add(column);
+        projections.getDistinctOnItems().add(new ColumnSegment(0, 7, new IdentifierValue("foo_name")));
+        SelectStatement statement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("t_user")))).build();
+        SelectStatement actual = new SelectStatementBinder().bind(statement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+        ColumnSegment actualColumn = (ColumnSegment) actual.getProjections().getDistinctOnItems().iterator().next();
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_name"));
+    }
+    
+    @ParameterizedTest(name = "later VALUES column={0}")
+    @ValueSource(strings = {"user_name", "email", "user_id"})
+    void assertBindValuesSubquery(final String columnName) {
+        ParameterMarkerExpressionSegment firstMarker = new ParameterMarkerExpressionSegment(8, 8, 0);
+        ParameterMarkerExpressionSegment secondMarker = new ParameterMarkerExpressionSegment(60, 60, 1);
+        ProjectionsSegment innerProjections = new ProjectionsSegment(24, 32);
+        innerProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(24, 24 + columnName.length() - 1, new IdentifierValue(columnName))));
+        SelectStatement inner = SelectStatement.builder().databaseType(databaseType).projections(innerProjections)
+                .from(new SimpleTableSegment(new TableNameSegment(40, 45, new IdentifierValue("t_user"))))
+                .where(new WhereSegment(50, 60, new BinaryOperationExpression(50, 60, new ColumnSegment(50, 56, new IdentifierValue("user_id")), secondMarker, "=", "user_id = ?"))).build();
+        inner.addParameterMarkers(Collections.singletonList(secondMarker));
+        SubqueryExpressionSegment expression = new SubqueryExpressionSegment(new SubquerySegment(17, 61, inner, "SELECT " + columnName + " FROM t_user WHERE user_id = ?"));
+        ProjectionsSegment projections = new ProjectionsSegment(7, 62);
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(8, 8, "?", firstMarker);
+        projection.setDefaultColumnLabel(new IdentifierValue("column1"));
+        projections.getProjections().add(projection);
+        SelectStatement statement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .values(Arrays.asList(new InsertValuesSegment(7, 9, Collections.singletonList(firstMarker)), new InsertValuesSegment(16, 62, Collections.singletonList(expression)))).build();
+        statement.addParameterMarkers(Arrays.asList(firstMarker, secondMarker));
+        SelectStatement actual = new SelectStatementBinder().bind(statement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), statement, Collections.emptyList()));
+        assertThat(actual.getValues().size(), is(2));
+        InsertValuesSegment actualSecond = new ArrayList<>(actual.getValues()).get(1);
+        SelectStatement actualSubquery = ((SubqueryExpressionSegment) actualSecond.getValues().get(0)).getSubquery().getSelect();
+        ColumnSegment actualColumn = ((ColumnProjectionSegment) actualSubquery.getProjections().getProjections().iterator().next()).getColumn();
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is(columnName));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        assertThat(actualColumn.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getParameterCount(), is(2));
+        assertThat(ExpressionExtractor.getParameterMarkerExpressions(actualSecond.getValues()).iterator().next().getParameterIndex(), is(1));
+    }
+    
+    @Test
+    void assertBindSelectInto() {
+        SimpleTableSegment into = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("created_table")));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).into(into).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(),
+                "foo_db", new HintValueContext(), selectStatement, Collections.emptyList()));
+        assertThat(actual.getInto().orElse(null), is(into));
+    }
     
     @Test
     void assertBind() {
@@ -156,6 +242,25 @@ class SelectStatementBinderTest {
         assertThat(actual.getParameterCount(), is(1));
         assertThat(actual.getVariableNames(), contains("foo_variable"));
         assertThat(actual.getComments(), contains(comment));
+    }
+    
+    @Test
+    void assertBindValuesWithRowExpansion() {
+        IdentifierValue owner = new IdentifierValue("foo_row");
+        ColumnProjectionSegment column = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("foo_column")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerContexts = LinkedHashMultimap.create();
+        outerContexts.put(CaseInsensitiveString.of(owner.getValue()), new SimpleTableSegmentBinderContext(Collections.singletonList(column), TableSourceType.TEMPORARY_TABLE));
+        CommonExpressionSegment value = new CommonExpressionSegment(8, 18, "(foo_row).*", Collections.singletonList(new ColumnSegment(9, 15, owner)));
+        value.setRowExpansion(true);
+        CommonExpressionSegment nextValue = new CommonExpressionSegment(22, 32, "(foo_row).*", Collections.singletonList(new ColumnSegment(23, 29, owner)));
+        nextValue.setRowExpansion(true);
+        ProjectionsSegment projections = new ProjectionsSegment(7, 33);
+        projections.getProjections().add(new ExpressionProjectionSegment(8, 18, value.getText(), value));
+        SelectStatement statement = SelectStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).projections(projections)
+                .values(Arrays.asList(new InsertValuesSegment(7, 19, Collections.singletonList(value)), new InsertValuesSegment(21, 33, Collections.singletonList(nextValue)))).build();
+        SelectStatement actual = new SelectStatementBinder(outerContexts).bind(statement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), statement));
+        assertThat(actual.getProjections().getProjections().iterator().next(), isA(ShorthandProjectionSegment.class));
+        assertThat(actual.getValues().stream().map(each -> each.getValues().iterator().next()).collect(Collectors.toList()), contains(sameInstance(value), sameInstance(nextValue)));
     }
     
     @Test

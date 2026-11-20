@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -60,6 +61,8 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
     
     private final InsertStatement sqlStatement;
     
+    private final Collection<SQLStatementContext> dataModificationBaseContexts;
+    
     private final TablesContext tablesContext;
     
     private final String currentDatabaseName;
@@ -75,6 +78,9 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
     public InsertStatementBaseContext(final InsertStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         this.metaData = metaData;
         this.sqlStatement = sqlStatement;
+        dataModificationBaseContexts = sqlStatement.getWith().isPresent()
+                ? SQLStatementContextExtractor.createDataModificationBaseContexts(sqlStatement.getWith().get().getCommonTableExpressions(), metaData, currentDatabaseName)
+                : Collections.emptyList();
         this.currentDatabaseName = currentDatabaseName;
         valueExpressions = getAllValueExpressions(sqlStatement);
         Collection<TableSegment> tableSegments = getAllSimpleTableSegments();

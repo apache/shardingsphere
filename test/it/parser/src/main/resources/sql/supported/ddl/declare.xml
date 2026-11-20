@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="declare_cursor" value="DECLARE t_order_cursor BINARY CURSOR FOR SELECT * FROM t_order;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="declare_cursor" value="DECLARE t_order_cursor BINARY CURSOR FOR SELECT * FROM t_order;" db-types="openGauss" />
+    <sql-case id="declare_cursor_with_select" value="DECLARE t_order_cursor BINARY CURSOR FOR SELECT * FROM t_order;" db-types="PostgreSQL" />
     <sql-case id="declare_table_variable" value="DECLARE @MyTableVar TABLE ( EmpID INT NOT NULL, NewVacationHours INT, ModifiedDate DATETIME);" db-types="SQLServer" />
 </sql-cases>

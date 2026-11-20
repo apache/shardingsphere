@@ -524,6 +524,23 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_extract_function_postgresql">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')">
+                        <parameter>
+                            <extract-arg start-index="15" stop-index="18" text="YEAR" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2001-02-16 20:38:40" start-index="25" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_extract_function_week">
         <projections start-index="7" stop-index="56">
             <expression-projection text="EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
@@ -546,6 +563,23 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_extract_function_week_postgresql">
+        <projections start-index="7" stop-index="56">
+            <expression-projection text="EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="56">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="56" text="EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')">
+                        <parameter>
+                            <extract-arg start-index="15" stop-index="18" text="WEEK" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2001-02-16 20:38:40" start-index="25" stop-index="55" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_extract_function_quarter">
         <projections start-index="7" stop-index="59">
             <expression-projection text="EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="59">
@@ -561,6 +595,23 @@
                                 </expression>
                                 <data-type>TIMESTAMP</data-type>
                             </type-cast-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_extract_function_quarter_postgresql">
+        <projections start-index="7" stop-index="59">
+            <expression-projection text="EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" start-index="7" stop-index="59">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="59" text="EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')">
+                        <parameter>
+                            <extract-arg start-index="15" stop-index="21" text="QUARTER" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2001-02-16 20:38:40" start-index="28" stop-index="58" />
                         </parameter>
                     </function>
                 </expr>

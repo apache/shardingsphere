@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.com
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
@@ -37,4 +38,10 @@ public final class CommonExpressionSegment implements ComplexExpressionSegment {
     private final String text;
     
     private final Collection<ExpressionSegment> children;
+    
+    /**
+     * Whether the single parenthesized child expression is followed directly by a row expansion.
+     */
+    @Setter
+    private boolean rowExpansion;
 }

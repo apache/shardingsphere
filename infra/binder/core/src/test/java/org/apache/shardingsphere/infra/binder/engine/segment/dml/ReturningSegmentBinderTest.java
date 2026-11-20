@@ -24,6 +24,13 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -38,9 +45,14 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+
+import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -81,13 +93,17 @@ class ReturningSegmentBinderTest {
         assertThat(segment.getProjections(), sameInstance(projections));
     }
     
-    @ParameterizedTest(name = "owner={0}, existing={1}, rowAlias={2}")
-    @CsvSource({"OLD,false,true", "NEW,false,true", "foo_old,false,true", "OLD,true,true", "foo_other,false,false"})
-    void assertBindRowAlias(final String owner, final boolean existing, final boolean rowAlias) {
+    @ParameterizedTest(name = "owner={0}, parenthesized={1}")
+    @CsvSource({"OLD,false", "NEW,false", "foo_old,false", "OLD,true", "NEW,true", "foo_old,true"})
+    void assertBindRowAlias(final String owner, final boolean parenthesized) {
         ProjectionsSegment projections = new ProjectionsSegment(10, 20);
-        ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(10, 20);
-        shorthand.setOwner(new OwnerSegment(10, 16, new IdentifierValue(owner)));
-        projections.getProjections().add(shorthand);
+        if (parenthesized) {
+            projections.getProjections().add(createRowExpansion(owner));
+        } else {
+            ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(10, 20);
+            shorthand.setOwner(new OwnerSegment(10, 16, new IdentifierValue(owner)));
+            projections.getProjections().add(shorthand);
+        }
         ReturningSegment segment = new ReturningSegment(0, 30, projections);
         if ("foo_old".equals(owner)) {
             segment.setOldAlias(new AliasSegment(1, 7, new IdentifierValue(owner)));
@@ -98,22 +114,72 @@ class ReturningSegmentBinderTest {
         TableSegmentBinderContext targetContext = mock(TableSegmentBinderContext.class);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tables = LinkedHashMultimap.create();
         tables.put(CaseInsensitiveString.of("foo_alias"), targetContext);
-        if (existing) {
-            tables.put(CaseInsensitiveString.of(owner), targetContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outer = LinkedHashMultimap.create();
+        ProjectionsSegment expected = new ProjectionsSegment(10, 20);
+        when(ProjectionsSegmentBinder.bind(eq(projections), eq(context), eq(table), tableContextsCaptor.capture(), eq(outer))).thenReturn(expected);
+        ReturningSegment actual = ReturningSegmentBinder.bind(segment, context, table, tables, outer);
+        assertThat(actual.getProjections(), sameInstance(expected));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> actualContexts = tableContextsCaptor.getValue();
+        assertThat(actualContexts, not(sameInstance(tables)));
+        assertTrue(actualContexts.containsEntry(CaseInsensitiveString.of(owner), targetContext));
+        assertThat(tables.size(), is(1));
+    }
+    
+    private static ExpressionProjectionSegment createRowExpansion(final String owner) {
+        CommonExpressionSegment expression = new CommonExpressionSegment(10, 20, "(" + owner + ").*",
+                Collections.singletonList(new ColumnSegment(11, 11 + owner.length() - 1, new IdentifierValue(owner))));
+        expression.setRowExpansion(true);
+        return new ExpressionProjectionSegment(10, 20, expression.getText(), expression);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unchangedScopeArguments")
+    void assertBindWithoutAdditionalRowScope(final String caseName, final ProjectionSegment projection, final boolean existingOld) {
+        ProjectionsSegment projections = new ProjectionsSegment(10, 20);
+        projections.getProjections().add(projection);
+        ReturningSegment segment = new ReturningSegment(0, 30, projections);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 8, new IdentifierValue("foo_table")));
+        SQLStatementBinderContext context = mock(SQLStatementBinderContext.class);
+        TableSegmentBinderContext target = mock(TableSegmentBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tables = LinkedHashMultimap.create();
+        tables.put(CaseInsensitiveString.of("foo_table"), target);
+        if (existingOld) {
+            tables.put(CaseInsensitiveString.of("OLD"), target);
         }
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outer = LinkedHashMultimap.create();
-        ProjectionsSegment expectedProjections = new ProjectionsSegment(10, 20);
-        when(ProjectionsSegmentBinder.bind(eq(projections), eq(context), eq(table), tableContextsCaptor.capture(), eq(outer))).thenReturn(expectedProjections);
+        ProjectionsSegment expected = new ProjectionsSegment(10, 20);
+        when(ProjectionsSegmentBinder.bind(eq(projections), eq(context), eq(table), tableContextsCaptor.capture(), eq(outer))).thenReturn(expected);
         ReturningSegment actual = ReturningSegmentBinder.bind(segment, context, table, tables, outer);
-        assertThat(actual.getProjections(), sameInstance(expectedProjections));
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> actualContexts = tableContextsCaptor.getValue();
-        if (rowAlias && !existing) {
-            assertThat(actualContexts, not(sameInstance(tables)));
-            assertTrue(actualContexts.containsEntry(CaseInsensitiveString.of(owner), targetContext));
-        } else {
-            assertThat(actualContexts, sameInstance(tables));
-        }
-        assertThat(tables.size(), is(existing ? 2 : 1));
+        assertThat(actual.getProjections(), sameInstance(expected));
+        assertThat(tableContextsCaptor.getValue(), sameInstance(tables));
+    }
+    
+    private static Stream<Arguments> unchangedScopeArguments() {
+        ExpressionProjectionSegment qualified = createRowExpansion("OLD");
+        ColumnSegment child = (ColumnSegment) ((CommonExpressionSegment) qualified.getExpr()).getChildren().iterator().next();
+        child.setOwner(new OwnerSegment(11, 13, new IdentifierValue("foo_table")));
+        ExpressionProjectionSegment ordinary = createRowExpansion("OLD");
+        ((CommonExpressionSegment) ordinary.getExpr()).setRowExpansion(false);
+        RowExpression row = new RowExpression(11, 18, "ROW(1,2)");
+        row.getItems().add(new LiteralExpressionSegment(15, 15, 1));
+        row.getItems().add(new LiteralExpressionSegment(17, 17, 2));
+        CommonExpressionSegment expansion = new CommonExpressionSegment(10, 20, "(ROW(1,2)).*", Collections.singletonList(row));
+        expansion.setRowExpansion(true);
+        ShorthandProjectionSegment existingOld = new ShorthandProjectionSegment(10, 20);
+        existingOld.setOwner(new OwnerSegment(10, 16, new IdentifierValue("OLD")));
+        ShorthandProjectionSegment unrelated = new ShorthandProjectionSegment(10, 20);
+        unrelated.setOwner(new OwnerSegment(10, 16, new IdentifierValue("foo_other")));
+        return Stream.of(
+                Arguments.of("maintained existing OLD shorthand scope", existingOld, true),
+                Arguments.of("maintained unrelated shorthand owner", unrelated, false),
+                Arguments.of("column projection", new ColumnProjectionSegment(new ColumnSegment(10, 13, new IdentifierValue("foo_column"))), false),
+                Arguments.of("unowned star", new ShorthandProjectionSegment(10, 10), false),
+                Arguments.of("row constructor expansion", new ExpressionProjectionSegment(10, 20, expansion.getText(), expansion), false),
+                Arguments.of("existing OLD scope", createRowExpansion("OLD"), true),
+                Arguments.of("unrelated owner", createRowExpansion("foo_other"), false),
+                Arguments.of("qualified composite column", qualified, false),
+                Arguments.of("ordinary parenthesized expression", ordinary, false),
+                Arguments.of("non common expression", new ExpressionProjectionSegment(10, 20, "1", new LiteralExpressionSegment(10, 10, 1)), false));
     }
     
     @Test

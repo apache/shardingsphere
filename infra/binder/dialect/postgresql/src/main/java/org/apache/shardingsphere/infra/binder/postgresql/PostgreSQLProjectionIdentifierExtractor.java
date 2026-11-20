@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.extractor.DialectProjectionIdentifierExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
@@ -48,7 +49,14 @@ public final class PostgreSQLProjectionIdentifierExtractor implements DialectPro
         if (!(expressionSegment instanceof ExpressionProjectionSegment)) {
             return "?column?";
         }
+        IdentifierValue defaultColumnLabel = ((ExpressionProjectionSegment) expressionSegment).getDefaultColumnLabel();
+        if (null != defaultColumnLabel) {
+            return getIdentifierValue(defaultColumnLabel);
+        }
         ExpressionSegment innerExpressionSegment = ((ExpressionProjectionSegment) expressionSegment).getExpr();
+        while (innerExpressionSegment instanceof TypeCastExpression) {
+            innerExpressionSegment = ((TypeCastExpression) innerExpressionSegment).getExpression();
+        }
         if (innerExpressionSegment instanceof FunctionSegment) {
             return getColumnNameFromFunctionSegment((FunctionSegment) innerExpressionSegment);
         }
