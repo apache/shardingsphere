@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCreateBlobCommandPacketTest {
+class FirebirdCreateAndOpenBlobCommandPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
@@ -49,11 +49,12 @@ class FirebirdCreateBlobCommandPacketTest {
     void assertCreateBlobPacketWithoutBpb() {
         when(payload.readInt4()).thenReturn(42);
         when(payload.readInt8()).thenReturn(0x0102030405060708L);
-        FirebirdCreateBlobCommandPacket packet = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB, payload);
+        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB, payload);
         verify(payload).skipReserved(4);
         verify(payload, never()).readBuffer();
         assertThat(packet.getTransactionId(), is(42));
-        assertThat(packet.getRequestedBlobId(), is(0x0102030405060708L));
+        assertThat(packet.getBlobId(), is(0x0102030405060708L));
+        assertThat(packet.getBlobParameterBuffer().length, is(0));
         assertFalse(packet.isStreamBlob());
         packet.write(payload);
         verify(payload).readInt4();
@@ -62,23 +63,49 @@ class FirebirdCreateBlobCommandPacketTest {
     }
     
     @Test
+    void assertOpenBlobPacketWithoutBpb() {
+        when(payload.readInt4()).thenReturn(5);
+        when(payload.readInt8()).thenReturn(7L);
+        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB, payload);
+        verify(payload).skipReserved(4);
+        verify(payload, never()).readBuffer();
+        assertThat(packet.getTransactionId(), is(5));
+        assertThat(packet.getBlobId(), is(7L));
+        assertThat(packet.getBlobParameterBuffer().length, is(0));
+    }
+    
+    @Test
     void assertCreateBlobPacketWithBpb() {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 3, 4, 1, 0, 0, 0}));
         when(payload.readInt4()).thenReturn(7);
         when(payload.readInt8()).thenReturn(11L);
-        FirebirdCreateBlobCommandPacket packet = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
+        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
         verify(payload).skipReserved(4);
         verify(payload).readBuffer();
+        assertThat(packet.getBlobParameterBuffer(), is(new byte[]{1, 3, 4, 1, 0, 0, 0}));
         assertThat(packet.getTransactionId(), is(7));
-        assertThat(packet.getRequestedBlobId(), is(11L));
+        assertThat(packet.getBlobId(), is(11L));
         assertTrue(packet.isStreamBlob());
+    }
+    
+    @Test
+    void assertOpenBlobPacketWithBpb() {
+        when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{4, 5, 6}));
+        when(payload.readInt4()).thenReturn(9);
+        when(payload.readInt8()).thenReturn(12L);
+        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB2, payload);
+        verify(payload).skipReserved(4);
+        verify(payload).readBuffer();
+        assertThat(packet.getBlobParameterBuffer(), is(new byte[]{4, 5, 6}));
+        assertThat(packet.getTransactionId(), is(9));
+        assertThat(packet.getBlobId(), is(12L));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("blobParameterBufferCases")
     void assertIsStreamBlob(final String name, final byte[] blobParameterBuffer, final boolean expectedStreamBlob) {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(blobParameterBuffer));
-        FirebirdCreateBlobCommandPacket packet = new FirebirdCreateBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
+        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
         if (expectedStreamBlob) {
             assertTrue(packet.isStreamBlob());
         } else {
@@ -100,13 +127,13 @@ class FirebirdCreateBlobCommandPacketTest {
     
     @Test
     void assertGetLengthWithoutBpb() {
-        assertThat(FirebirdCreateBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload), is(16));
+        assertThat(FirebirdCreateAndOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload), is(16));
     }
     
     @Test
     void assertGetLengthWithBpb() {
-        when(payload.getBufferLength(4)).thenReturn(12);
-        assertThat(FirebirdCreateBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB2, payload), is(28));
+        when(payload.getBufferLength(4)).thenReturn(10);
+        assertThat(FirebirdCreateAndOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB2, payload), is(26));
         verify(payload).getBufferLength(4);
     }
 }

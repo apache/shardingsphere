@@ -28,9 +28,8 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
@@ -80,11 +79,10 @@ public final class FirebirdCommandPacketFactory {
             case TRANSACTION:
                 return new FirebirdStartTransactionPacket(payload);
             case CREATE_BLOB:
-            case CREATE_BLOB2:
-                return new FirebirdCreateBlobCommandPacket(commandPacketType, payload);
             case OPEN_BLOB:
+            case CREATE_BLOB2:
             case OPEN_BLOB2:
-                return new FirebirdOpenBlobCommandPacket(commandPacketType, payload);
+                return new FirebirdCreateAndOpenBlobCommandPacket(commandPacketType, payload);
             case GET_SEGMENT:
                 return new FirebirdGetBlobSegmentCommandPacket(payload);
             case PUT_SEGMENT:
@@ -152,11 +150,10 @@ public final class FirebirdCommandPacketFactory {
             case TRANSACTION:
                 return FirebirdStartTransactionPacket.getLength(payload);
             case CREATE_BLOB:
-            case CREATE_BLOB2:
-                return FirebirdCreateBlobCommandPacket.getLength(commandPacketType, payload);
             case OPEN_BLOB:
+            case CREATE_BLOB2:
             case OPEN_BLOB2:
-                return FirebirdOpenBlobCommandPacket.getLength(commandPacketType, payload);
+                return FirebirdCreateAndOpenBlobCommandPacket.getLength(commandPacketType, payload);
             case GET_SEGMENT:
                 return FirebirdGetBlobSegmentCommandPacket.getLength(payload);
             case PUT_SEGMENT:

@@ -17,17 +17,25 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
+import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.FirebirdParameterBuffer;
+import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdBlobParameterBufferType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 /**
- * Firebird open blob command packet.
+ * Firebird blob command packet.
  */
 @Getter
-public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
+public final class FirebirdCreateAndOpenBlobCommandPacket extends FirebirdCommandPacket {
+    
+    private static final int BLOB_TYPE_STREAM = 1;
+    
+    private final FirebirdParameterBuffer bpb = FirebirdBlobParameterBufferType.createBuffer();
     
     private final byte[] blobParameterBuffer;
     
@@ -35,11 +43,32 @@ public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
     
     private final long blobId;
     
-    public FirebirdOpenBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
+    public FirebirdCreateAndOpenBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        blobParameterBuffer = FirebirdCommandPacketType.OPEN_BLOB2 == commandType ? ByteBufUtil.getBytes(payload.readBuffer()) : new byte[0];
+        if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType || FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
+            ByteBuf buffer = payload.readBuffer();
+            blobParameterBuffer = ByteBufUtil.getBytes(buffer);
+            if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType && buffer.isReadable()) {
+                bpb.parseBuffer(buffer);
+            }
+        } else {
+            blobParameterBuffer = new byte[0];
+        }
         transactionId = payload.readInt4();
         blobId = payload.readInt8();
+    }
+    
+    /**
+     * Is stream blob.
+     *
+     * <p>A BLOB without a blob parameter buffer, with an empty one, or with one that omits the type item, is a segmented BLOB.</p>
+     *
+     * @return stream blob or not
+     */
+    @HighFrequencyInvocation
+    public boolean isStreamBlob() {
+        Integer blobType = bpb.getValue(FirebirdBlobParameterBufferType.TYPE);
+        return null != blobType && BLOB_TYPE_STREAM == blobType;
     }
     
     @Override
@@ -55,7 +84,7 @@ public final class FirebirdOpenBlobCommandPacket extends FirebirdCommandPacket {
      */
     public static int getLength(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         int length = 4;
-        if (FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
+        if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType || FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
             length += payload.getBufferLength(length);
         }
         length += 4;
