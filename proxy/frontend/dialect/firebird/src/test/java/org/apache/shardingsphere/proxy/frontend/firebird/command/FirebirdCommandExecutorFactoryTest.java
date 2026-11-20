@@ -21,11 +21,10 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelAndReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
@@ -43,11 +42,10 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelAndReleaseCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchMessageCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchReleaseCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBatchBlobSegmentsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCancelBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCloseBlobCommandExecutor;
@@ -130,8 +128,8 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class, FirebirdBatchCreateCommandExecutor.class),
                 Arguments.of("batch_message", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchMessageCommandPacket.class, FirebirdBatchMessageCommandExecutor.class),
                 Arguments.of("batch_execute", FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class, FirebirdBatchExecuteCommandExecutor.class),
-                Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdBatchReleaseCommandPacket.class, FirebirdBatchReleaseCommandExecutor.class),
-                Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelCommandPacket.class, FirebirdBatchCancelCommandExecutor.class),
+                Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdBatchCancelAndReleaseCommandPacket.class, FirebirdBatchCancelAndReleaseCommandExecutor.class),
+                Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelAndReleaseCommandPacket.class, FirebirdBatchCancelAndReleaseCommandExecutor.class),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, FirebirdFreeStatementPacket.class, FirebirdFreeStatementCommandExecutor.class),
                 Arguments.of("unsupported_command", FirebirdCommandPacketType.VOID, CommandPacket.class, FirebirdUnsupportedCommandExecutor.class));
     }

@@ -17,28 +17,24 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
+import lombok.Getter;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-class FirebirdBatchReleaseCommandPacketTest {
+/**
+ * Firebird batch cancel and release command packet.
+ */
+@Getter
+public final class FirebirdBatchCancelAndReleaseCommandPacket extends FirebirdCommandPacket {
     
-    @Test
-    void assertConstructor() {
-        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
-        when(payload.readInt4()).thenReturn(3);
-        FirebirdBatchReleaseCommandPacket actualPacket = new FirebirdBatchReleaseCommandPacket(payload);
-        assertThat(actualPacket.getStatementHandle(), is(3));
-        verify(payload).skipReserved(4);
+    private final int statementHandle;
+    
+    public FirebirdBatchCancelAndReleaseCommandPacket(final FirebirdPacketPayload payload) {
+        payload.skipReserved(4);
+        statementHandle = payload.readInt4();
     }
     
-    @Test
-    void assertGetLength() {
-        assertThat(FirebirdBatchReleaseCommandPacket.getLength(), is(8));
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
 }

@@ -26,19 +26,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class FirebirdBatchCancelCommandPacketTest {
+class FirebirdBatchCancelAndReleaseCommandPacketTest {
     
     @Test
     void assertConstructor() {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.readInt4()).thenReturn(3);
-        FirebirdBatchCancelCommandPacket actualPacket = new FirebirdBatchCancelCommandPacket(payload);
+        FirebirdBatchCancelAndReleaseCommandPacket actualPacket = new FirebirdBatchCancelAndReleaseCommandPacket(payload);
         assertThat(actualPacket.getStatementHandle(), is(3));
         verify(payload).skipReserved(4);
-    }
-    
-    @Test
-    void assertGetLength() {
-        assertThat(FirebirdBatchCancelCommandPacket.getLength(), is(8));
     }
 }

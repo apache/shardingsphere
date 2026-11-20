@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelAndReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -31,14 +32,16 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Batch cancel command executor for Firebird.
+ * Batch cancel and release command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdBatchCancelCommandExecutor implements CommandExecutor {
+public final class FirebirdBatchCancelAndReleaseCommandExecutor implements CommandExecutor {
     
-    private final FirebirdBatchCancelCommandPacket packet;
+    private final FirebirdBatchCancelAndReleaseCommandPacket packet;
     
     private final ConnectionSession connectionSession;
+    
+    private final FirebirdCommandPacketType commandPacketType;
     
     @Override
     public Collection<DatabasePacket> execute() {
@@ -48,7 +51,11 @@ public final class FirebirdBatchCancelCommandExecutor implements CommandExecutor
         if (null == batchStatement) {
             return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidBatchHandleException(packet.getStatementHandle())));
         }
-        batchStatementManager.resetBatchStatement(batchStatement);
+        if (FirebirdCommandPacketType.BATCH_RLS == commandPacketType) {
+            batchStatementManager.unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        } else {
+            batchStatementManager.resetBatchStatement(batchStatement);
+        }
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

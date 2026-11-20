@@ -50,14 +50,6 @@ class FirebirdBatchCommandPacketTest {
     }
     
     @Test
-    void assertBatchCancelCommandPacket() {
-        FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(4).writeInt(9), StandardCharsets.UTF_8);
-        FirebirdBatchCancelCommandPacket packet = new FirebirdBatchCancelCommandPacket(payload);
-        assertThat(packet.getStatementHandle(), is(9));
-        assertThat(FirebirdBatchCancelCommandPacket.getLength(), is(8));
-    }
-    
-    @Test
     void assertBatchSendMessageGetLengthWhenHeaderIncomplete() {
         FirebirdPacketPayload payload = new FirebirdPacketPayload(Unpooled.buffer().writeZero(8), StandardCharsets.UTF_8);
         assertThat(FirebirdBatchMessageCommandPacket.getLength(payload, 1), is(-1));
