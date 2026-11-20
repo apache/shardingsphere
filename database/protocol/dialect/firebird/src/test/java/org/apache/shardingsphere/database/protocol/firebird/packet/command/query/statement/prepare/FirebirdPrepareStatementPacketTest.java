@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
@@ -50,12 +50,12 @@ class FirebirdPrepareStatementPacketTest {
     
     @Test
     void assertConstructor() {
-        FirebirdPrepareStatementPacket packet = createPacket(2, Arrays.asList(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.DESCRIBE_VARS));
+        FirebirdPrepareStatementPacket packet = createPacket(2, Arrays.asList(FirebirdSQLInfoItems.STMT_TYPE, FirebirdSQLInfoItems.DESCRIBE_VARS));
         verify(payload).skipReserved(4);
         assertThat(packet.getTransactionId(), is(1));
         assertThat(packet.getStatementId(), is(2));
         assertThat(packet.getSqlDialect(), is(3));
-        assertThat(packet.getInfoItems(), is(Arrays.asList(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.DESCRIBE_VARS)));
+        assertThat(packet.getItems(), is(Arrays.asList(FirebirdSQLInfoItems.STMT_TYPE, FirebirdSQLInfoItems.DESCRIBE_VARS)));
         assertThat(packet.getMaxLength(), is(10));
     }
     
@@ -71,7 +71,7 @@ class FirebirdPrepareStatementPacketTest {
     
     @Test
     void assertNextItem() {
-        assertTrue(createPacket(2, Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE)).nextItem());
+        assertTrue(createPacket(2, Collections.singletonList(FirebirdSQLInfoItems.STMT_TYPE)).nextItem());
     }
     
     @Test
@@ -81,9 +81,9 @@ class FirebirdPrepareStatementPacketTest {
     
     @Test
     void assertGetCurrentItem() {
-        FirebirdPrepareStatementPacket packet = createPacket(2, Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE));
+        FirebirdPrepareStatementPacket packet = createPacket(2, Collections.singletonList(FirebirdSQLInfoItems.STMT_TYPE));
         packet.nextItem();
-        assertThat(packet.getCurrentItem(), is(FirebirdSQLInfoPacketType.STMT_TYPE));
+        assertThat(packet.getCurrentItem(), is(FirebirdSQLInfoItems.STMT_TYPE));
     }
     
     @Test
@@ -107,14 +107,14 @@ class FirebirdPrepareStatementPacketTest {
         verify(payload).getBufferLength(28);
     }
     
-    private FirebirdPrepareStatementPacket createPacket(final int statementId, final List<FirebirdSQLInfoPacketType> infoItems) {
+    private FirebirdPrepareStatementPacket createPacket(final int statementId, final List<FirebirdSQLInfoItems> items) {
         when(payload.readInt4()).thenReturn(1, statementId, 3, 10);
         when(payload.readString()).thenReturn("SELECT 1");
         when(payload.readBuffer()).thenReturn(byteBuf);
         int[] idx = new int[1];
-        when(byteBuf.isReadable()).thenAnswer(invocation -> idx[0] < infoItems.size());
-        if (!infoItems.isEmpty()) {
-            when(byteBuf.readByte()).thenAnswer(invocation -> (byte) infoItems.get(idx[0]++).getCode());
+        when(byteBuf.isReadable()).thenAnswer(invocation -> idx[0] < items.size());
+        if (!items.isEmpty()) {
+            when(byteBuf.readByte()).thenAnswer(invocation -> (byte) items.get(idx[0]++).getCode());
         }
         return new FirebirdPrepareStatementPacket(payload);
     }

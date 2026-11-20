@@ -32,7 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
@@ -102,10 +102,17 @@ public final class FirebirdCommandExecutorFactory {
             // case ROLLBACK_RETAINING:
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementCommandExecutor(connectionSession);
-            case INFO_DATABASE:
-                return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket);
             case INFO_BLOB:
-                return new FirebirdBlobInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
+                return new FirebirdBlobInfoExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession);
+            case INFO_DATABASE:
+                return new FirebirdDatabaseInfoExecutor((FirebirdInfoCommandPacket) commandPacket);
+            // case INFO_REQUEST:
+            // case INFO_TRANSACTION:
+            // case SERVICE_INFO:
+            case INFO_SQL:
+                return new FirebirdSQLInfoExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession);
+            // case INFO_BATCH:
+            // case INFO_CURSOR:
             case TRANSACTION:
                 return new FirebirdStartTransactionCommandExecutor((FirebirdStartTransactionPacket) commandPacket, connectionSession);
             case CREATE_BLOB:
@@ -129,8 +136,6 @@ public final class FirebirdCommandExecutorFactory {
                 return new FirebirdExecuteStatementCommandExecutor((FirebirdExecuteStatementPacket) commandPacket, connectionSession);
             case FETCH:
                 return new FirebirdFetchStatementCommandExecutor((FirebirdFetchStatementPacket) commandPacket, connectionSession);
-            case INFO_SQL:
-                return new FirebirdSQLInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
             case BATCH_CREATE:

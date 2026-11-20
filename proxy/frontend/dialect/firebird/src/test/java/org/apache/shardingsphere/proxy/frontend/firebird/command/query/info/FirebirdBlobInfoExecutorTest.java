@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -49,7 +49,7 @@ class FirebirdBlobInfoExecutorTest {
     private static final int BLOB_HANDLE = 2;
     
     @Mock
-    private FirebirdInfoPacket packet;
+    private FirebirdInfoCommandPacket packet;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -60,7 +60,7 @@ class FirebirdBlobInfoExecutorTest {
         FirebirdBlobReadCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
-        when(packet.getHandle()).thenReturn(BLOB_HANDLE);
+        when(packet.getInfoObject()).thenReturn(BLOB_HANDLE);
     }
     
     @AfterEach
@@ -88,7 +88,7 @@ class FirebirdBlobInfoExecutorTest {
     @Test
     void assertExecuteWithStreamBlob() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, true);
-        when(packet.getInfoItems()).thenReturn(Collections.singletonList(FirebirdBlobInfoPacketType.TYPE));
+        when(packet.getItems()).thenReturn(Collections.singletonList(FirebirdBlobInfoItems.TYPE));
         Collection<DatabasePacket> actual = new FirebirdBlobInfoExecutor(packet, connectionSession).execute();
         assertTrue(((FirebirdBlobInfoReturnPacket) ((FirebirdGenericResponsePacket) actual.iterator().next()).getData()).isStreamBlob());
     }

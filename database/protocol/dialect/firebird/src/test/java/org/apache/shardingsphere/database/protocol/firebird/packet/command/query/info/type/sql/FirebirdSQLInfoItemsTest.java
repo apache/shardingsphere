@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql;
 
-/**
- * Firebird info packet type.
- */
-public interface FirebirdInfoPacketType {
+import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class FirebirdSQLInfoItemsTest {
     
-    /**
-     * Get code of the info packet type.
-     *
-     * @return numeric code representing the packet type
-     */
-    int getCode();
+    @Test
+    void assertValueOf() {
+        assertThat(FirebirdSQLInfoItems.valueOf(FirebirdSQLInfoItems.STMT_TYPE.getCode()), is(FirebirdSQLInfoItems.STMT_TYPE));
+    }
     
-    /**
-     * Determine whether this info packet type is common.
-     *
-     * @return true if the packet type is common, false otherwise
-     */
-    boolean isCommon();
+    @Test
+    void assertIsCommon() {
+        assertFalse(FirebirdSQLInfoItems.TYPE.isCommon());
+    }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,7 @@ class FirebirdDatabaseInfoReturnPacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("databaseInfoTypes")
-    void assertWriteWithDatabaseInfoType(final String name, final FirebirdDatabaseInfoPacketType infoType, final int expectedLength, final int expectedValue, final boolean int1Value) {
+    void assertWriteWithDatabaseInfoType(final String name, final FirebirdDatabaseInfoItems infoType, final int expectedLength, final int expectedValue, final boolean int1Value) {
         new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(infoType)).write(payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt1(infoType.getCode());
@@ -60,10 +60,10 @@ class FirebirdDatabaseInfoReturnPacketTest {
     
     @Test
     void assertWriteFirebirdVersion() {
-        new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.FIREBIRD_VERSION)).write(payload);
+        new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoItems.FIREBIRD_VERSION)).write(payload);
         String fbVersion = String.format("%s-%s%d.%d.%d.%d Firebird %d.%d (ShardingSphere-Proxy)", FirebirdArchType.ARCHITECTURE.getIdentifier(), "V", 5, 0, 0, 0, 5, 0);
         InOrder order = inOrder(payload);
-        order.verify(payload).writeInt1(FirebirdDatabaseInfoPacketType.FIREBIRD_VERSION.getCode());
+        order.verify(payload).writeInt1(FirebirdDatabaseInfoItems.FIREBIRD_VERSION.getCode());
         order.verify(payload).writeInt2LE(fbVersion.length() + 2);
         order.verify(payload).writeInt1(1);
         order.verify(payload).writeInt1(fbVersion.length());
@@ -72,19 +72,19 @@ class FirebirdDatabaseInfoReturnPacketTest {
     
     @Test
     void assertParseDatabaseInfoWithUnknownType() {
-        assertThrows(DatabaseProtocolException.class, () -> new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoPacketType.DB_ID)).write(payload));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdDatabaseInfoItems.DB_ID)).write(payload));
     }
     
     @Test
     void assertWriteCommonInfo() {
-        new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.END)).write(payload);
-        verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        new FirebirdDatabaseInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoItems.END)).write(payload);
+        verify(payload).writeInt1(FirebirdCommonInfoItems.END.getCode());
     }
     
     private static Stream<Arguments> databaseInfoTypes() {
         return Stream.of(
-                Arguments.of("db sql dialect", FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT, 1, 3, true),
-                Arguments.of("ods version", FirebirdDatabaseInfoPacketType.ODS_VERSION, 4, 13, false),
-                Arguments.of("ods minor version", FirebirdDatabaseInfoPacketType.ODS_MINOR_VERSION, 4, 1, false));
+                Arguments.of("db sql dialect", FirebirdDatabaseInfoItems.DB_SQL_DIALECT, 1, 3, true),
+                Arguments.of("ods version", FirebirdDatabaseInfoItems.ODS_VERSION, 4, 13, false),
+                Arguments.of("ods minor version", FirebirdDatabaseInfoItems.ODS_MINOR_VERSION, 4, 1, false));
     }
 }

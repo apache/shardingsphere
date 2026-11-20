@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
@@ -47,29 +47,29 @@ public final class FirebirdSQLInfoReturnPacket extends FirebirdPacket {
     
     private static final int RECORDS_CLUSTER_LENGTH = 4 * (1 + 2 + COUNT_VALUE_LENGTH);
     
-    private final List<FirebirdInfoPacketType> infoItems;
+    private final List<FirebirdInfoItem> items;
     
     private final FirebirdSQLRecordsInfo recordsInfo;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        for (FirebirdInfoPacketType type : infoItems) {
+        for (FirebirdInfoItem type : items) {
             if (type.isCommon()) {
-                FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
+                FirebirdCommonInfoItems.parseCommonInfo(payload, (FirebirdCommonInfoItems) type);
             } else {
-                parseSQLInfo(payload, (FirebirdSQLInfoPacketType) type);
+                parseSQLInfo(payload, (FirebirdSQLInfoItems) type);
             }
         }
     }
     
-    private void parseSQLInfo(final FirebirdPacketPayload payload, final FirebirdSQLInfoPacketType type) {
+    private void parseSQLInfo(final FirebirdPacketPayload payload, final FirebirdSQLInfoItems type) {
         // TODO implement other request types handle
-        ShardingSpherePreconditions.checkState(FirebirdSQLInfoPacketType.RECORDS == type, () -> new DatabaseProtocolException("Unknown database information request type %d", type.getCode()));
+        ShardingSpherePreconditions.checkState(FirebirdSQLInfoItems.RECORDS == type, () -> new DatabaseProtocolException("Unknown database information request type %d", type.getCode()));
         processRecords(payload);
     }
     
     private void processRecords(final FirebirdPacketPayload payload) {
-        payload.writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
+        payload.writeInt1(FirebirdSQLInfoItems.RECORDS.getCode());
         payload.writeInt2LE(RECORDS_CLUSTER_LENGTH);
         writeCount(payload, REQ_SELECT_COUNT, 0L);
         writeCount(payload, REQ_INSERT_COUNT, recordsInfo.getInsertCount());

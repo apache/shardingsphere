@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.connector.firebird.metadata.data.Fireb
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementReturnPacket;
@@ -216,7 +216,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void skipDescribe() {
-        while (packet.getCurrentItem() != FirebirdSQLInfoPacketType.DESCRIBE_END) {
+        while (packet.getCurrentItem() != FirebirdSQLInfoItems.DESCRIBE_END) {
             packet.nextItem();
         }
     }
@@ -224,10 +224,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     private void processDescribe(final SQLStatementContext sqlStatementContext, final Collection<FirebirdReturnColumnPacket> describeColumns, final boolean returnAll) {
         // TODO add exception if the first item is not DESCRIBE_VARS
         packet.nextItem();
-        Collection<FirebirdSQLInfoPacketType> requestedItems = new LinkedList<>();
+        Collection<FirebirdSQLInfoItems> requestedItems = new LinkedList<>();
         while (packet.nextItem()) {
             requestedItems.add(packet.getCurrentItem());
-            if (packet.getCurrentItem() == FirebirdSQLInfoPacketType.DESCRIBE_END) {
+            if (packet.getCurrentItem() == FirebirdSQLInfoItems.DESCRIBE_END) {
                 Supplier<ShardingSphereDatabase> database = Suppliers.memoize(() -> ProxyContext.getInstance().getContextManager().getDatabase(connectionSession.getCurrentDatabaseName()));
                 Supplier<Optional<ShardingSphereSchema>> schema = Suppliers.memoize(() -> database.get().findDefaultSchema());
                 if (returnAll) {
@@ -242,7 +242,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processReturnValues(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                      final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                     final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                     final Collection<FirebirdSQLInfoItems> requestedItems) {
         int columnCount = 0;
         for (Projection each : getProjections(sqlStatementContext, database, schema)) {
             if (each instanceof ColumnProjection) {
@@ -356,7 +356,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processParameters(final SQLStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                    final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                   final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                   final Collection<FirebirdSQLInfoItems> requestedItems) {
         if (sqlStatementContext instanceof InsertStatementContext) {
             processInsertStatement((InsertStatementContext) sqlStatementContext, database, schema, describeColumns, requestedItems);
             return;
@@ -376,7 +376,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private void processInsertStatement(final InsertStatementContext sqlStatementContext, final Supplier<ShardingSphereDatabase> database,
                                         final Supplier<Optional<ShardingSphereSchema>> schema, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                        final Collection<FirebirdSQLInfoPacketType> requestedItems) {
+                                        final Collection<FirebirdSQLInfoItems> requestedItems) {
         Collection<String> tableNames = getTableNames(sqlStatementContext);
         Collection<String> affectedColumns = new LinkedList<>();
         for (InsertValueContext context : sqlStatementContext.getInsertValueContexts()) {
@@ -460,7 +460,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         return false;
     }
     
-    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems,
+    private void processExpressionProjection(final ExpressionProjection expr, final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoItems> requestedItems,
                                              final int columnCount) {
         ExpressionSegment exprSegment = expr.getExpressionSegment().getExpr();
         if (exprSegment instanceof FunctionSegment) {
@@ -514,7 +514,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     @HighFrequencyInvocation
     private void processLiteralColumn(@Nullable final Object value, @Nullable final IdentifierValue columnAlias, final int dataType, final Collection<FirebirdReturnColumnPacket> describeColumns,
-                                      final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+                                      final Collection<FirebirdSQLInfoItems> requestedItems, final int columnCount) {
         ShardingSphereColumn column = new ShardingSphereColumn("CONSTANT", dataType, false, false, true, true, false, false);
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
@@ -528,13 +528,13 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     }
     
     private void processCustomColumn(final String tableName, final String columnName, final IdentifierValue columnAlias, final int dataType,
-                                     final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final int columnCount) {
+                                     final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoItems> requestedItems, final int columnCount) {
         ShardingSphereTable table = new ShardingSphereTable(tableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereColumn column = new ShardingSphereColumn(columnName, dataType, false, false, true, true, false, false);
         processColumn(describeColumns, requestedItems, table, column, null, columnAlias, columnCount);
     }
     
-    private void processColumn(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoPacketType> requestedItems, final ShardingSphereTable table,
+    private void processColumn(final Collection<FirebirdReturnColumnPacket> describeColumns, final Collection<FirebirdSQLInfoItems> requestedItems, final ShardingSphereTable table,
                                final ShardingSphereColumn column, final IdentifierValue tableAlias, final IdentifierValue columnAlias, final int idx) {
         String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();

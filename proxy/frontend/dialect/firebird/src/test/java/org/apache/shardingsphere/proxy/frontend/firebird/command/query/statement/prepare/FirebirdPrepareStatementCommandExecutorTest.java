@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.connector.firebird.metadata.data.Fireb
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementReturnPacket;
@@ -127,7 +127,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.isValidStatementHandle()).thenReturn(true);
         when(packet.getStatementId()).thenReturn(1);
         when(packet.nextItem()).thenReturn(true, false);
-        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoItems.STMT_TYPE);
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(metaDataContexts.getMetaData().getDatabase("foo_db"));
@@ -199,12 +199,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
-                FirebirdSQLInfoPacketType.STMT_TYPE,
-                FirebirdSQLInfoPacketType.BIND,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.DESCRIBE_END,
-                FirebirdSQLInfoPacketType.DESCRIBE_END);
+                FirebirdSQLInfoItems.STMT_TYPE,
+                FirebirdSQLInfoItems.BIND,
+                FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.DESCRIBE_END,
+                FirebirdSQLInfoItems.DESCRIBE_END);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         return (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
     }
@@ -235,7 +235,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeCountReturnsBigintType() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT COUNT(*) FROM foo_tbl");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
@@ -282,7 +282,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeDerivedTableSelect() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT * FROM (SELECT id FROM foo_tbl) derived_tbl");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
@@ -296,14 +296,14 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
-                FirebirdSQLInfoPacketType.STMT_TYPE,
-                FirebirdSQLInfoPacketType.SELECT,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.SUB_TYPE,
-                FirebirdSQLInfoPacketType.SUB_TYPE,
-                FirebirdSQLInfoPacketType.DESCRIBE_END,
-                FirebirdSQLInfoPacketType.DESCRIBE_END);
+                FirebirdSQLInfoItems.STMT_TYPE,
+                FirebirdSQLInfoItems.SELECT,
+                FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.SUB_TYPE,
+                FirebirdSQLInfoItems.SUB_TYPE,
+                FirebirdSQLInfoItems.DESCRIBE_END,
+                FirebirdSQLInfoItems.DESCRIBE_END);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
         return actualReturnPacket.getDescribeSelect().get(0);
@@ -314,14 +314,14 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getSQL()).thenReturn("SELECT 'foo' || 'bar', 1 + 2 FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
-                FirebirdSQLInfoPacketType.STMT_TYPE,
-                FirebirdSQLInfoPacketType.SELECT,
-                FirebirdSQLInfoPacketType.FIELD,
-                FirebirdSQLInfoPacketType.FIELD,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.DESCRIBE_END,
-                FirebirdSQLInfoPacketType.DESCRIBE_END);
+                FirebirdSQLInfoItems.STMT_TYPE,
+                FirebirdSQLInfoItems.SELECT,
+                FirebirdSQLInfoItems.FIELD,
+                FirebirdSQLInfoItems.FIELD,
+                FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.DESCRIBE_END,
+                FirebirdSQLInfoItems.DESCRIBE_END);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = (FirebirdPrepareStatementReturnPacket) ((FirebirdGenericResponsePacket) executor.execute().iterator().next()).getData();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
@@ -342,16 +342,16 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(packet.getSQL()).thenReturn("SELECT 'it''s', 1 AS one FROM foo_tbl");
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, true, false);
         when(packet.getCurrentItem()).thenReturn(
-                FirebirdSQLInfoPacketType.STMT_TYPE,
-                FirebirdSQLInfoPacketType.SELECT,
-                FirebirdSQLInfoPacketType.FIELD,
-                FirebirdSQLInfoPacketType.FIELD,
-                FirebirdSQLInfoPacketType.ALIAS,
-                FirebirdSQLInfoPacketType.ALIAS,
-                FirebirdSQLInfoPacketType.LENGTH,
-                FirebirdSQLInfoPacketType.LENGTH,
-                FirebirdSQLInfoPacketType.DESCRIBE_END,
-                FirebirdSQLInfoPacketType.DESCRIBE_END);
+                FirebirdSQLInfoItems.STMT_TYPE,
+                FirebirdSQLInfoItems.SELECT,
+                FirebirdSQLInfoItems.FIELD,
+                FirebirdSQLInfoItems.FIELD,
+                FirebirdSQLInfoItems.ALIAS,
+                FirebirdSQLInfoItems.ALIAS,
+                FirebirdSQLInfoItems.LENGTH,
+                FirebirdSQLInfoItems.LENGTH,
+                FirebirdSQLInfoItems.DESCRIBE_END,
+                FirebirdSQLInfoItems.DESCRIBE_END);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
         FirebirdPacketPayload stringPayload = mock(FirebirdPacketPayload.class);
@@ -387,7 +387,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeLiteralWithoutDatabase() throws Exception {
         when(connectionSession.getCurrentDatabaseName()).thenReturn(null);
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
@@ -395,17 +395,17 @@ class FirebirdPrepareStatementCommandExecutorTest {
         verify(payload).writeInt4LE(FirebirdBinaryColumnType.LONG.getValue() + 1);
     }
     
-    private void mockDescribeRequest(final FirebirdSQLInfoPacketType describeType) {
+    private void mockDescribeRequest(final FirebirdSQLInfoItems describeType) {
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoItems.STMT_TYPE, describeType, FirebirdSQLInfoItems.TYPE, FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.DESCRIBE_END, FirebirdSQLInfoItems.DESCRIBE_END);
     }
     
     @Test
     void assertDescribeParameterWithoutDatabase() throws Exception {
         when(connectionSession.getCurrentDatabaseName()).thenReturn(null);
         when(packet.getSQL()).thenReturn("SELECT ?");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        mockDescribeRequest(FirebirdSQLInfoItems.BIND);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
@@ -423,7 +423,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
             doReturn(Optional.empty()).when(database).findDefaultSchema();
         }
         when(packet.getSQL()).thenReturn(sql);
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
@@ -454,13 +454,13 @@ class FirebirdPrepareStatementCommandExecutorTest {
         assertThat(database.getSchema("system_tables").getTable("RDB$PROCEDURES").getColumn("RDB$ENGINE_NAME").getDataType(), is(Types.CHAR));
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH,
-                FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoItems.STMT_TYPE, FirebirdSQLInfoItems.SELECT, FirebirdSQLInfoItems.LENGTH, FirebirdSQLInfoItems.LENGTH,
+                FirebirdSQLInfoItems.DESCRIBE_END, FirebirdSQLInfoItems.DESCRIBE_END);
         FirebirdPrepareStatementReturnPacket actual = executeAndGetReturnPacket();
         assertThat(actual.getDescribeSelect().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         actual.getDescribeSelect().get(0).write(payload);
-        verify(payload).writeInt1(FirebirdSQLInfoPacketType.LENGTH.getCode());
+        verify(payload).writeInt1(FirebirdSQLInfoItems.LENGTH.getCode());
         verify(payload).writeInt4LE(63);
     }
     
@@ -478,7 +478,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         database.dropSchema("foo_db");
         doReturn(Optional.empty()).when(database).findDefaultSchema();
         when(packet.getSQL()).thenReturn("SELECT RDB$RELATION_ID FROM RDB$DATABASE WHERE RDB$RELATION_ID = ?");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        mockDescribeRequest(FirebirdSQLInfoItems.BIND);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
@@ -489,7 +489,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeInsertParameter() throws Exception {
         when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) VALUES (?)");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.BIND);
+        mockDescribeRequest(FirebirdSQLInfoItems.BIND);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeBind().size(), is(1));
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
@@ -500,7 +500,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeReturningShorthand() throws Exception {
         when(packet.getSQL()).thenReturn("INSERT INTO foo_tbl (id) VALUES (1) RETURNING *");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
         FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
@@ -515,7 +515,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     void assertDescribeHintedOrdinaryTableWildcard() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT * FROM foo_tbl");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
         FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
@@ -527,7 +527,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     void assertDescribeHintedQualifiedWildcard() throws Exception {
         when(packet.getSQL()).thenReturn("SELECT foo_tbl.* FROM foo_tbl");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
         FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
@@ -548,7 +548,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(database.findDefaultSchema()).thenCallRealMethod();
         when(packet.getSQL()).thenReturn("SELECT bar_tbl.* FROM foo_tbl JOIN bar_tbl ON foo_tbl.id = bar_tbl.id");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
         FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
@@ -570,7 +570,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(database.findDefaultSchema()).thenCallRealMethod();
         when(packet.getSQL()).thenReturn("SELECT s.* FROM (SELECT id FROM foo_tbl) s");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
     }
@@ -586,7 +586,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         when(database.findDefaultSchema()).thenCallRealMethod();
         when(packet.getSQL()).thenReturn("SELECT * FROM (SELECT id FROM foo_tbl) s");
         when(packet.getHintValueContext()).thenReturn(createDataSourceHintValueContext());
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
     }
@@ -599,7 +599,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("describeWithSchemaReplacementArguments")
-    void assertDescribeWithSchemaReplacement(final String name, final String sql, final FirebirdSQLInfoPacketType describeType) throws Exception {
+    void assertDescribeWithSchemaReplacement(final String name, final String sql, final FirebirdSQLInfoItems describeType) throws Exception {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("foo_db");
         ShardingSphereColumn idColumn = new ShardingSphereColumn("id", Types.INTEGER, false, false, true, true, false, true);
         ShardingSphereColumn codeColumn = new ShardingSphereColumn("code", Types.BIGINT, false, false, true, true, false, true);
@@ -614,10 +614,10 @@ class FirebirdPrepareStatementCommandExecutorTest {
         }).thenReturn(database);
         when(packet.getSQL()).thenReturn(sql);
         when(packet.nextItem()).thenReturn(true, true, true, true, true, true, false);
-        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, describeType, FirebirdSQLInfoPacketType.TYPE, FirebirdSQLInfoPacketType.TYPE,
-                FirebirdSQLInfoPacketType.FIELD, FirebirdSQLInfoPacketType.FIELD, FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoItems.STMT_TYPE, describeType, FirebirdSQLInfoItems.TYPE, FirebirdSQLInfoItems.TYPE,
+                FirebirdSQLInfoItems.FIELD, FirebirdSQLInfoItems.FIELD, FirebirdSQLInfoItems.DESCRIBE_END, FirebirdSQLInfoItems.DESCRIBE_END);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
-        List<FirebirdReturnColumnPacket> actualColumns = FirebirdSQLInfoPacketType.BIND == describeType ? actualReturnPacket.getDescribeBind() : actualReturnPacket.getDescribeSelect();
+        List<FirebirdReturnColumnPacket> actualColumns = FirebirdSQLInfoItems.BIND == describeType ? actualReturnPacket.getDescribeBind() : actualReturnPacket.getDescribeSelect();
         assertThat(actualColumns.size(), is(2));
         FirebirdPacketPayload idPayload = mock(FirebirdPacketPayload.class);
         when(idPayload.getCharset()).thenReturn(StandardCharsets.UTF_8);
@@ -633,15 +633,15 @@ class FirebirdPrepareStatementCommandExecutorTest {
     
     private static Stream<Arguments> describeWithSchemaReplacementArguments() {
         return Stream.of(
-                Arguments.of("Select columns", "SELECT id, code FROM foo_tbl", FirebirdSQLInfoPacketType.SELECT),
-                Arguments.of("Bind parameters", "SELECT id, code FROM foo_tbl WHERE id = ? AND code = ?", FirebirdSQLInfoPacketType.BIND),
-                Arguments.of("Returning shorthand", "INSERT INTO foo_tbl (id, code) VALUES (1, 2) RETURNING *", FirebirdSQLInfoPacketType.SELECT));
+                Arguments.of("Select columns", "SELECT id, code FROM foo_tbl", FirebirdSQLInfoItems.SELECT),
+                Arguments.of("Bind parameters", "SELECT id, code FROM foo_tbl WHERE id = ? AND code = ?", FirebirdSQLInfoItems.BIND),
+                Arguments.of("Returning shorthand", "INSERT INTO foo_tbl (id, code) VALUES (1, 2) RETURNING *", FirebirdSQLInfoItems.SELECT));
     }
     
     @Test
     void assertDescribeReturningOldAndNewShorthandColumnTypes() throws Exception {
         when(packet.getSQL()).thenReturn("UPDATE foo_tbl SET id = 1 RETURNING OLD.*, NEW.*");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(4));
         FirebirdPacketPayload oldIdPayload = mock(FirebirdPacketPayload.class);
@@ -661,7 +661,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     @Test
     void assertDescribeWithDatabaseRemoved() {
         when(packet.getSQL()).thenReturn("SELECT id FROM foo_tbl");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenThrow(expected);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
@@ -672,7 +672,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
     void assertDescribeBlobWithDatabaseRemoved() {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
         when(packet.getSQL()).thenReturn("SELECT content FROM foo_tbl");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         UnknownDatabaseException expected = new UnknownDatabaseException("foo_db");
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenReturn(database).thenThrow(expected);
         FirebirdPrepareStatementCommandExecutor executor = new FirebirdPrepareStatementCommandExecutor(packet, connectionSession);
@@ -684,7 +684,7 @@ class FirebirdPrepareStatementCommandExecutorTest {
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
         addSystemSchema(database);
         when(packet.getSQL()).thenReturn("SELECT id FROM foo_tbl");
-        mockDescribeRequest(FirebirdSQLInfoPacketType.SELECT);
+        mockDescribeRequest(FirebirdSQLInfoItems.SELECT);
         when(ProxyContext.getInstance().getContextManager().getDatabase("foo_db")).thenAnswer(invocation -> {
             database.getSchema("foo_db").removeTable("foo_tbl");
             return database;

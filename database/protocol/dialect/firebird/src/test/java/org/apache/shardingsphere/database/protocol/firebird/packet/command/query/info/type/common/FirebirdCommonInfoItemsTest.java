@@ -31,29 +31,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCommonInfoPacketTypeTest {
+class FirebirdCommonInfoItemsTest {
     
     @Mock
     private FirebirdPacketPayload payload;
     
     @Test
     void assertValueOf() {
-        assertThat(FirebirdCommonInfoPacketType.valueOf(FirebirdCommonInfoPacketType.END.getCode()), is(FirebirdCommonInfoPacketType.END));
+        assertThat(FirebirdCommonInfoItems.valueOf(FirebirdCommonInfoItems.END.getCode()), is(FirebirdCommonInfoItems.END));
     }
     
     @Test
     void assertParseCommonInfo() {
-        FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.END);
-        verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        FirebirdCommonInfoItems.parseCommonInfo(payload, FirebirdCommonInfoItems.END);
+        verify(payload).writeInt1(FirebirdCommonInfoItems.END.getCode());
     }
     
     @Test
     void assertParseCommonInfoWithUnknownType() {
-        assertThrows(DatabaseProtocolException.class, () -> FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.ERROR));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdCommonInfoItems.parseCommonInfo(payload, FirebirdCommonInfoItems.ERROR));
     }
     
     @Test
     void assertIsCommon() {
-        assertTrue(FirebirdCommonInfoPacketType.DATA_NOT_READY.isCommon());
+        assertTrue(FirebirdCommonInfoItems.DATA_NOT_READY.isCommon());
     }
 }

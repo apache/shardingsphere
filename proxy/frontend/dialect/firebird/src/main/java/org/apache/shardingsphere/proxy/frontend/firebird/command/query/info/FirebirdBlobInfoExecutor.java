@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -39,15 +39,15 @@ import java.util.OptionalInt;
 @RequiredArgsConstructor
 public final class FirebirdBlobInfoExecutor implements CommandExecutor {
     
-    private final FirebirdInfoPacket packet;
+    private final FirebirdInfoCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
         int connectionId = connectionSession.getConnectionId();
-        int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getHandle());
-        FirebirdBlobInfoReturnPacket returnPacket = new FirebirdBlobInfoReturnPacket(packet.getInfoItems(), getBlobLength(connectionId, blobHandle), isStreamBlob(connectionId, blobHandle));
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getInfoObject());
+        FirebirdBlobInfoReturnPacket returnPacket = new FirebirdBlobInfoReturnPacket(packet.getItems(), getBlobLength(connectionId, blobHandle), isStreamBlob(connectionId, blobHandle));
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(returnPacket));
     }
     

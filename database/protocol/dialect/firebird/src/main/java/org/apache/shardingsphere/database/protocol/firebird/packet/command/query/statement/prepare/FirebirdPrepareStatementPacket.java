@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -45,7 +45,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     private final String sql;
     
-    private final List<FirebirdSQLInfoPacketType> infoItems = new ArrayList<>();
+    private final List<FirebirdSQLInfoItems> items = new ArrayList<>();
     
     private int currentItemIdx = -1;
     
@@ -65,7 +65,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     
     private void parseInfo(final ByteBuf buffer) {
         while (buffer.isReadable()) {
-            infoItems.add(FirebirdSQLInfoPacketType.valueOf(buffer.readByte()));
+            items.add(FirebirdSQLInfoItems.valueOf(buffer.readByte()));
         }
     }
     
@@ -80,11 +80,11 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
      */
     public boolean nextItem() {
         ++currentItemIdx;
-        return currentItemIdx < infoItems.size();
+        return currentItemIdx < items.size();
     }
     
-    public FirebirdSQLInfoPacketType getCurrentItem() {
-        return infoItems.get(currentItemIdx);
+    public FirebirdSQLInfoItems getCurrentItem() {
+        return items.get(currentItemIdx);
     }
     
     @Override

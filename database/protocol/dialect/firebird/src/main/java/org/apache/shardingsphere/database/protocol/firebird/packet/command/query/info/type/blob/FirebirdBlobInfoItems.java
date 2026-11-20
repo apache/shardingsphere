@@ -19,31 +19,29 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Firebird blob info packet type.
+ * Firebird blob info items.
  */
 @RequiredArgsConstructor
 @Getter
-public enum FirebirdBlobInfoPacketType implements FirebirdInfoPacketType {
+public enum FirebirdBlobInfoItems implements FirebirdInfoItem {
     
     NUM_SEGMENTS(4),
     MAX_SEGMENT(5),
     TOTAL_LENGTH(6),
     TYPE(7);
     
-    private static final Map<Integer, FirebirdBlobInfoPacketType> FIREBIRD_BLOB_INFO_TYPE_CACHE = new HashMap<>();
+    private static final Map<Integer, FirebirdBlobInfoItems> FIREBIRD_BLOB_INFO_TYPE_CACHE = new HashMap<>();
     
     private final int code;
     
     static {
-        for (FirebirdBlobInfoPacketType each : values()) {
+        for (FirebirdBlobInfoItems each : values()) {
             FIREBIRD_BLOB_INFO_TYPE_CACHE.put(each.code, each);
         }
     }
@@ -51,21 +49,11 @@ public enum FirebirdBlobInfoPacketType implements FirebirdInfoPacketType {
     /**
      * Value of.
      *
-     * @param code blob info type code
-     * @return Firebird blob info packet type
+     * @param code blob info item code
+     * @return Firebird blob info item
      */
-    public static FirebirdBlobInfoPacketType valueOf(final int code) {
+    public static FirebirdBlobInfoItems valueOf(final int code) {
         return FIREBIRD_BLOB_INFO_TYPE_CACHE.get(code);
-    }
-    
-    /**
-     * Creates info packet of this type.
-     *
-     * @param payload Firebird packet payload
-     * @return Firebird blob info packet
-     */
-    public static FirebirdInfoPacket createPacket(final FirebirdPacketPayload payload) {
-        return new FirebirdInfoPacket(payload, FirebirdBlobInfoPacketType::valueOf);
     }
     
     @Override

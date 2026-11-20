@@ -32,7 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
@@ -107,8 +107,8 @@ class FirebirdCommandExecutorFactoryTest {
     
     private static Stream<Arguments> newInstanceArguments() {
         return Stream.of(
-                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoPacket.class, FirebirdDatabaseInfoExecutor.class),
-                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoPacket.class, FirebirdBlobInfoExecutor.class),
+                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoCommandPacket.class, FirebirdDatabaseInfoExecutor.class),
+                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoCommandPacket.class, FirebirdBlobInfoExecutor.class),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, FirebirdStartTransactionPacket.class, FirebirdStartTransactionCommandExecutor.class),
                 Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, FirebirdCreateBlobCommandPacket.class, FirebirdCreateBlobCommandExecutor.class),
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdCreateBlobCommandPacket.class, FirebirdCreateBlobCommandExecutor.class),
@@ -124,7 +124,7 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class, FirebirdPrepareStatementCommandExecutor.class),
                 Arguments.of("execute_statement", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class, FirebirdExecuteStatementCommandExecutor.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class, FirebirdFetchStatementCommandExecutor.class),
-                Arguments.of("info_s_q_l", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoPacket.class, FirebirdSQLInfoExecutor.class),
+                Arguments.of("info_s_q_l", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoCommandPacket.class, FirebirdSQLInfoExecutor.class),
                 Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class, FirebirdCommitTransactionCommandExecutor.class),
                 Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class, FirebirdRollbackTransactionCommandExecutor.class),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class, FirebirdBatchCreateCommandExecutor.class),

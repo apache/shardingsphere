@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
@@ -29,11 +29,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Firebird common info packet type.
+ * Firebird common info items.
  */
 @RequiredArgsConstructor
 @Getter
-public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
+public enum FirebirdCommonInfoItems implements FirebirdInfoItem {
     
     END(1),
     TRUNCATED(2),
@@ -42,12 +42,12 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
     LENGTH(126),
     FLAG_END(127);
     
-    private static final Map<Integer, FirebirdCommonInfoPacketType> FIREBIRD_INFO_COMMON_TYPE_CACHE = new HashMap<>();
+    private static final Map<Integer, FirebirdCommonInfoItems> FIREBIRD_INFO_COMMON_TYPE_CACHE = new HashMap<>();
     
     private final int code;
     
     static {
-        for (FirebirdCommonInfoPacketType each : values()) {
+        for (FirebirdCommonInfoItems each : values()) {
             FIREBIRD_INFO_COMMON_TYPE_CACHE.put(each.code, each);
         }
     }
@@ -55,11 +55,11 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
     /**
      * Value of.
      *
-     * @param code arch type code
-     * @return Firebird dpb type
+     * @param code common info item code
+     * @return Firebird common info item
      */
-    public static FirebirdCommonInfoPacketType valueOf(final int code) {
-        FirebirdCommonInfoPacketType result = FIREBIRD_INFO_COMMON_TYPE_CACHE.get(code);
+    public static FirebirdCommonInfoItems valueOf(final int code) {
+        FirebirdCommonInfoItems result = FIREBIRD_INFO_COMMON_TYPE_CACHE.get(code);
         Preconditions.checkNotNull(result, "Cannot find code '%d' in common info type", code);
         return result;
     }
@@ -71,7 +71,7 @@ public enum FirebirdCommonInfoPacketType implements FirebirdInfoPacketType {
      * @param type type of common info packet
      * @throws DatabaseProtocolException if the common info packet type is unknown
      */
-    public static void parseCommonInfo(final FirebirdPacketPayload data, final FirebirdCommonInfoPacketType type) {
+    public static void parseCommonInfo(final FirebirdPacketPayload data, final FirebirdCommonInfoItems type) {
         // TODO implement other request types handle
         ShardingSpherePreconditions.checkState(END == type, () -> new DatabaseProtocolException("Unknown common information request type %d", type.getCode()));
         data.writeInt1(END.getCode());

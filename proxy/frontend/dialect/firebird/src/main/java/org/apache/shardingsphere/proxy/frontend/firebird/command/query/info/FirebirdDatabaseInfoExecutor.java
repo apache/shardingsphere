@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -33,10 +33,10 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
     
-    private final FirebirdInfoPacket packet;
+    private final FirebirdInfoCommandPacket packet;
     
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdDatabaseInfoReturnPacket(packet.getInfoItems())));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdDatabaseInfoReturnPacket(packet.getItems())));
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,15 +23,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class FirebirdSQLInfoPacketTypeTest {
+class FirebirdDatabaseInfoItemsTest {
     
     @Test
     void assertValueOf() {
-        assertThat(FirebirdSQLInfoPacketType.valueOf(FirebirdSQLInfoPacketType.STMT_TYPE.getCode()), is(FirebirdSQLInfoPacketType.STMT_TYPE));
+        assertThat(FirebirdDatabaseInfoItems.valueOf(FirebirdDatabaseInfoItems.DB_SQL_DIALECT.getCode()), is(FirebirdDatabaseInfoItems.DB_SQL_DIALECT));
     }
     
     @Test
     void assertIsCommon() {
-        assertFalse(FirebirdSQLInfoPacketType.TYPE.isCommon());
+        assertFalse(FirebirdDatabaseInfoItems.DB_SIZE_IN_PAGES.isCommon());
     }
 }

@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -34,7 +34,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     
-    private final Collection<FirebirdSQLInfoPacketType> requestedItems;
+    private final Collection<FirebirdSQLInfoItems> requestedItems;
     
     private final int index;
     
@@ -57,46 +57,46 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         FirebirdBinaryColumnType columnType = blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());
-        for (FirebirdSQLInfoPacketType requestedItem : requestedItems) {
+        for (FirebirdSQLInfoItems requestedItem : requestedItems) {
             switch (requestedItem) {
                 case SQLDA_SEQ:
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SQLDA_SEQ, index, payload);
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoItems.SQLDA_SEQ, index, payload);
                     break;
                 case TYPE:
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.TYPE, columnType.getValue() + 1, payload);
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoItems.TYPE, columnType.getValue() + 1, payload);
                     break;
                 case SUB_TYPE:
                     int subType = FirebirdBinaryColumnType.BLOB == columnType && null != blobSubType ? blobSubType : columnType.getSubtype();
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, subType, payload);
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoItems.SUB_TYPE, subType, payload);
                     break;
                 case SCALE:
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SCALE, 0, payload);
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoItems.SCALE, 0, payload);
                     break;
                 case LENGTH:
                     if (FirebirdBinaryColumnType.VARYING == columnType || FirebirdBinaryColumnType.LEGACY_VARYING == columnType || FirebirdBinaryColumnType.TEXT == columnType
                             || FirebirdBinaryColumnType.LEGACY_TEXT == columnType) {
-                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnLength, payload);
+                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoItems.LENGTH, columnLength, payload);
                     } else {
-                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.LENGTH, columnType.getLength(), payload);
+                        FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoItems.LENGTH, columnType.getLength(), payload);
                     }
                     break;
                 case FIELD:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.FIELD, column.getName(), payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoItems.FIELD, column.getName(), payload);
                     break;
                 case ALIAS:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.ALIAS, columnAlias, payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoItems.ALIAS, columnAlias, payload);
                     break;
                 case RELATION:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.RELATION, table.getName(), payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoItems.RELATION, table.getName(), payload);
                     break;
                 case RELATION_ALIAS:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.RELATION_ALIAS, tableAlias, payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoItems.RELATION_ALIAS, tableAlias, payload);
                     break;
                 case OWNER:
-                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoPacketType.OWNER, owner, payload);
+                    FirebirdPrepareStatementReturnPacket.writeString(FirebirdSQLInfoItems.OWNER, owner, payload);
                     break;
                 case DESCRIBE_END:
-                    FirebirdPrepareStatementReturnPacket.writeCode(FirebirdSQLInfoPacketType.DESCRIBE_END, payload);
+                    FirebirdPrepareStatementReturnPacket.writeCode(FirebirdSQLInfoItems.DESCRIBE_END, payload);
                     break;
                 default:
                     throw new DatabaseProtocolException("Unknown statement info request type %d", requestedItem);

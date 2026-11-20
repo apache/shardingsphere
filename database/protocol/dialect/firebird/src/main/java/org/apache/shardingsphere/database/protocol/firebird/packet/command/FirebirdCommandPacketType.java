@@ -131,7 +131,7 @@ public enum FirebirdCommandPacketType implements CommandPacketType {
     TRANSACT(79),
     TRANSACT_RESPONSE(80),
     
-    DRDATABASE(81),
+    DROP_DATABASE(81),
     
     SERVICE_ATTACH(82),
     SERVICE_DETACH(83),

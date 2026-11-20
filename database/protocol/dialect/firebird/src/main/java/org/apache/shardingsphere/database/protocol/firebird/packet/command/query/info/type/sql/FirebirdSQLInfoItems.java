@@ -19,19 +19,17 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Firebird SQL info packet type.
+ * Firebird SQL info items.
  */
 @RequiredArgsConstructor
 @Getter
-public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
+public enum FirebirdSQLInfoItems implements FirebirdInfoItem {
     
     SELECT(4),
     BIND(5),
@@ -61,12 +59,12 @@ public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
     STMT_TIMEOUT_RUN(29),
     STMT_BLOB_ALIGN(30);
     
-    private static final Map<Integer, FirebirdSQLInfoPacketType> FIREBIRD_DATABASE_INFO_TYPE_CACHE = new HashMap<>();
+    private static final Map<Integer, FirebirdSQLInfoItems> FIREBIRD_DATABASE_INFO_TYPE_CACHE = new HashMap<>();
     
     private final int code;
     
     static {
-        for (FirebirdSQLInfoPacketType each : values()) {
+        for (FirebirdSQLInfoItems each : values()) {
             FIREBIRD_DATABASE_INFO_TYPE_CACHE.put(each.code, each);
         }
     }
@@ -74,21 +72,11 @@ public enum FirebirdSQLInfoPacketType implements FirebirdInfoPacketType {
     /**
      * Value of.
      *
-     * @param code arch type code
-     * @return Firebird dpb type
+     * @param code SQL info item code
+     * @return Firebird SQL info item
      */
-    public static FirebirdSQLInfoPacketType valueOf(final int code) {
+    public static FirebirdSQLInfoItems valueOf(final int code) {
         return FIREBIRD_DATABASE_INFO_TYPE_CACHE.get(code);
-    }
-    
-    /**
-     * Creates info packet of this type.
-     *
-     * @param payload Firebird packet payload
-     * @return Firebird database info packet
-     */
-    public static FirebirdInfoPacket createPacket(final FirebirdPacketPayload payload) {
-        return new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
     }
     
     @Override

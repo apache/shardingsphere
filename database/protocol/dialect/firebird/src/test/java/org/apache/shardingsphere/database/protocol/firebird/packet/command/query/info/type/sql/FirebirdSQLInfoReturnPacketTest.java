@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql;
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,10 +49,10 @@ class FirebirdSQLInfoReturnPacketTest {
     @Test
     void assertWriteRecords() {
         FirebirdSQLRecordsInfo recordsInfo = new FirebirdSQLRecordsInfo(5L, 7L, 9L);
-        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Arrays.asList(FirebirdSQLInfoPacketType.RECORDS, FirebirdCommonInfoPacketType.END), recordsInfo);
+        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Arrays.asList(FirebirdSQLInfoItems.RECORDS, FirebirdCommonInfoItems.END), recordsInfo);
         packet.write(payload);
         InOrder inOrder = inOrder(payload);
-        inOrder.verify(payload).writeInt1(FirebirdSQLInfoPacketType.RECORDS.getCode());
+        inOrder.verify(payload).writeInt1(FirebirdSQLInfoItems.RECORDS.getCode());
         inOrder.verify(payload).writeInt2LE(28);
         inOrder.verify(payload).writeInt1(REQ_SELECT_COUNT);
         inOrder.verify(payload).writeInt2LE(4);
@@ -66,12 +66,12 @@ class FirebirdSQLInfoReturnPacketTest {
         inOrder.verify(payload).writeInt1(REQ_DELETE_COUNT);
         inOrder.verify(payload).writeInt2LE(4);
         inOrder.verify(payload).writeInt4LE(9);
-        inOrder.verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        inOrder.verify(payload).writeInt1(FirebirdCommonInfoItems.END.getCode());
     }
     
     @Test
     void assertParseSQLInfoWithUnknownType() {
-        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.STMT_TYPE), new FirebirdSQLRecordsInfo(0L, 0L, 0L));
+        FirebirdSQLInfoReturnPacket packet = new FirebirdSQLInfoReturnPacket(Collections.singletonList(FirebirdSQLInfoItems.STMT_TYPE), new FirebirdSQLRecordsInfo(0L, 0L, 0L));
         assertThrows(DatabaseProtocolException.class, () -> packet.write(payload));
     }
 }

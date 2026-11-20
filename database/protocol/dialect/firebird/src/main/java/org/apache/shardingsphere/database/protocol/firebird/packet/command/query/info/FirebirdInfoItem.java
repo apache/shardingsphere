@@ -15,23 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info;
 
-import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-class FirebirdDatabaseInfoPacketTypeTest {
+/**
+ * Firebird info item.
+ */
+public interface FirebirdInfoItem {
     
-    @Test
-    void assertValueOf() {
-        assertThat(FirebirdDatabaseInfoPacketType.valueOf(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT.getCode()), is(FirebirdDatabaseInfoPacketType.DB_SQL_DIALECT));
-    }
+    /**
+     * Get code of the info packet type.
+     *
+     * @return numeric code representing the packet type
+     */
+    int getCode();
     
-    @Test
-    void assertIsCommon() {
-        assertFalse(FirebirdDatabaseInfoPacketType.DB_SIZE_IN_PAGES.isCommon());
-    }
+    /**
+     * Determine whether this info packet type is common.
+     *
+     * @return true if the packet type is common, false otherwise
+     */
+    boolean isCommon();
 }

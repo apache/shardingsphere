@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 class FirebirdSQLInfoExecutorTest {
     
     @Mock
-    private FirebirdInfoPacket packet;
+    private FirebirdInfoCommandPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -70,7 +70,7 @@ class FirebirdSQLInfoExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("sqlStatementProvider")
     void assertExecuteWithRecordsInfo(final String name, final SQLStatement sqlStatement, final long expectedInsertCount, final long expectedUpdateCount, final long expectedDeleteCount) {
-        when(packet.getHandle()).thenReturn(1);
+        when(packet.getInfoObject()).thenReturn(1);
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);

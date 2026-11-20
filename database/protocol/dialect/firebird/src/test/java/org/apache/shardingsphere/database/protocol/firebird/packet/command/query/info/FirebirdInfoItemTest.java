@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoItems;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,26 +27,26 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FirebirdInfoPacketTypeTest {
+class FirebirdInfoItemTest {
     
     @Test
-    void assertSQLInfoPacketType() {
-        FirebirdInfoPacketType type = FirebirdSQLInfoPacketType.RECORDS;
-        assertThat(type.getCode(), is(FirebirdSQLInfoPacketType.RECORDS.getCode()));
+    void assertSQLItems() {
+        FirebirdInfoItem type = FirebirdSQLInfoItems.RECORDS;
+        assertThat(type.getCode(), is(FirebirdSQLInfoItems.RECORDS.getCode()));
         assertFalse(type.isCommon());
     }
     
     @Test
-    void assertCommonInfoPacketType() {
-        FirebirdInfoPacketType type = FirebirdCommonInfoPacketType.END;
-        assertThat(type.getCode(), is(FirebirdCommonInfoPacketType.END.getCode()));
+    void assertCommonItems() {
+        FirebirdInfoItem type = FirebirdCommonInfoItems.END;
+        assertThat(type.getCode(), is(FirebirdCommonInfoItems.END.getCode()));
         assertTrue(type.isCommon());
     }
     
     @Test
-    void assertBlobInfoPacketType() {
-        FirebirdInfoPacketType type = FirebirdBlobInfoPacketType.TOTAL_LENGTH;
-        assertThat(type.getCode(), is(FirebirdBlobInfoPacketType.TOTAL_LENGTH.getCode()));
+    void assertBlobItems() {
+        FirebirdInfoItem type = FirebirdBlobInfoItems.TOTAL_LENGTH;
+        assertThat(type.getCode(), is(FirebirdBlobInfoItems.TOTAL_LENGTH.getCode()));
         assertFalse(type.isCommon());
     }
 }

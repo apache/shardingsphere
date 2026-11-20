@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
@@ -55,21 +55,21 @@ class FirebirdPrepareStatementReturnPacketTest {
     void assertWriteWithDescribeColumns() {
         FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket();
         packet.setType(FirebirdSQLInfoReturnValue.SELECT);
-        FirebirdReturnColumnPacket columnPacket = createColumnPacket(Collections.singleton(FirebirdSQLInfoPacketType.ALIAS), "tbl_alias", "col_alias", "owner");
+        FirebirdReturnColumnPacket columnPacket = createColumnPacket(Collections.singleton(FirebirdSQLInfoItems.ALIAS), "tbl_alias", "col_alias", "owner");
         packet.getDescribeSelect().add(columnPacket);
         packet.getDescribeBind().add(columnPacket);
         when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
         packet.write((PacketPayload) payload);
-        verify(payload).writeInt1(FirebirdSQLInfoPacketType.STMT_TYPE.getCode());
-        verify(payload, times(2)).writeInt1(FirebirdSQLInfoPacketType.ALIAS.getCode());
+        verify(payload).writeInt1(FirebirdSQLInfoItems.STMT_TYPE.getCode());
+        verify(payload, times(2)).writeInt1(FirebirdSQLInfoItems.ALIAS.getCode());
         verify(payload, times(2)).getCharset();
         verify(payload, times(2)).writeBytes(argThat(each -> Arrays.equals("col_alias".getBytes(StandardCharsets.UTF_8), each)));
-        verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        verify(payload).writeInt1(FirebirdCommonInfoItems.END.getCode());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteWithNullStringMetadataArguments")
-    void assertWriteWithNullStringMetadata(final String name, final FirebirdSQLInfoPacketType requestedItem, final String tableAlias, final String columnAlias, final String owner) {
+    void assertWriteWithNullStringMetadata(final String name, final FirebirdSQLInfoItems requestedItem, final String tableAlias, final String columnAlias, final String owner) {
         FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket();
         packet.setType(FirebirdSQLInfoReturnValue.SELECT);
         packet.getDescribeSelect().add(createColumnPacket(Collections.singleton(requestedItem), tableAlias, columnAlias, owner));
@@ -80,7 +80,7 @@ class FirebirdPrepareStatementReturnPacketTest {
         verify(payload, never()).getCharset();
     }
     
-    private FirebirdReturnColumnPacket createColumnPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final String tableAlias, final String columnAlias, final String owner) {
+    private FirebirdReturnColumnPacket createColumnPacket(final Collection<FirebirdSQLInfoItems> requestedItems, final String tableAlias, final String columnAlias, final String owner) {
         ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         return new FirebirdReturnColumnPacket(requestedItems, 1, table, column, tableAlias, columnAlias, owner, null, false, null);
@@ -88,8 +88,8 @@ class FirebirdPrepareStatementReturnPacketTest {
     
     private static Stream<Arguments> assertWriteWithNullStringMetadataArguments() {
         return Stream.of(
-                Arguments.of("null_alias", FirebirdSQLInfoPacketType.ALIAS, "tbl_alias", null, "owner"),
-                Arguments.of("null_relation_alias", FirebirdSQLInfoPacketType.RELATION_ALIAS, null, "col_alias", "owner"),
-                Arguments.of("null_owner", FirebirdSQLInfoPacketType.OWNER, "tbl_alias", "col_alias", null));
+                Arguments.of("null_alias", FirebirdSQLInfoItems.ALIAS, "tbl_alias", null, "owner"),
+                Arguments.of("null_relation_alias", FirebirdSQLInfoItems.RELATION_ALIAS, null, "col_alias", "owner"),
+                Arguments.of("null_owner", FirebirdSQLInfoItems.OWNER, "tbl_alias", "col_alias", null));
     }
 }

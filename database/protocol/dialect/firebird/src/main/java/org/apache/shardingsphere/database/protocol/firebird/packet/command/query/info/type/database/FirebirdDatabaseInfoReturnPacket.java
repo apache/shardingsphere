@@ -22,8 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.nio.charset.StandardCharsets;
@@ -57,20 +57,20 @@ public final class FirebirdDatabaseInfoReturnPacket extends FirebirdPacket {
     private static final String FB_VERSION = String.format("%s-%s%d.%d.%d.%d %s", FirebirdArchType.ARCHITECTURE.getIdentifier(), BUILD_TYPE, MAJOR_VERSION, MINOR_VERSION, REV_NO, BUILD_NO,
             SERVER_NAME);
     
-    private final List<FirebirdInfoPacketType> infoItems;
+    private final List<FirebirdInfoItem> items;
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        for (FirebirdInfoPacketType type : infoItems) {
+        for (FirebirdInfoItem type : items) {
             if (type.isCommon()) {
-                FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
+                FirebirdCommonInfoItems.parseCommonInfo(payload, (FirebirdCommonInfoItems) type);
             } else {
-                parseDatabaseInfo(payload, (FirebirdDatabaseInfoPacketType) type);
+                parseDatabaseInfo(payload, (FirebirdDatabaseInfoItems) type);
             }
         }
     }
     
-    private void parseDatabaseInfo(final FirebirdPacketPayload data, final FirebirdDatabaseInfoPacketType type) {
+    private void parseDatabaseInfo(final FirebirdPacketPayload data, final FirebirdDatabaseInfoItems type) {
         // TODO implement other request types handle
         switch (type) {
             case DB_SQL_DIALECT:

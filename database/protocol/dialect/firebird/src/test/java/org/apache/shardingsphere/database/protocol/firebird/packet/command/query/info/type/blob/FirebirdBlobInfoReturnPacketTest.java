@@ -19,8 +19,8 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
@@ -48,50 +48,50 @@ class FirebirdBlobInfoReturnPacketTest {
     
     private static final String SWITCH_CLASS_NAME = "org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoReturnPacket$1";
     
-    private static final String SWITCH_FIELD_NAME = "$SwitchMap$org$apache$shardingsphere$database$protocol$firebird$packet$command$query$info$type$blob$FirebirdBlobInfoPacketType";
+    private static final String SWITCH_FIELD_NAME = "$SwitchMap$org$apache$shardingsphere$database$protocol$firebird$packet$command$query$info$type$blob$FirebirdBlobInfoItems";
     
     @Mock
     private FirebirdPacketPayload payload;
     
     @Test
     void assertGetInfoItems() {
-        List<FirebirdInfoPacketType> expectedInfoItems = Collections.singletonList(FirebirdCommonInfoPacketType.END);
-        assertThat(new FirebirdBlobInfoReturnPacket(expectedInfoItems, 0, false).getInfoItems(), is(expectedInfoItems));
+        List<FirebirdInfoItem> expectedItems = Collections.singletonList(FirebirdCommonInfoItems.END);
+        assertThat(new FirebirdBlobInfoReturnPacket(expectedItems, 0, false).getItems(), is(expectedItems));
     }
     
     @Test
     void assertWriteCommonInfoWithRequestedEndWritesSingleTerminator() {
-        FirebirdBlobInfoReturnPacket packet = new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.END), 0, false);
+        FirebirdBlobInfoReturnPacket packet = new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoItems.END), 0, false);
         packet.write((PacketPayload) payload);
-        verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        verify(payload).writeInt1(FirebirdCommonInfoItems.END.getCode());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("blobInfoCases")
-    void assertWriteBlobInfo(final String name, final FirebirdBlobInfoPacketType type, final int blobLength, final boolean streamBlob, final int expectedValue) {
+    void assertWriteBlobInfo(final String name, final FirebirdBlobInfoItems type, final int blobLength, final boolean streamBlob, final int expectedValue) {
         FirebirdBlobInfoReturnPacket packet = new FirebirdBlobInfoReturnPacket(Collections.singletonList(type), blobLength, streamBlob);
         packet.write((PacketPayload) payload);
         InOrder order = inOrder(payload);
         order.verify(payload).writeInt1(type.getCode());
         order.verify(payload).writeInt2LE(4);
         order.verify(payload).writeInt4LE(expectedValue);
-        order.verify(payload).writeInt1(FirebirdCommonInfoPacketType.END.getCode());
+        order.verify(payload).writeInt1(FirebirdCommonInfoItems.END.getCode());
     }
     
     @Test
     void assertWriteCommonInfoWithUnsupportedType() {
         assertThrows(DatabaseProtocolException.class,
-                () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoPacketType.TRUNCATED), 0, false).write((PacketPayload) payload));
+                () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdCommonInfoItems.TRUNCATED), 0, false).write((PacketPayload) payload));
     }
     
     @Test
     void assertWriteBlobInfoWithUnknownType() {
         int[] switchMap = getSwitchMap();
-        int typeIndex = FirebirdBlobInfoPacketType.TYPE.ordinal();
+        int typeIndex = FirebirdBlobInfoItems.TYPE.ordinal();
         int actualSwitchValue = switchMap[typeIndex];
         switchMap[typeIndex] = 0;
         try {
-            assertThrows(DatabaseProtocolException.class, () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdBlobInfoPacketType.TYPE), 0, false).write((PacketPayload) payload));
+            assertThrows(DatabaseProtocolException.class, () -> new FirebirdBlobInfoReturnPacket(Collections.singletonList(FirebirdBlobInfoItems.TYPE), 0, false).write((PacketPayload) payload));
         } finally {
             switchMap[typeIndex] = actualSwitchValue;
         }
@@ -104,11 +104,11 @@ class FirebirdBlobInfoReturnPacketTest {
     
     private static Stream<Arguments> blobInfoCases() {
         return Stream.of(
-                Arguments.of("NUM_SEGMENTS without data", FirebirdBlobInfoPacketType.NUM_SEGMENTS, 0, false, 0),
-                Arguments.of("NUM_SEGMENTS with data", FirebirdBlobInfoPacketType.NUM_SEGMENTS, 3, false, 1),
-                Arguments.of("MAX_SEGMENT with data", FirebirdBlobInfoPacketType.MAX_SEGMENT, 4, false, 4),
-                Arguments.of("TOTAL_LENGTH with data", FirebirdBlobInfoPacketType.TOTAL_LENGTH, 5, false, 5),
-                Arguments.of("TYPE of segmented BLOB", FirebirdBlobInfoPacketType.TYPE, 1, false, 0),
-                Arguments.of("TYPE of stream BLOB", FirebirdBlobInfoPacketType.TYPE, 1, true, 1));
+                Arguments.of("NUM_SEGMENTS without data", FirebirdBlobInfoItems.NUM_SEGMENTS, 0, false, 0),
+                Arguments.of("NUM_SEGMENTS with data", FirebirdBlobInfoItems.NUM_SEGMENTS, 3, false, 1),
+                Arguments.of("MAX_SEGMENT with data", FirebirdBlobInfoItems.MAX_SEGMENT, 4, false, 4),
+                Arguments.of("TOTAL_LENGTH with data", FirebirdBlobInfoItems.TOTAL_LENGTH, 5, false, 5),
+                Arguments.of("TYPE of segmented BLOB", FirebirdBlobInfoItems.TYPE, 1, false, 0),
+                Arguments.of("TYPE of stream BLOB", FirebirdBlobInfoItems.TYPE, 1, true, 1));
     }
 }

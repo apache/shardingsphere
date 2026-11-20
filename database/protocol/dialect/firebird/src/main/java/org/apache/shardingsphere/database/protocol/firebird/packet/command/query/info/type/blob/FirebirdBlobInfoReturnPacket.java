@@ -21,8 +21,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     
     private static final int BLOB_TYPE_STREAM = 1;
     
-    private final List<FirebirdInfoPacketType> infoItems;
+    private final List<FirebirdInfoItem> items;
     
     private final int blobLength;
     
@@ -46,20 +46,20 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        for (FirebirdInfoPacketType type : infoItems) {
-            if (FirebirdCommonInfoPacketType.END == type) {
+        for (FirebirdInfoItem type : items) {
+            if (FirebirdCommonInfoItems.END == type) {
                 continue;
             }
             if (type.isCommon()) {
-                FirebirdCommonInfoPacketType.parseCommonInfo(payload, (FirebirdCommonInfoPacketType) type);
+                FirebirdCommonInfoItems.parseCommonInfo(payload, (FirebirdCommonInfoItems) type);
             } else {
-                parseBlobInfo(payload, (FirebirdBlobInfoPacketType) type);
+                parseBlobInfo(payload, (FirebirdBlobInfoItems) type);
             }
         }
-        FirebirdCommonInfoPacketType.parseCommonInfo(payload, FirebirdCommonInfoPacketType.END);
+        FirebirdCommonInfoItems.parseCommonInfo(payload, FirebirdCommonInfoItems.END);
     }
     
-    private void parseBlobInfo(final FirebirdPacketPayload payload, final FirebirdBlobInfoPacketType type) {
+    private void parseBlobInfo(final FirebirdPacketPayload payload, final FirebirdBlobInfoItems type) {
         switch (type) {
             case NUM_SEGMENTS:
                 writeIntValue(payload, type, getSegmentCount());
@@ -76,7 +76,7 @@ public final class FirebirdBlobInfoReturnPacket extends FirebirdPacket {
         }
     }
     
-    private void writeIntValue(final FirebirdPacketPayload payload, final FirebirdBlobInfoPacketType type, final int value) {
+    private void writeIntValue(final FirebirdPacketPayload payload, final FirebirdBlobInfoItems type, final int value) {
         payload.writeInt1(type.getCode());
         payload.writeInt2LE(4);
         payload.writeInt4LE(value);

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
@@ -78,8 +78,8 @@ class FirebirdCommandPacketFactoryTest {
     
     private static Stream<Arguments> newInstanceArguments() {
         return Stream.of(
-                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoPacket.class),
-                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoPacket.class),
+                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoCommandPacket.class),
+                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoCommandPacket.class),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, FirebirdStartTransactionPacket.class),
                 Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, FirebirdCreateBlobCommandPacket.class),
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdCreateBlobCommandPacket.class),
@@ -96,9 +96,17 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class),
                 Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, FirebirdExecuteStatementPacket.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class),
-                Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoPacket.class),
+                Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoCommandPacket.class),
                 Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("prepare", FirebirdCommandPacketType.PREPARE, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("unwind", FirebirdCommandPacketType.UNWIND, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("release", FirebirdCommandPacketType.RELEASE, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("detach", FirebirdCommandPacketType.DETACH, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("drop_database", FirebirdCommandPacketType.DROP_DATABASE, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("service_detach", FirebirdCommandPacketType.SERVICE_DETACH, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("commit_retaining", FirebirdCommandPacketType.COMMIT_RETAINING, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("rollback_retaining", FirebirdCommandPacketType.ROLLBACK_RETAINING, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, FirebirdFreeStatementPacket.class),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class),
                 Arguments.of("batch_msg", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchMessageCommandPacket.class),
@@ -131,7 +139,15 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, 0),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, 16),
                 Arguments.of("commit", FirebirdCommandPacketType.COMMIT, 8),
+                Arguments.of("prepare", FirebirdCommandPacketType.PREPARE, 8),
                 Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, 8),
+                Arguments.of("unwind", FirebirdCommandPacketType.UNWIND, 8),
+                Arguments.of("release", FirebirdCommandPacketType.RELEASE, 8),
+                Arguments.of("detach", FirebirdCommandPacketType.DETACH, 8),
+                Arguments.of("drop_database", FirebirdCommandPacketType.DROP_DATABASE, 8),
+                Arguments.of("service_detach", FirebirdCommandPacketType.SERVICE_DETACH, 8),
+                Arguments.of("commit_retaining", FirebirdCommandPacketType.COMMIT_RETAINING, 8),
+                Arguments.of("rollback_retaining", FirebirdCommandPacketType.ROLLBACK_RETAINING, 8),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, 12),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, 12),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, 12),

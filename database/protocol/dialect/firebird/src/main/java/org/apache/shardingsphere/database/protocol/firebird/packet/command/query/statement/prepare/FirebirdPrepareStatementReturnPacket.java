@@ -20,9 +20,9 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoItem;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoItems;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoItems;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -44,31 +44,31 @@ public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        writeInt(FirebirdSQLInfoPacketType.STMT_TYPE, type.getCode(), payload);
-        writeCode(FirebirdSQLInfoPacketType.SELECT, payload);
-        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, describeSelect.size(), payload);
+        writeInt(FirebirdSQLInfoItems.STMT_TYPE, type.getCode(), payload);
+        writeCode(FirebirdSQLInfoItems.SELECT, payload);
+        writeInt(FirebirdSQLInfoItems.DESCRIBE_VARS, describeSelect.size(), payload);
         for (FirebirdReturnColumnPacket column : describeSelect) {
             column.write(payload);
         }
-        writeCode(FirebirdSQLInfoPacketType.BIND, payload);
-        writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, describeBind.size(), payload);
+        writeCode(FirebirdSQLInfoItems.BIND, payload);
+        writeInt(FirebirdSQLInfoItems.DESCRIBE_VARS, describeBind.size(), payload);
         for (FirebirdReturnColumnPacket column : describeBind) {
             column.write(payload);
         }
-        writeCode(FirebirdCommonInfoPacketType.END, payload);
+        writeCode(FirebirdCommonInfoItems.END, payload);
     }
     
-    static void writeCode(final FirebirdInfoPacketType code, final FirebirdPacketPayload payload) {
+    static void writeCode(final FirebirdInfoItem code, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
     }
     
-    static void writeInt(final FirebirdInfoPacketType code, final int value, final FirebirdPacketPayload payload) {
+    static void writeInt(final FirebirdInfoItem code, final int value, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
         payload.writeInt2LE(4);
         payload.writeInt4LE(value);
     }
     
-    static void writeString(final FirebirdInfoPacketType code, final String value, final FirebirdPacketPayload payload) {
+    static void writeString(final FirebirdInfoItem code, final String value, final FirebirdPacketPayload payload) {
         payload.writeInt1(code.getCode());
         byte[] valueBytes = null == value ? new byte[0] : value.getBytes(payload.getCharset());
         payload.writeInt2LE(valueBytes.length);
