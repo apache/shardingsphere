@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
@@ -123,7 +124,8 @@ public final class FirebirdCommandPacketFactory {
      * @param payload packet payload for Firebird
      * @param protocolVersion protocol version of Firebird
      * @param connectionId connection ID
-     * @return expected length of packet, or 0 if length is variable
+     * @return expected length of packet, or -1 if the packet is incomplete
+     * @throws UnsupportedCommandException if the command packet type cannot be framed
      */
     public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
         switch (commandPacketType) {
@@ -143,9 +145,13 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_RLS:
             case BATCH_CANCEL:
                 return 8;
-            case INFO_DATABASE:
             case INFO_BLOB:
+            case INFO_DATABASE:
+            case INFO_REQUEST:
+            case INFO_TRANSACTION:
             case INFO_SQL:
+            case INFO_BATCH:
+            case INFO_CURSOR:
                 return FirebirdInfoCommandPacket.getLength(payload);
             case TRANSACTION:
                 return FirebirdStartTransactionPacket.getLength(payload);
@@ -180,7 +186,7 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_SYNC:
                 return FirebirdBatchSyncCommandPacket.getLength();
             default:
-                return 0;
+                throw UnsupportedCommandException.forCommandPacketLength(commandPacketType.getValue());
         }
     }
 }

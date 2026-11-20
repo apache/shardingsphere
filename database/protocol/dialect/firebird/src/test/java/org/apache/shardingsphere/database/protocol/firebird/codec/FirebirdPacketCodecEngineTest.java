@@ -160,6 +160,33 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
+    void assertDecodeDisconnectClosesChannel() {
+        ByteBuf in = Unpooled.buffer().writeInt(FirebirdCommandPacketType.DISCONNECT.getValue());
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertTrue(out.isEmpty());
+        verify(context).close();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("authenticationMessageTypes")
+    void assertDecodeAuthenticationMessageFramesWholeBuffer(final FirebirdCommandPacketType commandType) {
+        ByteBuf in = Unpooled.buffer().writeInt(commandType.getValue()).writeInt(0).writeZero(8);
+        int expectedLength = in.readableBytes();
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(1));
+        assertThat(((ByteBuf) out.get(0)).readableBytes(), is(expectedLength));
+    }
+    
+    private static Stream<Arguments> authenticationMessageTypes() {
+        return Stream.of(
+                Arguments.of(FirebirdCommandPacketType.CONNECT),
+                Arguments.of(FirebirdCommandPacketType.ATTACH),
+                Arguments.of(FirebirdCommandPacketType.CONT_AUTH));
+    }
+    
+    @Test
     void assertDecodeWithExpectedLength() {
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.PREPARE_STATEMENT, 8);
         List<Object> out = new LinkedList<>();
@@ -173,15 +200,17 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
-    void assertDecodeWithNonPositiveExpectedLength() {
+    void assertDecodeWithZeroExpectedLength() {
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.PREPARE_STATEMENT, 8);
         List<Object> out = new LinkedList<>();
-        assertTrue(in.maxCapacity() >= 8);
+        ChannelFuture errorResponseFuture = mock(ChannelFuture.class);
+        when(context.channel().writeAndFlush(any())).thenReturn(errorResponseFuture);
         try (MockedStatic<FirebirdCommandPacketFactory> ignored = mockExpectedLength(0)) {
             codecEngine.decode(context, in, out);
         }
-        assertThat(out.size(), is(1));
-        assertThat(((ByteBuf) out.get(0)).readableBytes(), is(8));
+        assertTrue(out.isEmpty());
+        assertThat(captureErrorResponse().getErrorCode(), is(335544382));
+        verify(errorResponseFuture).addListener(ChannelFutureListener.CLOSE);
     }
     
     @Test

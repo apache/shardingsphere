@@ -130,6 +130,11 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;
             }
+            if (FirebirdCommandPacketType.DISCONNECT == commandType) {
+                buffer.skipBytes(MESSAGE_TYPE_LENGTH);
+                context.close();
+                continue;
+            }
             int packetLength = findPacketLength(context, buffer, commandType, charset);
             if (packetLength < 0) {
                 pendingPacketType = commandType;
@@ -150,6 +155,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
         int readableBytes = buffer.readableBytes();
+        if (isAuthenticationMessage(commandType)) {
+            return readableBytes;
+        }
         ByteBuf slice = buffer.retainedSlice();
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
@@ -162,7 +170,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return -1;
             }
             if (0 == expectedLength) {
-                return readableBytes;
+                throw new IllegalStateException("Expected length of command packet must be positive: " + commandType);
             }
             return readableBytes >= expectedLength ? expectedLength : -1;
         } catch (final IndexOutOfBoundsException ex) {
@@ -170,6 +178,10 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } finally {
             slice.release();
         }
+    }
+    
+    private static boolean isAuthenticationMessage(final FirebirdCommandPacketType commandType) {
+        return FirebirdCommandPacketType.CONNECT == commandType || FirebirdCommandPacketType.ATTACH == commandType || FirebirdCommandPacketType.CONT_AUTH == commandType;
     }
     
     private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {

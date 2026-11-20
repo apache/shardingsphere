@@ -123,6 +123,8 @@ class FirebirdDialectExceptionMapperTest {
                         new Object[]{"Unsupported Firebird command packet: VOID"}),
                 Arguments.of("unsupported_command_packet_type", UnsupportedCommandException.forCommandPacketType(-1), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
                         new Object[]{"Unsupported Firebird type of command packet: -1"}),
+                Arguments.of("unsupported_command_packet_length", UnsupportedCommandException.forCommandPacketLength(84), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
+                        new Object[]{"Unsupported Firebird command packet length: 84"}),
                 Arguments.of("unsupported_command_executor", UnsupportedCommandException.forCommandExecutor("PREPARE"), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
                         new Object[]{"Unsupported Firebird command executor: PREPARE"}));
     }

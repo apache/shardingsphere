@@ -59,4 +59,14 @@ public final class UnsupportedCommandException extends SQLDialectException {
     public static UnsupportedCommandException forCommandPacketType(final int value) {
         return new UnsupportedCommandException(String.format("Unsupported Firebird type of command packet: %d", value));
     }
+    
+    /**
+     * Create new instance for an unsupported command packet length.
+     *
+     * @param value command packet type value
+     * @return created instance
+     */
+    public static UnsupportedCommandException forCommandPacketLength(final int value) {
+        return new UnsupportedCommandException(String.format("Unsupported Firebird command packet length: %d", value));
+    }
 }

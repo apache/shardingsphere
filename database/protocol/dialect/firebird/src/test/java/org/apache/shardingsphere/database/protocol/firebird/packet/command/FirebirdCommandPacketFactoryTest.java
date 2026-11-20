@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -50,6 +52,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,6 +77,13 @@ class FirebirdCommandPacketFactoryTest {
         assertThat(FirebirdCommandPacketFactory.getExpectedLength(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), is(expectedLength));
     }
     
+    @Test
+    void assertGetExpectedLengthWithUnsupportedCommandPacketLength() {
+        UnsupportedCommandException actual = assertThrows(UnsupportedCommandException.class,
+                () -> FirebirdCommandPacketFactory.getExpectedLength(FirebirdCommandPacketType.VOID, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1));
+        assertThat(actual.getMessage(), is("Unsupported Firebird command packet length: 0"));
+    }
+    
     private static Stream<Arguments> newInstanceArguments() {
         return Stream.of(
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoCommandPacket.class),
@@ -95,6 +105,10 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, FirebirdExecuteStatementPacket.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class),
                 Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoCommandPacket.class),
+                Arguments.of("info_request", FirebirdCommandPacketType.INFO_REQUEST, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("info_transaction", FirebirdCommandPacketType.INFO_TRANSACTION, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("info_batch", FirebirdCommandPacketType.INFO_BATCH, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("info_cursor", FirebirdCommandPacketType.INFO_CURSOR, FirebirdUnsupportedCommandPacket.class),
                 Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("prepare", FirebirdCommandPacketType.PREPARE, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class),
@@ -120,6 +134,10 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, 16),
                 Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, 16),
                 Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, 16),
+                Arguments.of("info_request", FirebirdCommandPacketType.INFO_REQUEST, 16),
+                Arguments.of("info_transaction", FirebirdCommandPacketType.INFO_TRANSACTION, 16),
+                Arguments.of("info_batch", FirebirdCommandPacketType.INFO_BATCH, 16),
+                Arguments.of("info_cursor", FirebirdCommandPacketType.INFO_CURSOR, 16),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, 8),
                 Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, 16),
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, 16),
@@ -133,8 +151,6 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, 8),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, 20),
-                Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, 0),
-                Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, 0),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, 16),
                 Arguments.of("commit", FirebirdCommandPacketType.COMMIT, 8),
                 Arguments.of("prepare", FirebirdCommandPacketType.PREPARE, 8),
@@ -151,7 +167,6 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, 12),
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),
-                Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4),
-                Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, 0));
+                Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4));
     }
 }
