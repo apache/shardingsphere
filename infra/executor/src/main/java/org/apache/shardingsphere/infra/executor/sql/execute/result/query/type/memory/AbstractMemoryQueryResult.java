@@ -18,17 +18,13 @@
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -90,20 +86,26 @@ public abstract class AbstractMemoryQueryResult implements QueryResult {
     }
     
     @Override
-    public final InputStream getInputStream(final int columnIndex, final String type) {
+    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
         Object value = currentRow.getValue().get(columnIndex - 1);
         wasNull = null == value;
-        return getInputStream(value);
-    }
-    
-    @SneakyThrows(IOException.class)
-    private InputStream getInputStream(final Object value) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(value);
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        if (null == value) {
+            return null;
+        }
+        if (value instanceof byte[]) {
+            return new ByteArrayInputStream((byte[]) value);
+        }
+        if (value instanceof Blob) {
+            return ((Blob) value).getBinaryStream();
+        }
+        if (value instanceof Clob) {
+            return ((Clob) value).getAsciiStream();
+        }
+        if (value instanceof SQLXML) {
+            return ((SQLXML) value).getBinaryStream();
+        }
+        // TODO Support connection property character encoding
+        return new ByteArrayInputStream(value.toString().getBytes(StandardCharsets.UTF_8));
     }
     
     @Override

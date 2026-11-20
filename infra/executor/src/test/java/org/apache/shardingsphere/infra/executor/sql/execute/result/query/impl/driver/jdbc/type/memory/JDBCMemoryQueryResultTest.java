@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
+import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -24,10 +25,7 @@ import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.math.BigDecimal;
@@ -350,17 +348,77 @@ class JDBCMemoryQueryResultTest {
     void assertGetInputStream() throws SQLException, IOException {
         JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSet(), databaseType);
         queryResult.next();
-        InputStream inputStream = queryResult.getInputStream(1, "Unicode");
-        assertThat(inputStream.read(), is(getInputStream(1).read()));
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Unicode")), is("1".getBytes(StandardCharsets.UTF_8)));
     }
     
-    private InputStream getInputStream(final Object value) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(value);
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+    @Test
+    void assertGetInputStreamWithVarchar() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.VARCHAR);
+        when(resultSet.getString(1)).thenReturn("foo_value");
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Ascii")), is("foo_value".getBytes(StandardCharsets.UTF_8)));
+        assertFalse(queryResult.wasNull());
+    }
+    
+    @Test
+    void assertGetInputStreamWithNonAsciiVarchar() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.VARCHAR);
+        when(resultSet.getString(1)).thenReturn("é");
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Unicode")), is(new byte[]{(byte) 0xC3, (byte) 0xA9}));
+    }
+    
+    @Test
+    void assertGetInputStreamWithVarBinary() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.VARBINARY);
+        when(resultSet.getBytes(1)).thenReturn(new byte[]{1, 2, 3});
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Binary")), is(new byte[]{1, 2, 3}));
+        assertFalse(queryResult.wasNull());
+    }
+    
+    @Test
+    void assertGetInputStreamWithBlob() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.BLOB);
+        Blob blob = mock(Blob.class);
+        when(blob.getBinaryStream()).thenReturn(new ByteArrayInputStream(new byte[]{1, 2, 3}));
+        when(resultSet.getBlob(1)).thenReturn(blob);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Binary")), is(new byte[]{1, 2, 3}));
+    }
+    
+    @Test
+    void assertGetInputStreamWithClob() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.CLOB);
+        Clob clob = mock(Clob.class);
+        when(clob.getAsciiStream()).thenReturn(new ByteArrayInputStream("foo_value".getBytes(StandardCharsets.US_ASCII)));
+        when(resultSet.getClob(1)).thenReturn(clob);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Ascii")), is("foo_value".getBytes(StandardCharsets.US_ASCII)));
+    }
+    
+    @Test
+    void assertGetInputStreamWithSQLXML() throws SQLException, IOException {
+        ResultSet resultSet = getMockedResultSet(Types.SQLXML);
+        SQLXML sqlXML = mock(SQLXML.class);
+        when(sqlXML.getBinaryStream()).thenReturn(new ByteArrayInputStream("<foo>bar</foo>".getBytes(StandardCharsets.UTF_8)));
+        when(resultSet.getObject(1)).thenReturn(sqlXML);
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(resultSet, databaseType);
+        queryResult.next();
+        assertThat(ByteStreams.toByteArray(queryResult.getInputStream(1, "Binary")), is("<foo>bar</foo>".getBytes(StandardCharsets.UTF_8)));
+    }
+    
+    @Test
+    void assertGetInputStreamWithNull() throws SQLException {
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSetForWasNull(true), databaseType);
+        queryResult.next();
+        assertNull(queryResult.getInputStream(1, "Binary"));
+        assertTrue(queryResult.wasNull());
     }
     
     @Test
