@@ -52,10 +52,17 @@ public final class PaginationContext {
     
     private final Long actualRowCount;
     
+    private final boolean oneBasedRowRange;
+    
     public PaginationContext(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> params) {
+        this(offsetSegment, rowCountSegment, params, false);
+    }
+    
+    public PaginationContext(final PaginationValueSegment offsetSegment, final PaginationValueSegment rowCountSegment, final List<Object> params, final boolean oneBasedRowRange) {
         hasPagination = null != offsetSegment || null != rowCountSegment;
         this.offsetSegment = offsetSegment;
         this.rowCountSegment = rowCountSegment;
+        this.oneBasedRowRange = oneBasedRowRange;
         actualOffset = null == offsetSegment ? Long.valueOf(0L) : getValue(offsetSegment, params);
         actualRowCount = null == rowCountSegment ? null : getValue(rowCountSegment, params);
     }
@@ -215,10 +222,13 @@ public final class PaginationContext {
     /**
      * Get revised offset.
      *
+     * <p>A one-based inclusive row range keeps its one-based lower bound after a multi-route rewrite, so the
+     * smallest selectable row number stays one instead of the zero lower bound of a skip and row count pair.</p>
+     *
      * @return revised offset
      */
     public long getRevisedOffset() {
-        return 0L;
+        return oneBasedRowRange ? 1L : 0L;
     }
     
     /**

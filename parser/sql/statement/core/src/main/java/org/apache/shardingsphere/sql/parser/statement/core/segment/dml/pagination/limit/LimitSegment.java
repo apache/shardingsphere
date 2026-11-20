@@ -50,6 +50,16 @@ public final class LimitSegment implements SQLSegment {
     private boolean implicitRowCount;
     
     /**
+     * Whether this limit selects an inclusive one-based row range instead of a skip and a row count.
+     *
+     * <p>Firebird's {@code ROWS m TO n} form numbers rows from one, so the offset is the count of skipped rows (m - 1)
+     * and the row count is n - m + 1. A multi-route rewrite must therefore keep the one-based lower bound of one
+     * instead of the zero lower bound used by {@code LIMIT offset, rowCount}.</p>
+     */
+    @Setter
+    private boolean oneBasedRowRange;
+    
+    /**
      * Get offset.
      *
      * @return offset

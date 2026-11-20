@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Proj
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ReturningClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RowsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
@@ -340,38 +341,36 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitLimitClause(final LimitClauseContext ctx) {
-        PaginationValueSegment rowCount = null;
-        PaginationValueSegment offset = null;
+        int startIndex = ctx.getStart().getStartIndex();
+        int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.rowsClause()) {
-            if (ctx.rowsClause().expr().size() > 1) {
-                if (isNumberLiteralExpression(ctx.rowsClause().expr(0)) && isNumberLiteralExpression(ctx.rowsClause().expr(1))) {
-                    NumberLiteralLimitValueSegment firstValue = (NumberLiteralLimitValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
-                    NumberLiteralLimitValueSegment lastValue = (NumberLiteralLimitValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
-                    offset = firstValue;
-                    rowCount = new NumberLiteralLimitValueSegment(lastValue.getStartIndex(), lastValue.getStopIndex(), lastValue.getValue() - firstValue.getValue() + 1);
-                }
-            } else {
-                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
-            }
-        } else {
-            OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
-            if (null != offsetDefinition.offsetClause()) {
-                offset = (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
-            }
-            if (null != offsetDefinition.fetchClause()) {
-                rowCount = (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
-            }
+            return visitRowsClause(ctx.rowsClause(), startIndex, stopIndex);
         }
-        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+        OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
+        PaginationValueSegment offset =
+                null == offsetDefinition.offsetClause() ? null : (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
+        PaginationValueSegment rowCount =
+                null == offsetDefinition.fetchClause() ? null : (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
+        return new LimitSegment(startIndex, stopIndex, offset, rowCount);
     }
     
-    private boolean isNumberLiteralExpression(final ParseTree tree) {
-        if (tree instanceof NumberLiteralsContext) {
-            return true;
+    private LimitSegment visitRowsClause(final RowsClauseContext ctx, final int startIndex, final int stopIndex) {
+        if (1 == ctx.expr().size()) {
+            return new LimitSegment(startIndex, stopIndex, null, (PaginationValueSegment) visitLimitValue(ctx.expr(0)));
         }
-        return 1 == tree.getChildCount() && isNumberLiteralExpression(tree.getChild(0));
+        PaginationValueSegment firstRow = (PaginationValueSegment) visitLimitValue(ctx.expr(0));
+        PaginationValueSegment lastRow = (PaginationValueSegment) visitLimitValue(ctx.expr(1));
+        if (!(firstRow instanceof NumberLiteralLimitValueSegment) || !(lastRow instanceof NumberLiteralLimitValueSegment)) {
+            return new LimitSegment(startIndex, stopIndex, null, null);
+        }
+        long skippedRowCount = ((NumberLiteralLimitValueSegment) firstRow).getValue() - 1;
+        long inclusiveRowCount = ((NumberLiteralLimitValueSegment) lastRow).getValue() - ((NumberLiteralLimitValueSegment) firstRow).getValue() + 1;
+        LimitSegment result = new LimitSegment(startIndex, stopIndex, new NumberLiteralLimitValueSegment(firstRow.getStartIndex(), firstRow.getStopIndex(), skippedRowCount),
+                new NumberLiteralLimitValueSegment(lastRow.getStartIndex(), lastRow.getStopIndex(), inclusiveRowCount));
+        result.setOneBasedRowRange(true);
+        return result;
     }
-
+    
     private ASTNode visitLimitValue(final ParserRuleContext ctx) {
         if (ctx.getChild(0) instanceof NumberLiteralsContext) {
             return new NumberLiteralLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((NumberLiteralValue) visit(ctx.getChild(0))).getValue().longValue());
