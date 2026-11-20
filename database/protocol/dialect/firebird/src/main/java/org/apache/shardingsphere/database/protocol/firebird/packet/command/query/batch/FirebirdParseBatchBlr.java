@@ -132,7 +132,10 @@ public final class FirebirdParseBatchBlr {
         if (BlrConstants.blr_varying == blrType || BlrConstants.blr_varying2 == blrType || BlrConstants.blr_short == blrType) {
             return Short.BYTES;
         }
-        if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType) {
+        // Firebird aligns both DECFLOAT sizes to 8 bytes: type_alignments in jrd/align.h
+        // uses sizeof(Decimal64) for dtype_dec64 and dtype_dec128.
+        if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType
+                || BlrConstants.blr_dec64 == blrType || BlrConstants.blr_dec128 == blrType) {
             return Long.BYTES;
         }
         return Integer.BYTES;
@@ -175,10 +178,10 @@ public final class FirebirdParseBatchBlr {
             return Integer.BYTES;
         }
         if (BlrConstants.blr_int64 == blrType || BlrConstants.blr_double == blrType || BlrConstants.blr_d_float == blrType
-                || BlrConstants.blr_quad == blrType || BlrConstants.blr_timestamp == blrType) {
+                || BlrConstants.blr_quad == blrType || BlrConstants.blr_timestamp == blrType || BlrConstants.blr_dec64 == blrType) {
             return Long.BYTES;
         }
-        if (BlrConstants.blr_int128 == blrType) {
+        if (BlrConstants.blr_int128 == blrType || BlrConstants.blr_dec128 == blrType) {
             return Long.BYTES * 2;
         }
         if (BlrConstants.blr_bool == blrType) {
