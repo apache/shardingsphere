@@ -84,6 +84,13 @@ class FirebirdReturnColumnPacketTest {
         verify(payload).writeInt4LE(expectedLength);
     }
     
+    @Test
+    void assertWriteLengthWithNullColumnLength() {
+        FirebirdReturnColumnPacket packet = createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.LENGTH), Types.VARCHAR, null, false, null);
+        packet.write(payload);
+        verify(payload).writeInt4LE(FirebirdBinaryColumnType.VARYING.getLength());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertWriteSubTypeArguments")
     void assertWriteSubType(final String name, final boolean blobColumn, final Integer blobSubType, final int expectedSubType) {
