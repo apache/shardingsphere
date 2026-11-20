@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.Expr
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationDistinctProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.RowExpressionBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.ColumnProjectionSegmentBinder;
@@ -119,10 +120,8 @@ public final class ProjectionsSegmentBinder {
             return ShorthandProjectionSegmentBinder.bind(shorthand, boundTableSegment, contexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
-            Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
-            newOuterTableBinderContexts.putAll(outerTableBinderContexts);
-            newOuterTableBinderContexts.putAll(tableBinderContexts);
-            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, binderContext, newOuterTableBinderContexts);
+            return SubqueryProjectionSegmentBinder.bind((SubqueryProjectionSegment) projectionSegment, binderContext,
+                    new ScopedTableSegmentBinderContexts(outerTableBinderContexts, tableBinderContexts));
         }
         if (projectionSegment instanceof ExpressionProjectionSegment) {
             ExpressionSegment boundExpressionSegment = ExpressionSegmentBinder.bind(

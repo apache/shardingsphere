@@ -29,6 +29,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ScopedTableSegmentBinderContexts;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -131,12 +132,12 @@ public final class ColumnSegmentBinder {
             return Optional.empty();
         }
         OwnerSegment owner = segment.getOwner().get();
-        if (!getTableBinderContextByOwner(owner.getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType).isEmpty()) {
+        if (!getTableBinderContextByOwner(owner, tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType).isEmpty()) {
             return Optional.empty();
         }
         ColumnSegment candidate = createNestedObjectColumnSegment(segment, owner);
         Collection<TableSegmentBinderContext> candidateTableBinderContexts = owner.getOwner()
-                .map(optional -> getTableBinderContextByOwner(optional.getIdentifier().getValue(), tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType))
+                .map(optional -> getTableBinderContextByOwner(optional, tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType))
                 .orElseGet(tableBinderContexts::values);
         return getInputInfoFromTableBinderContexts(candidateTableBinderContexts, candidate, parentSegmentType).getInputColumnSegment().map(optional -> candidate);
     }
@@ -193,8 +194,7 @@ public final class ColumnSegmentBinder {
                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (segment.getOwner().isPresent()) {
-            String owner = segment.getOwner().get().getIdentifier().getValue();
-            return getTableBinderContextByOwner(owner, tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType);
+            return getTableBinderContextByOwner(segment.getOwner().get(), tableBinderContexts, outerTableBinderContexts, binderContext, parentSegmentType);
         }
         if (!binderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, binderContext)) {
             return Collections.singleton(new SimpleTableSegmentBinderContext(binderContext.getJoinTableProjectionSegments(), TableSourceType.MIXED_TABLE));
@@ -202,13 +202,13 @@ public final class ColumnSegmentBinder {
         return tableBinderContexts.values();
     }
     
-    private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+    private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final OwnerSegment owner, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                                                       final SQLStatementBinderContext binderContext, final SegmentType parentSegmentType) {
-        if (null == owner) {
+        if (null == owner.getIdentifier().getValue()) {
             return Collections.emptyList();
         }
-        CaseInsensitiveString caseInsensitiveOwner = CaseInsensitiveString.of(owner);
+        CaseInsensitiveString caseInsensitiveOwner = CaseInsensitiveString.of(owner.getIdentifier().getValue());
         if (tableBinderContexts.containsKey(caseInsensitiveOwner)) {
             return tableBinderContexts.get(caseInsensitiveOwner);
         }
@@ -217,7 +217,9 @@ public final class ColumnSegmentBinder {
             return binderContext.getOrderByFromTableBinderContexts().get(caseInsensitiveOwner);
         }
         if (outerTableBinderContexts.containsKey(caseInsensitiveOwner)) {
-            return outerTableBinderContexts.get(caseInsensitiveOwner);
+            return outerTableBinderContexts instanceof ScopedTableSegmentBinderContexts
+                    ? ((ScopedTableSegmentBinderContexts) outerTableBinderContexts).getNearestScopeTableBinderContexts(owner, binderContext.getSqlStatement().getDatabaseType())
+                    : outerTableBinderContexts.get(caseInsensitiveOwner);
         }
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveOwner)) {
             return binderContext.getExternalTableBinderContexts().get(caseInsensitiveOwner);
