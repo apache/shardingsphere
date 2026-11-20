@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
@@ -117,8 +117,8 @@ class FirebirdOpenBlobCommandExecutorTest {
     @Test
     void assertExecuteAfterCreatedBlobIsClosed() {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
-        FirebirdCloseBlobCommandPacket closePacket = mock(FirebirdCloseBlobCommandPacket.class);
-        when(closePacket.getBlobHandle()).thenReturn(createdResponse.getHandle());
+        FirebirdSingleHandleCommandPacket closePacket = mock(FirebirdSingleHandleCommandPacket.class);
+        when(closePacket.getObjectHandle()).thenReturn(createdResponse.getHandle());
         new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
         Collection<DatabasePacket> actual = new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute();
@@ -153,8 +153,8 @@ class FirebirdOpenBlobCommandExecutorTest {
     @Test
     void assertExecuteRestoresCreatedStreamBlobType() {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, true);
-        FirebirdCloseBlobCommandPacket closePacket = mock(FirebirdCloseBlobCommandPacket.class);
-        when(closePacket.getBlobHandle()).thenReturn(createdResponse.getHandle());
+        FirebirdSingleHandleCommandPacket closePacket = mock(FirebirdSingleHandleCommandPacket.class);
+        when(closePacket.getObjectHandle()).thenReturn(createdResponse.getHandle());
         new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession).execute().iterator().next();

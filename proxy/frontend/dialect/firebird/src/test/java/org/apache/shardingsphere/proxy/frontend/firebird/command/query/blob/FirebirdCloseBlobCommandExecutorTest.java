@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -46,7 +46,7 @@ class FirebirdCloseBlobCommandExecutorTest {
     private static final int CONNECTION_ID = 1;
     
     @Mock
-    private FirebirdCloseBlobCommandPacket packet;
+    private FirebirdSingleHandleCommandPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -69,7 +69,7 @@ class FirebirdCloseBlobCommandExecutorTest {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 5L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
-        when(packet.getBlobHandle()).thenReturn(blobHandle);
+        when(packet.getObjectHandle()).thenReturn(blobHandle);
         FirebirdCloseBlobCommandExecutor executor = new FirebirdCloseBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
@@ -83,7 +83,7 @@ class FirebirdCloseBlobCommandExecutorTest {
     @Test
     void assertExecuteWithoutBlobWrite() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
-        when(packet.getBlobHandle()).thenReturn(blobHandle);
+        when(packet.getObjectHandle()).thenReturn(blobHandle);
         Collection<DatabasePacket> actual = new FirebirdCloseBlobCommandExecutor(packet, connectionSession).execute();
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(0L));
         assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));

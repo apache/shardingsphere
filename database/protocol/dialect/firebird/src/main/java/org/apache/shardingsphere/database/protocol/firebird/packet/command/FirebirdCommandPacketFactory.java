@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
@@ -28,8 +29,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
@@ -39,13 +38,10 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
@@ -87,12 +83,20 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdBatchBlobSegmentsCommandPacket(payload);
             case SEEK_BLOB:
                 return new FirebirdSeekBlobCommandPacket(payload);
-            case CANCEL_BLOB:
-                return new FirebirdCancelBlobCommandPacket(payload);
+            case COMMIT:
+                // case PREPARE:
+            case ROLLBACK:
+                // case UNWIND:
+                // case RELEASE:
             case CLOSE_BLOB:
-                return new FirebirdCloseBlobCommandPacket(payload);
+            case CANCEL_BLOB:
+                // case DETACH:
+                // case DROP_DATABASE:
+                // case SERVICE_DETACH:
+                // case COMMIT_RETAINING:
+                // case ROLLBACK_RETAINING:
             case ALLOCATE_STATEMENT:
-                return new FirebirdAllocateStatementPacket(payload);
+                return new FirebirdSingleHandleCommandPacket(payload);
             case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementPacket(payload);
             case EXECUTE:
@@ -102,10 +106,6 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdFetchStatementPacket(payload);
             case INFO_SQL:
                 return FirebirdSQLInfoPacketType.createPacket(payload);
-            case COMMIT:
-                return new FirebirdCommitTransactionPacket(payload);
-            case ROLLBACK:
-                return new FirebirdRollbackTransactionPacket(payload);
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementPacket(payload);
             case BATCH_CREATE:
@@ -156,12 +156,12 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchBlobSegmentsCommandPacket.getLength(payload);
             case SEEK_BLOB:
                 return FirebirdSeekBlobCommandPacket.getLength();
-            case CANCEL_BLOB:
-                return FirebirdCancelBlobCommandPacket.getLength();
+            case COMMIT:
+            case ROLLBACK:
             case CLOSE_BLOB:
-                return FirebirdCloseBlobCommandPacket.getLength();
+            case CANCEL_BLOB:
             case ALLOCATE_STATEMENT:
-                return FirebirdAllocateStatementPacket.getLength();
+                return 8;
             case PREPARE_STATEMENT:
                 return FirebirdPrepareStatementPacket.getLength(payload);
             case EXECUTE:
@@ -169,10 +169,6 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdExecuteStatementPacket.getLength(payload, protocolVersion);
             case FETCH:
                 return FirebirdFetchStatementPacket.getLength(payload);
-            case COMMIT:
-                return FirebirdCommitTransactionPacket.getLength();
-            case ROLLBACK:
-                return FirebirdRollbackTransactionPacket.getLength();
             case FREE_STATEMENT:
                 return FirebirdFreeStatementPacket.getLength();
             case BATCH_CREATE:

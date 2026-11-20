@@ -17,29 +17,28 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
+import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -88,11 +87,22 @@ class FirebirdCommandExecutorFactoryTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    @Mock
+    private FirebirdPacketPayload payload;
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceArguments")
     void assertNewInstance(final String name, final FirebirdCommandPacketType commandPacketType, final Class<? extends CommandPacket> commandPacketClass,
                            final Class<? extends CommandExecutor> expectedExecutorClass) {
         assertThat(FirebirdCommandExecutorFactory.newInstance(commandPacketType, mock(commandPacketClass), connectionSession), isA(expectedExecutorClass));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("singleHandleArguments")
+    void assertNewInstanceFromPacketFactory(final String name, final FirebirdCommandPacketType commandPacketType, final Class<? extends CommandExecutor> expectedExecutorClass) {
+        CommandPacket packet = FirebirdCommandPacketFactory.newInstance(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1);
+        assertThat(packet, isA(FirebirdSingleHandleCommandPacket.class));
+        assertThat(FirebirdCommandExecutorFactory.newInstance(commandPacketType, packet, connectionSession), isA(expectedExecutorClass));
     }
     
     private static Stream<Arguments> newInstanceArguments() {
@@ -108,15 +118,15 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("put_blob_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdPutBlobSegmentCommandPacket.class, FirebirdPutBlobSegmentCommandExecutor.class),
                 Arguments.of("batch_segments_with_blob", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdBatchBlobSegmentsCommandPacket.class, FirebirdBatchBlobSegmentsCommandExecutor.class),
                 Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, FirebirdSeekBlobCommandPacket.class, FirebirdSeekBlobCommandExecutor.class),
-                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelBlobCommandPacket.class, FirebirdCancelBlobCommandExecutor.class),
-                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class, FirebirdCloseBlobCommandExecutor.class),
-                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class, FirebirdAllocateStatementCommandExecutor.class),
+                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdSingleHandleCommandPacket.class, FirebirdCancelBlobCommandExecutor.class),
+                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdSingleHandleCommandPacket.class, FirebirdCloseBlobCommandExecutor.class),
+                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdSingleHandleCommandPacket.class, FirebirdAllocateStatementCommandExecutor.class),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class, FirebirdPrepareStatementCommandExecutor.class),
                 Arguments.of("execute_statement", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class, FirebirdExecuteStatementCommandExecutor.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class, FirebirdFetchStatementCommandExecutor.class),
                 Arguments.of("info_s_q_l", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoPacket.class, FirebirdSQLInfoExecutor.class),
-                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdCommitTransactionPacket.class, FirebirdCommitTransactionCommandExecutor.class),
-                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdRollbackTransactionPacket.class, FirebirdRollbackTransactionCommandExecutor.class),
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class, FirebirdCommitTransactionCommandExecutor.class),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class, FirebirdRollbackTransactionCommandExecutor.class),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class, FirebirdBatchCreateCommandExecutor.class),
                 Arguments.of("batch_message", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchMessageCommandPacket.class, FirebirdBatchMessageCommandExecutor.class),
                 Arguments.of("batch_execute", FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class, FirebirdBatchExecuteCommandExecutor.class),
@@ -124,5 +134,14 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelCommandPacket.class, FirebirdBatchCancelCommandExecutor.class),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, FirebirdFreeStatementPacket.class, FirebirdFreeStatementCommandExecutor.class),
                 Arguments.of("unsupported_command", FirebirdCommandPacketType.VOID, CommandPacket.class, FirebirdUnsupportedCommandExecutor.class));
+    }
+    
+    private static Stream<Arguments> singleHandleArguments() {
+        return Stream.of(
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdCommitTransactionCommandExecutor.class),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdRollbackTransactionCommandExecutor.class),
+                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelBlobCommandExecutor.class),
+                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandExecutor.class),
+                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementCommandExecutor.class));
     }
 }

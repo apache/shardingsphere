@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query;
 
-import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
- * Firebird start transaction packet.
+ * Firebird single handle command packet.
+ *
+ * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L533-L549">Firebird xdr_protocol</a>
  */
-@Getter
-public final class FirebirdRollbackTransactionPacket extends FirebirdCommandPacket {
+public final class FirebirdSingleHandleCommandPacket extends FirebirdCommandPacket {
     
-    private final int transactionId;
+    private final int objectHandle;
     
-    public FirebirdRollbackTransactionPacket(final FirebirdPacketPayload payload) {
+    public FirebirdSingleHandleCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        transactionId = payload.readInt4();
+        objectHandle = payload.readInt4() & 0xFFFF;
     }
     
     @Override
@@ -39,11 +39,11 @@ public final class FirebirdRollbackTransactionPacket extends FirebirdCommandPack
     }
     
     /**
-     * Get length of packet.
+     * Get object handle.
      *
-     * @return Length of packet
+     * @return object handle
      */
-    public static int getLength() {
-        return 8;
+    public int getObjectHandle() {
+        return objectHandle;
     }
 }

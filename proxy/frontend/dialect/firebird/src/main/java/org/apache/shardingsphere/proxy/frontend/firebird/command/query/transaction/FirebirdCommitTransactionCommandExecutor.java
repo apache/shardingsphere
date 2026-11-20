@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transact
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -37,13 +37,13 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdCommitTransactionCommandExecutor implements CommandExecutor {
     
-    private final FirebirdCommitTransactionPacket packet;
+    private final FirebirdSingleHandleCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
-        int transactionHandle = packet.getTransactionId();
+        int transactionHandle = packet.getObjectHandle();
         validateTransactionHandle(transactionHandle);
         if (!connectionSession.isAutoCommit()) {
             // TODO add rollback and return exception

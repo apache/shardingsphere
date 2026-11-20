@@ -33,7 +33,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -70,10 +69,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         try {
             if (pendingMessages.isEmpty()) {
                 pendingPacketType = FirebirdCommandPacketType.valueOf(in.getInt(in.readerIndex()));
-                if (FirebirdCommandPacketType.ALLOCATE_STATEMENT == pendingPacketType) {
-                    handleMultiPacket(context, in, out, FirebirdAllocateStatementPacket.getLength());
-                    return;
-                }
                 if (FirebirdCommandPacketType.FREE_STATEMENT == pendingPacketType) {
                     handleMultiPacket(context, in, out, FirebirdFreeStatementPacket.getLength());
                     return;

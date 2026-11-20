@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -36,13 +36,13 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     
-    private final FirebirdCloseBlobCommandPacket packet;
+    private final FirebirdSingleHandleCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
-        int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getBlobHandle());
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionSession.getConnectionId(), packet.getObjectHandle());
         long blobId = FirebirdBlobWriteCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle).orElse(0L);
         FirebirdBlobWriteCache.getInstance().closeWrite(connectionSession.getConnectionId(), blobHandle);
         FirebirdBlobReadCache.getInstance().removeBlob(connectionSession.getConnectionId(), blobHandle);

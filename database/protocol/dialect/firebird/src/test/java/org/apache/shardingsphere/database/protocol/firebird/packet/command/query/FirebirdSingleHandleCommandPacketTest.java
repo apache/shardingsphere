@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query;
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
@@ -32,27 +32,28 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdAllocateStatementPacketTest {
+class FirebirdSingleHandleCommandPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
     
     @Test
-    void assertAllocateStatementPacket() {
-        when(payload.readInt4()).thenReturn(1);
-        FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(payload);
+    void assertReadObjectHandle() {
+        when(payload.readInt4()).thenReturn(123);
+        FirebirdSingleHandleCommandPacket packet = new FirebirdSingleHandleCommandPacket(payload);
         verify(payload).skipReserved(4);
-        assertThat(packet.getDatabaseId(), is(1));
+        assertThat(packet.getObjectHandle(), is(123));
     }
     
     @Test
-    void assertGetLength() {
-        assertThat(FirebirdAllocateStatementPacket.getLength(), is(8));
+    void assertReadInvalidObjectHandle() {
+        when(payload.readInt4()).thenReturn(-1);
+        assertThat(new FirebirdSingleHandleCommandPacket(payload).getObjectHandle(), is(0xFFFF));
     }
     
     @Test
     void assertWrite() {
-        FirebirdAllocateStatementPacket packet = new FirebirdAllocateStatementPacket(payload);
+        FirebirdSingleHandleCommandPacket packet = new FirebirdSingleHandleCommandPacket(payload);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);
         verifyNoInteractions(writePayload);
