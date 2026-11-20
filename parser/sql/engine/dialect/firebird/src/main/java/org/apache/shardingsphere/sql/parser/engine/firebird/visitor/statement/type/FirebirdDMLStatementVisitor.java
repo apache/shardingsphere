@@ -361,6 +361,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         PaginationValueSegment firstRow = (PaginationValueSegment) visitLimitValue(ctx.expr(0));
         PaginationValueSegment lastRow = (PaginationValueSegment) visitLimitValue(ctx.expr(1));
         if (!(firstRow instanceof NumberLiteralLimitValueSegment) || !(lastRow instanceof NumberLiteralLimitValueSegment)) {
+            // TODO Add parameter marker support for the inclusive ROWS row range
             return new LimitSegment(startIndex, stopIndex, null, null);
         }
         long skippedRowCount = ((NumberLiteralLimitValueSegment) firstRow).getValue() - 1;
