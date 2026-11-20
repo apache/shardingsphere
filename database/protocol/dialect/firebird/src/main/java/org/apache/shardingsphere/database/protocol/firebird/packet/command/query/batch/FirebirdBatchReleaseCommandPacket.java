@@ -31,7 +31,7 @@ public final class FirebirdBatchReleaseCommandPacket extends FirebirdCommandPack
     
     public FirebirdBatchReleaseCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementHandle = payload.readInt4();
+        statementHandle = payload.readObjectHandle();
     }
     
     @Override

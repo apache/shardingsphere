@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.util.Collection;
@@ -38,6 +39,7 @@ public final class FirebirdAllocateStatementCommandExecutor implements CommandEx
     @Override
     public Collection<DatabasePacket> execute() {
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(connectionSession.getConnectionId(), statementId);
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
 }

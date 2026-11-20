@@ -51,7 +51,8 @@ class FirebirdInfoPacketTest {
     
     @Test
     void assertNewInstance() {
-        when(payload.readInt4()).thenReturn(1, 2, 100);
+        when(payload.readObjectHandle()).thenReturn(1);
+        when(payload.readInt4()).thenReturn(2, 100);
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true, true, false);
         when(byteBuf.readByte()).thenReturn((byte) FirebirdSQLInfoPacketType.RECORDS.getCode(), (byte) FirebirdCommonInfoPacketType.END.getCode());

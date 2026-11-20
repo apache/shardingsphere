@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.resource;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchStatementManager;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobReadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
@@ -49,7 +50,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings({
         FirebirdTransactionIdGenerator.class, FirebirdStatementIdGenerator.class, FirebirdBlobIdGenerator.class, FirebirdBlobHandleGenerator.class,
         FirebirdBlobWriteCache.class, FirebirdBlobReadCache.class, FirebirdConnectionProtocolVersion.class, FirebirdFetchStatementCache.class,
-        FirebirdBatchStatementManager.class
+        FirebirdBatchStatementManager.class, FirebirdLastObjectRegistry.class
 })
 class FirebirdConnectionResourceManagerTest {
     
@@ -82,6 +83,9 @@ class FirebirdConnectionResourceManagerTest {
     @Mock
     private FirebirdBatchStatementManager batchStatementManager;
     
+    @Mock
+    private FirebirdLastObjectRegistry lastObjectRegistry;
+    
     @BeforeEach
     void setUp() {
         when(FirebirdTransactionIdGenerator.getInstance()).thenReturn(transactionIdGenerator);
@@ -93,6 +97,7 @@ class FirebirdConnectionResourceManagerTest {
         when(FirebirdConnectionProtocolVersion.getInstance()).thenReturn(connectionProtocolVersion);
         when(FirebirdFetchStatementCache.getInstance()).thenReturn(fetchStatementCache);
         when(FirebirdBatchStatementManager.getInstance()).thenReturn(batchStatementManager);
+        when(FirebirdLastObjectRegistry.getInstance()).thenReturn(lastObjectRegistry);
     }
     
     @Test
@@ -121,7 +126,7 @@ class FirebirdConnectionResourceManagerTest {
         assertThat(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()), is(expectedBlobContent));
         FirebirdConnectionResourceManager.getInstance().unregisterConnection(CONNECTION_ID);
         InOrder inOrder = inOrder(statementIdGenerator, transactionIdGenerator, blobIdGenerator, blobHandleGenerator, blobWriteCache, blobReadCache,
-                connectionProtocolVersion, fetchStatementCache, batchStatementManager);
+                connectionProtocolVersion, fetchStatementCache, batchStatementManager, lastObjectRegistry);
         inOrder.verify(statementIdGenerator).unregisterConnection(CONNECTION_ID);
         inOrder.verify(transactionIdGenerator).unregisterConnection(CONNECTION_ID);
         inOrder.verify(blobIdGenerator).unregisterConnection(CONNECTION_ID);
@@ -131,6 +136,7 @@ class FirebirdConnectionResourceManagerTest {
         inOrder.verify(connectionProtocolVersion).unsetProtocolVersion(CONNECTION_ID);
         inOrder.verify(fetchStatementCache).unregisterConnection(CONNECTION_ID);
         inOrder.verify(batchStatementManager).unregisterConnection(CONNECTION_ID);
+        inOrder.verify(lastObjectRegistry).unregisterConnection(CONNECTION_ID);
         assertNull(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()));
     }
 }
