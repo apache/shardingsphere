@@ -46,9 +46,9 @@ class FirebirdSingleHandleCommandPacketTest {
     }
     
     @Test
-    void assertReadInvalidObjectHandle() {
-        when(payload.readInt4()).thenReturn(-1);
-        assertThat(new FirebirdSingleHandleCommandPacket(payload).getObjectHandle(), is(0xFFFF));
+    void assertReadObjectHandleAboveSixteenBits() {
+        when(payload.readInt4()).thenReturn(0x10000);
+        assertThat(new FirebirdSingleHandleCommandPacket(payload).getObjectHandle(), is(0x10000));
     }
     
     @Test

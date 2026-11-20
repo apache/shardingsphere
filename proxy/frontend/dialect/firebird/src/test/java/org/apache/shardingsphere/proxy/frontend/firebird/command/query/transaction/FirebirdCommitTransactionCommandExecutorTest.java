@@ -78,6 +78,22 @@ class FirebirdCommitTransactionCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWithTransactionIdAboveSixteenBits() throws SQLException {
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        int transactionId = 0;
+        while (0x10000 > transactionId) {
+            transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
+        }
+        when(packet.getObjectHandle()).thenReturn(transactionId);
+        try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
+            Collection<DatabasePacket> actual = new FirebirdCommitTransactionCommandExecutor(packet, connectionSession).execute();
+            assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
+            verify(mocked.constructed().get(0)).commit();
+        }
+    }
+    
+    @Test
     void assertExecuteWithAutoCommit() throws SQLException {
         when(packet.getObjectHandle()).thenReturn(1);
         when(connectionSession.isAutoCommit()).thenReturn(true);

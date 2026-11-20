@@ -31,7 +31,7 @@ public final class FirebirdSingleHandleCommandPacket extends FirebirdCommandPack
     
     public FirebirdSingleHandleCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        objectHandle = payload.readInt4() & 0xFFFF;
+        objectHandle = payload.readInt4();
     }
     
     @Override

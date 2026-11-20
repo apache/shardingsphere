@@ -83,22 +83,23 @@ public final class FirebirdBlobHandleGenerator {
     }
     
     /**
-     * Resolve a BLOB handle, mapping the deferred placeholder handle to the most recently generated one.
+     * Resolve a BLOB handle, normalizing sign-extended 16-bit values and mapping the deferred placeholder handle to the most recently generated one.
      *
      * @param connectionId connection ID
      * @param blobHandle blob handle received from the client
      * @return resolved blob handle
      */
     public int resolveBlobHandle(final int connectionId, final int blobHandle) {
-        if (INVALID_OBJECT_HANDLE != blobHandle) {
-            return blobHandle;
+        int normalizedBlobHandle = blobHandle & 0xFFFF;
+        if (INVALID_OBJECT_HANDLE != normalizedBlobHandle) {
+            return normalizedBlobHandle;
         }
         ConnectionBlobHandles connectionBlobHandles = connectionRegistry.get(connectionId);
         if (null == connectionBlobHandles) {
-            return blobHandle;
+            return normalizedBlobHandle;
         }
         synchronized (connectionBlobHandles) {
-            return 0 == connectionBlobHandles.lastBlobHandle ? blobHandle : connectionBlobHandles.lastBlobHandle;
+            return 0 == connectionBlobHandles.lastBlobHandle ? normalizedBlobHandle : connectionBlobHandles.lastBlobHandle;
         }
     }
     

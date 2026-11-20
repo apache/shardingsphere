@@ -109,6 +109,13 @@ class FirebirdBlobHandleGeneratorTest {
     }
     
     @Test
+    void assertResolveBlobHandleWithSignExtendedPlaceholderExpectsLastGeneratedHandle() {
+        GENERATOR.nextBlobHandle(CONNECTION_ID);
+        int expected = GENERATOR.nextBlobHandle(CONNECTION_ID);
+        assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, -1), is(expected));
+    }
+    
+    @Test
     void assertResolveBlobHandleWithPlaceholderAndNoGeneratedHandleExpectsPlaceholder() {
         assertThat(GENERATOR.resolveBlobHandle(CONNECTION_ID, INVALID_OBJECT_HANDLE), is(INVALID_OBJECT_HANDLE));
     }
