@@ -73,8 +73,6 @@ final class FirebirdNonFixedLengthColumnSizeLoader {
     
     private boolean isNonFixedLengthType(final int dataType) {
         switch (dataType) {
-            // Binary types are included for metadata loading only.
-            // They are not used in statement prepare/describe yet.
             case Types.CHAR:
             case Types.NCHAR:
             case Types.VARCHAR:
