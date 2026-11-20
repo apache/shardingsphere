@@ -151,7 +151,7 @@ public final class FirebirdCommandExecutorFactory {
             case BATCH_CANCEL:
                 return new FirebirdBatchCancelCommandExecutor((FirebirdBatchCancelCommandPacket) commandPacket, connectionSession);
             default:
-                return new FirebirdUnsupportedCommandExecutor();
+                return new FirebirdUnsupportedCommandExecutor(commandPacket, commandPacketType);
         }
     }
 }
