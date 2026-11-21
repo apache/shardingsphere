@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authentication.Authenticator;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -28,6 +29,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.support.ParameterDeclarations;
 
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -46,6 +48,23 @@ class MySQLAuthenticatorTypeTest {
         when(rule.getAuthenticatorType(any())).thenReturn(authenticatorType);
         Authenticator actual = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(actual.getAuthenticationMethodName(), is(expectedAuthenticatorMethodName));
+    }
+    
+    @Test
+    void assertAuthenticatorWithTurkishLocale() {
+        Locale originalDefault = Locale.getDefault();
+        Locale originalDisplay = Locale.getDefault(Locale.Category.DISPLAY);
+        Locale originalFormat = Locale.getDefault(Locale.Category.FORMAT);
+        Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+        try {
+            when(rule.getAuthenticatorType(any())).thenReturn("caching_sha2_password");
+            Authenticator actual = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
+            assertThat(actual.getAuthenticationMethodName(), is("caching_sha2_password"));
+        } finally {
+            Locale.setDefault(originalDefault);
+            Locale.setDefault(Locale.Category.DISPLAY, originalDisplay);
+            Locale.setDefault(Locale.Category.FORMAT, originalFormat);
+        }
     }
     
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
