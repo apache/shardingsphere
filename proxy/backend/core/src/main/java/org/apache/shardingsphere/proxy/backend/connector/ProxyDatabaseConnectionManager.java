@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -81,6 +82,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
     private final Object closeLock = new Object();
+    
+    @Getter(AccessLevel.NONE)
+    private boolean commandExecuting;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
@@ -319,12 +323,23 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     }
     
     /**
+     * Mark a command as executing until its execution resources are closed.
+     */
+    @HighFrequencyInvocation
+    public void markCommandExecuting() {
+        synchronized (closeLock) {
+            commandExecuting = true;
+        }
+    }
+    
+    /**
      * Close resources used in execution.
      *
      * @throws BackendConnectionException backend connection exception
      */
     public void closeExecutionResources() throws BackendConnectionException {
         synchronized (closeLock) {
+            commandExecuting = false;
             Collection<Exception> result = new LinkedList<>(closeHandlers(false));
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext()))) {
                 result.addAll(closeHandlers(true));
@@ -343,16 +358,33 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     /**
      * Close all resources.
      *
+     * <p>While a command is executing, only cancel it. Its statements and connections are released by {@link #closeExecutionResources()} when it finishes, after the cancellation completes.</p>
+     *
      * @return exceptions occurred during closing resources
      */
     public Collection<SQLException> closeAllResources() {
         synchronized (closeLock) {
             closed.set(true);
+            if (commandExecuting) {
+                return cancelHandlers();
+            }
             Collection<SQLException> result = new LinkedList<>();
             result.addAll(closeHandlers(true));
             result.addAll(closeConnections(true));
             return result;
         }
+    }
+    
+    private Collection<SQLException> cancelHandlers() {
+        Collection<SQLException> result = new LinkedList<>();
+        for (ProxyBackendHandler each : proxyBackendHandlers) {
+            try {
+                each.cancel();
+            } catch (final SQLException ex) {
+                result.add(ex);
+            }
+        }
+        return result;
     }
     
     /**
