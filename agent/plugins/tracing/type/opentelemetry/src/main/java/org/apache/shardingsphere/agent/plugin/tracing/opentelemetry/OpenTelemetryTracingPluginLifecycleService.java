@@ -21,6 +21,7 @@ import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.plugin.core.context.PluginContext;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice.OpenTelemetryJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.spi.PluginLifecycleService;
 
@@ -45,5 +46,10 @@ public final class OpenTelemetryTracingPluginLifecycleService implements PluginL
     @Override
     public String getType() {
         return "OpenTelemetry";
+    }
+    
+    @Override
+    public void close() {
+        OpenTelemetryJDBCExecutorCallbackAdvice.endAllPendingSpans();
     }
 }
