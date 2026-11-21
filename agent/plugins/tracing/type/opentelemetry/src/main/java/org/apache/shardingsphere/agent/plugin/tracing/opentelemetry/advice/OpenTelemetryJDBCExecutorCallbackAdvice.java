@@ -46,23 +46,17 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCExecutorCallbackAdvice<Span> {
     
     /**
-     * Spans started for an invocation whose completion hooks have not run yet, keyed by the execution unit of that invocation.
-     * The per-invocation key keeps concurrent and nested callbacks isolated and leaves nothing to consume for a completion hook
-     * whose {@code beforeMethod} failed before registering a span. An entry is released by the completion hooks of its own invocation,
-     * or by {@link #endAllPendingSpans()} when the plugin stops.
+     * Spans that have been started but not completed yet, keyed by the execution unit of their own invocation.
      */
     private static final Map<JDBCExecutionUnit, PendingSpan> PENDING_SPANS = new ConcurrentHashMap<>();
     
     /**
-     * Number of spans the current thread registered and has not completed yet. Keeping the count on the thread makes the enablement check
-     * independent of the size of {@link #PENDING_SPANS}, so spans left pending by other threads never turn a later SQL execution into a scan
-     * of the registry. The count is raised by {@code beforeMethod} and lowered by the single completion exit, {@code afterMethod}.
+     * Number of spans that the current thread has started but not completed yet.
      */
     private static final ThreadLocal<Integer> PENDING_SPAN_COUNT = new ThreadLocal<>();
     
     /**
-     * Keep a pending invocation observable after the plugin is disabled. The executor skips every advice hook of a disabled plugin, so without this
-     * the completion hooks of an invocation whose span is still pending would never run and the span, execution unit and statement would be retained.
+     * Keeps the completion hooks of a pending invocation runnable while the plugin is disabled.
      *
      * @return true when the plugin is enabled or the current thread owns a pending span
      */
@@ -137,8 +131,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     /**
-     * End and release every span that is still pending when the plugin stops, so that no span outlives the tracing it was started for.
-     * The caller thread has no pending span afterwards, so its count is cleared as well.
+     * Ends and releases every span that is still pending, and clears the caller thread's pending span count.
      */
     public static void endAllPendingSpans() {
         for (Entry<JDBCExecutionUnit, PendingSpan> entry : PENDING_SPANS.entrySet()) {
@@ -151,9 +144,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     /**
-     * A span started for one invocation, together with the throwable recorded by a preceding {@code onThrowing} call. The advice executor
-     * invokes {@code onThrowing} before the {@code finally} block invokes {@code afterMethod}, so {@code afterMethod} is the single exit that
-     * ends the span and applies its final status.
+     * A span started for one invocation, together with the throwable recorded by a preceding {@code onThrowing} call.
      */
     @RequiredArgsConstructor
     @Getter

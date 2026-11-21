@@ -196,8 +196,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * The inner callback target has no resourceMetaData field, so the inner beforeMethod fails. The executor swallows that failure and still
-     * invokes the completion hooks of the inner invocation, which must not touch the span of the outer invocation.
+     * Asserts a nested invocation failing in {@code beforeMethod} does not end the outer invocation's span.
      */
     @Test
     void assertNestedFailedBeforeDoesNotEndOuterSpan() throws Exception {
@@ -218,8 +217,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * The executor skips every advice hook of a disabled plugin. An invocation that started while tracing was enabled must still end its span when
-     * the plugin gets disabled before it completes, instead of retaining it until the plugin stops.
+     * Asserts a span started before the plugin was disabled is still ended when its invocation completes.
      */
     @Test
     void assertSpanEndsWhenPluginDisabledDuringExecution() throws Exception {
@@ -248,7 +246,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * The enablement check belongs to the current thread: a span another thread left pending must not keep the hooks of this thread running.
+     * Asserts a pending span on another thread does not enable the plugin for the current thread.
      */
     @Test
     void assertPendingSpanOnAnotherThreadDoesNotEnableThisThread() throws Exception {
@@ -262,7 +260,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * The same completion path must keep the failure outcome of an invocation that throws while the plugin is disabled.
+     * Asserts a throwing invocation keeps its failure outcome when the plugin is disabled mid-execution.
      */
     @Test
     void assertSpanRecordsFailureWhenPluginDisabledDuringExecution() throws Exception {
@@ -282,7 +280,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     /**
-     * A span whose completion hooks never ran is released when the plugin stops, so that it does not outlive the tracing it was started for.
+     * Asserts a span whose completion hooks never ran is released when the plugin stops.
      */
     @Test
     @SneakyThrows(ReflectiveOperationException.class)
