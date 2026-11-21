@@ -21,14 +21,17 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.CommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.LevelOfIsolationContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.engine.firebird.visitor.statement.FirebirdStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.jspecify.annotations.Nullable;
 
 /**
  * TCL statement visitor for Firebird.
@@ -41,7 +44,18 @@ public final class FirebirdTCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {
-        return new SetTransactionStatement(getDatabaseType());
+        return new SetTransactionStatement(getDatabaseType(), null, getIsolationLevel(ctx.levelOfIsolation()), null);
+    }
+    
+    @Nullable
+    private TransactionIsolationLevel getIsolationLevel(@Nullable final LevelOfIsolationContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        if (null != ctx.COMMITTED() || null != ctx.UNCOMMITTED()) {
+            return TransactionIsolationLevel.READ_COMMITTED;
+        }
+        return null == ctx.SERIALIZABLE() ? TransactionIsolationLevel.REPEATABLE_READ : TransactionIsolationLevel.SERIALIZABLE;
     }
     
     @Override

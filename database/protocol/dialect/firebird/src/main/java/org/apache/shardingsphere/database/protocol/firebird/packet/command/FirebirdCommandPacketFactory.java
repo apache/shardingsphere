@@ -20,6 +20,7 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
@@ -95,6 +97,8 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdAllocateStatementPacket(payload);
             case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementPacket(payload);
+            case EXEC_IMMEDIATE:
+                return new FirebirdExecuteImmediatePacket(payload);
             case EXECUTE:
             case EXECUTE2:
                 return new FirebirdExecuteStatementPacket(payload, protocolVersion);
@@ -120,6 +124,8 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdBatchCancelCommandPacket(payload);
             case BATCH_SYNC:
                 return new FirebirdBatchSyncCommandPacket(payload);
+            case CANCEL:
+                return new FirebirdCancelCommandPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
@@ -162,6 +168,7 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdCloseBlobCommandPacket.getLength();
             case ALLOCATE_STATEMENT:
                 return FirebirdAllocateStatementPacket.getLength();
+            case EXEC_IMMEDIATE:
             case PREPARE_STATEMENT:
                 return FirebirdPrepareStatementPacket.getLength(payload);
             case EXECUTE:
@@ -187,6 +194,8 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdBatchCancelCommandPacket.getLength();
             case BATCH_SYNC:
                 return FirebirdBatchSyncCommandPacket.getLength();
+            case CANCEL:
+                return FirebirdCancelCommandPacket.getLength();
             default:
                 return 0;
         }

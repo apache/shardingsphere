@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -37,6 +38,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteImmediatePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
@@ -97,6 +99,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class),
+                Arguments.of("execute_immediate", FirebirdCommandPacketType.EXEC_IMMEDIATE, FirebirdExecuteImmediatePacket.class),
                 Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class),
                 Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, FirebirdExecuteStatementPacket.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class),
@@ -110,6 +113,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdBatchReleaseCommandPacket.class),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelCommandPacket.class),
                 Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, FirebirdBatchSyncCommandPacket.class),
+                Arguments.of("cancel", FirebirdCommandPacketType.CANCEL, FirebirdCancelCommandPacket.class),
                 Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, FirebirdUnsupportedCommandPacket.class));
     }
     
@@ -131,6 +135,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, 8),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, 20),
+                Arguments.of("execute_immediate", FirebirdCommandPacketType.EXEC_IMMEDIATE, 20),
                 Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, 0),
                 Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, 0),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, 16),
@@ -142,6 +147,7 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),
                 Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4),
+                Arguments.of("cancel", FirebirdCommandPacketType.CANCEL, 8),
                 Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, 0));
     }
 }

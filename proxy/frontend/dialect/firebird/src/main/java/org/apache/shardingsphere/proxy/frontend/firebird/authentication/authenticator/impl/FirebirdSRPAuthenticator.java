@@ -21,7 +21,9 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAut
 import org.apache.shardingsphere.database.protocol.firebird.packet.handshake.FirebirdSRPAuthenticationData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticator;
-import org.firebirdsql.util.ByteArrayHelper;
+
+import java.math.BigInteger;
+import java.util.regex.Pattern;
 
 /**
  * SRP authenticator for Firebird.
@@ -30,12 +32,14 @@ import org.firebirdsql.util.ByteArrayHelper;
  */
 public final class FirebirdSRPAuthenticator implements FirebirdAuthenticator {
     
+    private static final Pattern HEX_NUMBER_PATTERN = Pattern.compile("[0-9A-Fa-f]+");
+    
     @Override
     public boolean authenticate(final ShardingSphereUser user, final Object[] authInfo) {
         FirebirdSRPAuthenticationData authData = (FirebirdSRPAuthenticationData) authInfo[1];
-        String serverProof = ByteArrayHelper.toHexString(authData.serverProof(user.getGrantee().getUsername()));
+        BigInteger serverProof = new BigInteger(1, authData.serverProof(user.getGrantee().getUsername()));
         String clientProof = (String) authInfo[2];
-        return serverProof.equals(clientProof);
+        return null != clientProof && HEX_NUMBER_PATTERN.matcher(clientProof).matches() && serverProof.equals(new BigInteger(clientProof, 16));
     }
     
     @Override

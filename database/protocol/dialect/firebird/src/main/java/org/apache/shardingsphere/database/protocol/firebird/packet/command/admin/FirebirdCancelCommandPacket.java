@@ -15,23 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.admin;
 
 import lombok.Getter;
-import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
- * Excess transactions exception for Firebird.
+ * Firebird cancel command packet.
  */
 @Getter
-public final class ExcessTransactionsException extends SQLDialectException {
+public final class FirebirdCancelCommandPacket extends FirebirdCommandPacket {
     
-    private static final long serialVersionUID = 2831574758434100827L;
+    private final int kind;
     
-    private final int maxTransactions;
+    public FirebirdCancelCommandPacket(final FirebirdPacketPayload payload) {
+        payload.skipReserved(4);
+        kind = payload.readInt4();
+    }
     
-    public ExcessTransactionsException(final int maxTransactions) {
-        super(String.format("Attempt to start more than %d transactions", maxTransactions));
-        this.maxTransactions = maxTransactions;
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
+    }
+    
+    /**
+     * Get length of packet.
+     *
+     * @return length of packet
+     */
+    public static int getLength() {
+        return 8;
     }
 }
