@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.Proj
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ProjectionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.QualifiedShorthandContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.ReturningClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.RowsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectContext;
 import org.apache.shardingsphere.sql.parser.autogen.FirebirdStatementParser.SelectSpecificationContext;
@@ -340,23 +341,35 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitLimitClause(final LimitClauseContext ctx) {
-        PaginationValueSegment rowCount = null;
-        PaginationValueSegment offset = null;
+        int startIndex = ctx.getStart().getStartIndex();
+        int stopIndex = ctx.getStop().getStopIndex();
         if (null != ctx.rowsClause()) {
-            offset = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(0));
-            if (ctx.rowsClause().expr().size() > 1) {
-                rowCount = (PaginationValueSegment) visitLimitValue(ctx.rowsClause().expr(1));
-            }
-        } else {
-            OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
-            if (null != offsetDefinition.offsetClause()) {
-                offset = (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
-            }
-            if (null != offsetDefinition.fetchClause()) {
-                rowCount = (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
-            }
+            return visitRowsClause(ctx.rowsClause(), startIndex, stopIndex);
         }
-        return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, rowCount);
+        OffsetDefinitionContext offsetDefinition = ctx.offsetDefinition();
+        PaginationValueSegment offset =
+                null == offsetDefinition.offsetClause() ? null : (PaginationValueSegment) visitLimitValue(offsetDefinition.offsetClause().limitOffset());
+        PaginationValueSegment rowCount =
+                null == offsetDefinition.fetchClause() ? null : (PaginationValueSegment) visitLimitValue(offsetDefinition.fetchClause().limitRowCount());
+        return new LimitSegment(startIndex, stopIndex, offset, rowCount);
+    }
+    
+    private LimitSegment visitRowsClause(final RowsClauseContext ctx, final int startIndex, final int stopIndex) {
+        if (1 == ctx.expr().size()) {
+            return new LimitSegment(startIndex, stopIndex, null, (PaginationValueSegment) visitLimitValue(ctx.expr(0)));
+        }
+        PaginationValueSegment firstRow = (PaginationValueSegment) visitLimitValue(ctx.expr(0));
+        PaginationValueSegment lastRow = (PaginationValueSegment) visitLimitValue(ctx.expr(1));
+        if (!(firstRow instanceof NumberLiteralLimitValueSegment) || !(lastRow instanceof NumberLiteralLimitValueSegment)) {
+            // TODO Add parameter marker support for the inclusive ROWS row range
+            return new LimitSegment(startIndex, stopIndex, null, null);
+        }
+        long skippedRowCount = ((NumberLiteralLimitValueSegment) firstRow).getValue() - 1;
+        long inclusiveRowCount = ((NumberLiteralLimitValueSegment) lastRow).getValue() - ((NumberLiteralLimitValueSegment) firstRow).getValue() + 1;
+        LimitSegment result = new LimitSegment(startIndex, stopIndex, new NumberLiteralLimitValueSegment(firstRow.getStartIndex(), firstRow.getStopIndex(), skippedRowCount),
+                new NumberLiteralLimitValueSegment(lastRow.getStartIndex(), lastRow.getStopIndex(), inclusiveRowCount));
+        result.setOneBasedRowRange(true);
+        return result;
     }
     
     private ASTNode visitLimitValue(final ParserRuleContext ctx) {
@@ -368,6 +381,9 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
                     new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerValue) visit(ctx.getChild(0))).getValue());
             getParameterMarkerSegments().add(result);
             return result;
+        }
+        if (1 == ctx.getChildCount() && ctx.getChild(0) instanceof ParserRuleContext) {
+            return visitLimitValue((ParserRuleContext) ctx.getChild(0));
         }
         return null;
     }

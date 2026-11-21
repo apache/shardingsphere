@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -66,6 +67,16 @@ class ShardingOffsetTokenGeneratorTest {
     @Test
     void assertGenerateSQLToken() {
         assertThat(generator.generateSQLToken(mockSelectStatementContext()).toString(), is("2"));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithOneBasedRowRange() {
+        NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(27, 27, 2L);
+        NumberLiteralLimitValueSegment rowCountSegment = new NumberLiteralLimitValueSegment(32, 32, 3L);
+        PaginationContext paginationContext = new PaginationContext(offsetSegment, rowCountSegment, null, true);
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
+        when(selectStatementContext.getPaginationContext()).thenReturn(paginationContext);
+        assertThat(generator.generateSQLToken(selectStatementContext).toString(), is("1"));
     }
     
     private SelectStatementContext mockSelectStatementContext() {

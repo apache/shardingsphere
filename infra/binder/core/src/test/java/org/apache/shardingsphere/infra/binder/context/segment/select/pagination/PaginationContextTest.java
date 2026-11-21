@@ -151,6 +151,11 @@ class PaginationContextTest {
     }
     
     @Test
+    void assertGetRevisedOffsetWithOneBasedRowRange() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters(), true).getRevisedOffset(), is(1L));
+    }
+    
+    @Test
     void assertGetRevisedRowCount() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
