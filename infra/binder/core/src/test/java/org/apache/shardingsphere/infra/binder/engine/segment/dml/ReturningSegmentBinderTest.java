@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.ProjectionsSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
@@ -114,6 +116,34 @@ class ReturningSegmentBinderTest {
             assertThat(actualContexts, sameInstance(tables));
         }
         assertThat(tables.size(), is(existing ? 2 : 1));
+    }
+    
+    @ParameterizedTest(name = "owner={0}, rowAlias={1}")
+    @CsvSource({"OLD,true", "NEW,true", "foo_other,false"})
+    void assertBindColumnRowAlias(final String owner, final boolean rowAlias) {
+        ProjectionsSegment projections = new ProjectionsSegment(10, 20);
+        ColumnSegment column = new ColumnSegment(10, 20, new IdentifierValue("id"));
+        column.setOwner(new OwnerSegment(10, 16, new IdentifierValue(owner)));
+        projections.getProjections().add(new ColumnProjectionSegment(column));
+        ReturningSegment segment = new ReturningSegment(0, 30, projections);
+        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 8, new IdentifierValue("foo_table")));
+        SQLStatementBinderContext context = mock(SQLStatementBinderContext.class);
+        TableSegmentBinderContext targetContext = mock(TableSegmentBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tables = LinkedHashMultimap.create();
+        tables.put(CaseInsensitiveString.of("foo_table"), targetContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outer = LinkedHashMultimap.create();
+        ProjectionsSegment expectedProjections = new ProjectionsSegment(10, 20);
+        when(ProjectionsSegmentBinder.bind(eq(projections), eq(context), eq(table), tableContextsCaptor.capture(), eq(outer))).thenReturn(expectedProjections);
+        ReturningSegment actual = ReturningSegmentBinder.bind(segment, context, table, tables, outer);
+        assertThat(actual.getProjections(), sameInstance(expectedProjections));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> actualContexts = tableContextsCaptor.getValue();
+        if (rowAlias) {
+            assertThat(actualContexts, not(sameInstance(tables)));
+            assertTrue(actualContexts.containsEntry(CaseInsensitiveString.of(owner), targetContext));
+        } else {
+            assertThat(actualContexts, sameInstance(tables));
+        }
+        assertThat(tables.size(), is(1));
     }
     
     @Test
