@@ -67,17 +67,18 @@ class FirebirdBatchStatementManagerTest {
     
     @Test
     void assertRegisterBatchStatement() {
-        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 16L, true, true);
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 16L, true, true, true);
         FirebirdBatchStatement actual = manager.getBatchStatement(CONNECTION_ID, STATEMENT_ID);
         assertThat(actual.getStatementHandle(), is(STATEMENT_ID));
         assertThat(actual.getBufferSize(), is(16L));
         assertTrue(actual.isRecordCounts());
         assertTrue(actual.isMultiError());
+        assertTrue(actual.isBlobStreamAllowed());
     }
     
     @Test
     void assertAppendBatchMessage() {
-        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false);
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false, false);
         List<List<Object>> expectedParameterValues = Arrays.asList(Collections.singletonList("foo_value"), Collections.singletonList("bar_value"));
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getDataLength()).thenReturn(4);
@@ -98,7 +99,7 @@ class FirebirdBatchStatementManagerTest {
     
     @Test
     void assertAppendBatchMessageWhenBufferSizeExceeded() {
-        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false);
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false, false);
         when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
         when(packet.getDataLength()).thenReturn(9);
         assertThrows(BatchTooBigException.class, () -> manager.appendBatchMessage(CONNECTION_ID, packet));
@@ -110,7 +111,7 @@ class FirebirdBatchStatementManagerTest {
     
     @Test
     void assertResetBatchStatement() {
-        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false);
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false, false);
         FirebirdBatchStatement batchStatement = manager.getBatchStatement(CONNECTION_ID, STATEMENT_ID);
         batchStatement.addParameterValues(Collections.singletonList("foo_value"));
         batchStatement.addSize(4L);
@@ -121,7 +122,7 @@ class FirebirdBatchStatementManagerTest {
     
     @Test
     void assertUnregisterBatchStatement() {
-        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false);
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false, false);
         manager.unregisterBatchStatement(CONNECTION_ID, STATEMENT_ID);
         assertNull(manager.getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }
@@ -133,7 +134,7 @@ class FirebirdBatchStatementManagerTest {
     
     @Test
     void assertUnregisterConnection() {
-        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false);
+        manager.registerBatchStatement(CONNECTION_ID, STATEMENT_ID, Collections.emptyList(), 8L, false, false, false);
         manager.unregisterConnection(CONNECTION_ID);
         assertNull(manager.getBatchStatement(CONNECTION_ID, STATEMENT_ID));
     }

@@ -213,7 +213,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void assertRejectUnclosedBlobParameter() {
         int blobHandle = 7;
         long blobId = 11L;
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, 1, false);
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, new byte[]{1, 2});
         mockParameter(FirebirdBinaryColumnType.BLOB, blobId);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
@@ -289,7 +289,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         int blobHandle = 13;
         long blobId = 17L;
         byte[] expectedBytes = new byte[]{3, 4};
-        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, transactionId, false);
         FirebirdBlobWriteCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, expectedBytes);
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         mockParameter(FirebirdBinaryColumnType.BLOB, blobId);

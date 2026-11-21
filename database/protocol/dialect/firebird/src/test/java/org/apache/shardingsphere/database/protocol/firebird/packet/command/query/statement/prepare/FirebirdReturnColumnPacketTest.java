@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,6 +41,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -51,6 +54,16 @@ class FirebirdReturnColumnPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
+    
+    @Test
+    void assertGetColumnTypeWithJdbcType() {
+        assertThat(createPacket(Collections.emptyList(), Types.VARCHAR, null, false, null).getColumnType(), is(FirebirdBinaryColumnType.VARYING));
+    }
+    
+    @Test
+    void assertGetColumnTypeWithBlobColumn() {
+        assertThat(createPacket(Collections.emptyList(), Types.VARCHAR, null, true, null).getColumnType(), is(FirebirdBinaryColumnType.BLOB));
+    }
     
     @Test
     void assertWrite() {
@@ -99,8 +112,8 @@ class FirebirdReturnColumnPacketTest {
         }
     }
     
-    private FirebirdReturnColumnPacket createPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final int dataType, final Integer columnLength,
-                                                    final boolean blobColumn, final Integer blobSubType) {
+    private FirebirdReturnColumnPacket createPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final int dataType, @Nullable final Integer columnLength,
+                                                    final boolean blobColumn, @Nullable final Integer blobSubType) {
         ShardingSphereColumn column = new ShardingSphereColumn("col", dataType, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         return new FirebirdReturnColumnPacket(requestedItems, 1, table, column, "t", "c", "o", columnLength, blobColumn, blobSubType);

@@ -19,9 +19,21 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cac
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.ref.SoftReference;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
+/**
+ * Firebird BLOB data written by the client and buffered by the proxy.
+ *
+ * <p>Used BLOB data is backed by a temporary file until its transaction ends so statements and open_blob can reuse its ID independently of garbage collection.</p>
+ */
 @RequiredArgsConstructor
 public final class FirebirdBlobWrite {
     
@@ -32,12 +44,25 @@ public final class FirebirdBlobWrite {
     private final long blobId;
     
     @Getter
+    private final int transactionId;
+    
+    @Getter
     private final boolean streamBlob;
     
-    private final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    
+    private volatile byte[] content;
+    
+    private volatile SoftReference<byte[]> usedContent;
+    
+    private Path backingFile;
+    
+    private int size;
     
     @Getter
     private boolean closed;
+    
+    private volatile boolean released;
     
     /**
      * Append a BLOB data segment.
@@ -48,18 +73,88 @@ public final class FirebirdBlobWrite {
         buffer.write(segment, 0, segment.length);
     }
     
+    /**
+     * Get size of BLOB data.
+     *
+     * @return size of BLOB data in bytes
+     */
     public int getSize() {
-        return buffer.size();
-    }
-    
-    public byte[] getBytes() {
-        return buffer.toByteArray();
+        return closed ? size : buffer.size();
     }
     
     /**
-     * Mark this BLOB write as closed.
+     * Get BLOB data.
+     *
+     * <p>Callers must not modify the returned data, which is shared while cached.</p>
+     *
+     * @return BLOB data
      */
+    @HighFrequencyInvocation
+    public Optional<byte[]> getBytes() {
+        if (released) {
+            return Optional.empty();
+        }
+        if (!closed) {
+            return Optional.of(buffer.toByteArray());
+        }
+        byte[] result = content;
+        if (null != result) {
+            return Optional.of(result);
+        }
+        result = usedContent.get();
+        return null == result ? readUsedContent() : Optional.of(result);
+    }
+    
+    @SneakyThrows(IOException.class)
+    private synchronized Optional<byte[]> readUsedContent() {
+        if (released) {
+            return Optional.empty();
+        }
+        byte[] result = usedContent.get();
+        if (null == result) {
+            result = Files.readAllBytes(backingFile);
+            usedContent = new SoftReference<>(result);
+        }
+        return Optional.of(result);
+    }
+    
+    /**
+     * Mark this BLOB write as closed and keep its data as one exact-size array.
+     */
+    @HighFrequencyInvocation
     public void markClosed() {
+        content = buffer.toByteArray();
+        size = content.length;
+        buffer = null;
         closed = true;
+    }
+    
+    @HighFrequencyInvocation
+    void markUsed() {
+        if (null != content) {
+            storeUsedContent();
+        }
+    }
+    
+    @SneakyThrows(IOException.class)
+    private synchronized void storeUsedContent() {
+        if (released || null == content) {
+            return;
+        }
+        if (null == backingFile) {
+            backingFile = Files.createTempFile("shardingsphere-firebird-blob-", ".tmp");
+        }
+        Files.write(backingFile, content);
+        usedContent = new SoftReference<>(content);
+        content = null;
+    }
+    
+    @HighFrequencyInvocation
+    synchronized void release() throws IOException {
+        if (null != backingFile) {
+            Files.delete(backingFile);
+            backingFile = null;
+        }
+        released = true;
     }
 }
