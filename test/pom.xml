@@ -35,20 +35,12 @@
     </modules>
     
     <properties>
-        <glassfish-jaxb.version>2.3.9</glassfish-jaxb.version>
         <testcontainers.version>2.0.3</testcontainers.version>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.glassfish.jaxb</groupId>
-                <artifactId>jaxb-bom</artifactId>
-                <version>${glassfish-jaxb.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-bom</artifactId>
