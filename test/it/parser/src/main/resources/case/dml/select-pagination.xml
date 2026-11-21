@@ -2135,6 +2135,9 @@
                 <expr>
                     <function function-name="CAST" text="CAST(? AS INTEGER)" start-index="15" stop-index="32">
                         <parameter>
+                            <parameter-marker-expression parameter-index="1" start-index="20" stop-index="20" />
+                        </parameter>
+                        <parameter>
                             <data-type value="INTEGER" start-index="25" stop-index="31" />
                         </parameter>
                     </function>

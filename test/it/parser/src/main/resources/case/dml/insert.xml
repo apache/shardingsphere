@@ -4748,6 +4748,45 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_select_with_returning_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="38">
+            <column name="order_id" start-index="21" stop-index="28" />
+            <column name="user_id" start-index="31" stop-index="37" />
+        </columns>
+        <select>
+            <from>
+                <simple-table name="t_order" start-index="70" stop-index="76" />
+            </from>
+            <projections start-index="47" stop-index="63">
+                <column-projection name="order_id" start-index="47" stop-index="54" />
+                <column-projection name="user_id" start-index="57" stop-index="63" />
+            </projections>
+            <where start-index="78" stop-index="95">
+                <expr>
+                    <binary-operation-expression start-index="84" stop-index="95">
+                        <left>
+                            <column name="order_id" start-index="84" stop-index="91" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="1" start-index="95" stop-index="95" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <order-by>
+                <column-item name="order_id" start-index="106" stop-index="113" />
+            </order-by>
+        </select>
+        <returning start-index="115" stop-index="141">
+            <projections start-index="125" stop-index="141">
+                <column-projection name="order_id" start-index="125" stop-index="132" />
+                <column-projection name="user_id" start-index="135" stop-index="141" />
+            </projections>
+        </returning>
+    </insert>
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />

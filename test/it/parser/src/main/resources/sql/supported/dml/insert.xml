@@ -71,8 +71,8 @@
     <sql-case id="insert_on_duplicate_key_update_with_base64_aes_encrypt" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = convert(to_base64(aes_encrypt(?, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
     <sql-case id="insert_all_with_all_placeholders" value="INSERT ALL INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) SELECT * FROM dual" db-types="Oracle" />
     <sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
-    <sql-case id="insert_select_with_all_columns" value="INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Presto,Doris" />
-    <sql-case id="insert_select_without_columns" value="INSERT INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="insert_select_with_all_columns" value="INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Presto,Doris,Firebird" />
+    <sql-case id="insert_select_without_columns" value="INSERT INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss,Firebird" />
     <sql-case id="insert_select_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) SELECT item_id, order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE item_id = ?" db-types="MySQL" />
     <sql-case id="insert_select_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
     <sql-case id="insert_select_on_duplicate_key_update" value="INSERT INTO t_order(order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ? ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
@@ -166,6 +166,7 @@
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
     <sql-case id="insert_default_firebird" value="INSERT INTO t_order (id) VALUES (DEFAULT)" db-types="Firebird"/>
+    <sql-case id="insert_select_with_returning_firebird" value="INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM t_order WHERE order_id = 1 ORDER BY order_id RETURNING order_id, user_id" db-types="Firebird"/>
     <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
     <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
     <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>

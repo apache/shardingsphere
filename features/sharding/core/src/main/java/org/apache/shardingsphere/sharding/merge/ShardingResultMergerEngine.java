@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -27,10 +28,12 @@ import org.apache.shardingsphere.infra.merge.engine.merger.impl.TransparentResul
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.merge.dal.ShardingDALResultMerger;
 import org.apache.shardingsphere.sharding.merge.ddl.ShardingDDLResultMerger;
+import org.apache.shardingsphere.sharding.merge.dml.ShardingDMLResultMerger;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 /**
  * Result merger engine for sharding.
@@ -49,7 +52,14 @@ public final class ShardingResultMergerEngine implements ResultMergerEngine<Shar
         if (sqlStatementContext.getSqlStatement() instanceof DALStatement) {
             return new ShardingDALResultMerger(databaseName, shardingRule);
         }
+        if (sqlStatementContext instanceof InsertStatementContext && isShardingInsertWithReturning(shardingRule, ((InsertStatementContext) sqlStatementContext).getSqlStatement())) {
+            return new ShardingDMLResultMerger();
+        }
         return new TransparentResultMerger();
+    }
+    
+    private boolean isShardingInsertWithReturning(final ShardingRule shardingRule, final InsertStatement insertStatement) {
+        return insertStatement.getReturning().isPresent() && insertStatement.getTable().map(optional -> shardingRule.isShardingTable(optional.getTableName().getIdentifier().getValue())).orElse(false);
     }
     
     @Override

@@ -104,6 +104,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     
     private ResponseHeader executePreparedStatement(final FirebirdServerPreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         Collection<Long> blobIdsToRemove = bindBlobParameters(params);
+        preparedStatement.convertExactNumericParameters(params);
         try {
             SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
             if (sqlStatementContext instanceof ParameterAware) {
