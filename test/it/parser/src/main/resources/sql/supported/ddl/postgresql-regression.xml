@@ -117,4 +117,12 @@
     <sql-case id="cluster_index_on_table_postgresql" value="CLUSTER foo_idx ON foo" db-types="PostgreSQL" />
     <sql-case id="drop_database_force_postgresql" value="DROP DATABASE foo_db WITH (FORCE)" db-types="PostgreSQL" />
     <sql-case id="drop_database_force_without_with_postgresql" value="DROP DATABASE foo_db (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="create_table_asensitive_identifier_postgresql" value="CREATE TABLE asensitive (asensitive int)" db-types="PostgreSQL" />
+    <sql-case id="create_table_compression_identifier_postgresql" value="CREATE TABLE compression (compression int)" db-types="PostgreSQL" />
+    <sql-case id="create_table_finalize_identifier_postgresql" value="CREATE TABLE finalize (finalize int)" db-types="PostgreSQL" />
+    <sql-case id="create_table_normalize_identifier_postgresql" value="CREATE TABLE normalize (normalize int)" db-types="PostgreSQL" />
+    <sql-case id="alter_view_rename_normalize_postgresql" value="ALTER VIEW foo_view RENAME TO normalize" db-types="PostgreSQL" />
+    <sql-case id="declare_asensitive_cursor_postgresql" value="DECLARE foo_cursor ASENSITIVE CURSOR FOR SELECT id FROM foo" db-types="PostgreSQL" />
+    <sql-case id="alter_table_detach_partition_finalize_postgresql" value="ALTER TABLE foo DETACH PARTITION bar FINALIZE" db-types="PostgreSQL" />
+    <sql-case id="create_table_unicode_names_postgresql" value="CREATE TABLE U&amp;&quot;foo\005f\0061&quot; (U&amp;&quot;foo!005f!0062&quot; UESCAPE '!' int)" db-types="PostgreSQL" />
 </sql-cases>

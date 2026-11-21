@@ -134,6 +134,7 @@ unreservedWord
     | ALSO
     | ALTER
     | ALWAYS
+    | ASENSITIVE
     | ASSERTION
     | ASSIGNMENT
     | AT
@@ -183,6 +184,7 @@ unreservedWord
     | COMMENTS
     | COMMIT
     | COMMITTED
+    | COMPRESSION
     | CONFIGURATION
     | CONFLICT
     | CONNECT
@@ -237,6 +239,7 @@ unreservedWord
     | EXTERNAL
     | FAMILY
     | FILTER
+    | FINALIZE
     | FIRST
     | FOLLOWING
     | FORCE
@@ -561,7 +564,7 @@ owner
     ;
 
 name
-    : identifier
+    : identifier | colNameKeyword
     ;
 
 tableNames
@@ -1849,6 +1852,7 @@ colNameKeyword
     | NATIONAL
     | NCHAR
     | NONE
+    | NORMALIZE
     | NULLIF
     | NUMERIC
     | OUT
