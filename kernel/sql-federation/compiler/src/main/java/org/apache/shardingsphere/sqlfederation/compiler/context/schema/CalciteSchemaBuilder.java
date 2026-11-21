@@ -56,7 +56,7 @@ public final class CalciteSchemaBuilder {
                 continue;
             }
             Optional<String> defaultSchema = new DatabaseTypeRegistry(each.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema();
-            AbstractSchema schema = defaultSchema.isPresent() ? buildDatabase(each) : buildSchema(each.getAllSchemas().iterator().next(), each.getProtocolType());
+            AbstractSchema schema = defaultSchema.isPresent() ? buildDatabase(each) : buildSchema(each);
             result.add(each.getName(), schema);
         }
         registerFunction(databases, result);
@@ -67,8 +67,10 @@ public final class CalciteSchemaBuilder {
         return new SQLFederationDatabase(database, database.getProtocolType());
     }
     
-    private static AbstractSchema buildSchema(final ShardingSphereSchema schema, final DatabaseType protocolType) {
-        return new SQLFederationSchema(schema.getName(), schema, protocolType);
+    private static AbstractSchema buildSchema(final ShardingSphereDatabase database) {
+        ShardingSphereSchema defaultSchema = database.findDefaultSchema().orElseGet(() -> database.getAllSchemas().iterator().next());
+        Collection<ShardingSphereSchema> subSchemas = database.getAllSchemas().stream().filter(each -> defaultSchema != each).collect(Collectors.toList());
+        return new SQLFederationSchema(defaultSchema.getName(), defaultSchema, subSchemas, database.getProtocolType());
     }
     
     private static void registerFunction(final Collection<ShardingSphereDatabase> databases, final CalciteSchema calciteSchema) {

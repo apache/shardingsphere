@@ -23,7 +23,7 @@ import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.sql.validate.SqlNameMatchers;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -32,7 +32,14 @@ import java.util.List;
  */
 public final class SQLFederationCatalogReader extends CalciteCatalogReader {
     
-    public SQLFederationCatalogReader(final CalciteSchema rootSchema, final List<String> schemaPaths, final RelDataTypeFactory typeFactory, final CalciteConnectionConfig config) {
-        super(rootSchema, SqlNameMatchers.withCaseSensitive(config.caseSensitive()), Arrays.asList(Collections.emptyList(), schemaPaths), typeFactory, config);
+    public SQLFederationCatalogReader(final CalciteSchema rootSchema, final List<List<String>> schemaPaths, final RelDataTypeFactory typeFactory, final CalciteConnectionConfig config) {
+        super(rootSchema, SqlNameMatchers.withCaseSensitive(config.caseSensitive()), createSchemaPaths(schemaPaths), typeFactory, config);
+    }
+    
+    private static List<List<String>> createSchemaPaths(final List<List<String>> schemaPaths) {
+        List<List<String>> result = new ArrayList<>(schemaPaths.size() + 1);
+        result.add(Collections.emptyList());
+        result.addAll(schemaPaths);
+        return result;
     }
 }

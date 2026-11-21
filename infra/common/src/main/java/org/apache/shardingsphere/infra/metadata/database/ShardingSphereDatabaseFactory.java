@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -43,7 +44,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere database factory.
@@ -93,7 +93,7 @@ public final class ShardingSphereDatabaseFactory {
      * @param protocolType database protocol type
      * @param databaseConfig database configuration
      * @param computeNodeInstanceContext compute node instance context
-     * @param schemas schemas
+     * @param schemas loaded schemas; system schemas missing from them are built and added
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
@@ -109,14 +109,42 @@ public final class ShardingSphereDatabaseFactory {
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param computeNodeInstanceContext compute node instance context
-     * @param schemas schemas
+     * @param schemas loaded schemas; system schemas missing from them are built and added
      * @return created database
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext, final Collection<ShardingSphereSchema> schemas) {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         Collection<ShardingSphereRule> rules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), schemas, props);
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(rules), mergeSystemSchemas(name, protocolType, props, schemas), props);
+    }
+    
+    private static Collection<ShardingSphereSchema> mergeSystemSchemas(final String name, final DatabaseType protocolType, final ConfigurationProperties props,
+                                                                       final Collection<ShardingSphereSchema> schemas) {
+        Collection<ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(name, protocolType, props).values();
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemas.size() + systemSchemas.size(), 1F);
+        for (ShardingSphereSchema each : schemas) {
+            result.put(each.getName(), each);
+        }
+        for (ShardingSphereSchema each : systemSchemas) {
+            result.merge(each.getName(), each, ShardingSphereDatabaseFactory::addMissingTables);
+        }
+        return result.values();
+    }
+    
+    private static ShardingSphereSchema addMissingTables(final ShardingSphereSchema loadedSchema, final ShardingSphereSchema systemSchema) {
+        Collection<ShardingSphereTable> missingTables = new LinkedList<>();
+        for (ShardingSphereTable each : systemSchema.getAllTables()) {
+            if (!loadedSchema.containsTable(each.getName())) {
+                missingTables.add(each);
+            }
+        }
+        if (missingTables.isEmpty()) {
+            return loadedSchema;
+        }
+        Collection<ShardingSphereTable> tables = new LinkedList<>(loadedSchema.getAllTables());
+        tables.addAll(missingTables);
+        return new ShardingSphereSchema(loadedSchema.getName(), loadedSchema.getProtocolType(), tables, loadedSchema.getAllViews());
     }
     
     /**
@@ -137,10 +165,8 @@ public final class ShardingSphereDatabaseFactory {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
-        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.buildWithInventoryCheck(protocolType,
-                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, DefaultSchemaNameResolver.resolveProtocol(protocolType, name),
-                        identifierContext, revisionCandidateSchemas)));
-        SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
-        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values(), props);
+        Collection<ShardingSphereSchema> schemas = GenericSchemaBuilder.buildWithInventoryCheck(protocolType, new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props,
+                DefaultSchemaNameResolver.resolveProtocol(protocolType, name), identifierContext, revisionCandidateSchemas)).values();
+        return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), mergeSystemSchemas(name, protocolType, props, schemas), props);
     }
 }

@@ -34,14 +34,23 @@ import org.apache.calcite.rel.core.TableScan;
 import org.apache.calcite.rel.rel2sql.RelToSqlConverter;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.util.SqlString;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.DefaultSchemaNameResolver;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFederationTable;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.dialect.SQLDialectFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Enumerable scan.
@@ -90,7 +99,12 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
     
     private SqlString createSQLString(final RelNode scanContext, final String databaseType) {
         SqlDialect sqlDialect = SQLDialectFactory.getSQLDialect(databaseType);
-        return new RelToSqlConverter(sqlDialect).visitRoot(scanContext).asStatement().toSqlString(sqlDialect);
+        DatabaseType type = TypedSPILoader.getService(DatabaseType.class, databaseType);
+        DialectSchemaOption schemaOption = new DatabaseTypeRegistry(type).getDialectDatabaseMetaData().getSchemaOption();
+        Optional<String> systemSchemaName = schemaOption.getDefaultSystemSchema();
+        boolean isSchemaQualified = !schemaOption.getDefaultSchema().isPresent() && systemSchemaName.isPresent() && !schemaOption.isSystemSchemaPreferredOverCurrentSchema();
+        RelToSqlConverter converter = isSchemaQualified ? new DefaultSchemaQualifiedRelToSQLConverter(sqlDialect, type, systemSchemaName.get()) : new RelToSqlConverter(sqlDialect);
+        return converter.visitRoot(scanContext).asStatement().toSqlString(sqlDialect);
     }
     
     private int[] getParamIndexes(final Collection<Integer> dynamicParameters) {
@@ -100,5 +114,34 @@ public final class EnumerableScan extends TableScan implements EnumerableRel {
             result[index++] = each;
         }
         return result;
+    }
+    
+    private static final class DefaultSchemaQualifiedRelToSQLConverter extends RelToSqlConverter {
+        
+        private final DatabaseType databaseType;
+        
+        private final String systemSchemaName;
+        
+        private DefaultSchemaQualifiedRelToSQLConverter(final SqlDialect dialect, final DatabaseType databaseType, final String systemSchemaName) {
+            super(dialect);
+            this.databaseType = databaseType;
+            this.systemSchemaName = systemSchemaName;
+        }
+        
+        @Override
+        protected Result dispatch(final RelNode relNode) {
+            if (!(relNode instanceof TableScan)) {
+                return super.dispatch(relNode);
+            }
+            return result(new SqlIdentifier(createNames(((TableScan) relNode).getTable().getQualifiedName()), SqlParserPos.ZERO), Collections.singleton(Clause.FROM), relNode, null);
+        }
+        
+        private List<String> createNames(final List<String> qualifiedName) {
+            String tableName = qualifiedName.get(qualifiedName.size() - 1);
+            if (3 == qualifiedName.size() && systemSchemaName.equals(qualifiedName.get(1))) {
+                return Collections.singletonList(tableName);
+            }
+            return Arrays.asList(DefaultSchemaNameResolver.resolveProtocol(databaseType, qualifiedName.get(0)), tableName);
+        }
     }
 }

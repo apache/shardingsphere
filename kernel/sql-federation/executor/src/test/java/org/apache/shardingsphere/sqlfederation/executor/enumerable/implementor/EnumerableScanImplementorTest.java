@@ -22,6 +22,7 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.linq4j.Enumerator;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.SystemDatabase;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -121,6 +122,7 @@ class EnumerableScanImplementorTest {
         DialectDriverQuerySystemCatalogOption driverOption = mock(DialectDriverQuerySystemCatalogOption.class);
         when(driverOption.isSystemTable("pg_database")).thenReturn(true);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(mock(DialectSchemaOption.class));
         when(dialectDatabaseMetaData.getDriverQuerySystemCatalogOption()).thenReturn(Optional.of(driverOption));
         DialectDataTypeOption dataTypeOption = mock(DialectDataTypeOption.class);
         when(dataTypeOption.findExtraSQLTypeClass(anyInt(), anyBoolean())).thenReturn(Optional.empty());
@@ -164,6 +166,7 @@ class EnumerableScanImplementorTest {
         when(statistics.getDatabaseStatistics("foo_db").getSchemaStatistics("pg_catalog").getTableStatistics("custom_stats")).thenReturn(tableStatistics);
         when(executorContext.getStatistics()).thenReturn(statistics);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(mock(DialectSchemaOption.class));
         when(dialectDatabaseMetaData.getDriverQuerySystemCatalogOption()).thenReturn(Optional.of(mock(DialectDriverQuerySystemCatalogOption.class)));
         DialectDataTypeOption dataTypeOption = mock(DialectDataTypeOption.class);
         when(dataTypeOption.findExtraSQLTypeClass(anyInt(), anyBoolean())).thenReturn(Optional.empty());
@@ -249,6 +252,45 @@ class EnumerableScanImplementorTest {
                 assertFalse(actual.moveNext());
             }
             assertFalse(mockedSystemDatabase.constructed().isEmpty());
+        }
+    }
+    
+    @Test
+    void assertImplementWithSystemSchemaQueriedFromStorage() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("SYS"));
+        QueryContext queryContext = mock(QueryContext.class, RETURNS_DEEP_STUBS);
+        when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        SQLStatement sqlStatement = mock(SQLStatement.class);
+        CompilerContext compilerContext = mock(CompilerContext.class, RETURNS_DEEP_STUBS);
+        when(compilerContext.getSqlParserRule().getSQLParserEngine(databaseType).parse("SELECT SEQUENCE_NAME FROM ALL_SEQUENCES", false)).thenReturn(sqlStatement);
+        ExecutorContext executorContext = mock(ExecutorContext.class);
+        when(executorContext.isPreview()).thenReturn(true);
+        when(executorContext.getPreviewExecutionUnits()).thenReturn(new LinkedList<>());
+        when(executorContext.getCurrentDatabaseName()).thenReturn("foo_db");
+        ExecutionUnit executionUnit = new ExecutionUnit("ds_0", new SQLUnit("SELECT SEQUENCE_NAME FROM ALL_SEQUENCES", Collections.emptyList()));
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singleton(executionUnit));
+        SQLStatementContext boundStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(boundStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singletonList("foo_db"));
+        when(boundStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.isSystemSchemaQueriedFromStorage()).thenReturn(true);
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+        try (
+                MockedConstruction<SystemDatabase> ignoredSystemDatabase = mockConstruction(SystemDatabase.class,
+                        (constructed, context) -> when(constructed.getSystemSchemas()).thenReturn(Collections.singletonList("SYS")));
+                MockedConstruction<DatabaseTypeRegistry> ignoredTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (constructed, context) -> when(constructed.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+                MockedConstruction<SQLBindEngine> ignoredSQLBindEngine = mockConstruction(SQLBindEngine.class,
+                        (constructed, context) -> when(constructed.bind(sqlStatement)).thenReturn(boundStatementContext));
+                MockedConstruction<KernelProcessor> ignoredKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (constructed, context) -> when(constructed.generateExecutionContext(any(), any(), any())).thenReturn(executionContext))) {
+            new EnumerableScanImplementor(queryContext, compilerContext, executorContext)
+                    .implement(mock(ShardingSphereTable.class), new ScanImplementorContext(mock(), "SELECT SEQUENCE_NAME FROM ALL_SEQUENCES", null));
+            assertThat(executorContext.getPreviewExecutionUnits(), is(Collections.singletonList(executionUnit)));
         }
     }
     
