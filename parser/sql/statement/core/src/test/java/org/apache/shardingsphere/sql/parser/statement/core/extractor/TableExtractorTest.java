@@ -99,6 +99,25 @@ class TableExtractorTest {
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Test
+    void assertExtractTablesFromAllValuesRows() {
+        SimpleTableSegment first = new SimpleTableSegment(new TableNameSegment(20, 28, new IdentifierValue("foo_first")));
+        SimpleTableSegment second = new SimpleTableSegment(new TableNameSegment(60, 69, new IdentifierValue("foo_second")));
+        SelectStatement firstSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(10, 12)).from(first).build();
+        SelectStatement secondSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(50, 52)).from(second).build();
+        SubqueryExpressionSegment firstExpression = new SubqueryExpressionSegment(new SubquerySegment(8, 30, firstSelect, "SELECT 1 FROM foo_first"));
+        SubqueryExpressionSegment secondExpression = new SubqueryExpressionSegment(new SubquerySegment(48, 71, secondSelect, "SELECT 1 FROM foo_second"));
+        FunctionSegment function = new FunctionSegment(40, 72, "LOWER", "LOWER((SELECT 1 FROM foo_second))");
+        function.getParameters().add(secondExpression);
+        ProjectionsSegment projections = new ProjectionsSegment(0, 72);
+        projections.getProjections().add(new ExpressionProjectionSegment(8, 30, firstExpression.getText(), firstExpression));
+        SelectStatement statement = SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections)
+                .values(Arrays.asList(new InsertValuesSegment(7, 31, Collections.singletonList(firstExpression)), new InsertValuesSegment(39, 73, Collections.singletonList(function)))).build();
+        TableExtractor extractor = new TableExtractor();
+        extractor.extractTablesFromSelect(statement);
+        assertThat(extractor.getRewriteTables(), contains(first, second));
+    }
+    
+    @Test
     void assertExtractTablesFromFunctionFilter() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_filter")));
         SelectStatement filtered = SelectStatement.builder().from(table).build();
@@ -198,6 +217,34 @@ class TableExtractorTest {
                 Arguments.of("update from", UpdateStatement.builder().table(target).from(source).setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList())).build(), 2),
                 Arguments.of("delete", DeleteStatement.builder().table(target).build(), 1),
                 Arguments.of("merge", MergeStatement.builder().target(target).source(source).build(), 2));
+    }
+    
+    @Test
+    void assertExtractTablesFromInsertWithDataModification() {
+        InsertStatement statement = InsertStatement.builder().table(createScopeTable("foo_target", 70)).with(createDataModificationWith()).build();
+        tableExtractor.extractTablesFromInsert(statement);
+        assertThat(tableExtractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_target", "bar_source")));
+    }
+    
+    private WithSegment createDataModificationWith() {
+        DeleteStatement child = DeleteStatement.builder().table(createScopeTable("bar_source", 20)).build();
+        CommonTableExpressionSegment segment = new CommonTableExpressionSegment(0, 60, new AliasSegment(5, 15, new IdentifierValue("foo_changed")), null, child);
+        return new WithSegment(0, 60, Collections.singletonList(segment));
+    }
+    
+    @Test
+    void assertExtractTablesFromUpdateWithDataModification() {
+        UpdateStatement statement = UpdateStatement.builder().table(createScopeTable("foo_target", 70))
+                .setAssignment(new SetAssignmentSegment(85, 90, Collections.emptyList())).with(createDataModificationWith()).build();
+        tableExtractor.extractTablesFromUpdate(statement);
+        assertThat(tableExtractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_target", "bar_source")));
+    }
+    
+    @Test
+    void assertExtractTablesFromDeleteWithDataModification() {
+        DeleteStatement statement = DeleteStatement.builder().table(createScopeTable("foo_target", 70)).with(createDataModificationWith()).build();
+        tableExtractor.extractTablesFromDelete(statement);
+        assertThat(tableExtractor.getRewriteTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList()), is(Arrays.asList("foo_target", "bar_source")));
     }
     
     @ParameterizedTest(name = "{0}")

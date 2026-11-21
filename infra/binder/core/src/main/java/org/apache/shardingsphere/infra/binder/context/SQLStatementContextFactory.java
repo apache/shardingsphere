@@ -92,10 +92,10 @@ public final class SQLStatementContextFactory {
             return new SelectStatementContext((SelectStatement) sqlStatement, metaData, currentDatabaseName, Collections.emptyList());
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return new UpdateStatementContext((UpdateStatement) sqlStatement);
+            return new UpdateStatementContext((UpdateStatement) sqlStatement, metaData, currentDatabaseName);
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return new DeleteStatementContext((DeleteStatement) sqlStatement);
+            return new DeleteStatementContext((DeleteStatement) sqlStatement, metaData, currentDatabaseName);
         }
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext((InsertStatement) sqlStatement, metaData, currentDatabaseName);

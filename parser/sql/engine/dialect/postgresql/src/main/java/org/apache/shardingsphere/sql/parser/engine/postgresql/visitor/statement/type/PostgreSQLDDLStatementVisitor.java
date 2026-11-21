@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterUserMappingContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AnyNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BackwardAllContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BackwardContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BackwardCountContext;
@@ -244,6 +245,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CloseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
@@ -318,7 +320,6 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLC
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateOperatorFamilyStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateTransformStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLCreateUserMappingStatement;
-import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDeclareStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDiscardStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropOperatorClassStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLDropOperatorFamilyStatement;
@@ -1325,9 +1326,14 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return new DropOperatorStatement(getDatabaseType());
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
-        return new DropMaterializedViewStatement(getDatabaseType());
+        Collection<SimpleTableSegment> views = new LinkedList<>();
+        for (AnyNameContext each : ctx.anyNameList().anyName()) {
+            views.add(createTableSegment(((CollectionValue<NameSegment>) visit(each)).getValue().iterator()));
+        }
+        return new DropMaterializedViewStatement(getDatabaseType(), views, null != ctx.ifExists());
     }
     
     @Override
@@ -1436,7 +1442,10 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        return new PostgreSQLDeclareStatement(getDatabaseType(), (CursorNameSegment) visit(ctx.cursorName()), (SelectStatement) visit(ctx.select()));
+        SelectStatement select = (SelectStatement) visit(ctx.select());
+        CursorStatement result = new CursorStatement(getDatabaseType(), (CursorNameSegment) visit(ctx.cursorName()), select);
+        result.addParameterMarkers(select.getParameterMarkers());
+        return result;
     }
     
     @Override
@@ -1644,7 +1653,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new CreateMaterializedViewStatement(getDatabaseType());
+        CreateMaterializedViewStatement result = new CreateMaterializedViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.createMvTarget().qualifiedName()));
+        result.setViewDefinition(getOriginalText(ctx.select()));
+        SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
+        result.setSelect(selectStatement);
+        result.addParameterMarkers(selectStatement.getParameterMarkers());
+        return result;
     }
     
     @Override

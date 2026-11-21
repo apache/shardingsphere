@@ -57,6 +57,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
@@ -197,4 +198,25 @@ class ExpressionSegmentBinderTest {
         assertThat(ExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, mock(SQLStatementBinderContext.class), LinkedHashMultimap.create(), LinkedHashMultimap.create()),
                 sameInstance(segment));
     }
+    
+    @Test
+    void assertBindRowExpansionPreservesCachedExpression() {
+        ColumnSegment column = new ColumnSegment(1, 3, new IdentifierValue("foo"));
+        ColumnSegment boundColumn = new ColumnSegment(1, 3, new IdentifierValue("foo"));
+        CommonExpressionSegment segment = new CommonExpressionSegment(0, 6, "(foo).*", Collections.singletonList(column));
+        segment.setRowExpansion(true);
+        SQLStatementBinderContext context = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tables = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outer = LinkedHashMultimap.create();
+        when(ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, context, tables, outer)).thenReturn(boundColumn);
+        CommonExpressionSegment actual = (CommonExpressionSegment) ExpressionSegmentBinder.bind(segment, SegmentType.PROJECTION, context, tables, outer);
+        assertTrue(actual.isRowExpansion());
+        assertThat(actual, not(sameInstance(segment)));
+        assertThat(actual.getChildren(), contains(boundColumn));
+        assertThat(actual.getStartIndex(), is(0));
+        assertThat(actual.getStopIndex(), is(6));
+        assertTrue(segment.isRowExpansion());
+        assertThat(segment.getChildren(), contains(column));
+    }
+    
 }

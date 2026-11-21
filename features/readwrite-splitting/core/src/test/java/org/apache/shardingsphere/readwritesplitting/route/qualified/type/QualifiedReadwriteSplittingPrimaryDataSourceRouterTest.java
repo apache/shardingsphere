@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -25,11 +26,14 @@ import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,13 +44,19 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(SQLStatementContextExtractor.class)
 class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     
     @Mock
     private SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext = new HintValueContext();
+    
+    @BeforeEach
+    void setUp() {
+        when(SQLStatementContextExtractor.getDataModificationBaseContexts(sqlStatementContext)).thenReturn(Collections.emptyList());
+    }
     
     @Test
     void assertIsQualifiedWithSelect() {
@@ -89,6 +99,13 @@ class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     void assertIsNotQualifiedWithHint() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         assertFalse(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
+    }
+    
+    @Test
+    void assertIsQualifiedWithDataModificationCte() {
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(SQLStatementContextExtractor.getDataModificationBaseContexts(sqlStatementContext)).thenReturn(Collections.singleton(mock(SQLStatementContext.class)));
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null, hintValueContext));
     }
     
     @Test
