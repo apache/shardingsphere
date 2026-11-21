@@ -704,4 +704,10 @@
     <sql-case id="select_postgresql_aggregate_filter" value="SELECT SUM(order_id) FILTER (WHERE user_id &gt; 0) FROM t_order" db-types="PostgreSQL" />
     <sql-case id="select_postgresql_function_filter" value="SELECT any_value(order_id) FILTER (WHERE user_id &gt; 0) FROM t_order" db-types="PostgreSQL" />
     <sql-case id="select_postgresql_aggregate_filter_window" value="SELECT COUNT(*) FILTER (WHERE $1) OVER (ORDER BY $2)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="select_postgresql_asensitive_identifier" value="SELECT asensitive FROM asensitive;" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_compression_identifier" value="SELECT compression FROM compression;" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_finalize_identifier" value="SELECT finalize FROM finalize;" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_normalize_identifier" value="SELECT normalize FROM normalize;" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_normalize_default" value="SELECT NORMALIZE('foo')" db-types="PostgreSQL" />
+    <sql-case id="select_postgresql_normalize_nfc" value="SELECT NORMALIZE('foo', NFC)" db-types="PostgreSQL" />
 </sql-cases>

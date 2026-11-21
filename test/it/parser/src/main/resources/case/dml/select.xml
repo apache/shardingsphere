@@ -17588,4 +17588,62 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_postgresql_asensitive_identifier">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="asensitive" start-index="7" stop-index="16" />
+        </projections>
+        <from>
+            <simple-table name="asensitive" start-index="23" stop-index="32" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_compression_identifier">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="compression" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="compression" start-index="24" stop-index="34" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_finalize_identifier">
+        <projections start-index="7" stop-index="14">
+            <column-projection name="finalize" start-index="7" stop-index="14" />
+        </projections>
+        <from>
+            <simple-table name="finalize" start-index="21" stop-index="28" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_normalize_identifier">
+        <projections start-index="7" stop-index="15">
+            <column-projection name="normalize" start-index="7" stop-index="15" />
+        </projections>
+        <from>
+            <simple-table name="normalize" start-index="22" stop-index="30" />
+        </from>
+    </select>
+    <select sql-case-id="select_postgresql_normalize_default">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="NORMALIZE('foo')" start-index="7" stop-index="22">
+                <expr>
+                    <function function-name="NORMALIZE" text="NORMALIZE('foo')" start-index="7" stop-index="22">
+                        <parameter>
+                            <literal-expression value="foo" start-index="17" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_postgresql_normalize_nfc">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="NORMALIZE('foo', NFC)" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="NORMALIZE" text="NORMALIZE('foo', NFC)" start-index="7" stop-index="27">
+                        <parameter>
+                            <literal-expression value="foo" start-index="17" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

@@ -453,4 +453,60 @@
     <drop-database sql-case-id="drop_database_force_postgresql" force="true" />
 
     <drop-database sql-case-id="drop_database_force_without_with_postgresql" force="true" />
+
+    <create-table sql-case-id="create_table_asensitive_identifier_postgresql">
+        <table name="asensitive" start-index="13" stop-index="22" />
+        <column-definition type="int" start-index="25" stop-index="38">
+            <column name="asensitive" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_compression_identifier_postgresql">
+        <table name="compression" start-index="13" stop-index="23" />
+        <column-definition type="int" start-index="26" stop-index="40">
+            <column name="compression" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_finalize_identifier_postgresql">
+        <table name="finalize" start-index="13" stop-index="20" />
+        <column-definition type="int" start-index="23" stop-index="34">
+            <column name="finalize" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_normalize_identifier_postgresql">
+        <table name="normalize" start-index="13" stop-index="21" />
+        <column-definition type="int" start-index="24" stop-index="36">
+            <column name="normalize" />
+        </column-definition>
+    </create-table>
+
+    <alter-view sql-case-id="alter_view_rename_normalize_postgresql">
+        <view name="foo_view" start-index="11" stop-index="18" />
+        <rename-view name="normalize" start-index="30" stop-index="38" />
+    </alter-view>
+
+    <declare sql-case-id="declare_asensitive_cursor_postgresql">
+        <cursor-name name="foo_cursor" start-index="8" stop-index="17" />
+        <select>
+            <from>
+                <simple-table name="foo" start-index="56" stop-index="58" />
+            </from>
+            <projections start-index="48" stop-index="49">
+                <column-projection name="id" start-index="48" stop-index="49" />
+            </projections>
+        </select>
+    </declare>
+
+    <alter-table sql-case-id="alter_table_detach_partition_finalize_postgresql">
+        <table name="foo" start-index="12" stop-index="14" />
+    </alter-table>
+
+    <create-table sql-case-id="create_table_unicode_names_postgresql">
+        <table name="foo_a" start-delimiter="&quot;" end-delimiter="&quot;" start-index="13" stop-index="29" />
+        <column-definition type="int" start-index="32" stop-index="64">
+            <column name="foo_b" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
