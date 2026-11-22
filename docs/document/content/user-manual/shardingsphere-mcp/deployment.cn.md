@@ -10,10 +10,17 @@ ShardingSphere-MCP 可以通过源码构建的独立发行包运行，也可以�
 构建发行包：
 
 ```bash
-./mvnw -pl distribution/mcp -am -DskipTests package
+./mvnw -pl distribution/mcp -Prelease,default-dep -am -DskipTests package
 ```
 
-发行包目录包含：
+解压发行包：
+
+```bash
+tar -xzf distribution/mcp/target/apache-shardingsphere-${version}-shardingsphere-mcp-bin.tar.gz -C distribution/mcp/target
+```
+
+将 `${version}` 替换为构建出的发行包版本。
+解压后的发行包目录包含：
 
 - `bin/`：启动脚本。
 - `conf/`：默认配置和日志配置。

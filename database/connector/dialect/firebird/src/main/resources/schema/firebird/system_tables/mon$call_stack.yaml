@@ -87,3 +87,10 @@ columns:
     name: MON$PACKAGE_NAME
     primaryKey: false
     visible: true
+  MON$COMPILED_STATEMENT_ID:
+    caseSensitive: false
+    dataType: -5
+    generated: false
+    name: MON$COMPILED_STATEMENT_ID
+    primaryKey: false
+    visible: true

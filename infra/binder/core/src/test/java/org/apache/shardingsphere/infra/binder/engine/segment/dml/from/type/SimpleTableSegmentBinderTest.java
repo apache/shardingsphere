@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCasePolicyFactory;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ty
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.AmbiguousIdentifierException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -52,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -64,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -86,6 +90,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
@@ -151,6 +157,7 @@ class SimpleTableSegmentBinderTest {
         assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalDatabase().getValue(), is("foo_db"));
         assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is("yanyi"));
         assertTrue(((SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next()).isSkipColumnBind());
+        assertFalse(tableBinderContexts.values().iterator().next().getOriginalTableName().isPresent());
     }
     
     @Test
@@ -188,7 +195,7 @@ class SimpleTableSegmentBinderTest {
                 createMetaData(), "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
         assertTrue(actual.isTableSampled());
         assertTrue(actual.getTableSampleExpression().isPresent());
-        assertTrue(actual.getTableSampleExpression().get() instanceof ColumnSegment);
+        assertThat(actual.getTableSampleExpression().get(), isA(ColumnSegment.class));
         ColumnSegment actualExpression = (ColumnSegment) actual.getTableSampleExpression().get();
         assertThat(actualExpression.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actualExpression.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
@@ -497,6 +504,167 @@ class SimpleTableSegmentBinderTest {
     
     private void assertBoundSchema(final SimpleTableSegment actual, final String expectedSchemaName) {
         assertThat(actual.getTableName().getTableBoundInfo().get().getOriginalSchema().getValue(), is(expectedSchemaName));
+    }
+    
+    @Test
+    void assertBindDummyTable() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("dUaL")));
+        segment.setAlias(new AliasSegment(5, 13, new IdentifierValue("foo_dummy")));
+        SQLStatementBinderContext context = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(),
+                SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.get(CaseInsensitiveString.of("foo_dummy")).iterator().next();
+            assertTrue(actual.isSkipColumnBind());
+            assertThat(actual.getOriginalTableName().get().getValue(), is("dUaL"));
+        }
+    }
+    
+    private MockedConstruction<DatabaseTypeRegistry> mockDummyTableName(final String dummyTableName) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = spy(new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData());
+        DialectSQLOption sqlOption = mock(DialectSQLOption.class);
+        when(sqlOption.getDummyTableName()).thenReturn(Optional.of(dummyTableName));
+        when(dialectDatabaseMetaData.getSQLOption()).thenReturn(sqlOption);
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+    }
+    
+    @Test
+    void assertBindDummyTableWithoutSchema() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        ShardingSphereMetaData metaData = createMetaData();
+        when(metaData.getDatabase("foo_db").getDefaultSchemaName()).thenReturn(null);
+        SQLStatementBinderContext context = new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertTrue(actual.isSkipColumnBind());
+        }
+    }
+    
+    @Test
+    void assertBindDummyTableWithoutDeclaration() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        ShardingSphereMetaData metaData = createMetaData();
+        when(metaData.getDatabase("foo_db").getSchema("foo_db").containsView("DUAL")).thenThrow(new AmbiguousIdentifierException("DUAL", Arrays.asList("dual", "Dual")));
+        SQLStatementBinderContext context = new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+        SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+        assertFalse(actual.isSkipColumnBind());
+    }
+    
+    @Test
+    void assertBindDummyTableWithMismatchedDeclaration() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        ShardingSphereMetaData metaData = createMetaData();
+        when(metaData.getDatabase("foo_db").getSchema("foo_db").containsView("DUAL")).thenThrow(new AmbiguousIdentifierException("DUAL", Arrays.asList("dual", "Dual")));
+        SQLStatementBinderContext context = new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("foo_dummy")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertFalse(actual.isSkipColumnBind());
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getNonDummyTableStatements")
+    void assertBindDummyTableOutsideEligibleQuery(final String name, final SQLStatement statement, final SimpleTableSegment segment) {
+        SQLStatementBinderContext context = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), statement);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertFalse(actual.isSkipColumnBind());
+        }
+    }
+    
+    private static Stream<Arguments> getNonDummyTableStatements() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        SimpleTableSegment dummyTable = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        SimpleTableSegment quotedTable = new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("\"DUAL\"")));
+        SimpleTableSegment qualifiedTable = new SimpleTableSegment(new TableNameSegment(7, 10, new IdentifierValue("DUAL")));
+        qualifiedTable.setOwner(new OwnerSegment(0, 5, new IdentifierValue("foo_db")));
+        SimpleTableSegment linkedTable = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        linkedTable.setDbLink(new IdentifierValue("foo_link"));
+        JoinTableSegment join = new JoinTableSegment();
+        join.setLeft(dummyTable);
+        join.setRight(new SimpleTableSegment(new TableNameSegment(0, 6, new IdentifierValue("t_order"))));
+        return Stream.of(
+                Arguments.of("Delete", DeleteStatement.builder().databaseType(databaseType).table(dummyTable).build(), dummyTable),
+                Arguments.of("MissingFrom", SelectStatement.builder().databaseType(databaseType).build(), dummyTable),
+                Arguments.of("Join", SelectStatement.builder().databaseType(databaseType).from(join).build(), dummyTable),
+                Arguments.of("QuotedTable", SelectStatement.builder().databaseType(databaseType).from(quotedTable).build(), quotedTable),
+                Arguments.of("QualifiedTable", SelectStatement.builder().databaseType(databaseType).from(qualifiedTable).build(), qualifiedTable),
+                Arguments.of("DatabaseLink", SelectStatement.builder().databaseType(databaseType).from(linkedTable).build(), linkedTable));
+    }
+    
+    @Test
+    void assertBindDummyTableWithTableMetadata() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        ShardingSphereMetaData metaData = createMetaData();
+        ShardingSphereSchema schema = metaData.getDatabase("foo_db").getSchema("foo_db");
+        when(schema.containsTable(segment.getTableName().getIdentifier())).thenReturn(true);
+        when(schema.getTable(segment.getTableName().getIdentifier()).getAllColumns())
+                .thenReturn(Collections.singletonList(new ShardingSphereColumn("ss_noarg_fn", Types.INTEGER, false, false, false, true, false, false)));
+        SQLStatementBinderContext context = new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertFalse(actual.isSkipColumnBind());
+            assertTrue(actual.findProjectionSegmentByColumnLabel("ss_noarg_fn").isPresent());
+        }
+    }
+    
+    @Test
+    void assertBindDummyTableWithViewMetadata() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        ShardingSphereMetaData metaData = createMetaData();
+        when(metaData.getDatabase("foo_db").getSchema("foo_db").containsView("DUAL")).thenReturn(true);
+        SQLStatementBinderContext context = new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertFalse(actual.isSkipColumnBind());
+        }
+    }
+    
+    @Test
+    void assertBindDummyTableWithCTEMetadata() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        SQLStatementBinderContext context = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(),
+                SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        SimpleTableSegmentBinderContext externalContext = new SimpleTableSegmentBinderContext(
+                Collections.singletonList(new ColumnProjectionSegment(new ColumnSegment(0, 10, new IdentifierValue("ss_noarg_fn")))), TableSourceType.TEMPORARY_TABLE);
+        externalContext.setFromWithSegment(true);
+        context.getExternalTableBinderContexts().put(CaseInsensitiveString.of("DUAL"), externalContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertFalse(actual.isSkipColumnBind());
+            assertTrue(actual.isFromWithSegment());
+            assertTrue(actual.findProjectionSegmentByColumnLabel("ss_noarg_fn").isPresent());
+        }
+    }
+    
+    @Test
+    void assertBindDummyTableWithHint() {
+        SimpleTableSegment segment = new SimpleTableSegment(new TableNameSegment(0, 3, new IdentifierValue("DUAL")));
+        HintValueContext hintValueContext = new HintValueContext();
+        hintValueContext.setSkipMetadataValidate(true);
+        SQLStatementBinderContext context = new SQLStatementBinderContext(createMetaData(), "foo_db", hintValueContext, SelectStatement.builder().databaseType(databaseType).from(segment).build());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockDummyTableName("DUAL")) {
+            SimpleTableSegmentBinder.bind(segment, context, tableBinderContexts);
+            SimpleTableSegmentBinderContext actual = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
+            assertTrue(actual.isSkipColumnBind());
+            assertThat(actual.getOriginalTableName().get().getValue(), is("DUAL"));
+        }
     }
     
     private ShardingSphereMetaData createMetaData() {

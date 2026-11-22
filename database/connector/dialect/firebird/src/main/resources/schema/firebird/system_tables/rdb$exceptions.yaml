@@ -47,7 +47,7 @@ columns:
     visible: false
   RDB$SYSTEM_FLAG:
     caseSensitive: false
-    dataType: 2004
+    dataType: 5
     generated: false
     name: RDB$SYSTEM_FLAG
     primaryKey: false

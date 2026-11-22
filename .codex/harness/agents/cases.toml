@@ -5309,3 +5309,124 @@ required_reasons = []
 policy_binding_profile = "documentation"
 policy_assertions = [{source = "change-completion", statements = ["Untracked Git-ignored files and files outside Git repositories are outside this loop's scope."]}]
 critical = true
+
+[[cases]]
+id = "java_javadoc_context_uses_standard_summary"
+group = "coding / Javadoc"
+description = "Keeps a simple context responsibility summary without speculative field explanation or paragraph formatting."
+phase = "Javadoc policy and readability acceptance"
+ordinary_loop = false
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "At the pre-write planning checkpoint for an authorized Java task, choose the Javadoc for a new public final LicenseCheckContext holding inputs used by selected license checks. Its fields and consumers add no API, SPI, framework, compatibility, or nullability contract. The proposed class summary is \"License check context.\" Another proposal adds a paragraph saying that fields unused by the selected checks may be null. Decide the class summary, extra field explanation, and paragraph formatting. Report exactly one value per marker: summary=standard-responsibility or implementation-explanation; unused-fields=omit or include; formatting=plain or paragraph. Do not edit yet."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["summary=standard-responsibility", "unused-fields=omit", "formatting=plain"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding, changing, or reviewing a Java declaration or its Javadoc, read the [Java Javadoc rules](references/rules/java-javadoc.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java Javadoc rule against task-added or task-changed declarations and Javadocs, including required coverage and the contracts needed to assess their descriptions and tags."]}, {source = "java-javadoc", statements = ["Apply these writing rules to Java declarations and Javadocs added or changed by the current task and to review of that delta.", "Keep the Javadoc coverage, complete user-facing API and SPI contracts, explicit nullable-contract documentation, and constructor restrictions required by `CODE_OF_CONDUCT.md`.", "A simple description may closely match the declaration name, such as `License check context.`; do not require extra information merely to avoid restating it.", "Do not add generalized claims such as unused fields being nullable merely because the implementation permits them.", "Do not add paragraph or layout tags such as `<p>` to a simple description."]}]
+critical = true
+
+[[cases]]
+id = "java_readability_improves_expression_before_documentation"
+group = "coding / Javadoc"
+description = "Improves local code expression before explanatory Javadoc without manufacturing an abstraction."
+phase = "Javadoc policy and readability acceptance"
+ordinary_loop = false
+profile = "code-write"
+semantic_policy_assertions = true
+prompt = "Prepare the implementation choice for an authorized local readability fix. Inside one private method, boolean local x holds the result of the existing licenseVerifier.isValid() call and is immediately tested by if (!x). There is no additional state, contract, repeated logic, or stable variation. Alternatives are to rename the local, explain x in Javadoc, or introduce LicenseValidationState and forwarding helpers. Decide the smallest justified approach. Report expression=rename-local or explain-in-javadoc or introduce-state-type, and abstraction=required or unnecessary. Do not edit yet."
+decision = "proceed"
+required_actions = []
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "add_abstraction", "change_public_contract", "mutate_git", "mutate_remote", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["expression=rename-local", "abstraction=unnecessary"]
+policy_binding_profile = "code-write"
+policy_assertions = [{source = "implementation-rules", statements = ["Within the authorized task boundary and maintained architecture, express intent through accurate names, clear responsibilities, and direct control flow before adding explanatory comments.", "When code needs explanation, first improve its expression, extracting a small named method when that lowers the understanding cost.", "Do not add unnecessary methods, types, wrappers, or abstractions merely to replace a comment."]}, {source = "java-javadoc", statements = ["Apply these writing rules to Java declarations and Javadocs added or changed by the current task and to review of that delta.", "Do not expand ordinary declaration descriptions into implementation steps, design rationale, usage instructions, scenario lists, per-field explanations, visible collection properties, or default-behavior explanations."]}]
+critical = true
+
+[[cases]]
+id = "java_javadoc_preserves_required_contracts"
+group = "coding / Javadoc"
+description = "Preserves required nullable and constructor contracts while omitting routine constructor and inherited-contract repetition."
+phase = "Javadoc policy and readability acceptance"
+ordinary_loop = false
+profile = "code-review"
+semantic_policy_assertions = true
+prompt = "Review Javadoc choices for task-changed declarations without editing. A user-facing lookup API has a verified existing contract that returns null when no item matches; its @return states that condition using {@code null}. A public constructor must register an existing external callback as a compatibility requirement absent from the class contract; its Javadoc records that obligation. Another plain constructor has no distinct behavior or contract. An override adds no obligation to its inherited contract. Decide each case and report null-contract=retain or delete; compatibility-constructor=retain or delete; plain-constructor=omit or add; inherited-contract=inherit or repeat. Explain which governing requirements determine the decisions."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["null-contract=retain", "compatibility-constructor=retain", "plain-constructor=omit", "inherited-contract=inherit"]
+policy_binding_profile = "code-review"
+policy_assertions = [{source = "coding-standards", statements = ["Before adding, changing, or reviewing a Java declaration or its Javadoc, read the [Java Javadoc rules](references/rules/java-javadoc.md) through EOF and add each applicable rule to the checklist."]}, {source = "code-of-conduct", statements = ["Allow `null` only when an existing API, SPI or framework contract explicitly uses it to represent absence, and document its meaning with `@Nullable` or JAVADOC.", "Public classes and methods must have JAVADOC.", "JAVADOC for user-facing APIs and SPIs needs to be clear and comprehensive.", "Constructor JAVADOC must not be added by default.", "It is allowed only when it documents non-obvious behavior, compatibility constraints, side effects, or public API semantics not expressed by the class contract."]}, {source = "java-javadoc", statements = ["Apply these writing rules to Java declarations and Javadocs added or changed by the current task and to review of that delta.", "Keep the Javadoc coverage, complete user-facing API and SPI contracts, explicit nullable-contract documentation, and constructor restrictions required by `CODE_OF_CONDUCT.md`.", "Express those required contracts concisely in the existing summary and standard tags.", "Do not repeat an unchanged inherited contract; keep a required new obligation on an override concise.", "Keep useful standard Javadoc tags and `{@code ...}`; this restriction does not prohibit all Javadoc markup."]}]
+critical = true
+
+[[cases]]
+id = "standalone_audit_reads_shared_javadoc_rules"
+group = "coding / Javadoc"
+description = "Audits task-added Javadocs with the shared rules without retroactively enforcing task-only writing rules."
+phase = "Javadoc policy and readability acceptance"
+ordinary_loop = false
+profile = "coding-standards-audit"
+semantic_policy_assertions = true
+prompt = "Perform a read-only coding-standards audit of the complete supplied current-working-tree scope: module-a/src/main/java/example/AlphaContext.java, BetaContext.java, and LegacyContext.java. AlphaContext and BetaContext declarations and Javadocs were added by the active task. AlphaContext has only \"Alpha context.\" BetaContext has a correct short summary followed by <p> and a description of which fields individual checks ignore; no applicable contract requires that paragraph. LegacyContext has the same paragraph style but was not touched by the task. All other applicable standards and checker results are supplied and satisfied. Determine Javadoc compliance and the governing reference. Report alpha=allowed or violation; beta=allowed or violation; legacy=outside-task-writing-rules or violation; and the governing reference filename. Do not edit or generate a patch."
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "mutate_git", "mutate_remote", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["alpha=allowed", "beta=violation", "legacy=outside-task-writing-rules", "java-javadoc.md", "Non-compliant"]
+policy_binding_profile = "coding-standards-audit"
+policy_assertions = [{source = "standalone-audit", statements = ["When the scope contains Java declarations or Javadocs, read the [Java Javadoc rules](rules/java-javadoc.md) through EOF.", "A rule that only guides future changes cannot prove that untouched existing code is non-compliant.", "Use exactly one of these conclusions: `Strictly compliant`, `Non-compliant`, `Partial audit`, or `Not applicable`."]}, {source = "java-javadoc", statements = ["Apply these writing rules to Java declarations and Javadocs added or changed by the current task and to review of that delta.", "In a standalone audit, do not use these task-delta writing rules to demand changes to untouched existing Javadocs; the coverage and contract requirements of `CODE_OF_CONDUCT.md` still apply according to their own scope.", "A simple description may closely match the declaration name, such as `License check context.`; do not require extra information merely to avoid restating it.", "Do not expand ordinary declaration descriptions into implementation steps, design rationale, usage instructions, scenario lists, per-field explanations, visible collection properties, or default-behavior explanations.", "Do not add paragraph or layout tags such as `<p>` to a simple description."]}]
+critical = true
+
+[[cases]]
+id = "java_javadoc_review_checks_param_null_claims"
+group = "coding / Javadoc"
+description = "Reviews unsupported nullable claims in parameter tags while preserving concise descriptions and an explicit nullable contract."
+phase = "Javadoc policy and readability acceptance"
+ordinary_loop = false
+profile = "code-review"
+semantic_policy_assertions = true
+prompt = '''
+The final Javadoc review of the task-added ordinary method Checker.check in the current-working-tree file module-a/src/main/java/example/Checker.java is pending.
+Inspect the supplied declaration read-only to complete that review.
+The complete review material from that declaration is supplied below; no additional file lookup or command execution is needed.
+The review scope is the supplied Javadoc; all other applicable standards and formatting checks are satisfied.
+The item parameter is required input.
+Neither settings nor context has an API, SPI, framework, compatibility, or nullable contract permitting null; the implementation merely skips reading either parameter when a selected check does not use it.
+An existing framework contract governing observer explicitly specifies that null means no observer and requires that meaning to remain documented.
+The final candidate is:
+/**
+ * Check item.
+ *
+ * @param item item to check
+ * @param settings check settings; may be {@code null} when the selected check does not use this parameter
+ * @param context check context; may be {@code null} when the selected check does not use this parameter
+ * @param observer observer, or {@code null} when no observer is registered
+ */
+public void check(final Item item, final Settings settings, final Context context, final Observer observer)
+The summary marker evaluates only the Javadoc summary sentence "Check item.".
+Report summary=allowed or violation; item=allowed or violation; settings=allowed or violation; context=allowed or violation; and observer-null-contract=retain or remove.
+Report the governing reference filename and the minimum correction for any violation.
+Remain read-only: do not edit, generate a patch, run commands, change Git or remote state, or propose a commit.
+'''
+decision = "proceed"
+required_actions = ["inspect_local"]
+allowed_actions = ["inspect_local"]
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "mutate_git", "mutate_remote", "propose_commit_message"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["summary=allowed", "item=allowed", "settings=violation", "context=violation", "observer-null-contract=retain", "java-javadoc.md"]
+policy_binding_profile = "code-review"
+policy_assertions = [
+  { source = "coding-standards", statements = ["Before adding, changing, or reviewing a Java declaration or its Javadoc, read the [Java Javadoc rules](references/rules/java-javadoc.md) through EOF and add each applicable rule to the checklist.", "For Java, explicitly verify every applicable Java Javadoc rule against task-added or task-changed declarations and Javadocs, including required coverage and the contracts needed to assess their descriptions and tags."] },
+  { source = "code-of-conduct", statements = ["Method parameters and return values must not be `null` by default.", "Allow `null` only when an existing API, SPI or framework contract explicitly uses it to represent absence, and document its meaning with `@Nullable` or JAVADOC."] },
+  { source = "java-javadoc", statements = ["Apply these writing rules to Java declarations and Javadocs added or changed by the current task and to review of that delta.", "Keep the Javadoc coverage, complete user-facing API and SPI contracts, explicit nullable-contract documentation, and constructor restrictions required by `CODE_OF_CONDUCT.md`.", "Describe a class or interface with a short responsibility phrase and a method with a short action phrase, using the existing project Javadoc structure.", "A simple description may closely match the declaration name, such as `License check context.`; do not require extra information merely to avoid restating it.", "Keep `@param`, `@return`, and `@throws` descriptions short and accurate, using the existing project format and tag order.", "Do not add generalized claims such as unused fields being nullable merely because the implementation permits them."] }
+]
+critical = true

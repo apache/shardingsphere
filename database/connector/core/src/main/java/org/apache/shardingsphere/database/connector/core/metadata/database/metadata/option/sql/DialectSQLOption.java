@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql;
 
+import java.util.Optional;
+
 /**
  * Dialect SQL option.
  */
@@ -29,5 +31,14 @@ public interface DialectSQLOption {
      */
     default boolean isSupportWholeRowProjection() {
         return false;
+    }
+    
+    /**
+     * Get dummy table name.
+     *
+     * @return dummy table name, or empty if not declared
+     */
+    default Optional<String> getDummyTableName() {
+        return Optional.empty();
     }
 }
