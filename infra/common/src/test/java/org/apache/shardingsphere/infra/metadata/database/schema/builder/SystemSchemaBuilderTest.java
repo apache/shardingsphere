@@ -20,12 +20,15 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -33,6 +36,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 
 class SystemSchemaBuilderTest {
     
@@ -120,5 +126,34 @@ class SystemSchemaBuilderTest {
         ShardingSphereSchema shardingsphereSchema = actual.get("shardingsphere");
         assertThat(shardingsphereSchema.getAllTables().size(), is(1));
         assertTrue(shardingsphereSchema.containsTable("cluster_information"));
+    }
+    
+    @Test
+    void assertBuildWithCompleteLoadedSystemSchema() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ShardingSphereSchema loadedSystemSchema = SystemSchemaBuilder.build("foo_db", databaseType, props).get("sys");
+        try (MockedStatic<SystemSchemaManager> systemSchemaManager = mockStatic(SystemSchemaManager.class, CALLS_REAL_METHODS)) {
+            Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("foo_db", databaseType, props, Collections.singleton(loadedSystemSchema));
+            assertFalse(actual.containsKey("sys"));
+            systemSchemaManager.verify(() -> SystemSchemaManager.getAllInputStreams("Oracle", "SYS"), never());
+        }
+    }
+    
+    @Test
+    void assertBuildWithIncompleteLoadedSystemSchema() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build(
+                "foo_db", databaseType, new ConfigurationProperties(new Properties()), Collections.singleton(new ShardingSphereSchema("SYS", databaseType)));
+        assertTrue(actual.get("sys").containsTable("ALL_SEQUENCES"));
+    }
+    
+    @Test
+    void assertBuildWithIncompleteLoadedSystemSchemaWhenSystemSchemaMetadataDisabled() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        Properties props = PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.SYSTEM_SCHEMA_METADATA_ASSEMBLY_ENABLED.getKey(), Boolean.FALSE.toString()));
+        Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build(
+                "foo_db", databaseType, new ConfigurationProperties(props), Collections.singleton(new ShardingSphereSchema("SYS", databaseType)));
+        assertTrue(actual.get("sys").containsTable("ALL_SEQUENCES"));
     }
 }

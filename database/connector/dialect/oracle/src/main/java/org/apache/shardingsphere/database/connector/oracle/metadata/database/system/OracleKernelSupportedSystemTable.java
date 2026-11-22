@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.database.system;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectKernelSupportedSystemTable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -32,7 +32,7 @@ public final class OracleKernelSupportedSystemTable implements DialectKernelSupp
     
     @Override
     public Map<String, Collection<String>> getSchemaAndTablesMap() {
-        return Collections.singletonMap("SYS", new HashSet<>(Arrays.asList("ALL_TABLES", "USER_TABLES", "ALL_SEQUENCES", "ALL_VIEWS", "ALL_SYNONYMS", "ALL_TAB_COLUMNS")));
+        return Collections.singletonMap("SYS", new CaseInsensitiveSet<>(Arrays.asList("ALL_TABLES", "USER_TABLES", "ALL_SEQUENCES", "ALL_VIEWS", "ALL_SYNONYMS", "ALL_TAB_COLUMNS")));
     }
     
     @Override

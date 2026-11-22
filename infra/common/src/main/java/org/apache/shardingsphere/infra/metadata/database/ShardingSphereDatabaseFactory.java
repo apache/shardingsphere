@@ -121,7 +121,7 @@ public final class ShardingSphereDatabaseFactory {
     
     private static Collection<ShardingSphereSchema> mergeSystemSchemas(final String name, final DatabaseType protocolType, final ConfigurationProperties props,
                                                                        final Collection<ShardingSphereSchema> schemas) {
-        Collection<ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(name, protocolType, props).values();
+        Collection<ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(name, protocolType, props, schemas).values();
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemas.size() + systemSchemas.size(), 1F);
         for (ShardingSphereSchema each : schemas) {
             result.put(each.getName(), each);

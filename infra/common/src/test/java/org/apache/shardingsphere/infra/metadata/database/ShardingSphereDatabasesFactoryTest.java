@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -82,5 +83,14 @@ class ShardingSphereDatabasesFactoryTest {
         assertTrue(actual.stream().anyMatch(each -> "sys".equals(each.getName())));
         assertTrue(actual.stream().anyMatch(each -> "mysql".equals(each.getName())));
         assertTrue(actual.stream().anyMatch(each -> "shardingsphere".equals(each.getName())));
+    }
+    
+    @Test
+    void assertCreateDatabaseNamedAsSystemSchemaWithoutStorageUnits() throws SQLException {
+        Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("SYS", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()));
+        Collection<ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
+                databaseConfigs, new ConfigurationProperties(new Properties()), mock(), TypedSPILoader.getService(DatabaseType.class, "Oracle"));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getName(), is("SYS"));
     }
 }

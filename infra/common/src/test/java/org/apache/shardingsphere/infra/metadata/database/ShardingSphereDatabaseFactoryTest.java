@@ -52,6 +52,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -95,7 +96,7 @@ class ShardingSphereDatabaseFactoryTest {
                     .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
             mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.buildWithInventoryCheck(eq(protocolType), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType)));
-            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build("foo_db", protocolType, props)).thenReturn(systemSchemas);
+            mockedSystemSchemaBuilder.when(() -> SystemSchemaBuilder.build(eq("foo_db"), eq(protocolType), eq(props), anyCollection())).thenReturn(systemSchemas);
             ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.create("foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext);
             mockedDefaultSchemaNameResolver.verify(() -> DefaultSchemaNameResolver.resolveProtocol(protocolType, "foo_db"));
             assertThat(actual.getName(), is("foo_db"));

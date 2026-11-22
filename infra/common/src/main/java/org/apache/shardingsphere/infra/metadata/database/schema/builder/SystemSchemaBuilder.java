@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -62,9 +63,29 @@ public final class SystemSchemaBuilder {
      * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props) {
+        return build(databaseName, databaseType, props, Collections.emptyList());
+    }
+    
+    /**
+     * Build system schemas which are absent from loaded schemas or miss system tables.
+     *
+     * <p>A loaded system schema which already contains every expected system table is not built again, so its table definitions are not read.</p>
+     *
+     * @param databaseName database name
+     * @param databaseType database type
+     * @param props configuration properties
+     * @param loadedSchemas loaded schemas
+     * @return ShardingSphere system schema map
+     */
+    public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType, final ConfigurationProperties props,
+                                                          final Collection<ShardingSphereSchema> loadedSchemas) {
         SystemDatabase systemDatabase = new SystemDatabase(databaseType);
         boolean isSystemSchemaMetaDataEnabled = isSystemSchemaMetaDataEnabled(props.getProps());
+        SystemTable systemTable = new SystemTable(databaseType);
+        Map<String, ShardingSphereSchema> loadedSchemaMap = loadedSchemas.stream()
+                .collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each, (oldValue, currentValue) -> currentValue, () -> new HashMap<>(loadedSchemas.size(), 1F)));
         return getSystemSchemas(databaseName, databaseType, systemDatabase).stream()
+                .filter(each -> !isComplete(loadedSchemaMap.get(each), each, databaseType, systemTable, isSystemSchemaMetaDataEnabled))
                 .collect(Collectors.toMap(String::toLowerCase, each -> createSchema(each, databaseType, isSystemSchemaMetaDataEnabled), (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
@@ -76,6 +97,19 @@ public final class SystemSchemaBuilder {
     private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType, final SystemDatabase systemDatabase) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         return systemDatabase.getSystemSchemas(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? "postgres" : originalDatabaseName);
+    }
+    
+    private static boolean isComplete(final ShardingSphereSchema loadedSchema, final String schemaName, final DatabaseType databaseType, final SystemTable systemTable,
+                                      final boolean isSystemSchemaMetadataEnabled) {
+        if (null == loadedSchema) {
+            return false;
+        }
+        for (String each : SystemSchemaManager.getTables(databaseType.getType(), schemaName)) {
+            if ((isSystemSchemaMetadataEnabled || systemTable.isSupportedSystemTable(schemaName, each)) && !loadedSchema.containsTable(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @SneakyThrows(IOException.class)

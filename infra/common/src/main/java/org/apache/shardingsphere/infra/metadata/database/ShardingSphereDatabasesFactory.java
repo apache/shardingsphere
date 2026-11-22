@@ -90,7 +90,7 @@ public final class ShardingSphereDatabasesFactory {
         Collection<ShardingSphereDatabase> result = new HashSet<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
-            if (!entry.getValue().getStorageUnits().isEmpty() || !systemDatabase.getSystemSchemas().contains(databaseName)) {
+            if (!entry.getValue().getStorageUnits().isEmpty() || !systemDatabase.getSystemDatabases().contains(databaseName)) {
                 result.add(ShardingSphereDatabaseFactory.create(databaseName, protocolType, entry.getValue(), props, instanceContext));
             }
         }
