@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchAlreadyOpenedException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -34,6 +36,11 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.firebirdsql.gds.BlrConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +48,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,6 +65,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,7 +99,7 @@ class FirebirdBatchCreateCommandExecutorTest {
     @Mock
     private FirebirdBatchCreateCommandPacket packet;
     
-    @Mock
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private FirebirdServerPreparedStatement preparedStatement;
     
     @AfterEach
@@ -98,9 +107,11 @@ class FirebirdBatchCreateCommandExecutorTest {
         FirebirdBatchRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
-    @Test
-    void assertExecute() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("batchStatementArguments")
+    void assertExecute(final String name, final SQLStatement sqlStatement) {
         mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(sqlStatement);
         when(packet.getBatchBlr()).thenReturn(createBatchBlr());
         when(packet.getBatchMessageLength()).thenReturn(6L);
         when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
@@ -164,6 +175,69 @@ class FirebirdBatchCreateCommandExecutorTest {
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(null);
         assertThrows(InvalidStatementHandleException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
         verify(packet, never()).getBatchBlr();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("selectBatchArguments")
+    void assertExecuteWithSelect(final String name, final ByteBuf batchBlr, final long messageLength, final String batchParamsHex) {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(batchBlr);
+        when(packet.getBatchMessageLength()).thenReturn(messageLength);
+        ByteBuf batchParamsBuffer = Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump(batchParamsHex));
+        when(packet.getBatchParametersBuffer()).thenReturn(batchParamsBuffer);
+        assertThrows(InvalidBatchStatementTypeException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertThat(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).size(), is(1));
+        assertThat(batchParamsBuffer.readerIndex(), is(0));
+    }
+    
+    @Test
+    void assertExecuteWithSelectAndInvalidParameterVersion() {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(createIntegerBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(6L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{2}));
+        assertThrows(InvalidBatchParameterVersionException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertThat(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).size(), is(1));
+    }
+    
+    @Test
+    void assertExecuteWithSelectWithoutParameters() {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(createEmptyBatchBlr());
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.EMPTY_BUFFER);
+        assertThrows(InvalidBatchStatementTypeException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertTrue(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).isEmpty());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(longs = {0L, 5L, 7L})
+    void assertExecuteWithSelectAndInvalidMessageLength(final long messageLength) {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(createIntegerBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(messageLength);
+        assertThrows(InvalidBatchMessageFormatException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertNull(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidSelectParametersArguments")
+    void assertExecuteWithSelectAndMalformedParameters(final String name, final String batchParamsHex) {
+        mockPreparedStatement();
+        when(preparedStatement.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(packet.getBatchBlr()).thenReturn(createIntegerBatchBlr());
+        when(packet.getBatchMessageLength()).thenReturn(6L);
+        when(packet.getBatchParametersBuffer()).thenReturn(Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump(batchParamsHex)));
+        assertThrows(DatabaseProtocolException.class, () -> new FirebirdBatchCreateCommandExecutor(packet, connectionSession).execute());
+        assertNull(FirebirdBatchRegistry.getInstance().getBatchStatement(CONNECTION_ID, STATEMENT_ID));
+        assertThat(FirebirdBatchRegistry.getInstance().getMessageFormat(CONNECTION_ID, STATEMENT_ID).size(), is(1));
     }
     
     @Test
@@ -260,7 +334,7 @@ class FirebirdBatchCreateCommandExecutorTest {
         assertFalse(actual.isRecordCounts());
     }
     
-    private ByteBuf createBatchBlr() {
+    private static ByteBuf createBatchBlr() {
         return Unpooled.wrappedBuffer(new byte[]{
                 (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
                 2, 0, (byte) BlrConstants.blr_text, 4, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
@@ -271,14 +345,22 @@ class FirebirdBatchCreateCommandExecutorTest {
                 (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0, 0, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
     
-    private ByteBuf createBlobBatchBlr() {
+    private static ByteBuf createBlobBatchBlr() {
         return Unpooled.wrappedBuffer(new byte[]{
                 (byte) BlrConstants.blr_version5, (byte) BlrConstants.blr_begin, (byte) BlrConstants.blr_message, 0,
                 2, 0, (byte) BlrConstants.blr_blob2, 0, 0, 0, 0, (byte) BlrConstants.blr_short, 0, (byte) BlrConstants.blr_end, (byte) BlrConstants.blr_eoc});
     }
     
+    private static ByteBuf createIntegerBatchBlr() {
+        return Unpooled.wrappedBuffer(ByteBufUtil.decodeHexDump("05020400020008000700ff4c"));
+    }
+    
     private ByteBuf createBatchParametersBuffer(final int tag, final int value) {
         return Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(tag).writeIntLE(4).writeIntLE(value);
+    }
+    
+    private static Stream<Arguments> batchStatementArguments() {
+        return Stream.of(Arguments.of("insert", mock(InsertStatement.class)), Arguments.of("update", mock(UpdateStatement.class)), Arguments.of("delete", mock(DeleteStatement.class)));
     }
     
     private static Stream<Arguments> bufferSizeArguments() {
@@ -290,5 +372,24 @@ class FirebirdBatchCreateCommandExecutorTest {
                 Arguments.of("clumplet_truncated", Unpooled.wrappedBuffer(new byte[]{BATCH_VERSION_1, TAG_BUFFER_BYTES_SIZE})),
                 Arguments.of("value_truncated", Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(TAG_BUFFER_BYTES_SIZE).writeIntLE(4)),
                 Arguments.of("integer_length_invalid", Unpooled.buffer().writeByte(BATCH_VERSION_1).writeByte(TAG_BUFFER_BYTES_SIZE).writeIntLE(1).writeByte(1)));
+    }
+    
+    private static Stream<Arguments> invalidSelectParametersArguments() {
+        return Stream.of(
+                Arguments.of("truncated_header", "0102"),
+                Arguments.of("truncated_value", "01020400000001"),
+                Arguments.of("record_counts_integer_too_long", "0102050000000100000000"),
+                Arguments.of("blob_policy_integer_too_long", "0104050000000000000000"),
+                Arguments.of("unknown_tag_truncated_header", "0163"));
+    }
+    
+    private static Stream<Arguments> selectBatchArguments() {
+        return Stream.of(
+                Arguments.of("text", createBatchBlr(), 6L, ""),
+                Arguments.of("blob_metadata", createBlobBatchBlr(), 10L, "01"),
+                Arguments.of("blob_policy", createIntegerBatchBlr(), 6L, "01040400000000000000"),
+                Arguments.of("short_wire_integer", createIntegerBatchBlr(), 6L, "01020100000001"),
+                Arguments.of("unknown_tag", createIntegerBatchBlr(), 6L, "01630100000001"),
+                Arguments.of("deferred_integer_option", createIntegerBatchBlr(), 6L, "0101050000000100000000"));
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.engine.mysql.visitor.statement.type;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
@@ -731,7 +732,7 @@ public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implem
                 TextOrIdentifierContext hostContext = ctx.userIdentifierOrText().textOrIdentifier(1);
                 String host = null == hostContext ? "" : hostContext.getStart().getText();
                 host = null == ctx.userIdentifierOrText().textOrIdentifier(2) ? host
-                        : ctx.userIdentifierOrText().textOrIdentifier().stream().skip(1).map(each -> each.getText()).collect(Collectors.joining("."));
+                        : ctx.userIdentifierOrText().textOrIdentifier().stream().skip(1).map(ParseTree::getText).collect(Collectors.joining("."));
                 result.setHost(new IdentifierValue(host).getValue());
             }
         }

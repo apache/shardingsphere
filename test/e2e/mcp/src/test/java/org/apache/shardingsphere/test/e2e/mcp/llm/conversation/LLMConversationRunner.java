@@ -93,16 +93,13 @@ public final class LLMConversationRunner {
             List<Map<String, Object>> toolDefinitions = toolDefinitionFactory.createFromRemote(advertisedTools, scenario.allowedToolNames());
             artifacts.setToolDefinitions(toolDefinitions);
             return runTurns(scenario, artifacts, toolDefinitions);
-        } catch (final IOException ex) {
+        } catch (final IOException | IllegalStateException ex) {
             return artifacts.createResult(scenario, modelName,
                     LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage()));
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
             return artifacts.createResult(scenario, modelName,
                     LLME2EAssertionReport.failure("conversation_interrupted", "Conversation was interrupted."));
-        } catch (final IllegalStateException ex) {
-            return artifacts.createResult(scenario, modelName,
-                    LLME2EAssertionReport.failure("mcp_runtime_unavailable", ex.getMessage()));
         } finally {
             closeInteractionClient();
         }

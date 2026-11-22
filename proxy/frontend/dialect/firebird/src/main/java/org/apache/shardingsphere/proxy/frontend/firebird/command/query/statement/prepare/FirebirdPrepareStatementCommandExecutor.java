@@ -49,6 +49,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -151,6 +152,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
     
     private Collection<DatabasePacket> createResponse(final SQLStatementContext sqlStatementContext) {
         FirebirdSQLInfoReturnValue statementType = getFirebirdStatementType(sqlStatementContext.getSqlStatement());
+        ShardingSpherePreconditions.checkNotNull(statementType, () -> new UnsupportedSQLOperationException(
+                String.format("unsupported SQL statement `%s`", sqlStatementContext.getSqlStatement().getClass().getSimpleName())));
         FirebirdPrepareStatementReturnPacket returnPacket = new FirebirdPrepareStatementReturnPacket();
         while (packet.nextItem()) {
             switch (packet.getCurrentItem()) {

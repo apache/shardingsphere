@@ -75,7 +75,10 @@ public final class ShardingRouteEngineFactory {
                     : getDDLRouteEngine(database, sqlStatement, logicTableNames);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALRouteEngine(database, sqlStatementContext.getSqlStatement(), queryContext.getConnectionContext(), logicTableNames);
+            SQLStatementContext routingSQLStatementContext = shardingConditions.getSqlStatementContext();
+            return routingSQLStatementContext.getSqlStatement() instanceof DMLStatement
+                    ? getDQLRouteEngine(rule, routingSQLStatementContext, queryContext, shardingConditions, logicTableNames, props)
+                    : getDALRouteEngine(database, sqlStatementContext.getSqlStatement(), queryContext.getConnectionContext(), logicTableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
             return getDCLRouteEngine(database, sqlStatementContext, logicTableNames);

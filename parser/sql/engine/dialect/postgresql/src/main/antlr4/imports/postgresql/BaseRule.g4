@@ -134,6 +134,7 @@ unreservedWord
     | ALSO
     | ALTER
     | ALWAYS
+    | ASENSITIVE
     | ASSERTION
     | ASSIGNMENT
     | AT
@@ -183,6 +184,7 @@ unreservedWord
     | COMMENTS
     | COMMIT
     | COMMITTED
+    | COMPRESSION
     | CONFIGURATION
     | CONFLICT
     | CONNECT
@@ -237,6 +239,7 @@ unreservedWord
     | EXTERNAL
     | FAMILY
     | FILTER
+    | FINALIZE
     | FIRST
     | FOLLOWING
     | FORCE
@@ -374,6 +377,7 @@ unreservedWord
     | RELATIVE
     | RELEASE
     | RENAME
+    | REPACK
     | REPEATABLE
     | REPLACE
     | REPLICA
@@ -512,6 +516,9 @@ unreservedWord
     | USAGE
     | SOURCE
     | TARGET
+    | PLAN
+    | IGNORE
+    | RESPECT
     ;
 
 typeFuncNameKeyword
@@ -557,7 +564,7 @@ owner
     ;
 
 name
-    : identifier
+    : identifier | colNameKeyword
     ;
 
 tableNames
@@ -589,7 +596,7 @@ primaryKey
     ;
 
 andOperator
-    : AND | AND_
+    : AND
     ;
 
 orOperator
@@ -602,16 +609,20 @@ comparisonOperator
 
 patternMatchingOperator
     : LIKE
-    | TILDE_TILDE_
     | NOT LIKE
-    | NOT_TILDE_TILDE_
     | ILIKE
-    | ILIKE_
     | NOT ILIKE
-    | NOT_ILIKE_
     | SIMILAR TO
     | NOT SIMILAR TO
-    | TILDE_
+    | patternMatchingSymbol
+    ;
+
+patternMatchingSymbol
+    : TILDE_
+    | TILDE_TILDE_
+    | NOT_TILDE_TILDE_
+    | ILIKE_
+    | NOT_ILIKE_
     | REGEX_NOT_MATCH_
     | REGEX_MATCH_CASE_INSENSITIVE_
     | REGEX_NOT_MATCH_CASE_INSENSITIVE_
@@ -636,10 +647,8 @@ aExpr
     | aExpr MOD_ aExpr
     | aExpr CARET_ aExpr
     | TILDE_ aExpr
-    | aExpr AMPERSAND_ aExpr
-    | aExpr VERTICAL_BAR_ aExpr
-    | aExpr qualOp aExpr
     | {QUESTION_ != _input.LA(1)}? qualOp aExpr
+    | aExpr qualOp aExpr
     | aExpr qualOp
     | aExpr comparisonOperator aExpr
     | NOT aExpr
@@ -690,8 +699,8 @@ bExpr
     | bExpr (ASTERISK_ | SLASH_ | MOD_) bExpr
     | bExpr (PLUS_ | MINUS_) bExpr
     | TILDE_ bExpr
-    | bExpr qualOp bExpr
     | {QUESTION_ != _input.LA(1)}? qualOp bExpr
+    | bExpr qualOp bExpr
     | bExpr qualOp
     | bExpr IS DISTINCT FROM bExpr
     | bExpr IS NOT DISTINCT FROM bExpr
@@ -772,10 +781,16 @@ columnref
 qualOp
     : jsonOperator
     | geometricOperator
+    | patternMatchingSymbol
+    | AND_
+    | AMPERSAND_
+    | VERTICAL_BAR_
     | CUSTOM_OPERATOR_
     | NOT_
     | AT_
     | DEQ_
+    | SAFE_EQ_
+    | BQ_
     | OPERATOR LP_ anyOperator RP_
     ;
 
@@ -1063,7 +1078,11 @@ typeFunctionName
     : UNICODE_ESCAPE? IDENTIFIER_ uescape?
     | unreservedWord
     | typeFuncNameKeyword
-    | INT4RANGE
+    | rangeTypeName
+    ;
+
+rangeTypeName
+    : INT4RANGE
     | INT8RANGE
     | NUMRANGE
     | TSRANGE
@@ -1114,8 +1133,13 @@ xmlNamespaceEl
 
 funcExpr
     : jsonAggregateFunction filterClause? overClause?
-    | funcApplication withinGroupClause? filterClause? overClause?
+    | funcApplication ({null == $funcApplication.ctx.DISTINCT() && null == $funcApplication.ctx.VARIADIC() && null == $funcApplication.ctx.sortClause()}? withinGroupClause)?
+      filterClause? nullTreatment? overClause?
     | functionExprCommonSubexpr
+    ;
+
+nullTreatment
+    : (IGNORE | RESPECT) NULLS
     ;
 
 withinGroupClause
@@ -1127,7 +1151,7 @@ filterClause
     ;
 
 functionExprWindowless
-    : funcApplication | functionExprCommonSubexpr
+    : funcApplication | functionExprCommonSubexpr | jsonAggregateFunction
     ;
 
 ordinality
@@ -1277,7 +1301,27 @@ jsonExistsErrorClause
     ;
 
 jsonTable
-    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTableErrorClause? RP_
+    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTablePlanClause? jsonTableErrorClause? RP_
+    ;
+
+jsonTablePlanClause
+    : PLAN LP_ jsonTablePlan RP_
+    | PLAN DEFAULT LP_ jsonTableDefaultPlan RP_
+    ;
+
+jsonTableDefaultPlan
+    : (INNER | OUTER) (COMMA_ (UNION | CROSS))?
+    | (UNION | CROSS) (COMMA_ (INNER | OUTER))?
+    ;
+
+jsonTablePlan
+    : name ((INNER | OUTER) jsonTablePlanPrimary)?
+    | jsonTablePlanPrimary UNION jsonTablePlanPrimary (UNION jsonTablePlanPrimary)*
+    | jsonTablePlanPrimary CROSS jsonTablePlanPrimary (CROSS jsonTablePlanPrimary)*
+    ;
+
+jsonTablePlanPrimary
+    : name | LP_ jsonTablePlan RP_
     ;
 
 jsonTableColumn
@@ -1324,8 +1368,7 @@ constTypeName
     ;
 
 exprList
-    : aExpr
-    | exprList COMMA_ aExpr
+    : aExpr (COMMA_ aExpr)*
     ;
 
 extractList
@@ -1353,7 +1396,26 @@ typeModifiers
     ;
 
 numeric
-    : INT | INTEGER | SMALLINT | BIGINT| REAL | FLOAT optFloat | DOUBLE PRECISION | DECIMAL typeModifiers? | DEC typeModifiers? | NUMERIC typeModifiers? | BOOLEAN | FLOAT8 | FLOAT4 | INT2 | INT4 | INT8
+    : numericTypeName | FLOAT optFloat | fixedPointTypeName typeModifiers? | DEC typeModifiers?
+    ;
+
+numericTypeName
+    : INT
+    | INTEGER
+    | SMALLINT
+    | BIGINT
+    | REAL
+    | BOOLEAN
+    | FLOAT8
+    | FLOAT4
+    | INT2
+    | INT4
+    | INT8
+    | DOUBLE PRECISION
+    ;
+
+fixedPointTypeName
+    : DECIMAL | NUMERIC
     ;
 
 constDatetime
@@ -1382,12 +1444,14 @@ characterWithoutLength
     ;
 
 characterClause
-    : CHARACTER VARYING?
-    | CHAR VARYING?
+    : characterTypeName VARYING?
     | VARCHAR
-    | NATIONAL CHARACTER VARYING?
-    | NATIONAL CHAR VARYING?
+    | NATIONAL characterTypeName VARYING?
     | NCHAR VARYING?
+    ;
+
+characterTypeName
+    : CHARACTER | CHAR
     ;
 
 optFloat
@@ -1701,10 +1765,17 @@ dataType
     ;
 
 dataTypeName
-    : INT | INT2 | INT4 | INT8 | SMALLINT | INTEGER | BIGINT | DECIMAL | NUMERIC | REAL | FLOAT | FLOAT4 | FLOAT8 | DOUBLE PRECISION | SMALLSERIAL | SERIAL | BIGSERIAL
-    | VARCHAR | CHARACTER | CHAR | TEXT | NAME | BYTEA | TIMESTAMP | DATE | TIME | INTERVAL | BOOLEAN | ENUM | POINT
-    | LINE | LSEG | BOX | PATH | POLYGON | CIRCLE | CIDR | INET | MACADDR | MACADDR8 | BIT | VARBIT | TSVECTOR | TSQUERY | XML
-    | JSON | INT4RANGE | INT8RANGE | NUMRANGE | TSRANGE | TSTZRANGE | DATERANGE | ARRAY | identifier | constDatetime | typeName
+    : numericTypeName
+    | FLOAT
+    | fixedPointTypeName
+    | characterTypeName
+    | VARCHAR
+    | BIT
+    | rangeTypeName
+    | ARRAY
+    | identifier
+    | constDatetime
+    | typeName
     ;
 
 dataTypeLength
@@ -1781,6 +1852,7 @@ colNameKeyword
     | NATIONAL
     | NCHAR
     | NONE
+    | NORMALIZE
     | NULLIF
     | NUMERIC
     | OUT
@@ -2095,7 +2167,7 @@ encoding
     ;
 
 genericSet
-    : varName (EQ_|TO) (varList | DEFAULT)
+    : varName (EQ_|TO) (varList | DEFAULT | NULL)
     ;
 
 variableResetStmt

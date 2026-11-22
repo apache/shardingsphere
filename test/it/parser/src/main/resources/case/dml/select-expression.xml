@@ -1406,6 +1406,73 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_with_expr_with_and_not_or" parameters="1,2,3">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="96">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="96">
+                    <left>
+                        <binary-operation-expression start-index="28" stop-index="73">
+                            <left>
+                                <binary-operation-expression start-index="28" stop-index="46">
+                                    <left>
+                                        <column name="user_id" start-index="28" stop-index="42">
+                                            <owner name="t_order" start-index="28" stop-index="34" />
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="1" start-index="46" stop-index="46" />
+                                        <parameter-marker-expression parameter-index="0" start-index="46" stop-index="46" />
+                                    </right>
+                                </binary-operation-expression>
+                            </left>
+                            <operator>AND</operator>
+                            <right>
+                                <not-expression start-index="52" stop-index="73">
+                                    <expr>
+                                        <binary-operation-expression start-index="56" stop-index="73">
+                                            <left>
+                                                <column name="status" start-index="56" stop-index="69">
+                                                    <owner name="t_order" start-index="56" stop-index="62" />
+                                                </column>
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <literal-expression value="2" start-index="73" stop-index="73" />
+                                                <parameter-marker-expression parameter-index="1" start-index="73" stop-index="73" />
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </not-expression>
+                            </right>
+                        </binary-operation-expression>
+                    </left>
+                    <operator>OR</operator>
+                    <right>
+                        <binary-operation-expression start-index="78" stop-index="96">
+                            <left>
+                                <column name="user_id" start-index="78" stop-index="92">
+                                    <owner name="t_order" start-index="78" stop-index="84" />
+                                </column>
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <literal-expression value="3" start-index="96" stop-index="96" />
+                                <parameter-marker-expression parameter-index="2" start-index="96" stop-index="96" />
+                            </right>
+                        </binary-operation-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_where_with_expr_with_not_sign" parameters="1">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />

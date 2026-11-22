@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.database.connector.mysql.resultset;
 
 import org.apache.shardingsphere.database.connector.core.resultset.DialectResultSetMapper;
+import org.apache.shardingsphere.database.connector.core.resultset.ResultSetTimeValueReader;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Result set mapper of MySQL.
@@ -44,6 +47,12 @@ public final class MySQLResultSetMapper implements DialectResultSetMapper {
     
     private static boolean isYearDataType(final String columnDataTypeName) {
         return YEAR_DATA_TYPE.equalsIgnoreCase(columnDataTypeName);
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public Optional<ResultSetTimeValueReader> createTimeValueReader() {
+        return Optional.of(new MySQLTimeValueReader());
     }
     
     @Override

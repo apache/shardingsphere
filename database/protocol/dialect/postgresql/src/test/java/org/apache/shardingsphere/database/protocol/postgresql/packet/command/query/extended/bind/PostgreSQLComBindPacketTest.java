@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.postgresql.util.PGobject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -97,6 +99,29 @@ class PostgreSQLComBindPacketTest {
     void assertReadParameters(final String name, final byte[] packetBytes, final List<PostgreSQLBinaryColumnType> paramTypes, final List<Object> expected) {
         PostgreSQLComBindPacket packet = new PostgreSQLComBindPacket(new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(packetBytes), StandardCharsets.UTF_8));
         assertThat(packet.readParameters(paramTypes), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}: {1}")
+    @MethodSource("specialTimestampArguments")
+    void assertReadParametersWithSpecialTimestamp(final PostgreSQLBinaryColumnType paramType, final String input, final String expectedType) {
+        ByteBuf buffer = Unpooled.buffer();
+        try {
+            byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
+            buffer.writeBytes(NEW_INSTANCE_PACKET_BYTES).writeShort(0).writeShort(1).writeInt(bytes.length).writeBytes(bytes);
+            PostgreSQLComBindPacket packet = new PostgreSQLComBindPacket(new PostgreSQLPacketPayload(buffer, StandardCharsets.UTF_8));
+            PGobject actual = (PGobject) packet.readParameters(Collections.singletonList(paramType)).get(0);
+            assertThat(actual.getType(), is(expectedType));
+            assertThat(actual.getValue(), is(input));
+        } finally {
+            buffer.release();
+        }
+    }
+    
+    private static Stream<Arguments> specialTimestampArguments() {
+        return Stream.of(
+                Arguments.of(PostgreSQLBinaryColumnType.TIMESTAMP, "epoch", "timestamp"),
+                Arguments.of(PostgreSQLBinaryColumnType.TIMESTAMPTZ, "tomorrow", "timestamptz"),
+                Arguments.of(PostgreSQLBinaryColumnType.TIMESTAMP, "today", "timestamp"));
     }
     
     @ParameterizedTest(name = "{0}")

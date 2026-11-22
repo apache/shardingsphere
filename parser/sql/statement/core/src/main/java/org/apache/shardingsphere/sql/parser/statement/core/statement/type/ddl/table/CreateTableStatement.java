@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
@@ -52,6 +53,8 @@ public final class CreateTableStatement extends DDLStatement {
     
     private final SelectStatement selectStatement;
     
+    private final ExecuteStatement executeStatement;
+    
     private final boolean ifNotExists;
     
     private final boolean temporary;
@@ -66,18 +69,21 @@ public final class CreateTableStatement extends DDLStatement {
     
     private final List<ColumnSegment> columns;
     
+    private final Collection<ColumnSegment> columnReferences = new LinkedList<>();
+    
     private final Collection<RollupSegment> rollups;
     
     private final SQLStatementAttributes attributes;
     
     @Builder
-    private CreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SelectStatement selectStatement,
+    private CreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SelectStatement selectStatement, final ExecuteStatement executeStatement,
                                  final boolean ifNotExists, final boolean temporary, final SimpleTableSegment likeTable, final CreateTableOptionSegment createTableOption,
                                  final Collection<ColumnDefinitionSegment> columnDefinitions, final Collection<ConstraintDefinitionSegment> constraintDefinitions,
                                  final List<ColumnSegment> columns, final Collection<RollupSegment> rollups) {
         super(databaseType);
         this.table = table;
         this.selectStatement = selectStatement;
+        this.executeStatement = executeStatement;
         this.ifNotExists = ifNotExists;
         this.temporary = temporary;
         this.likeTable = likeTable;
@@ -96,6 +102,15 @@ public final class CreateTableStatement extends DDLStatement {
      */
     public Optional<SelectStatement> getSelectStatement() {
         return Optional.ofNullable(selectStatement);
+    }
+    
+    /**
+     * Get execute statement.
+     *
+     * @return execute statement
+     */
+    public Optional<ExecuteStatement> getExecuteStatement() {
+        return Optional.ofNullable(executeStatement);
     }
     
     /**

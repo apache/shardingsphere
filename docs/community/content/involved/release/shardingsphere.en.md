@@ -240,7 +240,9 @@ export GPG_TTY=$(tty)
 ./mvnw release:prepare -P-dev,release,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
--P-dev,release,all: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-Proxy.
+-P-dev,release,all: enable distribution packaging and the `all` dependency set to build source packages, jar files, and binary distributions including MCP.
+
+Ordinary packaging with the `release` profile does not require GPG signing credentials; the `.asc` files for release candidates are generated through the existing `apache-release` signing flow used by `release:perform`.
 
 -DautoVersionSubmodules=true: it can make the version number is inputted only once and not for each sub-module.
 
@@ -323,7 +325,7 @@ Create folder by version number.
 mkdir ${RELEASE.VERSION}
 ```
 
-Add source code packages, binary packages and executable binary packages of ShardingSphere-Proxy to SVN working directory.
+Add the source package and JDBC, Proxy, Agent, and MCP binary packages to the SVN working directory, together with their `.asc` and `.sha512` files.
 
 ```shell
 cd ${RELEASE.VERSION}
@@ -331,6 +333,7 @@ cp -f ~/shardingsphere/distribution/src/target/*.zip* .
 cp -f ~/shardingsphere/distribution/jdbc/target/*.tar.gz* .
 cp -f ~/shardingsphere/distribution/proxy/target/*.tar.gz* .
 cp -f ~/shardingsphere/distribution/agent/target/*.tar.gz* .
+cp -f ~/shardingsphere/distribution/mcp/target/*.tar.gz* .
 ```
 
 ### 4. Commit to Apache SVN
@@ -386,6 +389,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
+gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz
 ```
 
 ### 3. Check Released Files
@@ -415,6 +419,7 @@ Decompress
 - `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz`
 - `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz`
 - `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz`
+- `apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz`
 
 And check the following items:
 
@@ -426,6 +431,22 @@ And check the following items:
     *   All software licenses mentioned in `LICENSE`
     *   All the third party dependency licenses are under `licenses` folder
     *   If it depends on Apache license and has a `NOTICE` file, that `NOTICE` file need to be added to `NOTICE` file of the release
+
+For MCP, also verify the contents extracted from the actual archive into a new empty directory, rather than only the build directory or a copy repaired by a test helper.
+Confirm that `apache-shardingsphere-mcp-${RELEASE.VERSION}/` contains `bin`, `conf`, `lib`, `plugins`, `logs`, `licenses`, `LICENSE`, and `NOTICE`, and check the database dependencies selected by the `all` profile.
+On Unix systems, confirm that `bin/start.sh` and `bin/docker-entrypoint.sh` both have mode `0755` in the archive, then start MCP without first running `chmod`:
+
+```shell
+MCP_VERIFY_DIR=$(mktemp -d)
+tar -xzf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-mcp-bin.tar.gz -C "${MCP_VERIFY_DIR}"
+cd "${MCP_VERIFY_DIR}/apache-shardingsphere-mcp-${RELEASE.VERSION}"
+test -x bin/start.sh
+test -x bin/docker-entrypoint.sh
+./bin/start.sh conf/mcp-http.yaml
+```
+
+Confirm that the MCP HTTP service starts, then stop the process after verification.
+On Windows systems, verify startup with `bin\start.bat conf\mcp-http.yaml`.
 
 ## Call for a Vote
 
@@ -611,6 +632,7 @@ docker logout
 3.8 ShardingSphere MCP publication
 
 ShardingSphere MCP is published through the repository workflow [`.github/workflows/release-mcp.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/release-mcp.yml).
+Project binary release candidates use `release,all`, while this OCI image and MCP Registry workflow continues to use `release,default-dep` to retain the existing default database dependency set for the image.
 The workflow builds the MCP distribution, pushes `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}` to GHCR,
 pushes `latest` for stable releases, and then publishes `mcp/server.json` to the official MCP Registry through GitHub OIDC.
 
@@ -654,7 +676,7 @@ Refer to [Release Download Pages for Projects](https://infra.apache.org/release-
 
 Refer to commit:
 Update the version number of document files, including index.html, indexzh.html, learning.html, legacy.html, and legacyzh.html under the shardingsphere-doc repository to the current version. [Reference commit](https://github.com/apache/shardingsphere-doc/commit/9fdf438d1170129d2690b5dee316403984579430)
-Update language.html(docs/document/themes/hugo-theme-learn/layouts/partials/language.html) under the shardingsphere repository and add the current version number for navigation. [Reference commit](https://github.com/apache/shardingsphere/pull/29017/files)
+Update language.html(.github/website/shardingsphere/document/layouts/partials/language.html) under the shardingsphere-doc repository and add the current version number for navigation. [Reference commit](https://github.com/apache/shardingsphere/pull/29017/files)
 
 ### 7. Update Example Version
 

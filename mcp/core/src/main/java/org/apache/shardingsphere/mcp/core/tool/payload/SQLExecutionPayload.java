@@ -163,7 +163,7 @@ public final class SQLExecutionPayload implements MCPSuccessPayload {
         if (executionResult.getColumns().isEmpty()) {
             return executionResult.getRows().isEmpty() ? "" : "unnamed_columns";
         }
-        Set<String> columnNames = new LinkedHashSet<>(executionResult.getColumns().size());
+        Set<String> columnNames = LinkedHashSet.newLinkedHashSet(executionResult.getColumns().size());
         for (SQLExecutionColumnDefinition each : executionResult.getColumns()) {
             if (null == each.getColumnName() || each.getColumnName().isBlank()) {
                 return "unnamed_columns";

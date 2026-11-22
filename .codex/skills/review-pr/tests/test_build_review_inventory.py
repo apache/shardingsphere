@@ -15,7 +15,10 @@
 # limitations under the License.
 #
 
+import os
+import subprocess
 import sys
+import tempfile
 import unittest
 from argparse import Namespace
 from pathlib import Path
@@ -62,6 +65,19 @@ class BuildReviewInventoryTest(unittest.TestCase):
         self.assertEqual({"provided": True}, actual["scope"]["candidate_files"])
         self.assertEqual("AGENTS.md", actual["changed_files_by_category"]["docs"][0]["path"])
         resolve_candidate_changes.assert_called_once_with(Path("/repo"), "merge-base", "candidate.txt")
+
+    def test_default_review_commands_leave_no_repository_bytecode(self):
+        for script_name in ("build_review_inventory.py", "manage_review_ledger.py"):
+            with self.subTest(script=script_name), tempfile.TemporaryDirectory() as temp_dir:
+                scripts = Path(temp_dir) / ".codex/skills/review-pr/scripts"
+                scripts.mkdir(parents=True)
+                for name in (script_name, "resolve_review_scope.py"):
+                    (scripts / name).write_bytes((SCRIPTS_DIR / name).read_bytes())
+                environment = {key: value for key, value in os.environ.items() if key not in {"PYTHONDONTWRITEBYTECODE", "PYTHONPYCACHEPREFIX"}}
+                process = subprocess.run([sys.executable, str(scripts / script_name), "--help"], cwd=temp_dir, env=environment,
+                                         text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, timeout=20)
+                self.assertIn("usage:", process.stdout)
+                self.assertEqual([], list(scripts.rglob("__pycache__")))
 
 
 if __name__ == "__main__":

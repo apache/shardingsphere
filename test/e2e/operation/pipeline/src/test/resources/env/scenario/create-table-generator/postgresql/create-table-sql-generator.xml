@@ -24,39 +24,39 @@
         </input>
         <output version="default">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order
+                CREATE TABLE IF NOT EXISTS "public"."t_order"
                 (
-                order_id integer NOT NULL,
-                user_id integer NOT NULL,
-                status character varying(45) COLLATE pg_catalog."default",
-                CONSTRAINT t_order_pkey PRIMARY KEY (
-                order_id)
+                "order_id" integer NOT NULL,
+                "user_id" integer NOT NULL,
+                "status" character varying(45) COLLATE pg_catalog."default",
+                CONSTRAINT "t_order_pkey" PRIMARY KEY (
+                "order_id")
                 )
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
         <output version="10">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order
+                CREATE TABLE IF NOT EXISTS "public"."t_order"
                 (
-                order_id integer NOT NULL,
-                user_id integer NOT NULL,
-                status character varying(45) COLLATE pg_catalog."default",
-                CONSTRAINT t_order_pkey PRIMARY KEY (order_id))
+                "order_id" integer NOT NULL,
+                "user_id" integer NOT NULL,
+                "status" character varying(45) COLLATE pg_catalog."default",
+                CONSTRAINT "t_order_pkey" PRIMARY KEY ("order_id"))
                 WITH (OIDS = FALSE)
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
         <output version="11">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order
+                CREATE TABLE IF NOT EXISTS "public"."t_order"
                 (
-                order_id integer NOT NULL,
-                user_id integer NOT NULL,
-                status character varying(45) COLLATE pg_catalog."default",
-                CONSTRAINT t_order_pkey PRIMARY KEY (order_id))
+                "order_id" integer NOT NULL,
+                "user_id" integer NOT NULL,
+                "status" character varying(45) COLLATE pg_catalog."default",
+                CONSTRAINT "t_order_pkey" PRIMARY KEY ("order_id"))
                 WITH (OIDS = FALSE)
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
     </create-table-generator-assertion>
@@ -69,47 +69,47 @@
         </input>
         <output version="default">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order_item
+                CREATE TABLE IF NOT EXISTS "public"."t_order_item"
                 (
-                item_id integer NOT NULL,
-                order_id integer NOT NULL,
-                user_id integer NOT NULL,
-                status character varying(45) COLLATE pg_catalog."default",
-                creation_date date,
-                CONSTRAINT t_order_item_pkey PRIMARY KEY (
-                item_id)
+                "item_id" integer NOT NULL,
+                "order_id" integer NOT NULL,
+                "user_id" integer NOT NULL,
+                "status" character varying(45) COLLATE pg_catalog."default",
+                "creation_date" date,
+                CONSTRAINT "t_order_item_pkey" PRIMARY KEY (
+                "item_id")
                 )
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
         <output version="10">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order_item
+                CREATE TABLE IF NOT EXISTS "public"."t_order_item"
                 (
-                item_id integer NOT NULL,
-                order_id integer NOT NULL,
-                user_id integer NOT NULL,
-                status character varying(45) COLLATE pg_catalog."default",
-                creation_date date,
-                CONSTRAINT t_order_item_pkey PRIMARY KEY (
-                item_id))
+                "item_id" integer NOT NULL,
+                "order_id" integer NOT NULL,
+                "user_id" integer NOT NULL,
+                "status" character varying(45) COLLATE pg_catalog."default",
+                "creation_date" date,
+                CONSTRAINT "t_order_item_pkey" PRIMARY KEY (
+                "item_id"))
                 WITH (OIDS = FALSE)
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
         <output version="11">
             <sql>
-                CREATE TABLE IF NOT EXISTS public.t_order_item
+                CREATE TABLE IF NOT EXISTS "public"."t_order_item"
                 (
-                item_id integer NOT NULL,
-                order_id integer NOT NULL,
-                user_id integer NOT NULL,
-                status character varying(45) COLLATE pg_catalog."default",
-                creation_date date,
-                CONSTRAINT t_order_item_pkey PRIMARY KEY (
-                item_id))
+                "item_id" integer NOT NULL,
+                "order_id" integer NOT NULL,
+                "user_id" integer NOT NULL,
+                "status" character varying(45) COLLATE pg_catalog."default",
+                "creation_date" date,
+                CONSTRAINT "t_order_item_pkey" PRIMARY KEY (
+                "item_id"))
                 WITH (OIDS = FALSE)
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
     </create-table-generator-assertion>
@@ -122,39 +122,39 @@
         </input>
         <output version="default">
             <sql>
-                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                CREATE UNLOGGED TABLE IF NOT EXISTS "public"."t_log"
                 (
-                id integer
+                "id" integer
                 ,
-                status character varying(10) COLLATE pg_catalog."default"
+                "status" character varying(10) COLLATE pg_catalog."default"
                 )
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
         <output version="10">
             <sql>
-                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                CREATE UNLOGGED TABLE IF NOT EXISTS "public"."t_log"
                 (
-                id integer
+                "id" integer
                 ,
-                status character varying(10) COLLATE pg_catalog."default"
+                "status" character varying(10) COLLATE pg_catalog."default"
                 )
                 WITH (
                 OIDS = FALSE)
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
         <output version="11">
             <sql>
-                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                CREATE UNLOGGED TABLE IF NOT EXISTS "public"."t_log"
                 (
-                id integer
+                "id" integer
                 ,
-                status character varying(10) COLLATE pg_catalog."default"
+                "status" character varying(10) COLLATE pg_catalog."default"
                 )
                 WITH (
                 OIDS = FALSE)
-                TABLESPACE pg_default
+                TABLESPACE "pg_default"
             </sql>
         </output>
     </create-table-generator-assertion>

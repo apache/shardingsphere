@@ -31,8 +31,12 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.table.MySQLOptimizeTableStatement;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedConstruction;
 
 import java.sql.Connection;
@@ -42,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,9 +58,10 @@ import static org.mockito.Mockito.when;
 
 class DriverJDBCPushDownExecuteQueryExecutorTest {
     
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSQLStatements")
     @SuppressWarnings("unchecked")
-    void assertExecuteQuery() {
+    void assertExecuteQuery(final SQLStatement sqlStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         StorageUnit mysqlStorageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         StorageUnit postgresqlStorageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
@@ -67,7 +73,7 @@ class DriverJDBCPushDownExecuteQueryExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         QueryContext queryContext = mock(QueryContext.class);
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
-        when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(executionContext.getSqlStatementContext().getSqlStatement()).thenReturn(sqlStatement);
         when(executionContext.getExecutionUnits()).thenReturn(Arrays.asList(
                 new ExecutionUnit("foo_mysql", new SQLUnit("SELECT id FROM foo_table", Collections.emptyList())),
                 new ExecutionUnit("foo_postgresql", new SQLUnit("SELECT id FROM foo_table", Collections.emptyList()))));
@@ -83,5 +89,9 @@ class DriverJDBCPushDownExecuteQueryExecutorTest {
                     mock(StatementReplayCallback.class)));
             verifyNoInteractions(prepareEngine, backendExecutor);
         }
+    }
+    
+    private static Stream<SQLStatement> getSQLStatements() {
+        return Stream.of(mock(SelectStatement.class), mock(AnalyzeTableStatement.class), mock(MySQLOptimizeTableStatement.class));
     }
 }

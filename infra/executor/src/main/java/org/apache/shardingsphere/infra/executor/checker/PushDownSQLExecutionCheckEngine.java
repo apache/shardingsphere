@@ -24,11 +24,13 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Push down SQL execution check engine.
@@ -45,14 +47,21 @@ public final class PushDownSQLExecutionCheckEngine {
      */
     public void check(final ShardingSphereDatabase database, final ExecutionContext executionContext) throws SQLException {
         Collection<ExecutionUnit> executionUnits = executionContext.getExecutionUnits();
-        if (executionUnits.size() < 2 || !(executionContext.getSqlStatementContext().getSqlStatement() instanceof SelectStatement)) {
+        if (executionUnits.size() < 2) {
             return;
         }
+        if (executionContext.getSqlStatementContext().getSqlStatement() instanceof SelectStatement) {
+            checkStorageTypes(database, executionUnits, () -> new UnsupportedSQLOperationException("SELECT across different storage database types in push down execution").toSQLException());
+        } else if (executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
+            checkStorageTypes(database, executionUnits, () -> new UnsupportedSQLOperationException("DAL across different storage database types in push down execution").toSQLException());
+        }
+    }
+    
+    private void checkStorageTypes(final ShardingSphereDatabase database, final Collection<ExecutionUnit> executionUnits, final Supplier<SQLException> exceptionSupplier) throws SQLException {
         Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         String storageType = storageUnits.get(executionUnits.iterator().next().getDataSourceName()).getStorageType().getType();
         for (ExecutionUnit each : executionUnits) {
-            ShardingSpherePreconditions.checkState(storageType.equals(storageUnits.get(each.getDataSourceName()).getStorageType().getType()),
-                    () -> new UnsupportedSQLOperationException("SELECT across different storage database types in push down execution").toSQLException());
+            ShardingSpherePreconditions.checkState(storageType.equals(storageUnits.get(each.getDataSourceName()).getStorageType().getType()), exceptionSupplier);
         }
     }
 }

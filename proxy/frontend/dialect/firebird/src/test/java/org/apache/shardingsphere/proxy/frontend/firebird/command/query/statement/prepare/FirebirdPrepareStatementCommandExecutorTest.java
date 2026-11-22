@@ -32,12 +32,14 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -167,6 +170,12 @@ class FirebirdPrepareStatementCommandExecutorTest {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(preparedStatement.getSql(), is("SELECT 1"));
         assertThat(preparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
+    }
+    
+    @Test
+    void assertExecuteWithUnsupportedStatement() {
+        when(packet.getSQL()).thenReturn("DROP ROLE foo_role");
+        assertThrows(UnsupportedSQLOperationException.class, () -> new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute());
     }
     
     private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {
@@ -438,6 +447,33 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Default schema table", "SELECT id FROM foo_tbl", true, FirebirdBinaryColumnType.LONG),
                 Arguments.of("System table with default schema", "SELECT RDB$RELATION_ID FROM RDB$DATABASE", true, FirebirdBinaryColumnType.SHORT),
                 Arguments.of("System table without default schema", "SELECT RDB$RELATION_ID FROM RDB$DATABASE", false, FirebirdBinaryColumnType.SHORT));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("systemTextColumnArguments")
+    void assertDescribeSystemTextColumnWithoutUserTables(final String name, final String sql) throws Exception {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getDatabase("foo_db");
+        database.dropSchema("foo_db");
+        doReturn(Optional.empty()).when(database).findDefaultSchema();
+        SystemSchemaBuilder.build("foo_db", databaseType, new ConfigurationProperties(PropertiesBuilder.build())).values().forEach(database::addSchema);
+        assertThat(database.getSchema("system_tables").getTable("RDB$PROCEDURES").getColumn("RDB$ENGINE_NAME").getDataType(), is(Types.CHAR));
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.nextItem()).thenReturn(true, true, true, true, true, false);
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.SELECT, FirebirdSQLInfoPacketType.LENGTH, FirebirdSQLInfoPacketType.LENGTH,
+                FirebirdSQLInfoPacketType.DESCRIBE_END, FirebirdSQLInfoPacketType.DESCRIBE_END);
+        FirebirdPrepareStatementReturnPacket actual = executeAndGetReturnPacket();
+        assertThat(actual.getDescribeSelect().size(), is(1));
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        actual.getDescribeSelect().get(0).write(payload);
+        verify(payload).writeInt1(FirebirdSQLInfoPacketType.LENGTH.getCode());
+        verify(payload).writeInt4LE(63);
+    }
+    
+    private static Stream<Arguments> systemTextColumnArguments() {
+        return Stream.of(
+                Arguments.of("procedure engine", "SELECT RDB$ENGINE_NAME FROM RDB$PROCEDURES"),
+                Arguments.of("empty result", "SELECT RDB$ENGINE_NAME FROM RDB$PROCEDURES WHERE 1 = 0"),
+                Arguments.of("aliased procedure engine", "SELECT p.RDB$ENGINE_NAME AS foo_engine FROM RDB$PROCEDURES p"));
     }
     
     @Test

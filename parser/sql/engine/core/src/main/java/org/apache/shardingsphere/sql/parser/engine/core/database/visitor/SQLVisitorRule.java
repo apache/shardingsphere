@@ -841,6 +841,8 @@ public enum SQLVisitorRule {
     
     CLUSTER("Cluster", SQLStatementType.DDL),
     
+    REPACK("Repack", SQLStatementType.DDL),
+    
     CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
     
     DO("DoStatement", SQLStatementType.DML),

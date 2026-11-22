@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,7 +43,7 @@ class ShardingInspectionServiceTest {
     void assertDatabaseScopedQuery(final String name, final QueryInvocation invocation, final String expectedSQL) {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         invocation.invoke(new ShardingInspectionService(), queryFacade);
-        verify(queryFacade).query(eq("logic_db"), eq(expectedSQL));
+        verify(queryFacade).query("logic_db", expectedSQL);
     }
     
     @ParameterizedTest(name = "{0}")

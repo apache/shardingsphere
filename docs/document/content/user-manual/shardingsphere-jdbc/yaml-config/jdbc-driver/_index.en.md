@@ -16,7 +16,7 @@ ShardingSphere-JDBC provides a JDBC Driver, which can be used only through confi
 
 ### URL Configuration and sample
 
-Refer to [known Implementation](./known-implementation/_index.en.md).
+Refer to [known Implementation](./known-implementation/).
 
 ## Procedure
 

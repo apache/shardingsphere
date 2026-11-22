@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.postgresql.jdbc.TimestampUtils;
+import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 
 /**
  * Timestamp value parser of PostgreSQL.
  */
-public final class PostgreSQLTimestampValueParser implements PostgreSQLTextValueParser<Timestamp> {
+@RequiredArgsConstructor
+public final class PostgreSQLTimestampValueParser implements PostgreSQLTextValueParser<Object> {
     
     private static final DateTimeFormatter POSTGRESQL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
             "[yyyy-MM-dd][yyyy_MM_dd][yyyyMMdd][yyyy-M-d][MM/dd/yy][yyMMdd]"
@@ -40,18 +44,32 @@ public final class PostgreSQLTimestampValueParser implements PostgreSQLTextValue
                     + "[ ]"
                     + "[XXXXX][XXXX][XXX][XX][X]");
     
+    private final String typeName;
+    
     @Override
-    public Timestamp parse(final String value) {
+    public Object parse(final String value) {
         try {
             return Timestamp.valueOf(LocalDateTime.from(POSTGRESQL_DATE_TIME_FORMATTER.parse(value)));
         } catch (final DateTimeParseException ignored) {
-            return fallbackToPostgreSQLTimestampUtils(value);
+            return parseFallbackValue(value);
         }
     }
     
-    private static Timestamp fallbackToPostgreSQLTimestampUtils(final String value) {
+    private Object parseFallbackValue(final String value) {
         try {
-            return new TimestampUtils(false, null).toTimestamp(null, value);
+            switch (value.trim().toLowerCase(Locale.ROOT)) {
+                case "epoch":
+                case "today":
+                case "tomorrow":
+                case "now":
+                case "yesterday":
+                    PGobject result = new PGobject();
+                    result.setType(typeName);
+                    result.setValue(value);
+                    return result;
+                default:
+                    return new TimestampUtils(false, null).toTimestamp(null, value);
+            }
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

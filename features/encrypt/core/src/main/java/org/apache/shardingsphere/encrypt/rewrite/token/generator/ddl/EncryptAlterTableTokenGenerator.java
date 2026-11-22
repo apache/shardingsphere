@@ -55,7 +55,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -194,7 +194,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getAlterTableOption().map(DialectAlterTableOption::isContainsParenthesesOnColumnsClause).orElse(false);
     }
     
-    private String appendEncryptedDefault(final String dataType, final ColumnDefinitionSegment columnDefinitionSegment, final Function<Object, Object> encryptor) {
+    private String appendEncryptedDefault(final String dataType, final ColumnDefinitionSegment columnDefinitionSegment, final UnaryOperator<Object> encryptor) {
         return getDefaultLiteral(columnDefinitionSegment).map(optional -> appendDefault(dataType, createDefaultLiteral(encryptor.apply(createDefaultPlainValue(optional)))))
                 .map(optional -> appendNotNull(optional, columnDefinitionSegment)).orElseGet(() -> appendNotNull(dataType, columnDefinitionSegment));
     }

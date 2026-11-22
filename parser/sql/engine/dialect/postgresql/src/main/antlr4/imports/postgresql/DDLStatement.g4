@@ -25,9 +25,9 @@ createTable
     : CREATE createTableSpecification TABLE ifNotExists? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))?
       inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tablespace?
-      (AS (select | EXECUTE name executeParamClause?) withData?)?
+      (AS (select | executeStmt) withData?)?
     | CREATE createTableSpecification TABLE ifNotExists? tableName columnNames
-      tableAccessMethodClause? withOption? onCommitOption? tablespace? AS (select | EXECUTE name executeParamClause?) withData?
+      tableAccessMethodClause? withOption? onCommitOption? tablespace? AS (select | executeStmt) withData?
     ;
 
 executeParamClause
@@ -176,7 +176,7 @@ dropIndexOpt
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableNamesClause restartSeqs? dropTableOpt?
+    : TRUNCATE TABLE? relationExprList restartSeqs? dropTableOpt?
     ;
 
 restartSeqs
@@ -233,7 +233,11 @@ checkOption
     ;
 
 defaultExpr
-    : CURRENT_TIMESTAMP | aExpr
+    : CURRENT_TIMESTAMP | defaultComparison (IS NOT? DISTINCT FROM defaultComparison)?
+    ;
+
+defaultComparison
+    : bExpr (comparisonOperator bExpr)?
     ;
 
 sequenceOptions
@@ -241,11 +245,11 @@ sequenceOptions
     ;
 
 sequenceOption
-    : START WITH? NUMBER_
-    | INCREMENT BY? NUMBER_
-    | MAXVALUE NUMBER_
+    : START WITH? signedIconst
+    | INCREMENT BY? signedIconst
+    | MAXVALUE signedIconst
     | NO MAXVALUE
-    | MINVALUE NUMBER_
+    | MINVALUE signedIconst
     | NO MINVALUE
     | CYCLE
     | NO CYCLE
@@ -966,6 +970,8 @@ fdwOption
     | NO HANDLER
     | VALIDATOR handlerName
     | NO VALIDATOR
+    | CONNECTION handlerName
+    | NO CONNECTION
     ;
 
 handlerName
@@ -1217,6 +1223,18 @@ alterViewClauses
 
 close
     : CLOSE (cursorName | ALL)
+    ;
+
+repack
+    : REPACK repackOptions? (qualifiedName (LP_ columnList RP_)? (USING INDEX indexName?)? | USING INDEX)?
+    ;
+
+repackOptions
+    : LP_ repackOption (COMMA_ repackOption)* RP_
+    ;
+
+repackOption
+    : (nonReservedWord | analyzeKeyword) (booleanOrString | numericOnly)?
     ;
 
 cluster
@@ -1651,7 +1669,11 @@ createServer
     ;
 
 createStatistics
-    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON exprList FROM fromList
+    : CREATE STATISTICS (ifNotExists anyName | anyName)? optNameList ON statisticsExpression (COMMA_ statisticsExpression)* FROM fromList
+    ;
+
+statisticsExpression
+    : colId | funcExprWindowless | LP_ aExpr RP_
     ;
 
 createSubscription

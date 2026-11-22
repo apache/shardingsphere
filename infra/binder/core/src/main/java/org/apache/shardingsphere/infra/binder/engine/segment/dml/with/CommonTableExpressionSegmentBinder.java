@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.CommonTableExpressionDataModificationBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -42,7 +43,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
@@ -68,11 +72,16 @@ public final class CommonTableExpressionSegmentBinder {
      */
     public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final boolean recursive) {
-        ShardingSpherePreconditions.checkState(null == segment.getDataModification(), () -> new UnsupportedSQLOperationException("Data-modifying common table expressions"));
+        ShardingSpherePreconditions.checkState(null == segment.getDataModification() || segment.getDataModification() instanceof InsertStatement
+                || segment.getDataModification() instanceof UpdateStatement || segment.getDataModification() instanceof DeleteStatement,
+                () -> new UnsupportedSQLOperationException("Data-modifying common table expressions"));
         if (segment.getAliasName().isPresent()) {
             ShardingSpherePreconditions.checkState(!binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(segment.getAliasName().get()),
                     () -> new DuplicateCommonTableExpressionAliasException(segment.getAliasName().get()));
             binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(segment.getAliasName().get());
+        }
+        if (null != segment.getDataModification()) {
+            return CommonTableExpressionDataModificationBinder.bind(segment, binderContext, tableBinderContexts);
         }
         if (recursive && segment.getAliasName().isPresent()) {
             SimpleTableSegmentBinderContext recursiveTableBinderContext =

@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AExprContext;
@@ -259,6 +260,7 @@ import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -267,7 +269,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Statement visitor for PostgreSQL.
@@ -328,6 +329,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return 'b' == character ? '\b' : character;
     }
     
+    @HighFrequencyInvocation
     private String concatenateStringLiterals(final String text) {
         StringBuilder result = new StringBuilder("'");
         boolean escaped = 'E' == text.charAt(0) || 'e' == text.charAt(0);
@@ -342,7 +344,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 result.append("''");
                 index++;
             } else {
-                int nextIndex = text.indexOf('\'', index + 1);
+                int nextIndex = findNextStringLiteral(text, index + 1);
                 if (-1 == nextIndex) {
                     break;
                 }
@@ -351,6 +353,28 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             index++;
         }
         return result.append('\'').toString();
+    }
+    
+    private int findNextStringLiteral(final String text, final int startIndex) {
+        int result = startIndex;
+        while (result < text.length()) {
+            if (text.startsWith("--", result)) {
+                result = skipStringContinuationComment(text, result + 2);
+            } else if ('\'' == text.charAt(result)) {
+                return result;
+            } else {
+                result++;
+            }
+        }
+        return -1;
+    }
+    
+    private int skipStringContinuationComment(final String text, final int startIndex) {
+        int result = startIndex;
+        while (result < text.length() && '\r' != text.charAt(result) && '\n' != text.charAt(result)) {
+            result++;
+        }
+        return result;
     }
     
     private String decodeUnicode(final String value, final char escape) {
@@ -462,7 +486,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return Optional.of(createInSegment(ctx));
         }
         if (null != ctx.patternMatchingOperator()) {
-            return Optional.of(createPatternMatchingOperationSegment(ctx));
+            return Optional.of(createPatternMatchingOperationSegment(ctx, ctx.patternMatchingOperator()));
+        }
+        if (null != ctx.qualOp() && null != ctx.qualOp().patternMatchingSymbol() && null != ctx.aExpr(1)) {
+            return Optional.of(createPatternMatchingOperationSegment(ctx, ctx.qualOp()));
         }
         if (null != ctx.subqueryOp() && (null != ctx.subqueryOp().LIKE() || null != ctx.subqueryOp().ILIKE())) {
             return Optional.of(createQuantifiedPatternMatchingOperationSegment(ctx));
@@ -539,14 +566,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.SLASH_()) {
             return Optional.of(ctx.SLASH_().getText());
         }
-        if (null != ctx.qualOp() && (null != ctx.qualOp().CUSTOM_OPERATOR_() || null != ctx.qualOp().OPERATOR())) {
+        if (null != ctx.qualOp() && (null != ctx.qualOp().CUSTOM_OPERATOR_() || null != ctx.qualOp().OPERATOR() || null != ctx.qualOp().SAFE_EQ_() || null != ctx.qualOp().BQ_()
+                || null != ctx.qualOp().AND_())) {
             return Optional.of(ctx.qualOp().getText());
         }
         return Optional.empty();
     }
     
-    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
-        String operator = getOriginalText(ctx.patternMatchingOperator()).toUpperCase();
+    private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx, final ParserRuleContext operatorContext) {
+        String operator = getOriginalText(operatorContext).toUpperCase();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex());
         for (int i = 1; i < ctx.aExpr().size(); i++) {
@@ -680,17 +708,54 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
+    @HighFrequencyInvocation
     public ASTNode visitFuncExpr(final FuncExprContext ctx) {
         if (null != ctx.functionExprCommonSubexpr()) {
             return visit(ctx.functionExprCommonSubexpr());
         }
-        ShardingSpherePreconditions.checkState(null == ctx.filterClause(), () -> new SQLParsingException("FILTER clauses are not supported"));
         ASTNode result = visit(null == ctx.jsonAggregateFunction() ? ctx.funcApplication() : ctx.jsonAggregateFunction());
-        return null == ctx.overClause() ? result : appendWindow(ctx, result);
+        List<ExpressionSegment> children = Collections.emptyList();
+        if (null != ctx.withinGroupClause()) {
+            children = visitWithinGroupExpressions(ctx, (ExpressionSegment) result);
+        }
+        if (null == ctx.filterClause()) {
+            return null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result);
+        }
+        ExpressionSegment filter = (ExpressionSegment) visit(ctx.filterClause().aExpr());
+        if (null == ctx.jsonAggregateFunction()) {
+            ExpressionSegment aggregate = (ExpressionSegment) (null == ctx.overClause() && null == ctx.nullTreatment() ? result : appendWindow(ctx, result));
+            if (children.isEmpty()) {
+                children = Arrays.asList(aggregate, filter);
+            } else {
+                children.set(0, aggregate);
+                children.add(filter);
+            }
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx), children);
+        }
+        FunctionSegment function = (FunctionSegment) result;
+        FunctionSegment filtered = createFunctionSegment(ctx, function, null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause()));
+        filtered.setFilter(filter);
+        return filtered;
+    }
+    
+    private List<ExpressionSegment> visitWithinGroupExpressions(final FuncExprContext ctx, final ExpressionSegment aggregate) {
+        Collection<SortbyContext> sortItems = ctx.withinGroupClause().sortClause().sortbyList().sortby();
+        if (null == ctx.filterClause()) {
+            for (SortbyContext each : sortItems) {
+                visit(each.aExpr());
+            }
+            return Collections.emptyList();
+        }
+        List<ExpressionSegment> result = new ArrayList<>(sortItems.size() + 2);
+        result.add(aggregate);
+        for (SortbyContext each : sortItems) {
+            result.add((ExpressionSegment) visit(each.aExpr()));
+        }
+        return result;
     }
     
     private ASTNode appendWindow(final FuncExprContext ctx, final ASTNode node) {
-        WindowItemSegment window = (WindowItemSegment) visit(ctx.overClause());
+        WindowItemSegment window = null == ctx.overClause() ? null : (WindowItemSegment) visit(ctx.overClause());
         if (node instanceof AggregationDistinctProjectionSegment) {
             return createAggregationDistinctSegmentWithWindow(ctx, (AggregationDistinctProjectionSegment) node, window);
         }
@@ -704,7 +769,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     private AggregationDistinctProjectionSegment createAggregationDistinctSegmentWithWindow(final FuncExprContext ctx, final AggregationDistinctProjectionSegment segment,
-                                                                                            final WindowItemSegment window) {
+                                                                                            @Nullable final WindowItemSegment window) {
         AggregationDistinctProjectionSegment result = new AggregationDistinctProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
                 segment.getDistinctInnerExpression(), segment.getSeparator().orElse(null));
         result.getParameters().addAll(segment.getParameters());
@@ -712,7 +777,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    private AggregationProjectionSegment createAggregationSegmentWithWindow(final FuncExprContext ctx, final AggregationProjectionSegment segment, final WindowItemSegment window) {
+    private AggregationProjectionSegment createAggregationSegmentWithWindow(final FuncExprContext ctx, final AggregationProjectionSegment segment, @Nullable final WindowItemSegment window) {
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getType(), getOriginalText(ctx),
                 segment.getSeparator().orElse(null));
         result.getParameters().addAll(segment.getParameters());
@@ -720,10 +785,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    private FunctionSegment createFunctionSegment(final FuncExprContext ctx, final FunctionSegment segment, final WindowItemSegment window) {
+    private FunctionSegment createFunctionSegment(final FuncExprContext ctx, final FunctionSegment segment, @Nullable final WindowItemSegment window) {
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment.getFunctionName(), getOriginalText(ctx));
         result.setOwner(segment.getOwner());
         result.getParameters().addAll(segment.getParameters());
+        segment.getFilter().ifPresent(result::setFilter);
+        result.setIgnoreNulls(null != ctx.nullTreatment() && null != ctx.nullTreatment().IGNORE());
         result.setWindow(window);
         return result;
     }
@@ -970,14 +1037,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
         CollectionValue<ExpressionSegment> result = new CollectionValue<>();
-        if (null != ctx.exprList()) {
-            result.combine((CollectionValue<ExpressionSegment>) visitExprList(ctx.exprList()));
+        for (AExprContext each : ctx.aExpr()) {
+            result.getValue().add((ExpressionSegment) visit(each));
         }
-        result.getValue().add((ExpressionSegment) visit(ctx.aExpr()));
         return result;
     }
     
@@ -1051,10 +1116,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
-        IdentifierContext identifierContext = ctx.identifier();
-        return new KeywordValue(null == identifierContext
-                ? IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" "))
-                : identifierContext.getText());
+        return new KeywordValue(null != ctx.numericTypeName() && null != ctx.numericTypeName().DOUBLE()
+                ? String.join(" ", ctx.numericTypeName().DOUBLE().getText(), ctx.numericTypeName().PRECISION().getText())
+                : ctx.getChild(0).getText());
     }
     
     @Override
@@ -1272,12 +1336,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     private Collection<ExpressionSegment> createInsertValuesSegments(final ExprListContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        if (null != ctx.exprList()) {
-            Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
-            result.addAll(tmpResult);
+        for (AExprContext each : ctx.aExpr()) {
+            result.add((ExpressionSegment) visit(each));
         }
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
-        result.add(expr);
         return result;
     }
     
@@ -2230,9 +2291,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
-        return new ExecuteStatement(databaseType);
+        ExecuteStatement result = new ExecuteStatement(databaseType);
+        result.setStatementName((IdentifierValue) visit(ctx.name()));
+        if (null != ctx.executeParamClause()) {
+            result.getArguments().addAll(((CollectionValue<ExpressionSegment>) visit(ctx.executeParamClause().exprList())).getValue());
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     /**
@@ -2269,7 +2337,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitName(final NameContext ctx) {
-        return visit(ctx.identifier());
+        return createIdentifierValue(ctx.getText());
     }
     
     @Override

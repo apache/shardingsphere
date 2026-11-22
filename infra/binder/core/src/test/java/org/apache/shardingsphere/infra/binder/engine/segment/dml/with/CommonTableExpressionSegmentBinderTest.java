@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.CommonTableExpressionDataModificationBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
@@ -69,29 +70,38 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({SubqueryTableSegmentBinder.class, SubqueryTableBindUtils.class})
+@StaticMockSettings({SubqueryTableSegmentBinder.class, SubqueryTableBindUtils.class, CommonTableExpressionDataModificationBinder.class})
 class CommonTableExpressionSegmentBinderTest {
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getDataModificationArguments")
-    void assertBindDataModification(final String name, final DMLStatement body, final boolean recursive) {
+    @Test
+    void assertBindUnsupportedDataModification() {
+        DMLStatement body = MergeStatement.builder().build();
         CommonTableExpressionSegment segment = new CommonTableExpressionSegment(0, 50, new AliasSegment(5, 11, new IdentifierValue("foo_cte")), null, body);
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), body);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         UnsupportedSQLOperationException actual = assertThrows(UnsupportedSQLOperationException.class,
-                () -> CommonTableExpressionSegmentBinder.bind(segment, binderContext, tableBinderContexts, recursive));
+                () -> CommonTableExpressionSegmentBinder.bind(segment, binderContext, tableBinderContexts, true));
         assertThat(actual.getMessage(), is("Unsupported SQL operation: Data-modifying common table expressions."));
         assertTrue(binderContext.getCommonTableExpressionsSegmentsUniqueAliases().isEmpty());
         assertTrue(binderContext.getExternalTableBinderContexts().isEmpty());
         assertTrue(tableBinderContexts.isEmpty());
     }
     
-    private static Stream<Arguments> getDataModificationArguments() {
-        return Stream.of(
-                Arguments.of("INSERT", InsertStatement.builder().build(), false),
-                Arguments.of("UPDATE", UpdateStatement.builder().build(), true),
-                Arguments.of("DELETE", DeleteStatement.builder().build(), false),
-                Arguments.of("MERGE", MergeStatement.builder().build(), true));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSupportedDataModificationArguments")
+    void assertBindSupportedDataModification(final String name, final DMLStatement body) {
+        CommonTableExpressionSegment segment = new CommonTableExpressionSegment(0, 50, new AliasSegment(5, 11, new IdentifierValue("foo_cte")), null, body);
+        SQLStatementBinderContext context = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), body);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tables = LinkedHashMultimap.create();
+        CommonTableExpressionSegment bound = new CommonTableExpressionSegment(0, 50, segment.getAliasSegment().get(), null, body);
+        when(CommonTableExpressionDataModificationBinder.bind(segment, context, tables)).thenReturn(bound);
+        assertThat(CommonTableExpressionSegmentBinder.bind(segment, context, tables, false), sameInstance(bound));
+        assertTrue(context.getCommonTableExpressionsSegmentsUniqueAliases().contains("foo_cte"));
+    }
+    
+    private static Stream<Arguments> getSupportedDataModificationArguments() {
+        return Stream.of(Arguments.of("INSERT", InsertStatement.builder().build()), Arguments.of("UPDATE", UpdateStatement.builder().build()),
+                Arguments.of("DELETE", DeleteStatement.builder().build()));
     }
     
     @Test
