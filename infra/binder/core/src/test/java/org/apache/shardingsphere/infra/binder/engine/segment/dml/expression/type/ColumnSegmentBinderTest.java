@@ -48,7 +48,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.MockedConstruction;
 
 import java.util.Arrays;
@@ -168,6 +170,41 @@ class ColumnSegmentBinderTest {
                 Arguments.of("legacy function without owner", ImmutableMultimap.of(CaseInsensitiveString.of("foo_source"), mock(FunctionTableSegmentBinderContext.class))),
                 Arguments.of("multiple unresolved sources", multipleSources),
                 Arguments.of("skipped non-function source", ImmutableMultimap.of(CaseInsensitiveString.of("foo_source"), skippedSource)));
+    }
+    
+    @ParameterizedTest(name = "owner={0}")
+    @ValueSource(strings = {"foo_outer", "foo_unknown", ""})
+    void assertBindSkippedOuterSource(final String owner) {
+        SimpleTableSegmentBinderContext outerContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, new IdentifierValue("DUAL"));
+        outerContext.setSkipColumnBind(true);
+        ColumnSegment column = new ColumnSegment(0, 6, new IdentifierValue("foo_key"));
+        if (!owner.isEmpty()) {
+            column.setOwner(new OwnerSegment(0, owner.length() - 1, new IdentifierValue(owner)));
+        }
+        assertThrows(ColumnNotFoundException.class, () -> ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(),
+                ImmutableMultimap.of(CaseInsensitiveString.of("foo_outer"), outerContext)));
+    }
+    
+    @Test
+    void assertBindSkippedLocalDummySource() {
+        SimpleTableSegmentBinderContext context = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE, new IdentifierValue("DUAL"));
+        context.setSkipColumnBind(true);
+        ColumnSegment actual = ColumnSegmentBinder.bind(new ColumnSegment(0, 6, new IdentifierValue("foo_key")), SegmentType.PROJECTION, createBinderContext(),
+                ImmutableMultimap.of(CaseInsensitiveString.of("foo_dummy"), context), LinkedHashMultimap.create());
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("foo_key"));
+    }
+    
+    @ParameterizedTest(name = "DBLink={0}, hint={1}, owner={2}")
+    @CsvSource({"true, false, foo_outer", "true, false, foo_unknown", "false, true, foo_outer", "false, true, foo_unknown"})
+    void assertBindLegacySkippedOuterSource(final boolean containsDBLink, final boolean skipMetadataValidate, final String owner) {
+        SimpleTableSegmentBinderContext outerContext = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
+        outerContext.setContainsDBLink(containsDBLink);
+        outerContext.setSkipColumnBind(skipMetadataValidate);
+        ColumnSegment column = new ColumnSegment(0, 6, new IdentifierValue("foo_key"));
+        column.setOwner(new OwnerSegment(0, owner.length() - 1, new IdentifierValue(owner)));
+        ColumnSegment actual = ColumnSegmentBinder.bind(column, SegmentType.PROJECTION, createBinderContext(), LinkedHashMultimap.create(),
+                ImmutableMultimap.of(CaseInsensitiveString.of("foo_outer"), outerContext));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("foo_key"));
     }
     
     @Test

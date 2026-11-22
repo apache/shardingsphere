@@ -129,6 +129,7 @@ class DialectDatabaseMetaDataTest {
         DialectSQLOption actual = dialectDatabaseMetaData.getSQLOption();
         assertThat(actual, isA(DefaultSQLOption.class));
         assertFalse(actual.isSupportWholeRowProjection());
+        assertThat(actual.getDummyTableName(), is(Optional.empty()));
     }
     
     @Test

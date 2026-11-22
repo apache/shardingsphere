@@ -30,6 +30,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.table.TableExistsException;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -69,9 +70,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -447,6 +450,10 @@ public final class SimpleTableSegmentBinder {
         }
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
         result.setSkipColumnBind(binderContext.getHintValueContext().isSkipMetadataValidate() && segment.getOwner().isPresent());
+        if (isDummyTable(segment, schema, binderContext)) {
+            result.setOriginalTableName(tableName);
+            result.setSkipColumnBind(true);
+        }
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
         return Optional.of(result);
     }
@@ -503,5 +510,17 @@ public final class SimpleTableSegmentBinder {
         result.setColumnBoundInfo(
                 new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName), tableName, new IdentifierValue(column.getName(), quoteCharacter), TableSourceType.PHYSICAL_TABLE));
         return result;
+    }
+    
+    @HighFrequencyInvocation
+    private static boolean isDummyTable(final SimpleTableSegment segment, @Nullable final ShardingSphereSchema schema, final SQLStatementBinderContext binderContext) {
+        if (!(binderContext.getSqlStatement() instanceof SelectStatement) || ((SelectStatement) binderContext.getSqlStatement()).getFrom().orElse(null) != segment
+                || segment.getOwner().isPresent() || segment.getDbLink().isPresent() || QuoteCharacter.NONE != segment.getTableName().getIdentifier().getQuoteCharacter()) {
+            return false;
+        }
+        String tableName = segment.getTableName().getIdentifier().getValue();
+        return new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getSQLOption().getDummyTableName()
+                .filter(each -> each.equalsIgnoreCase(tableName)).isPresent()
+                && (null == schema || !schema.containsView(tableName));
     }
 }
