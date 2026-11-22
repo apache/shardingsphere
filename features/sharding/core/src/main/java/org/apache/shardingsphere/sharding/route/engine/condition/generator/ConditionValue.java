@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.route.parameter.RouteValueParameter;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -57,7 +58,8 @@ public final class ConditionValue {
     private Comparable<?> getValue(final ParameterMarkerExpressionSegment expressionSegment, final List<Object> params) {
         int parameterMarkerIndex = expressionSegment.getParameterMarkerIndex();
         if (parameterMarkerIndex < params.size()) {
-            Object result = params.get(parameterMarkerIndex);
+            Object param = params.get(parameterMarkerIndex);
+            Object result = param instanceof RouteValueParameter ? ((RouteValueParameter) param).getRouteValue() : param;
             isNull = null == result;
             ShardingSpherePreconditions.checkState(null == result || result instanceof Comparable, () -> new NotImplementComparableValueException("Sharding", result));
             return (Comparable<?>) result;

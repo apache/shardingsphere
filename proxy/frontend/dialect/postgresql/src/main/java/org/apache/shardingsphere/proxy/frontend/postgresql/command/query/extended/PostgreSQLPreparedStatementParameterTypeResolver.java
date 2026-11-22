@@ -86,9 +86,10 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     private static final Pattern BIGINT_TEXT_PATTERN = Pattern.compile("[ \\t\\n\\r\\f\\x0B]*\\+?(0|[1-9][0-9]*)[ \\t\\n\\r\\f\\x0B]*");
     
     /**
-     * Resolve values of unspecified type parameters by the integer sharding columns they are compared with or assigned to.
-     * Only sharding columns are used, because routing needs their values, while a parameter of another column, such as a domain over integer with its own operators,
-     * keeps the type the database infers for it. NOT IN and NOT BETWEEN are not used either, because routing ignores them.
+     * Resolve route values of unspecified type parameters by the integer sharding columns they are compared with or assigned to.
+     * A resolved parameter keeps its original text and is still passed to the database without a type, so that the database infers its type as before,
+     * such as for a domain over integer with its own operators, while routing uses the decoded value.
+     * Only sharding columns are used, because only routing needs the decoded values. NOT IN and NOT BETWEEN are not used either, because routing ignores them.
      * A WHERE condition is used only when every OR branch of it has a sharding condition,
      * because routing goes to all data nodes without reading the remaining parameters once it reaches a branch without one.
      * A parameter is resolved only when every occurrence of it is compared with or assigned to a column, so that a parameter also used elsewhere,
@@ -99,7 +100,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
      * Only plain decimal integer text is resolved, because Java decodes it to the same value as PostgreSQL integer input.
      * JDBC BIGINT columns can also be oid columns, whose input reads a leading zero as octal and wraps negative numbers,
      * so their text is resolved only without a minus sign or leading zeros, where oid and int8 input give the same value.
-     * Other values stay unspecified and are passed to the database as text.
+     * Other values are kept as they are.
      *
      * @param connectionSession connection session
      * @param preparedStatement prepared statement
@@ -404,7 +405,8 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
             return parameter;
         }
         try {
-            return PostgreSQLBinaryColumnType.valueOfJDBCType(columnType).getTextValueParser().parse(matcher.group(1));
+            Comparable<?> routeValue = (Comparable<?>) PostgreSQLBinaryColumnType.valueOfJDBCType(columnType).getTextValueParser().parse(matcher.group(1));
+            return new PostgreSQLTypeUnspecifiedRouteValueParameter(parameter.toString(), routeValue);
         } catch (final NumberFormatException ignored) {
             return parameter;
         }

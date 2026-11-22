@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.parameter.RouteValueParameter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -36,7 +37,9 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
@@ -55,6 +58,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -90,6 +94,16 @@ class ShardingUpdateRouteContextCheckerTest {
     void assertCheckWhenUpdateShardingColumnWithDifferentCaseFromConfiguration() {
         mockShardingRuleForUpdateShardingColumn("ID");
         when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement("ID")));
+        assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
+    }
+    
+    @Test
+    void assertCheckWhenUpdateShardingColumnWithRouteValueParameter() {
+        mockShardingRuleForUpdateShardingColumn("id");
+        RouteValueParameter param = mock(RouteValueParameter.class);
+        doReturn(1).when(param).getRouteValue();
+        when(queryContext.getSqlStatementContext()).thenReturn(new UpdateStatementContext(createUpdateStatement("id", new ParameterMarkerExpressionSegment(0, 0, 0))));
+        when(queryContext.getParameters()).thenReturn(Collections.singletonList(param));
         assertDoesNotThrow(() -> new ShardingUpdateRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), createSingleRouteContext()));
     }
     
@@ -132,9 +146,13 @@ class ShardingUpdateRouteContextCheckerTest {
     }
     
     private UpdateStatement createUpdateStatement(final String assignmentColumnName) {
+        return createUpdateStatement(assignmentColumnName, new LiteralExpressionSegment(0, 0, 1));
+    }
+    
+    private UpdateStatement createUpdateStatement(final String assignmentColumnName, final ExpressionSegment assignmentValue) {
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue(assignmentColumnName)));
-        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, assignmentValue);
         return UpdateStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))))

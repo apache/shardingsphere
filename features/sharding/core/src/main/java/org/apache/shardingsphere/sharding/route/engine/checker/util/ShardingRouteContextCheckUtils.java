@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.route.parameter.RouteValueParameter;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -132,6 +133,7 @@ public final class ShardingRouteContextCheckUtils {
         if (-1 == shardingSetAssignIndex || shardingSetAssignIndex > params.size() - 1) {
             return Optional.empty();
         }
-        return Optional.of(params.get(shardingSetAssignIndex));
+        Object result = params.get(shardingSetAssignIndex);
+        return Optional.of(result instanceof RouteValueParameter ? ((RouteValueParameter) result).getRouteValue() : result);
     }
 }

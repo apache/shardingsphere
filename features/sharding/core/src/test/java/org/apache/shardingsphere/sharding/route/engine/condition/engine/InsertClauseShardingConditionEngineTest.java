@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.parameter.RouteValueParameter;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -70,6 +71,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -205,6 +207,20 @@ class InsertClauseShardingConditionEngineTest {
         assertThat(shardingConditions.size(), is(1));
         assertThat(shardingConditions.get(0).getValues().size(), is(1));
         assertThat(shardingConditions.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertCreateShardingConditionsWithRouteValueParameter() {
+        RouteValueParameter param = mock(RouteValueParameter.class);
+        doReturn(1).when(param).getRouteValue();
+        List<Object> params = Collections.singletonList(param);
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0)), params, 0);
+        when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(rule.findShardingColumn("foo_col_1", "foo_tbl")).thenReturn(Optional.of("foo_col_1"));
+        List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(insertStatementContext, params);
+        assertThat(actual.size(), is(1));
+        assertThat(((ListShardingConditionValue<?>) actual.get(0).getValues().get(0)).getValues(), is(Collections.singletonList(1)));
+        assertThat(actual.get(0).getValues().get(0).getParameterMarkerIndexes(), is(Collections.singletonList(0)));
     }
     
     @ParameterizedTest(name = "{0}: {1}, parameter={2}")

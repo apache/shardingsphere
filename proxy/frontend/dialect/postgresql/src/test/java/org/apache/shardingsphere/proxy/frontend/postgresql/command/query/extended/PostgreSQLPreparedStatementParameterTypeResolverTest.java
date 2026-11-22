@@ -105,7 +105,8 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, Arrays.asList(
                 new PostgreSQLTypeUnspecifiedSQLParameter("-01"), new PostgreSQLTypeUnspecifiedSQLParameter(" 2 "), new PostgreSQLTypeUnspecifiedSQLParameter("+3"),
                 new PostgreSQLTypeUnspecifiedSQLParameter("0"), new PostgreSQLTypeUnspecifiedSQLParameter("\t5\n")));
-        assertThat(actual, is(Arrays.asList(-1, 2L, 3L, 0L, 5L)));
+        assertThat(getRouteValues(actual), is(Arrays.asList(-1, 2L, 3L, 0L, 5L)));
+        assertThat(actual.get(1).toString(), is(" 2 "));
     }
     
     private PostgreSQLServerPreparedStatement createBoundPreparedStatement(final String sql, final List<Integer> actualParameterMarkerIndexes) {
@@ -115,6 +116,14 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         SQLStatementContext sqlStatementContext = new SQLBindEngine(contextManager.getMetaDataContexts().getMetaData(), "postgres", new HintValueContext()).bind(sqlParserEngine.parse(sql, false));
         List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.nCopies(actualParameterMarkerIndexes.size(), PostgreSQLBinaryColumnType.UNSPECIFIED));
         return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, actualParameterMarkerIndexes);
+    }
+    
+    private List<Object> getRouteValues(final List<Object> params) {
+        List<Object> result = new ArrayList<>(params.size());
+        for (Object each : params) {
+            result.add(((PostgreSQLTypeUnspecifiedRouteValueParameter) each).getRouteValue());
+        }
+        return result;
     }
     
     @Test
@@ -133,7 +142,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         }
         String sql = "SELECT id FROM foo_tbl WHERE " + String.join(" AND ", Collections.nCopies(orConditionCount, "(id=? OR k=?)"));
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement(sql, actualParameterMarkerIndexes);
-        assertThat(PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, params), is(expected));
+        assertThat(getRouteValues(PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement, params)), is(expected));
     }
     
     @Test
@@ -141,7 +150,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("UPDATE foo_tbl SET k=? WHERE id=?", Arrays.asList(0, 1));
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Arrays.asList(new PostgreSQLTypeUnspecifiedSQLParameter("1"), new PostgreSQLTypeUnspecifiedSQLParameter("2")));
-        assertThat(actual, is(Arrays.asList(1L, 2)));
+        assertThat(getRouteValues(actual), is(Arrays.asList(1L, 2)));
     }
     
     @Test
@@ -149,7 +158,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?", Arrays.asList(1, 0));
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Arrays.asList(new PostgreSQLTypeUnspecifiedSQLParameter("1"), new PostgreSQLTypeUnspecifiedSQLParameter("2")));
-        assertThat(actual, is(Arrays.asList(1L, 2)));
+        assertThat(getRouteValues(actual), is(Arrays.asList(1L, 2)));
     }
     
     @Test
@@ -165,7 +174,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id=? OR id=?", Arrays.asList(0, 0));
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Collections.singletonList(new PostgreSQLTypeUnspecifiedSQLParameter("1")));
-        assertThat(actual, is(Collections.singletonList(1)));
+        assertThat(getRouteValues(actual), is(Collections.singletonList(1)));
     }
     
     @Test
@@ -181,7 +190,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         PostgreSQLServerPreparedStatement preparedStatement = createBoundPreparedStatement("SELECT id FROM foo_tbl WHERE id IN (?, 1)", Collections.singletonList(0));
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Collections.singletonList(new PostgreSQLTypeUnspecifiedSQLParameter("010")));
-        assertThat(actual, is(Collections.singletonList(10)));
+        assertThat(getRouteValues(actual), is(Collections.singletonList(10)));
     }
     
     @Test
@@ -208,7 +217,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Arrays.asList(expected, new PostgreSQLTypeUnspecifiedSQLParameter("2")));
         assertThat(actual.get(0), sameInstance(expected));
-        assertThat(actual.get(1), is(2L));
+        assertThat(((PostgreSQLTypeUnspecifiedRouteValueParameter) actual.get(1)).getRouteValue(), is(2L));
     }
     
     @Test
@@ -286,7 +295,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         PostgreSQLTypeUnspecifiedSQLParameter expectedLength = new PostgreSQLTypeUnspecifiedSQLParameter("bar");
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Arrays.asList(new PostgreSQLTypeUnspecifiedSQLParameter("7"), expectedName, expectedLength));
-        assertThat(actual.get(0), is(7));
+        assertThat(((PostgreSQLTypeUnspecifiedRouteValueParameter) actual.get(0)).getRouteValue(), is(7));
         assertThat(actual.get(1), sameInstance(expectedName));
         assertThat(actual.get(2), sameInstance(expectedLength));
     }
@@ -330,7 +339,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         PostgreSQLTypeUnspecifiedSQLParameter expected = new PostgreSQLTypeUnspecifiedSQLParameter("8");
         List<Object> actual = PostgreSQLPreparedStatementParameterTypeResolver.resolveUnspecifiedParameterValues(connectionSession, preparedStatement,
                 Arrays.asList(new PostgreSQLTypeUnspecifiedSQLParameter("7"), expected));
-        assertThat(actual.get(0), is(7));
+        assertThat(((PostgreSQLTypeUnspecifiedRouteValueParameter) actual.get(0)).getRouteValue(), is(7));
         assertThat(actual.get(1), sameInstance(expected));
     }
     
