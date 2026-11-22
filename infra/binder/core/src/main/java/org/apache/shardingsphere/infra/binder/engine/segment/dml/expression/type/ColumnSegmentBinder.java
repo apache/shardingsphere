@@ -109,7 +109,7 @@ public final class ColumnSegmentBinder {
             return segment;
         }
         ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent()
-                        || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values(), tableBinderContexts.values()),
+                || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values(), tableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         ColumnSegment result = copy(columnSegment);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
