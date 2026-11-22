@@ -27,4 +27,5 @@ CREATE TABLE t_product (product_id INT PRIMARY KEY, product_name VARCHAR(50) NOT
 CREATE TABLE t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_product_category (category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level SMALLINT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE t_country (country_id SMALLINT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
+CREATE TABLE t_octets (id INT PRIMARY KEY, vo VARCHAR(10) CHARACTER SET OCTETS, co CHAR(4) CHARACTER SET OCTETS);
 CREATE INDEX order_index_t_order ON t_order (order_id);

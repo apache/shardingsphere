@@ -254,6 +254,17 @@
         </assertion>
     </test-case>
 
+    <test-case sql="INSERT INTO t_octets (id, vo) VALUES (?, ?)" db-types="Firebird" scenario-types="db">
+        <assertion parameters="4:int, abcdefghij:varbinary" expected-data-file="insert_octets_varying_column_4.xml" />
+        <assertion parameters="5:int, null:varbinary" expected-data-file="insert_octets_varying_column_5.xml" />
+    </test-case>
+
+    <test-case sql="INSERT INTO t_octets (id, co) VALUES (?, ?)" db-types="Firebird" scenario-types="db">
+        <assertion parameters="4:int, wxyz:binary" expected-data-file="insert_octets_text_column_4.xml" />
+        <assertion parameters="5:int, k:binary" expected-data-file="insert_octets_text_column_5.xml" />
+        <assertion parameters="6:int, null:binary" expected-data-file="insert_octets_text_column_6.xml" />
+    </test-case>
+
     <test-case sql="INSERT INTO t_user (user_id, user_name, password, email, telephone, creation_date) VALUES (?, ?, '123456', 'tomas@gmail.com', '12341234123', '2018-08-08'), (?, ?, '23456', 'mike@qq.com', '23452345456', '2019-08-08')" db-types="Hive" scenario-types="encrypt" skip-batch="true">
         <assertion parameters="40:int, tomas:String, 41:int, mike:String" expected-data-file="batch_insert_into_user_table_for_hive.xml" />
     </test-case>
