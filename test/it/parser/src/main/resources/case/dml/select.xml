@@ -17646,4 +17646,36 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_scientific_literal_1e0_firebird">
+        <projections start-index="7" stop-index="9">
+            <expression-projection text="1" start-index="7" stop-index="9">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="9" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_scientific_literal_1E20_firebird">
+        <projections start-index="7" stop-index="10">
+            <expression-projection text="1E+20" start-index="7" stop-index="10">
+                <expr>
+                    <literal-expression value="1E+20" start-index="7" stop-index="10" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_identifier_e10_firebird">
+        <projections start-index="7" stop-index="9">
+            <column-projection name="e10" start-index="7" stop-index="9" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_identifier_1e_firebird">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="1e" start-index="7" stop-index="8" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

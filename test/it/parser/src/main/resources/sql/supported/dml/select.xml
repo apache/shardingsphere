@@ -710,4 +710,8 @@
     <sql-case id="select_postgresql_normalize_identifier" value="SELECT normalize FROM normalize;" db-types="PostgreSQL" />
     <sql-case id="select_postgresql_normalize_default" value="SELECT NORMALIZE('foo')" db-types="PostgreSQL" />
     <sql-case id="select_postgresql_normalize_nfc" value="SELECT NORMALIZE('foo', NFC)" db-types="PostgreSQL" />
+    <sql-case id="select_scientific_literal_1e0_firebird" value="SELECT 1e0" db-types="Firebird" />
+    <sql-case id="select_scientific_literal_1E20_firebird" value="SELECT 1E20" db-types="Firebird" />
+    <sql-case id="select_identifier_e10_firebird" value="SELECT e10" db-types="Firebird" />
+    <sql-case id="select_identifier_1e_firebird" value="SELECT 1e" db-types="Firebird" />
 </sql-cases>
