@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCreateAndOpenBlobCommandExecutorTest {
+class FirebirdOpenBlobCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -85,7 +85,7 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecuteWithCreateBlob() {
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CREATE_BLOB);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CREATE_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -97,7 +97,7 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
     @Test
     void assertExecuteWithCreateBlob2AndStreamType() {
         when(packet.isStreamBlob()).thenReturn(true);
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CREATE_BLOB2);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CREATE_BLOB2);
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) executor.execute().iterator().next();
         assertTrue(FirebirdBlobWriteCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getId()));
     }
@@ -106,7 +106,7 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
     void assertExecuteWithOpenBlob() {
         long blobId = registerBlobContent(new byte[]{1, 2});
         when(packet.getBlobId()).thenReturn(blobId);
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -118,13 +118,13 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
     @Test
     void assertExecuteWithUnknownBlobId() {
         when(packet.getBlobId()).thenReturn(99L);
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
         assertThrows(InvalidSegstrIdException.class, executor::execute);
     }
     
     @Test
     void assertExecuteWithZeroBlobId() {
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -138,9 +138,9 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
         FirebirdSingleHandleCommandPacket closePacket = mock(FirebirdSingleHandleCommandPacket.class);
         when(closePacket.getObjectHandle()).thenReturn(createdResponse.getHandle());
-        new FirebirdCancelAndCloseBlobCommandExecutor(closePacket, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB).execute();
+        new FirebirdEndBlobCommandExecutor(closePacket, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB).execute();
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
-        Collection<DatabasePacket> actual = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2).execute();
+        Collection<DatabasePacket> actual = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2).execute();
         FirebirdGenericResponsePacket actualResponse = (FirebirdGenericResponsePacket) actual.iterator().next();
         assertThat(actualResponse.getId(), is(createdResponse.getId()));
         Optional<BlobSegment> actualSegment = FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, actualResponse.getHandle(), 3);
@@ -152,21 +152,21 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
     void assertExecuteWhenCreatedBlobIsNotClosed() {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
         assertThrows(InvalidSegstrIdException.class, executor::execute);
     }
     
     @Test
     void assertExecuteWithResultBlobId() {
         when(packet.getBlobId()).thenReturn(registerBlobContent(new byte[]{1, 2}));
-        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2)
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2)
                 .execute().iterator().next();
         assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(true)));
     }
     
     @Test
     void assertExecuteWithZeroBlobIdOpensSegmentedBlob() {
-        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB)
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB)
                 .execute().iterator().next();
         assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(false)));
     }
@@ -176,9 +176,9 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, true);
         FirebirdSingleHandleCommandPacket closePacket = mock(FirebirdSingleHandleCommandPacket.class);
         when(closePacket.getObjectHandle()).thenReturn(createdResponse.getHandle());
-        new FirebirdCancelAndCloseBlobCommandExecutor(closePacket, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB).execute();
+        new FirebirdEndBlobCommandExecutor(closePacket, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB).execute();
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
-        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2)
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2)
                 .execute().iterator().next();
         assertThat(FirebirdBlobReadCache.getInstance().isStreamBlob(CONNECTION_ID, actual.getHandle()), is(Optional.of(true)));
     }
@@ -186,19 +186,19 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
     @Test
     void assertExecuteWithUnknownResultBlobId() {
         when(packet.getBlobId()).thenReturn(-99L);
-        FirebirdCreateAndOpenBlobCommandExecutor executor = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB);
         assertThrows(InvalidSegstrIdException.class, executor::execute);
     }
     
     private FirebirdGenericResponsePacket createBlobWithSegment(final byte[] segment, final boolean streamBlob) {
         FirebirdCreateAndOpenBlobCommandPacket createPacket = mock(FirebirdCreateAndOpenBlobCommandPacket.class);
         when(createPacket.isStreamBlob()).thenReturn(streamBlob);
-        FirebirdGenericResponsePacket result = (FirebirdGenericResponsePacket) new FirebirdCreateAndOpenBlobCommandExecutor(createPacket, connectionSession, FirebirdCommandPacketType.CREATE_BLOB)
+        FirebirdGenericResponsePacket result = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(createPacket, connectionSession, FirebirdCommandPacketType.CREATE_BLOB)
                 .execute().iterator().next();
         FirebirdPutBlobSegmentCommandPacket putPacket = mock(FirebirdPutBlobSegmentCommandPacket.class);
         when(putPacket.getBlobHandle()).thenReturn(result.getHandle());
         when(putPacket.getSegment()).thenReturn(segment);
-        new FirebirdPutBlobSegmentCommandExecutor(putPacket, connectionSession).execute();
+        new FirebirdPutSegmentCommandExecutor(putPacket, connectionSession).execute();
         return result;
     }
     

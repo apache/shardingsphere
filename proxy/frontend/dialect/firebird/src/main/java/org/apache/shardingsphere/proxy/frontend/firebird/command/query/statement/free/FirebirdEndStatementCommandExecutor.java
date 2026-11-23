@@ -32,10 +32,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird free statement command executor.
+ * End statement command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdFreeStatementCommandExecutor implements CommandExecutor {
+public final class FirebirdEndStatementCommandExecutor implements CommandExecutor {
     
     private final FirebirdFreeStatementPacket packet;
     

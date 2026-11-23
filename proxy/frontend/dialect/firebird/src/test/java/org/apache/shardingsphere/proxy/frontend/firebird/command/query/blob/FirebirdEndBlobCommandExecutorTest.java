@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCancelAndCloseBlobCommandExecutorTest {
+class FirebirdEndBlobCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -72,7 +72,7 @@ class FirebirdCancelAndCloseBlobCommandExecutorTest {
         long blobId = 5L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getObjectHandle()).thenReturn(blobHandle);
-        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB);
+        FirebirdEndBlobCommandExecutor executor = new FirebirdEndBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -86,7 +86,7 @@ class FirebirdCancelAndCloseBlobCommandExecutorTest {
     void assertExecuteWithCloseBlobAndWithoutBlobWrite() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         when(packet.getObjectHandle()).thenReturn(blobHandle);
-        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB);
+        FirebirdEndBlobCommandExecutor executor = new FirebirdEndBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(0L));
         assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
@@ -98,7 +98,7 @@ class FirebirdCancelAndCloseBlobCommandExecutorTest {
         long blobId = 9L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getObjectHandle()).thenReturn(blobHandle);
-        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CANCEL_BLOB);
+        FirebirdEndBlobCommandExecutor executor = new FirebirdEndBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CANCEL_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -112,7 +112,7 @@ class FirebirdCancelAndCloseBlobCommandExecutorTest {
     void assertExecuteWithCancelBlobAndWithoutBlobWrite() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         when(packet.getObjectHandle()).thenReturn(blobHandle);
-        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CANCEL_BLOB);
+        FirebirdEndBlobCommandExecutor executor = new FirebirdEndBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CANCEL_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));

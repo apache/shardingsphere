@@ -31,9 +31,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird fetch statement command executor.
+ * Fetch command executor for Firebird.
  */
-public final class FirebirdFetchStatementCommandExecutor implements QueryCommandExecutor {
+public final class FirebirdFetchCommandExecutor implements QueryCommandExecutor {
     
     private final ConnectionSession connectionSession;
     
@@ -41,7 +41,7 @@ public final class FirebirdFetchStatementCommandExecutor implements QueryCommand
     
     private int fetchCount;
     
-    public FirebirdFetchStatementCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
+    public FirebirdFetchCommandExecutor(final FirebirdFetchStatementPacket packet, final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
         proxyBackendHandler = FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(connectionSession.getConnectionId(), packet.getStatementId());
         fetchCount = packet.getFetchSize();

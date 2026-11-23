@@ -33,10 +33,10 @@ import java.util.Collections;
 import java.util.OptionalLong;
 
 /**
- * Cancel and close blob command executor for Firebird.
+ * End blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdCancelAndCloseBlobCommandExecutor implements CommandExecutor {
+public final class FirebirdEndBlobCommandExecutor implements CommandExecutor {
     
     private final FirebirdSingleHandleCommandPacket packet;
     

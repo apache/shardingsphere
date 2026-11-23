@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-class FirebirdFreeStatementCommandExecutorTest {
+class FirebirdEndStatementCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -94,7 +94,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     @MethodSource("preparedStatementFreeOptions")
     void assertExecuteWithPreparedStatementFreeOption(final String scenario, final int option) throws Exception {
         when(packet.getOption()).thenReturn(option);
-        FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
+        FirebirdEndStatementCommandExecutor executor = new FirebirdEndStatementCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         verify(registry).removePreparedStatement(STATEMENT_ID);
@@ -106,7 +106,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     @Test
     void assertExecuteWithClose() throws Exception {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.CLOSE);
-        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        new FirebirdEndStatementCommandExecutor(packet, connectionSession).execute();
         verify(connectionSession, never()).invalidatePreparedStatementCache(any());
         verify(registry, never()).removePreparedStatement(STATEMENT_ID);
         assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
@@ -118,7 +118,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     void assertExecuteWithPreparedStatementFreeOptionWithoutFetchHandler(final String scenario, final int option) throws Exception {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         when(packet.getOption()).thenReturn(option);
-        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
+        new FirebirdEndStatementCommandExecutor(packet, connectionSession).execute();
         verify(registry).removePreparedStatement(STATEMENT_ID);
         verify(connectionSession).invalidatePreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(STATEMENT_ID));
     }
@@ -126,7 +126,7 @@ class FirebirdFreeStatementCommandExecutorTest {
     @Test
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
-        assertThrows(DatabaseProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
+        assertThrows(DatabaseProtocolException.class, new FirebirdEndStatementCommandExecutor(packet, connectionSession)::execute);
     }
     
     private static Stream<Arguments> preparedStatementFreeOptions() {

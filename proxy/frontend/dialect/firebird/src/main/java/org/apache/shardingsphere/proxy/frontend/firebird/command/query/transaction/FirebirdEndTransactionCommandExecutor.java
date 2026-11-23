@@ -33,10 +33,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Commit and rollback transaction command executor for Firebird.
+ * End transaction command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdCommitAndRollbackTransactionCommandExecutor implements CommandExecutor {
+public final class FirebirdEndTransactionCommandExecutor implements CommandExecutor {
     
     private final FirebirdSingleHandleCommandPacket packet;
     

@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Get blob segment command executor for Firebird.
+ * Get segment command executor for Firebird.
  *
  * <p>The requested length in the packet is the size of the client buffer receiving the length-prefixed
  * segments, so the returned segment data is capped at the requested length minus the 2-byte segment length
@@ -45,7 +45,7 @@ import java.util.Optional;
  * for another segment length prefix and at least one byte after it.</p>
  */
 @RequiredArgsConstructor
-public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecutor {
+public final class FirebirdGetSegmentCommandExecutor implements CommandExecutor {
     
     private static final int SEGMENT_STATE_COMPLETE = 0;
     

@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdPutBlobSegmentCommandExecutorTest {
+class FirebirdPutSegmentCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -76,7 +76,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
         when(packet.getSegment()).thenReturn(segment);
-        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -94,7 +94,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
         when(packet.getSegment()).thenReturn(segment);
-        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(blobId));
@@ -104,7 +104,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
     @Test
     void assertExecuteWithUnknownBlobHandle() {
         when(packet.getBlobHandle()).thenReturn(4);
-        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         assertThrows(InvalidSegstrHandleException.class, executor::execute);
     }
     
@@ -115,7 +115,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         FirebirdBlobWriteCache.getInstance().closeWrite(CONNECTION_ID, blobHandle);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
-        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         assertThrows(InvalidSegstrHandleException.class, executor::execute);
     }
     
@@ -124,7 +124,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{1, 2}, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
-        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         assertThrows(CannotUpdateOldBlobException.class, executor::execute);
     }
     
@@ -134,7 +134,7 @@ class FirebirdPutBlobSegmentCommandExecutorTest {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{1, 2}, false);
         FirebirdBlobReadCache.getInstance().readSegment(CONNECTION_ID, blobHandle, 2);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
-        FirebirdPutBlobSegmentCommandExecutor executor = new FirebirdPutBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         assertThrows(CannotUpdateOldBlobException.class, executor::execute);
     }
 }

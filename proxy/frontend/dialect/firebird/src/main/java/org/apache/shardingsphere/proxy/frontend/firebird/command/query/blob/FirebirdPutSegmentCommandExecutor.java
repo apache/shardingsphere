@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Put blob segment command executor for Firebird.
+ * Put segment command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecutor {
+public final class FirebirdPutSegmentCommandExecutor implements CommandExecutor {
     
     private final FirebirdPutBlobSegmentCommandPacket packet;
     

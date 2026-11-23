@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
+class FirebirdEndTransactionCommandExecutorTest {
     
     private static final int CONNECTION_ID = 201;
     
@@ -71,7 +71,7 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
     void assertExecuteWithCommit() throws SQLException {
         when(packet.getObjectHandle()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            Collection<DatabasePacket> actual = new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
+            Collection<DatabasePacket> actual = new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).commit();
         }
@@ -81,7 +81,7 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
     void assertExecuteWithRollback() throws SQLException {
         when(packet.getObjectHandle()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            Collection<DatabasePacket> actual = new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.ROLLBACK).execute();
+            Collection<DatabasePacket> actual = new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.ROLLBACK).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).rollback();
         }
@@ -92,7 +92,7 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
         when(packet.getObjectHandle()).thenReturn(1);
         when(connectionSession.isAutoCommit()).thenReturn(true);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            Collection<DatabasePacket> actual = new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
+            Collection<DatabasePacket> actual = new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             assertTrue(mocked.constructed().isEmpty());
         }
@@ -102,7 +102,7 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
     void assertExecuteWithUnknownTransactionHandle() {
         when(packet.getObjectHandle()).thenReturn(99);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute());
+            assertThrows(InvalidTransactionHandleException.class, () -> new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute());
             assertTrue(mocked.constructed().isEmpty());
         }
     }
@@ -111,9 +111,9 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
     void assertExecuteTwiceWithSameTransactionHandle() throws SQLException {
         when(packet.getObjectHandle()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
+            new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
             assertThrows(InvalidTransactionHandleException.class,
-                    () -> new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute());
+                    () -> new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute());
         }
     }
     
@@ -127,7 +127,7 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
         }
         when(packet.getObjectHandle()).thenReturn(transactionId);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            Collection<DatabasePacket> actual = new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
+            Collection<DatabasePacket> actual = new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
             verify(mocked.constructed().get(0)).commit();
         }
@@ -137,12 +137,12 @@ class FirebirdCommitAndRollbackTransactionCommandExecutorTest {
     void assertExecuteWithClosedTransactionHandleAfterNewTransaction() throws SQLException {
         when(packet.getObjectHandle()).thenReturn(1);
         try (MockedConstruction<ProxyBackendTransactionManager> mocked = mockConstruction(ProxyBackendTransactionManager.class)) {
-            new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
+            new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
             FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
             assertThrows(InvalidTransactionHandleException.class,
-                    () -> new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute());
+                    () -> new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute());
             when(packet.getObjectHandle()).thenReturn(2);
-            Collection<DatabasePacket> actual = new FirebirdCommitAndRollbackTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
+            Collection<DatabasePacket> actual = new FirebirdEndTransactionCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.COMMIT).execute();
             assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         }
     }

@@ -49,7 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdGetBlobSegmentCommandExecutorTest {
+class FirebirdGetSegmentCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -82,7 +82,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, new byte[]{7, 8, 9}, false);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
         when(packet.getSegmentLength()).thenReturn(16386);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(2));
@@ -92,18 +92,18 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     @Test
     void assertExecuteWithUnknownBlobHandle() {
         when(packet.getBlobHandle()).thenReturn(99);
-        assertThrows(InvalidSegstrHandleException.class, () -> new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession).execute());
+        assertThrows(InvalidSegstrHandleException.class, () -> new FirebirdGetSegmentCommandExecutor(packet, connectionSession).execute());
     }
     
     @Test
     void assertExecuteWithReleasedBlobHandle() {
         FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, BLOB_HANDLE);
-        assertThrows(InvalidSegstrHandleException.class, () -> new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession).execute());
+        assertThrows(InvalidSegstrHandleException.class, () -> new FirebirdGetSegmentCommandExecutor(packet, connectionSession).execute());
     }
     
     @Test
     void assertExecuteWithoutBlobContent() {
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
@@ -114,7 +114,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     @Test
     void assertExecuteWithEmptyBlobExpectsEof() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[0], false);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(2));
@@ -125,7 +125,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     void assertExecuteWithRequestedLengthBelowPrefixExpectsPartial() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{9, 8}, false);
         when(packet.getSegmentLength()).thenReturn(1);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(1));
@@ -136,7 +136,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     void assertExecuteWithPartialSegmentLeftExpectsPartial() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, false);
         when(packet.getSegmentLength()).thenReturn(4);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(1));
@@ -148,7 +148,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     void assertExecuteWithFullyConsumedSegmentExpectsComplete() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{4, 5}, false);
         when(packet.getSegmentLength()).thenReturn(4);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(0));
@@ -160,7 +160,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     void assertExecuteWithLastSegment(final String name, final int requestedLength, final int expectedState) {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, false);
         when(packet.getSegmentLength()).thenReturn(requestedLength);
-        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession).execute().iterator().next();
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdGetSegmentCommandExecutor(packet, connectionSession).execute().iterator().next();
         assertThat(actual.getHandle(), is(expectedState));
         assertThat(getResponseSegment(actual), is(new byte[]{1, 2, 3}));
     }
@@ -171,7 +171,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         content[0xFFFF] = 42;
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, content, false);
         when(packet.getSegmentLength()).thenReturn(0xFFFF + 100);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(1));
@@ -182,7 +182,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
     void assertExecuteConsecutivelyReturnsAllDataOnce() {
         FirebirdBlobReadCache.getInstance().registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3, 4, 5}, false);
         when(packet.getSegmentLength()).thenReturn(4);
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        FirebirdGetSegmentCommandExecutor executor = new FirebirdGetSegmentCommandExecutor(packet, connectionSession);
         FirebirdGenericResponsePacket firstPacket = (FirebirdGenericResponsePacket) executor.execute().iterator().next();
         assertThat(firstPacket.getHandle(), is(1));
         assertThat(getResponseSegment(firstPacket), is(new byte[]{1, 2}));
@@ -203,7 +203,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
             int otherBlobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(2);
             FirebirdBlobReadCache.getInstance().registerBlob(2, otherBlobHandle, new byte[]{1, 2, 3}, false);
             when(packet.getBlobHandle()).thenReturn(otherBlobHandle);
-            assertThrows(InvalidSegstrHandleException.class, () -> new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession).execute());
+            assertThrows(InvalidSegstrHandleException.class, () -> new FirebirdGetSegmentCommandExecutor(packet, connectionSession).execute());
             assertThat(FirebirdBlobReadCache.getInstance().readSegment(2, otherBlobHandle, 3).get().getData(), is(new byte[]{1, 2, 3}));
         } finally {
             FirebirdBlobReadCache.getInstance().unregisterConnection(2);

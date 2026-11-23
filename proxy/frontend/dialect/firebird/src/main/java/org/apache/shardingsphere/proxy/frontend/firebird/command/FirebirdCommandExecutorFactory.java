@@ -40,26 +40,27 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelAndReleaseCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchMessageCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchReleaseCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchSyncCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBatchBlobSegmentsCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCancelAndCloseBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCreateAndOpenBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetBlobSegmentCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdEndBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdOpenBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdSeekBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdBlobInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate.FirebirdAllocateStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteStatementCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free.FirebirdFreeStatementCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free.FirebirdEndStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare.FirebirdPrepareStatementCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitAndRollbackTransactionCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdEndTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdStartTransactionCommandExecutor;
 
 /**
@@ -80,10 +81,10 @@ public final class FirebirdCommandExecutorFactory {
         switch (commandPacketType) {
             case COMMIT:
             case ROLLBACK:
-                return new FirebirdCommitAndRollbackTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
+                return new FirebirdEndTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
             case CANCEL_BLOB:
             case CLOSE_BLOB:
-                return new FirebirdCancelAndCloseBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
+                return new FirebirdEndBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementCommandExecutor(connectionSession);
             case INFO_BLOB:
@@ -98,11 +99,11 @@ public final class FirebirdCommandExecutorFactory {
             case OPEN_BLOB:
             case CREATE_BLOB2:
             case OPEN_BLOB2:
-                return new FirebirdCreateAndOpenBlobCommandExecutor((FirebirdCreateAndOpenBlobCommandPacket) commandPacket, connectionSession, commandPacketType);
+                return new FirebirdOpenBlobCommandExecutor((FirebirdCreateAndOpenBlobCommandPacket) commandPacket, connectionSession, commandPacketType);
             case GET_SEGMENT:
-                return new FirebirdGetBlobSegmentCommandExecutor((FirebirdGetBlobSegmentCommandPacket) commandPacket, connectionSession);
+                return new FirebirdGetSegmentCommandExecutor((FirebirdGetBlobSegmentCommandPacket) commandPacket, connectionSession);
             case PUT_SEGMENT:
-                return new FirebirdPutBlobSegmentCommandExecutor((FirebirdPutBlobSegmentCommandPacket) commandPacket, connectionSession);
+                return new FirebirdPutSegmentCommandExecutor((FirebirdPutBlobSegmentCommandPacket) commandPacket, connectionSession);
             case BATCH_SEGMENTS:
                 return new FirebirdBatchBlobSegmentsCommandExecutor((FirebirdBatchBlobSegmentsCommandPacket) commandPacket, connectionSession);
             case SEEK_BLOB:
@@ -113,9 +114,9 @@ public final class FirebirdCommandExecutorFactory {
             case EXECUTE2:
                 return new FirebirdExecuteStatementCommandExecutor((FirebirdExecuteStatementPacket) commandPacket, connectionSession);
             case FETCH:
-                return new FirebirdFetchStatementCommandExecutor((FirebirdFetchStatementPacket) commandPacket, connectionSession);
+                return new FirebirdFetchCommandExecutor((FirebirdFetchStatementPacket) commandPacket, connectionSession);
             case FREE_STATEMENT:
-                return new FirebirdFreeStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
+                return new FirebirdEndStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
             case BATCH_CREATE:
                 return new FirebirdBatchCreateCommandExecutor((FirebirdBatchCreateCommandPacket) commandPacket, connectionSession);
             case BATCH_MSG:
@@ -123,8 +124,9 @@ public final class FirebirdCommandExecutorFactory {
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandExecutor((FirebirdBatchExecuteCommandPacket) commandPacket, connectionSession);
             case BATCH_RLS:
+                return new FirebirdBatchReleaseCommandExecutor((FirebirdBatchCancelAndReleaseCommandPacket) commandPacket, connectionSession);
             case BATCH_CANCEL:
-                return new FirebirdBatchCancelAndReleaseCommandExecutor((FirebirdBatchCancelAndReleaseCommandPacket) commandPacket, connectionSession, commandPacketType);
+                return new FirebirdBatchCancelCommandExecutor((FirebirdBatchCancelAndReleaseCommandPacket) commandPacket, connectionSession);
             case BATCH_SYNC:
                 return new FirebirdBatchSyncCommandExecutor();
             default:

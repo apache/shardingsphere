@@ -37,10 +37,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Create and open blob command executor for Firebird.
+ * Open blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdCreateAndOpenBlobCommandExecutor implements CommandExecutor {
+public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
     private final FirebirdCreateAndOpenBlobCommandPacket packet;
     
