@@ -1067,8 +1067,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         result.setView((SimpleTableSegment) visit(ctx.qualifiedName()));
         if (ctx.alterViewClauses() instanceof AlterRenameViewContext) {
             NameContext nameContext = ((AlterRenameViewContext) ctx.alterViewClauses()).name();
-            result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(),
-                    nameContext.getStop().getStopIndex(), (IdentifierValue) visit(nameContext.identifier()))));
+            result.setRenameView(new SimpleTableSegment(new TableNameSegment(nameContext.getStart().getStartIndex(), nameContext.getStop().getStopIndex(), (IdentifierValue) visit(nameContext))));
         }
         return result;
     }

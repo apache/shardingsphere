@@ -397,4 +397,6 @@
     <sql-case id="unsupported_postgresql_security_label_without_role_name" value="SECURITY LABEL ON ROLE IS 'foo_label';" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_copy_format_without_value" value="COPY t_order TO STDOUT (FORMAT);" db-types="PostgreSQL" case-types="literal" />
     <sql-case id="unsupported_postgresql_copy_header_unquoted_value" value="COPY t_order FROM STDIN (HEADER wrong_choice);" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_reserved_table_identifier" value="CREATE TABLE select (id int)" db-types="PostgreSQL" case-types="literal" />
+    <sql-case id="unsupported_postgresql_reserved_column_identifier" value="CREATE TABLE foo (select int)" db-types="PostgreSQL" case-types="literal" />
 </sql-cases>

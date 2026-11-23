@@ -2504,7 +2504,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitName(final NameContext ctx) {
-        return visit(ctx.identifier());
+        return createIdentifierValue(ctx.getText());
     }
     
     @Override
