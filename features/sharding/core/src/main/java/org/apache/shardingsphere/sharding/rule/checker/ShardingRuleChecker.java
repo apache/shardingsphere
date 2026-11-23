@@ -112,11 +112,14 @@ public class ShardingRuleChecker {
     private void checkDuplicatedBindingTables(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups) {
         Map<String, String> groupNames = new CaseInsensitiveMap<>();
         for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
-            for (String logicTable : Splitter.on(",").trimResults().splitToList(each.getReference())) {
-                String previousGroupName = groupNames.putIfAbsent(logicTable, each.getName());
-                ShardingSpherePreconditions.checkState(null == previousGroupName,
-                        () -> new DuplicateBindingTableException(logicTable, previousGroupName, each.getName()));
-            }
+            checkDuplicatedBindingTables(each, groupNames);
+        }
+    }
+    
+    private void checkDuplicatedBindingTables(final ShardingTableReferenceRuleConfiguration bindingTableGroup, final Map<String, String> groupNames) {
+        for (String each : Splitter.on(",").trimResults().splitToList(bindingTableGroup.getReference())) {
+            String previousGroupName = groupNames.putIfAbsent(each, bindingTableGroup.getName());
+            ShardingSpherePreconditions.checkState(null == previousGroupName, () -> new DuplicateBindingTableException(each, previousGroupName, bindingTableGroup.getName()));
         }
     }
     
