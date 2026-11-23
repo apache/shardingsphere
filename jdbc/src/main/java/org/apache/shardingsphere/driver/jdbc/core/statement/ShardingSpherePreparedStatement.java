@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.driver.exception.ParameterIndexOutOfRangeException;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.DriverExecuteBatchExecutor;
@@ -172,6 +173,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private boolean isStatementsCacheable() {
         return usedDatabase.getRuleMetaData().getAttributes(StorageConnectorReusableRuleAttribute.class).size() == usedDatabase.getRuleMetaData().getRules().size()
                 && !HintManager.isInstantiated();
+    }
+    
+    @Override
+    protected void setParameter(final int parameterIndex, final Object value) throws SQLException {
+        int parameterCount = getParameterMetaData().getParameterCount();
+        ShardingSpherePreconditions.checkState(parameterIndex >= 1 && parameterIndex <= parameterCount,
+                () -> SQLExceptionTransformEngine.toSQLException(new ParameterIndexOutOfRangeException(parameterIndex, parameterCount), metaData.getProtocolType()));
+        super.setParameter(parameterIndex, value);
     }
     
     @Override
