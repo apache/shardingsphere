@@ -49,9 +49,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.Fire
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdOpenBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdSeekBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdBlobInfoExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdInfoCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate.FirebirdAllocateStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute.FirebirdExecuteStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchCommandExecutor;
@@ -85,11 +83,9 @@ public final class FirebirdCommandExecutorFactory {
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementCommandExecutor(connectionSession);
             case INFO_BLOB:
-                return new FirebirdBlobInfoExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession);
             case INFO_DATABASE:
-                return new FirebirdDatabaseInfoExecutor((FirebirdInfoCommandPacket) commandPacket);
             case INFO_SQL:
-                return new FirebirdSQLInfoExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession);
+                return new FirebirdInfoCommandExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession, commandPacketType);
             case TRANSACTION:
                 return new FirebirdStartTransactionCommandExecutor((FirebirdStartTransactionPacket) commandPacket, connectionSession);
             case CREATE_BLOB:
