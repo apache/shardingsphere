@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.My
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetUtils;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -65,6 +68,7 @@ public final class MySQLProjectionMetadataResolver {
      * @return column definition packets
      * @throws SQLException SQL exception
      */
+    @HighFrequencyInvocation
     public static Collection<MySQLPacket> resolveProjectionPackets(final ConnectionSession connectionSession, final MySQLServerPreparedStatement preparedStatement,
                                                                    final SelectStatementContext selectStatementContext, final int characterSet) throws SQLException {
         try (PreparedStatement actualPreparedStatement = MySQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
@@ -78,9 +82,17 @@ public final class MySQLProjectionMetadataResolver {
             QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
             int visibleColumnCount = ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, actualResultSetMetaData);
             Collection<MySQLPacket> result = new ArrayList<>(visibleColumnCount);
+            DatabaseType actualType = null;
             for (int columnIndex = 1; columnIndex <= visibleColumnCount; columnIndex++) {
                 QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, columnIndex);
-                result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet));
+                boolean mysqlDatetime = Types.TIMESTAMP == queryHeader.getColumnType() && "DATETIME".equalsIgnoreCase(queryHeader.getColumnTypeName());
+                if (mysqlDatetime) {
+                    if (null == actualType) {
+                        actualType = DatabaseTypeFactory.get(actualPreparedStatement.getConnection().getMetaData());
+                    }
+                    mysqlDatetime = "MySQL".equals(actualType.getType());
+                }
+                result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet, mysqlDatetime));
             }
             return result;
         }
@@ -94,10 +106,10 @@ public final class MySQLProjectionMetadataResolver {
         return result;
     }
     
-    private static MySQLColumnDefinition41Packet createMySQLColumnDefinition41Packet(final QueryHeader queryHeader, final int characterSet) {
+    private static MySQLColumnDefinition41Packet createMySQLColumnDefinition41Packet(final QueryHeader queryHeader, final int characterSet, final boolean mysqlDatetime) {
         int actualCharacterSet = BINARY_TYPES.contains(queryHeader.getColumnType()) ? MySQLCharacterSets.BINARY.getId() : characterSet;
         return new MySQLColumnDefinition41Packet(actualCharacterSet, getColumnDefinitionFlag(queryHeader), queryHeader.getSchema(), queryHeader.getTable(), queryHeader.getTable(),
-                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(queryHeader.getColumnType()),
+                queryHeader.getColumnLabel(), queryHeader.getColumnName(), queryHeader.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(queryHeader.getColumnType(), mysqlDatetime),
                 queryHeader.getDecimals(), false);
     }
     

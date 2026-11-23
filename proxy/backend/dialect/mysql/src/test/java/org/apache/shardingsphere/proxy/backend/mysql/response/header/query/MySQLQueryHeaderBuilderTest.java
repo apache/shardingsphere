@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -33,11 +34,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -47,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class MySQLQueryHeaderBuilderTest {
@@ -132,6 +138,41 @@ class MySQLQueryHeaderBuilderTest {
                 resultSetMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
         assertFalse(actual.isPrimaryKey());
         assertThat(actual.getTable(), is(actual.getTable()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("datetimeStorageArguments")
+    void assertAppendProtocolAttributesWithDatetime(final String name, final DatabaseType storageType, final Map<String, Object> expected) throws SQLException {
+        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
+        ResultSet resultSet = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+            mocked.when(() -> DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData())).thenReturn(storageType);
+            queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
+        }
+        assertThat(actual.getProtocolAttributes(), is(expected));
+    }
+    
+    private static Stream<Arguments> datetimeStorageArguments() {
+        DatabaseType sqlserver = mock(DatabaseType.class);
+        when(sqlserver.getType()).thenReturn("SQLServer");
+        return Stream.of(
+                Arguments.of("mysql", TypedSPILoader.getService(DatabaseType.class, "MySQL"), Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)),
+                Arguments.of("sqlserver", sqlserver, Collections.emptyMap()),
+                Arguments.of("mysql-trunk-only", TypedSPILoader.getService(DatabaseType.class, "H2"), Collections.emptyMap()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nonDatetimeArguments")
+    void assertAppendProtocolAttributesWithoutDatetime(final String name, final int jdbcType, final String typeName) throws SQLException {
+        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_column", "foo_column", jdbcType, typeName, 26, 6, true, false, false, false);
+        ResultSet resultSet = mock(ResultSet.class);
+        queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
+        assertTrue(actual.getProtocolAttributes().isEmpty());
+        verifyNoInteractions(resultSet);
+    }
+    
+    private static Stream<Arguments> nonDatetimeArguments() {
+        return Stream.of(Arguments.of("non-temporal", Types.INTEGER, "INTEGER"), Arguments.of("timestamp", Types.TIMESTAMP, "TIMESTAMP"), Arguments.of("missing-type-name", Types.TIMESTAMP, ""));
     }
     
     private ShardingSphereDatabase createDatabase() {

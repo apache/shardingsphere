@@ -298,7 +298,7 @@ class ContextManagerTest {
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
             contextManager.reloadTable(database, "foo_schema", "foo_tbl");
         }
-        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).alterTables(database, "foo_schema", Collections.singleton(table));
     }
     
     @Test
@@ -313,7 +313,7 @@ class ContextManagerTest {
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
             contextManager.reloadTable(database, "foo_schema", new IdentifierValue("\"FOO_TBL\""));
         }
-        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
+        verify(persistServiceFacade.getModeFacade().getMetaDataManagerService()).alterTables(database, "foo_schema", Collections.singleton(table));
     }
     
     @Test

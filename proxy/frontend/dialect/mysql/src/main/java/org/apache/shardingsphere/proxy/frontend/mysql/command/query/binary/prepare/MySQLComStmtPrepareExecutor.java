@@ -156,7 +156,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
                     .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
                     .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(column),
-                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
+                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType(), column.isMysqlDatetime())))
                     .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
         }
         return result;

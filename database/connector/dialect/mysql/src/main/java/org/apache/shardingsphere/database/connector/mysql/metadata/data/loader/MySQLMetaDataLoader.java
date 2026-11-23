@@ -71,7 +71,8 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     @Override
     public Collection<SchemaMetaData> load(final MetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(material.getDataSource(), material.getActualTableNames());
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(material.getDataSource(), material.getActualTableNames(),
+                "MySQL".equals(material.getStorageType().getType()));
         Collection<String> viewNames = columnMetaDataMap.isEmpty() ? Collections.emptySet() : loadViewNames(material.getDataSource(), columnMetaDataMap.keySet());
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(material.getDataSource(), columnMetaDataMap.keySet());
         Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap = columnMetaDataMap.isEmpty()
@@ -93,8 +94,8 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
                 .filter(each -> PRIMARY_KEY_INDEX_NAME.equalsIgnoreCase(each.getName())).findFirst().map(IndexMetaData::getColumns).orElse(Collections.emptyList());
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : columnMetaDataList) {
-            result.add(new ColumnMetaData(each.getName(),
-                    each.getDataType(), primaryKeyColumns.contains(each.getName()), each.isGenerated(), each.isCaseSensitive(), each.isVisible(), each.isUnsigned(), each.isNullable()));
+            result.add(new ColumnMetaData(each.getName(), each.getDataType(), primaryKeyColumns.contains(each.getName()), each.isGenerated(), each.isCaseSensitive(), each.isVisible(),
+                    each.isUnsigned(), each.isNullable(), each.isMysqlDatetime()));
         }
         return result;
     }
@@ -143,7 +144,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         return String.format(CONSTRAINT_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
-    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
+    private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final DataSource dataSource, final Collection<String> tables, final boolean mysql) throws SQLException {
         Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1F);
         try (
                 Connection connection = dataSource.getConnection();
@@ -152,7 +153,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
-                    ColumnMetaData columnMetaData = loadColumnMetaData(resultSet);
+                    ColumnMetaData columnMetaData = loadColumnMetaData(resultSet, mysql);
                     if (!result.containsKey(tableName)) {
                         result.put(tableName, new LinkedList<>());
                     }
@@ -163,7 +164,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         return result;
     }
     
-    private ColumnMetaData loadColumnMetaData(final ResultSet resultSet) throws SQLException {
+    private ColumnMetaData loadColumnMetaData(final ResultSet resultSet, final boolean mysql) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = "PRI".equalsIgnoreCase(resultSet.getString("COLUMN_KEY"));
@@ -174,7 +175,8 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         boolean visible = !extra.contains("INVISIBLE");
         boolean unsigned = resultSet.getString("COLUMN_TYPE").toUpperCase().contains("UNSIGNED");
         boolean nullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
-        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, visible, unsigned, nullable);
+        return new ColumnMetaData(columnName, DataTypeRegistry.getDataType(getDatabaseType(), dataType).orElse(Types.OTHER), primaryKey, generated, caseSensitive, visible, unsigned, nullable,
+                mysql && "datetime".equalsIgnoreCase(dataType));
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

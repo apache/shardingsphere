@@ -19,14 +19,21 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.loader.t
 
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,17 +45,21 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class, AutoMockExtension.class})
 @LogCaptureSettings(suppressOutput = true)
+@StaticMockSettings(DatabaseTypedSPILoader.class)
 class ColumnMetaDataLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -61,6 +72,7 @@ class ColumnMetaDataLoaderTest {
     
     @BeforeEach
     void setUp() throws SQLException {
+        when(DatabaseTypedSPILoader.getService(any(), any(DatabaseType.class))).thenReturn(TypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType));
         when(connection.getCatalog()).thenReturn("catalog");
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(true, false);
@@ -94,6 +106,36 @@ class ColumnMetaDataLoaderTest {
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.isPrimaryKey(), is(primaryKey));
         assertThat(actual.isCaseSensitive(), is(caseSensitive));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("datetimeArguments")
+    void assertLoadDatetime(final String name, final String storageType, final String columnTypeName, final boolean expectedMysqlDatetime) throws SQLException {
+        DatabaseType sourceType = mock(DatabaseType.class);
+        when(sourceType.getType()).thenReturn(storageType);
+        when(columnResultSet.next()).thenReturn(true, false);
+        when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
+        when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
+        when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.TIMESTAMP);
+        ResultSet queryResultSet = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(queryResultSet.getMetaData()).thenReturn(resultSetMetaData);
+        if ("MySQL".equals(storageType)) {
+            when(resultSetMetaData.getColumnTypeName(1)).thenReturn(columnTypeName);
+        }
+        when(connection.createStatement().executeQuery(anyString())).thenReturn(queryResultSet);
+        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", sourceType);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getDataType(), is(Types.TIMESTAMP));
+        assertTrue(actual.iterator().next().isMysqlDatetime() == expectedMysqlDatetime);
+    }
+    
+    private static Stream<Arguments> datetimeArguments() {
+        return Stream.of(
+                Arguments.of("MySQL DATETIME", "MySQL", "DATETIME", true),
+                Arguments.of("MySQL TIMESTAMP", "MySQL", "TIMESTAMP", false),
+                Arguments.of("other storage DATETIME", "SQLServer", "DATETIME", false),
+                Arguments.of("missing type name", "MySQL", null, false));
     }
     
     @Test

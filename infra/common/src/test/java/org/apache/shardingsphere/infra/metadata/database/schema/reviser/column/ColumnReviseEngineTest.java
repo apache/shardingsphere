@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -33,6 +34,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -62,5 +65,18 @@ class ColumnReviseEngineTest {
         assertFalse(revisedColumn.isVisible());
         assertFalse(revisedColumn.isUnsigned());
         assertFalse(revisedColumn.isNullable());
+        assertFalse(revisedColumn.isMysqlDatetime());
+    }
+    
+    @Test
+    void assertReviseWithDatetime() {
+        ColumnNameReviser nameReviser = mock(ColumnNameReviser.class);
+        doReturn(Optional.of(nameReviser)).when(reviseEntry).getColumnNameReviser(rule, "foo_tbl");
+        when(nameReviser.revise("foo_col")).thenReturn("bar_col");
+        ColumnMetaData columnMetaData = new ColumnMetaData("foo_col", Types.TIMESTAMP, false, false, false, true, false, true, true);
+        Collection<ColumnMetaData> actual = new ColumnReviseEngine<>(rule, reviseEntry).revise("foo_tbl", Collections.singleton(columnMetaData));
+        ColumnMetaData actualColumn = actual.iterator().next();
+        assertThat(actualColumn.getName(), is("bar_col"));
+        assertTrue(actualColumn.isMysqlDatetime());
     }
 }

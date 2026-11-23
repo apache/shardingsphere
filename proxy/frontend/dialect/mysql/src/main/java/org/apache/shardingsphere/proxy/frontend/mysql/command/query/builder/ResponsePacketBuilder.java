@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEof
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.proxy.backend.mysql.response.header.query.MySQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -67,8 +68,9 @@ public final class ResponsePacketBuilder {
         result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
             int characterSet = BINARY_TYPES.contains(each.getColumnType()) || Types.TIME == each.getColumnType() ? MySQLCharacterSets.BINARY.getId() : sessionCharacterSet;
-            result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(),
-                    each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
+            boolean mysqlDatetime = Boolean.TRUE.equals(each.getProtocolAttributes().get(MySQLQueryHeaderBuilder.MYSQL_DATETIME));
+            result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(), each.getColumnLabel(), each.getColumnName(),
+                    each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType(), mysqlDatetime), each.getDecimals(), false));
         }
         result.add(new MySQLEofPacket(statusFlags));
         return result;

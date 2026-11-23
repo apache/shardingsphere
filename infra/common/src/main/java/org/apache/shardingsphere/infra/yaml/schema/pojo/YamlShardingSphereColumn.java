@@ -43,4 +43,9 @@ public final class YamlShardingSphereColumn implements YamlConfiguration {
     private boolean unsigned;
     
     private boolean nullable;
+    
+    /**
+     * {@code null} means that MySQL DATETIME has not been confirmed.
+     */
+    private Boolean mysqlDatetime;
 }

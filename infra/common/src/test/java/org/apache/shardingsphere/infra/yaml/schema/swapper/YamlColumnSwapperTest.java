@@ -17,13 +17,23 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.sql.Types;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlColumnSwapperTest {
@@ -42,6 +52,16 @@ class YamlColumnSwapperTest {
         assertTrue(actual.isVisible());
         assertFalse(actual.isUnsigned());
         assertFalse(actual.isNullable());
+        assertNull(actual.getMysqlDatetime());
+        assertFalse(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).containsKey("mysqlDatetime"));
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithDatetime() {
+        ColumnMetaData columnMetaData = new ColumnMetaData("foo_col", Types.TIMESTAMP, false, false, false, true, false, true, true);
+        YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(new ShardingSphereColumn(columnMetaData));
+        assertTrue(actual.getMysqlDatetime());
+        assertTrue(Boolean.TRUE.equals(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).get("mysqlDatetime")));
     }
     
     @Test
@@ -64,5 +84,20 @@ class YamlColumnSwapperTest {
         assertFalse(actual.isVisible());
         assertTrue(actual.isUnsigned());
         assertTrue(actual.isNullable());
+        assertFalse(actual.isMysqlDatetime());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("datetimeMetadataArguments")
+    void assertSwapToObjectWithDatetimeMetadata(final String name, final String yaml, final boolean expectedMysqlDatetime) {
+        ShardingSphereColumn actual = swapper.swapToObject(YamlEngine.unmarshal(yaml, YamlShardingSphereColumn.class));
+        assertTrue(actual.isMysqlDatetime() == expectedMysqlDatetime);
+    }
+    
+    private static Stream<Arguments> datetimeMetadataArguments() {
+        return Stream.of(
+                Arguments.of("DATETIME", "name: foo_col\ndataType: 93\nmysqlDatetime: true\n", true),
+                Arguments.of("explicit false", "name: foo_col\ndataType: 93\nmysqlDatetime: false\n", false),
+                Arguments.of("legacy metadata", "name: foo_col\ndataType: 93\n", false));
     }
 }

@@ -87,6 +87,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -145,6 +146,35 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(SelectStatement.class));
         assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.LONGLONG, MySQLBinaryColumnType.VAR_STRING)));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
+    }
+    
+    @Test
+    void assertPrepareLocalTemporalProjection() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT mysql_datetime, mysql_timestamp FROM foo_db.user WHERE mysql_datetime = ? AND mysql_timestamp = ?");
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 17;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class)))
+                .thenAnswer(invocation -> fail("Local projection metadata must not load backend metadata"));
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        try {
+            Iterator<DatabasePacket> actual = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actual.next(), isA(MySQLComStmtPrepareOKPacket.class));
+            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(MySQLBinaryColumnType.TIMESTAMP.getValue()));
+            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(MySQLBinaryColumnType.TIMESTAMP.getValue()));
+            assertThat(actual.next(), isA(MySQLEofPacket.class));
+            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(MySQLBinaryColumnType.DATETIME.getValue()));
+            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(MySQLBinaryColumnType.TIMESTAMP.getValue()));
+            assertThat(actual.next(), isA(MySQLEofPacket.class));
+            assertFalse(actual.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.TIMESTAMP, MySQLBinaryColumnType.TIMESTAMP)));
+        } finally {
+            MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+        }
     }
     
     @Test
@@ -483,7 +513,9 @@ class MySQLComStmtPrepareExecutorTest {
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
                 new ShardingSphereColumn("content", Types.CLOB, false, false, false, false, false, true),
-                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, false, false, true),
+                new ShardingSphereColumn("mysql_datetime", Types.TIMESTAMP, false, false, false, true, false, true, true),
+                new ShardingSphereColumn("mysql_timestamp", Types.TIMESTAMP, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));

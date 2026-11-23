@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -25,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -34,6 +37,8 @@ import java.util.Optional;
  * Query header builder for MySQL.
  */
 public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
+    
+    public static final String MYSQL_DATETIME = "mysqlDatetime";
     
     @Override
     @HighFrequencyInvocation
@@ -72,6 +77,18 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         }
         int result = columnLength - 11;
         return result >= 1 && result <= 6 ? result : decimals;
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+        if (Types.TIMESTAMP != queryHeader.getColumnType() || !"DATETIME".equalsIgnoreCase(queryHeader.getColumnTypeName())) {
+            return;
+        }
+        DatabaseType actualType = DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData());
+        if ("MySQL".equals(actualType.getType())) {
+            queryHeader.getProtocolAttributes().put(MYSQL_DATETIME, true);
+        }
     }
     
     @Override

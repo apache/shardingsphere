@@ -275,7 +275,7 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereSchema schema = GenericSchemaBuilder.build(Collections.singleton(tableName.getValue()), database.getProtocolType(), material)
                 .getOrDefault(schemaName, new ShardingSphereSchema(schemaName, database.getProtocolType()));
         if (schema.containsTable(tableName)) {
-            persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable().persist(database.getName(), schemaName, Collections.singleton(schema.getTable(tableName)));
+            persistServiceFacade.getModeFacade().getMetaDataManagerService().alterTables(database, schemaName, Collections.singleton(schema.getTable(tableName)));
         } else {
             persistServiceFacade.getModeFacade().getMetaDataManagerService().dropTables(database, schemaName, Collections.singleton(tableName.getValue()));
         }

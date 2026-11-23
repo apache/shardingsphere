@@ -86,10 +86,12 @@ public final class ColumnMetaDataLoader {
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(emptyResultSQL)) {
+            boolean mysql = "MySQL".equals(databaseType.getType());
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
                 caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i)));
+                boolean mysqlDatetime = mysql && "DATETIME".equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(i + 1));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i), mysqlDatetime));
             }
         } catch (final SQLException ex) {
             log.error("Error occurred while loading column meta data, SQL: {}", emptyResultSQL, ex);

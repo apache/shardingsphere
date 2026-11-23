@@ -29,10 +29,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.datat
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -47,6 +50,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -73,6 +77,26 @@ class MySQLMetaDataLoaderTest {
     
     private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
     
+    private Map<String, Map<String, Integer>> dataTypes;
+    
+    private Map<String, Integer> mysqlDataTypes;
+    
+    @BeforeEach
+    @SuppressWarnings("unchecked")
+    void setUp() throws Exception {
+        dataTypes = (Map<String, Map<String, Integer>>) Plugins.getMemberAccessor().get(DataTypeRegistry.class.getDeclaredField("DATA_TYPES"), null);
+        mysqlDataTypes = dataTypes.remove("MySQL");
+    }
+    
+    @AfterEach
+    void tearDown() {
+        if (null == mysqlDataTypes) {
+            dataTypes.remove("MySQL");
+        } else {
+            dataTypes.put("MySQL", mysqlDataTypes);
+        }
+    }
+    
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertLoadWithEmptyColumnMetaData() throws SQLException {
@@ -93,6 +117,24 @@ class MySQLMetaDataLoaderTest {
         Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
         assertThat(actual.size(), is(1));
         assertTrue(actual.iterator().next().getTables().isEmpty());
+    }
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadWithOtherStorage() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        when(dataSource.getConnection().getCatalog()).thenReturn("sharding_db");
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(TABLE_METADATA_SQL_WITH_TABLE).executeQuery()).thenReturn(tableMetaDataResultSet);
+        DataTypeRegistry.load(dataSource, "MySQL");
+        DatabaseType storageType = mock(DatabaseType.class);
+        when(storageType.getType()).thenReturn("H2");
+        Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, storageType, "sharding_db"));
+        Collection<ColumnMetaData> actualColumns = actual.iterator().next().getTables().iterator().next().getColumns();
+        assertThat(actualColumns.size(), is(11));
+        for (ColumnMetaData each : actualColumns) {
+            assertFalse(each.isMysqlDatetime());
+        }
     }
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
@@ -142,17 +184,17 @@ class MySQLMetaDataLoaderTest {
     private ResultSet mockTypeInfoResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, false);
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
-        when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
+        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar", "datetime", "timestamp");
+        when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP, Types.TIMESTAMP);
         return result;
     }
     
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, true, false);
+        when(result.next()).thenReturn(true, true, true, true, true, true, true, true, true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year", "pg", "mpg", "pt", "mpt");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year", "polygon", "multipolygon", "point", "multipoint");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year", "pg", "mpg", "pt", "mpt", "foo_datetime", "foo_timestamp");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year", "polygon", "multipolygon", "point", "multipoint", "datetime", "timestamp");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "", "", "", "", "");
         when(result.getString("EXTRA")).thenReturn("auto_increment INVISIBLE", "VIRTUAL GENERATED INVISIBLE", "", "", "", "", "", "", "");
         when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci", null, null, null, null, null, null, null);
@@ -203,7 +245,7 @@ class MySQLMetaDataLoaderTest {
         assertThat(tables.size(), is(1));
         TableMetaData actualTableMetaData = tables.iterator().next();
         assertThat(actualTableMetaData.getName(), is("tbl"));
-        assertThat(actualTableMetaData.getColumns().size(), is(9));
+        assertThat(actualTableMetaData.getColumns().size(), is(11));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, !expectedCompositeIndexExists, true, true, false, false, false));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
@@ -214,6 +256,12 @@ class MySQLMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpg", Types.BINARY, false, false, false, true, false, true));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("pt", Types.BINARY, false, false, false, true, false, true));
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false, true));
+        ColumnMetaData actualDatetimeColumn = columnsIterator.next();
+        assertThat(actualDatetimeColumn.getDataType(), is(Types.TIMESTAMP));
+        assertTrue(actualDatetimeColumn.isMysqlDatetime());
+        ColumnMetaData actualTimestampColumn = columnsIterator.next();
+        assertThat(actualTimestampColumn.getDataType(), is(Types.TIMESTAMP));
+        assertFalse(actualTimestampColumn.isMysqlDatetime());
         assertIndexMetaData(actualTableMetaData.getIndexes(), expectedCompositeIndexExists);
         assertConstraintMetaData(actualTableMetaData.getConstraints(), expectedConstraintExists);
     }
