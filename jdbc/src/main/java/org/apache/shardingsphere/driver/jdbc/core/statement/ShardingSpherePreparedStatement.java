@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.driver.exception.ParameterIndexOutOfRangeException;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.DriverExecuteBatchExecutor;
@@ -42,6 +41,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -179,7 +179,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     protected void setParameter(final int parameterIndex, final Object value) throws SQLException {
         int parameterCount = getParameterMetaData().getParameterCount();
         ShardingSpherePreconditions.checkState(parameterIndex >= 1 && parameterIndex <= parameterCount,
-                () -> SQLExceptionTransformEngine.toSQLException(new ParameterIndexOutOfRangeException(parameterIndex, parameterCount), metaData.getProtocolType()));
+                () -> new SQLException(String.format("Parameter index '%d' is out of range. Number of parameters: %d.", parameterIndex, parameterCount),
+                        XOpenSQLState.INVALID_DESCRIPTOR_INDEX.getValue(), 12023));
         super.setParameter(parameterIndex, value);
     }
     
