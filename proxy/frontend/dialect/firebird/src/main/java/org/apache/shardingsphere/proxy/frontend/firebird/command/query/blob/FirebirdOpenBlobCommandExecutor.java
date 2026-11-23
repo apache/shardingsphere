@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -42,7 +42,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
-    private final FirebirdCreateAndOpenBlobCommandPacket packet;
+    private final FirebirdBlobCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     

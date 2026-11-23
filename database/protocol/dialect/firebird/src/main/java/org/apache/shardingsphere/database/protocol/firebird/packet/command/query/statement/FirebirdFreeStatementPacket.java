@@ -22,7 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 /**
- * Firebird allocate statement packet.
+ * Firebird free statement packet.
  */
 @Getter
 public final class FirebirdFreeStatementPacket extends FirebirdCommandPacket {

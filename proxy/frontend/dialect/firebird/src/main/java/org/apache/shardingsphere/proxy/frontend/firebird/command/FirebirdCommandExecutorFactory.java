@@ -21,11 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelAndReleaseCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
@@ -92,7 +91,7 @@ public final class FirebirdCommandExecutorFactory {
             case OPEN_BLOB:
             case CREATE_BLOB2:
             case OPEN_BLOB2:
-                return new FirebirdOpenBlobCommandExecutor((FirebirdCreateAndOpenBlobCommandPacket) commandPacket, connectionSession, commandPacketType);
+                return new FirebirdOpenBlobCommandExecutor((FirebirdBlobCommandPacket) commandPacket, connectionSession, commandPacketType);
             case GET_SEGMENT:
                 return new FirebirdGetSegmentCommandExecutor((FirebirdSegmentCommandPacket) commandPacket, connectionSession);
             case PUT_SEGMENT:
@@ -116,9 +115,9 @@ public final class FirebirdCommandExecutorFactory {
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandExecutor((FirebirdBatchExecuteCommandPacket) commandPacket, connectionSession);
             case BATCH_RLS:
-                return new FirebirdBatchReleaseCommandExecutor((FirebirdBatchCancelAndReleaseCommandPacket) commandPacket, connectionSession);
+                return new FirebirdBatchReleaseCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
             case BATCH_CANCEL:
-                return new FirebirdBatchCancelCommandExecutor((FirebirdBatchCancelAndReleaseCommandPacket) commandPacket, connectionSession);
+                return new FirebirdBatchCancelCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
             case BATCH_SYNC:
                 return new FirebirdBatchSyncCommandExecutor();
             default:

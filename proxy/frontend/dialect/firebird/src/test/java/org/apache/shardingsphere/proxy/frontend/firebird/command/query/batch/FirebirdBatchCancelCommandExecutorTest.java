@@ -24,7 +24,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelAndReleaseCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -80,7 +80,7 @@ class FirebirdBatchCancelCommandExecutorTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private FirebirdBatchCancelAndReleaseCommandPacket packet;
+    private FirebirdSingleHandleCommandPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
@@ -95,7 +95,7 @@ class FirebirdBatchCancelCommandExecutorTest {
         batchStatement.addParameterValues(Arrays.asList(1, "foo"));
         FirebirdBatchRegistry.getInstance().registerBatchStatement(CONNECTION_ID, STATEMENT_ID, batchStatement);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
-        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getObjectHandle()).thenReturn(STATEMENT_ID);
         Collection<DatabasePacket> actual = new FirebirdBatchCancelCommandExecutor(packet, connectionSession).execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
@@ -108,7 +108,7 @@ class FirebirdBatchCancelCommandExecutorTest {
     @Test
     void assertExecuteWhenBatchNotFound() {
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
-        when(packet.getStatementHandle()).thenReturn(STATEMENT_ID);
+        when(packet.getObjectHandle()).thenReturn(STATEMENT_ID);
         Collection<DatabasePacket> actual = new FirebirdBatchCancelCommandExecutor(packet, connectionSession).execute();
         assertThat(actual.size(), is(1));
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getErrorCode(), is(ISCConstants.isc_bad_batch_handle));

@@ -22,7 +22,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
@@ -61,7 +61,7 @@ class FirebirdOpenBlobCommandExecutorTest {
     private static final int CONNECTION_ID = 1;
     
     @Mock
-    private FirebirdCreateAndOpenBlobCommandPacket packet;
+    private FirebirdBlobCommandPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -192,7 +192,7 @@ class FirebirdOpenBlobCommandExecutorTest {
     }
     
     private FirebirdGenericResponsePacket createBlobWithSegment(final byte[] segment, final boolean streamBlob) {
-        FirebirdCreateAndOpenBlobCommandPacket createPacket = mock(FirebirdCreateAndOpenBlobCommandPacket.class);
+        FirebirdBlobCommandPacket createPacket = mock(FirebirdBlobCommandPacket.class);
         when(createPacket.isStreamBlob()).thenReturn(streamBlob);
         FirebirdGenericResponsePacket result = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(createPacket, connectionSession, FirebirdCommandPacketType.CREATE_BLOB)
                 .execute().iterator().next();

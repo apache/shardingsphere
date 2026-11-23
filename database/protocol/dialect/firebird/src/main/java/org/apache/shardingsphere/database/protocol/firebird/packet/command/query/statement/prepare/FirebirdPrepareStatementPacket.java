@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Firebird allocate statement packet.
+ * Firebird prepare statement packet.
  */
 @Getter
 public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket implements SQLReceivedPacket {

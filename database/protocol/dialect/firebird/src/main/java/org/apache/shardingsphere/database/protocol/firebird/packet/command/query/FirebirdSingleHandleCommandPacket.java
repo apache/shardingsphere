@@ -23,7 +23,10 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 /**
  * Firebird single handle command packet.
  *
- * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L533-L549">Firebird xdr_protocol</a>
+ * <p>In Firebird 5.0.4 {@code op_batch_rls} and {@code op_batch_cancel} use {@code P_BATCH_FREE_CANCEL}, which has the same wire layout;
+ * in master they use {@code P_RLSE}.</p>
+ *
+ * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L535-L551">Firebird xdr_protocol</a>
  */
 public final class FirebirdSingleHandleCommandPacket extends FirebirdCommandPacket {
     

@@ -40,7 +40,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCreateAndOpenBlobCommandPacketTest {
+class FirebirdBlobCommandPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
@@ -49,7 +49,7 @@ class FirebirdCreateAndOpenBlobCommandPacketTest {
     void assertCreateBlobPacketWithoutBpb() {
         when(payload.readInt4()).thenReturn(42);
         when(payload.readInt8()).thenReturn(0x0102030405060708L);
-        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB, payload);
+        FirebirdBlobCommandPacket packet = new FirebirdBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB, payload);
         verify(payload).skipReserved(4);
         verify(payload, never()).readBuffer();
         assertThat(packet.getTransactionId(), is(42));
@@ -66,7 +66,7 @@ class FirebirdCreateAndOpenBlobCommandPacketTest {
     void assertOpenBlobPacketWithoutBpb() {
         when(payload.readInt4()).thenReturn(5);
         when(payload.readInt8()).thenReturn(7L);
-        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB, payload);
+        FirebirdBlobCommandPacket packet = new FirebirdBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB, payload);
         verify(payload).skipReserved(4);
         verify(payload, never()).readBuffer();
         assertThat(packet.getTransactionId(), is(5));
@@ -79,7 +79,7 @@ class FirebirdCreateAndOpenBlobCommandPacketTest {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 3, 4, 1, 0, 0, 0}));
         when(payload.readInt4()).thenReturn(7);
         when(payload.readInt8()).thenReturn(11L);
-        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
+        FirebirdBlobCommandPacket packet = new FirebirdBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
         verify(payload).skipReserved(4);
         verify(payload).readBuffer();
         assertThat(packet.getBlobParameterBuffer(), is(new byte[]{1, 3, 4, 1, 0, 0, 0}));
@@ -93,7 +93,7 @@ class FirebirdCreateAndOpenBlobCommandPacketTest {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(new byte[]{4, 5, 6}));
         when(payload.readInt4()).thenReturn(9);
         when(payload.readInt8()).thenReturn(12L);
-        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB2, payload);
+        FirebirdBlobCommandPacket packet = new FirebirdBlobCommandPacket(FirebirdCommandPacketType.OPEN_BLOB2, payload);
         verify(payload).skipReserved(4);
         verify(payload).readBuffer();
         assertThat(packet.getBlobParameterBuffer(), is(new byte[]{4, 5, 6}));
@@ -105,7 +105,7 @@ class FirebirdCreateAndOpenBlobCommandPacketTest {
     @MethodSource("blobParameterBufferCases")
     void assertIsStreamBlob(final String name, final byte[] blobParameterBuffer, final boolean expectedStreamBlob) {
         when(payload.readBuffer()).thenReturn(Unpooled.wrappedBuffer(blobParameterBuffer));
-        FirebirdCreateAndOpenBlobCommandPacket packet = new FirebirdCreateAndOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
+        FirebirdBlobCommandPacket packet = new FirebirdBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB2, payload);
         if (expectedStreamBlob) {
             assertTrue(packet.isStreamBlob());
         } else {
@@ -127,13 +127,13 @@ class FirebirdCreateAndOpenBlobCommandPacketTest {
     
     @Test
     void assertGetLengthWithoutBpb() {
-        assertThat(FirebirdCreateAndOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload), is(16));
+        assertThat(FirebirdBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload), is(16));
     }
     
     @Test
     void assertGetLengthWithBpb() {
         when(payload.getBufferLength(4)).thenReturn(10);
-        assertThat(FirebirdCreateAndOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB2, payload), is(26));
+        assertThat(FirebirdBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB2, payload), is(26));
         verify(payload).getBufferLength(4);
     }
 }

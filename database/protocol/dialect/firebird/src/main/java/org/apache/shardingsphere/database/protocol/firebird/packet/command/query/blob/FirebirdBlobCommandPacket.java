@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
  * Firebird blob command packet.
  */
 @Getter
-public final class FirebirdCreateAndOpenBlobCommandPacket extends FirebirdCommandPacket {
+public final class FirebirdBlobCommandPacket extends FirebirdCommandPacket {
     
     private static final int BLOB_TYPE_STREAM = 1;
     
@@ -43,7 +43,7 @@ public final class FirebirdCreateAndOpenBlobCommandPacket extends FirebirdComman
     
     private final long blobId;
     
-    public FirebirdCreateAndOpenBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
+    public FirebirdBlobCommandPacket(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType || FirebirdCommandPacketType.OPEN_BLOB2 == commandType) {
             ByteBuf buffer = payload.readBuffer();

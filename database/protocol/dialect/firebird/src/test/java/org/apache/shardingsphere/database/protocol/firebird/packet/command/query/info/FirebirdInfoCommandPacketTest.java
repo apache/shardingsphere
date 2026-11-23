@@ -53,6 +53,13 @@ class FirebirdInfoCommandPacketTest {
     }
     
     @Test
+    void assertGetServiceInfoLength() {
+        when(payload.getBufferLength(12)).thenReturn(8);
+        when(payload.getBufferLength(20)).thenReturn(12);
+        assertThat(FirebirdInfoCommandPacket.getServiceInfoLength(payload), is(36));
+    }
+    
+    @Test
     void assertNewInstanceWithDatabaseItems() {
         assertNewInstance(FirebirdCommandPacketType.INFO_DATABASE, FirebirdDatabaseInfoItems.PAGE_SIZE);
     }

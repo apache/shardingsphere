@@ -41,7 +41,7 @@ import java.util.OptionalInt;
  * <p>Firebird defines seek for stream BLOBs only and returns the resulting position in the BLOB id of the response.
  * A position outside the BLOB is not an error, it is limited to the BLOB content.</p>
  *
- * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.3/src/jrd/blb.cpp">Firebird blb::BLB_lseek</a>
+ * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/jrd/blb.cpp">Firebird blb::BLB_lseek</a>
  */
 @RequiredArgsConstructor
 public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {

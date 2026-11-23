@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import java.util.List;
 
 /**
- * Firebird allocate statement packet.
+ * Firebird fetch statement packet.
  */
 @Getter
 public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {

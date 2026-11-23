@@ -34,7 +34,7 @@ import java.util.function.IntFunction;
 /**
  * Firebird info command packet.
  *
- * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L507-L525">Firebird xdr_protocol</a>
+ * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L507-L525">Firebird xdr_protocol</a>
  */
 @Getter
 public final class FirebirdInfoCommandPacket extends FirebirdCommandPacket {
@@ -90,5 +90,18 @@ public final class FirebirdInfoCommandPacket extends FirebirdCommandPacket {
         int length = 12;
         length += payload.getBufferLength(length);
         return length + 4;
+    }
+    
+    /**
+     * Get length of service info packet.
+     *
+     * <p>A service info packet contains an additional received items buffer before the buffer length.</p>
+     *
+     * @param payload Firebird packet payload
+     * @return Length of packet
+     */
+    public static int getServiceInfoLength(final FirebirdPacketPayload payload) {
+        int length = 12 + payload.getBufferLength(12);
+        return length + payload.getBufferLength(length) + 4;
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelAndReleaseCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -35,7 +35,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class FirebirdBatchReleaseCommandExecutor implements CommandExecutor {
     
-    private final FirebirdBatchCancelAndReleaseCommandPacket packet;
+    private final FirebirdSingleHandleCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
@@ -43,10 +43,10 @@ public final class FirebirdBatchReleaseCommandExecutor implements CommandExecuto
     public Collection<DatabasePacket> execute() {
         FirebirdBatchStatementManager batchStatementManager = FirebirdBatchStatementManager.getInstance();
         // TODO restore checkNotNull when FirebirdFrontendEngine stops marking the transaction as failed for InvalidBatchHandleException
-        if (null == batchStatementManager.getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle())) {
-            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidBatchHandleException(packet.getStatementHandle())));
+        if (null == batchStatementManager.getBatchStatement(connectionSession.getConnectionId(), packet.getObjectHandle())) {
+            return Collections.singleton(FirebirdErrorPacketFactory.newInstance(new InvalidBatchHandleException(packet.getObjectHandle())));
         }
-        batchStatementManager.unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        batchStatementManager.unregisterBatchStatement(connectionSession.getConnectionId(), packet.getObjectHandle());
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }
