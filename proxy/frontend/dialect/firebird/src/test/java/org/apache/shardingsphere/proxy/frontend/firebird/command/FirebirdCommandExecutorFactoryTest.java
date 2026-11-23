@@ -59,8 +59,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free.FirebirdFreeStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare.FirebirdPrepareStatementCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitTransactionCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdRollbackTransactionCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitAndRollbackTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdStartTransactionCommandExecutor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -120,8 +119,8 @@ class FirebirdCommandExecutorFactoryTest {
                 Arguments.of("execute_statement", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class, FirebirdExecuteStatementCommandExecutor.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class, FirebirdFetchStatementCommandExecutor.class),
                 Arguments.of("info_s_q_l", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoCommandPacket.class, FirebirdSQLInfoExecutor.class),
-                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class, FirebirdCommitTransactionCommandExecutor.class),
-                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class, FirebirdRollbackTransactionCommandExecutor.class),
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class, FirebirdCommitAndRollbackTransactionCommandExecutor.class),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class, FirebirdCommitAndRollbackTransactionCommandExecutor.class),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class, FirebirdBatchCreateCommandExecutor.class),
                 Arguments.of("batch_message", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchMessageCommandPacket.class, FirebirdBatchMessageCommandExecutor.class),
                 Arguments.of("batch_execute", FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class, FirebirdBatchExecuteCommandExecutor.class),
@@ -133,8 +132,8 @@ class FirebirdCommandExecutorFactoryTest {
     
     private static Stream<Arguments> singleHandleArguments() {
         return Stream.of(
-                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdCommitTransactionCommandExecutor.class),
-                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdRollbackTransactionCommandExecutor.class),
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdCommitAndRollbackTransactionCommandExecutor.class),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdCommitAndRollbackTransactionCommandExecutor.class),
                 Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelAndCloseBlobCommandExecutor.class),
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCancelAndCloseBlobCommandExecutor.class),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementCommandExecutor.class));

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.transact
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -32,21 +33,28 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Firebird rollback statement command executor.
+ * Commit and rollback transaction command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdRollbackTransactionCommandExecutor implements CommandExecutor {
+public final class FirebirdCommitAndRollbackTransactionCommandExecutor implements CommandExecutor {
     
     private final FirebirdSingleHandleCommandPacket packet;
     
     private final ConnectionSession connectionSession;
+    
+    private final FirebirdCommandPacketType commandPacketType;
     
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         int transactionHandle = packet.getObjectHandle();
         validateTransactionHandle(transactionHandle);
         if (!connectionSession.isAutoCommit()) {
-            new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager()).rollback();
+            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager());
+            if (FirebirdCommandPacketType.COMMIT == commandPacketType) {
+                transactionManager.commit();
+            } else {
+                transactionManager.rollback();
+            }
         }
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());

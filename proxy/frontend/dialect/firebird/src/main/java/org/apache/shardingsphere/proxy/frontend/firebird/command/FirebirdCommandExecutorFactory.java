@@ -59,8 +59,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.free.FirebirdFreeStatementCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.prepare.FirebirdPrepareStatementCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitTransactionCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdRollbackTransactionCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdCommitAndRollbackTransactionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdStartTransactionCommandExecutor;
 
 /**
@@ -80,9 +79,8 @@ public final class FirebirdCommandExecutorFactory {
     public static CommandExecutor newInstance(final FirebirdCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) {
         switch (commandPacketType) {
             case COMMIT:
-                return new FirebirdCommitTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
             case ROLLBACK:
-                return new FirebirdRollbackTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
+                return new FirebirdCommitAndRollbackTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
             case CANCEL_BLOB:
             case CLOSE_BLOB:
                 return new FirebirdCancelAndCloseBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
