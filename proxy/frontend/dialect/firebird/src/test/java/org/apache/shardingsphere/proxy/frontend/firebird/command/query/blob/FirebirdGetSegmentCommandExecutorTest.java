@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -56,7 +56,7 @@ class FirebirdGetSegmentCommandExecutorTest {
     private static final int BLOB_HANDLE = 1;
     
     @Mock
-    private FirebirdGetBlobSegmentCommandPacket packet;
+    private FirebirdSegmentCommandPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;

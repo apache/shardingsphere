@@ -26,11 +26,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -93,9 +91,9 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdCreateAndOpenBlobCommandPacket.class),
                 Arguments.of("open_blob", FirebirdCommandPacketType.OPEN_BLOB, FirebirdCreateAndOpenBlobCommandPacket.class),
                 Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, FirebirdCreateAndOpenBlobCommandPacket.class),
-                Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, FirebirdGetBlobSegmentCommandPacket.class),
-                Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdPutBlobSegmentCommandPacket.class),
-                Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdBatchBlobSegmentsCommandPacket.class),
+                Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, FirebirdSegmentCommandPacket.class),
+                Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdSegmentCommandPacket.class),
+                Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdSegmentCommandPacket.class),
                 Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, FirebirdSeekBlobCommandPacket.class),
                 Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdSingleHandleCommandPacket.class),

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -44,6 +44,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -195,9 +196,9 @@ class FirebirdOpenBlobCommandExecutorTest {
         when(createPacket.isStreamBlob()).thenReturn(streamBlob);
         FirebirdGenericResponsePacket result = (FirebirdGenericResponsePacket) new FirebirdOpenBlobCommandExecutor(createPacket, connectionSession, FirebirdCommandPacketType.CREATE_BLOB)
                 .execute().iterator().next();
-        FirebirdPutBlobSegmentCommandPacket putPacket = mock(FirebirdPutBlobSegmentCommandPacket.class);
+        FirebirdSegmentCommandPacket putPacket = mock(FirebirdSegmentCommandPacket.class);
         when(putPacket.getBlobHandle()).thenReturn(result.getHandle());
-        when(putPacket.getSegment()).thenReturn(segment);
+        when(putPacket.getSegments()).thenReturn(Collections.singletonList(segment));
         new FirebirdPutSegmentCommandExecutor(putPacket, connectionSession).execute();
         return result;
     }

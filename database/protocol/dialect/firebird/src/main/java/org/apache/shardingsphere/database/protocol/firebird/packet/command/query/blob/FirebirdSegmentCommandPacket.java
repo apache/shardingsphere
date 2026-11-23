@@ -18,22 +18,23 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
 import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * Firebird batch segments with blob command packet.
- *
- * <p>Similar to Put segment, but allows to send multiple segments.</p>
+ * Firebird segment command packet.
  */
 @Getter
-public final class FirebirdBatchBlobSegmentsCommandPacket extends FirebirdCommandPacket {
+public final class FirebirdSegmentCommandPacket extends FirebirdCommandPacket {
     
     private final int blobHandle;
     
@@ -41,14 +42,24 @@ public final class FirebirdBatchBlobSegmentsCommandPacket extends FirebirdComman
     
     private final Collection<byte[]> segments;
     
-    public FirebirdBatchBlobSegmentsCommandPacket(final FirebirdPacketPayload payload) {
+    public FirebirdSegmentCommandPacket(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         blobHandle = payload.readBlobHandle();
         segmentLength = payload.readInt4();
-        segments = readSegments(payload.readBuffer());
+        segments = parseSegments(payload.readBuffer(), commandPacketType);
     }
     
-    private Collection<byte[]> readSegments(final ByteBuf buffer) {
+    private Collection<byte[]> parseSegments(final ByteBuf buffer, final FirebirdCommandPacketType commandPacketType) {
+        if (FirebirdCommandPacketType.GET_SEGMENT == commandPacketType) {
+            return Collections.emptyList();
+        }
+        if (FirebirdCommandPacketType.PUT_SEGMENT == commandPacketType) {
+            return Collections.singletonList(ByteBufUtil.getBytes(buffer));
+        }
+        return readBatchSegments(buffer);
+    }
+    
+    private Collection<byte[]> readBatchSegments(final ByteBuf buffer) {
         Collection<byte[]> result = new LinkedList<>();
         while (buffer.isReadable()) {
             ShardingSpherePreconditions.checkState(buffer.readableBytes() >= Short.BYTES, () -> new DatabaseProtocolException("Truncated batch BLOB segment length"));

@@ -28,11 +28,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -85,11 +83,9 @@ public final class FirebirdCommandPacketFactory {
             case OPEN_BLOB2:
                 return new FirebirdCreateAndOpenBlobCommandPacket(commandPacketType, payload);
             case GET_SEGMENT:
-                return new FirebirdGetBlobSegmentCommandPacket(payload);
             case PUT_SEGMENT:
-                return new FirebirdPutBlobSegmentCommandPacket(payload);
             case BATCH_SEGMENTS:
-                return new FirebirdBatchBlobSegmentsCommandPacket(payload);
+                return new FirebirdSegmentCommandPacket(commandPacketType, payload);
             case SEEK_BLOB:
                 return new FirebirdSeekBlobCommandPacket(payload);
             case PREPARE_STATEMENT:
@@ -161,11 +157,9 @@ public final class FirebirdCommandPacketFactory {
             case OPEN_BLOB2:
                 return FirebirdCreateAndOpenBlobCommandPacket.getLength(commandPacketType, payload);
             case GET_SEGMENT:
-                return FirebirdGetBlobSegmentCommandPacket.getLength(payload);
             case PUT_SEGMENT:
-                return FirebirdPutBlobSegmentCommandPacket.getLength(payload);
             case BATCH_SEGMENTS:
-                return FirebirdBatchBlobSegmentsCommandPacket.getLength(payload);
+                return FirebirdSegmentCommandPacket.getLength(payload);
             case SEEK_BLOB:
                 return FirebirdSeekBlobCommandPacket.getLength();
             case PREPARE_STATEMENT:

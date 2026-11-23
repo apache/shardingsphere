@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -57,7 +57,7 @@ public final class FirebirdGetSegmentCommandExecutor implements CommandExecutor 
     
     private static final int MAX_SEGMENT_DATA_LENGTH = 0xFFFF;
     
-    private final FirebirdGetBlobSegmentCommandPacket packet;
+    private final FirebirdSegmentCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     

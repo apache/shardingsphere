@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.CannotUpdateOldBlobException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -34,7 +34,9 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -48,7 +50,7 @@ class FirebirdPutSegmentCommandExecutorTest {
     private static final int CONNECTION_ID = 1;
     
     @Mock
-    private FirebirdPutBlobSegmentCommandPacket packet;
+    private FirebirdSegmentCommandPacket packet;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -75,7 +77,7 @@ class FirebirdPutSegmentCommandExecutorTest {
         byte[] segment = new byte[]{1, 2};
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(blobHandle);
-        when(packet.getSegment()).thenReturn(segment);
+        when(packet.getSegments()).thenReturn(Collections.singletonList(segment));
         FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
@@ -87,13 +89,29 @@ class FirebirdPutSegmentCommandExecutorTest {
     }
     
     @Test
+    void assertExecuteWithBatchSegments() {
+        int blobHandle = 4;
+        long blobId = 12L;
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        when(packet.getBlobHandle()).thenReturn(blobHandle);
+        when(packet.getSegments()).thenReturn(Arrays.asList(new byte[]{1, 2}, new byte[]{3, 4, 5}));
+        FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getId(), is(blobId));
+        assertThat(FirebirdBlobWriteCache.getInstance().getBlobData(CONNECTION_ID, blobId).orElse(new byte[0]).length, is(5));
+    }
+    
+    @Test
     void assertExecuteWithDeferredPlaceholderHandle() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 21L;
         byte[] segment = new byte[]{1, 2, 3};
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getBlobHandle()).thenReturn(0xFFFF);
-        when(packet.getSegment()).thenReturn(segment);
+        when(packet.getSegments()).thenReturn(Collections.singletonList(segment));
         FirebirdPutSegmentCommandExecutor executor = new FirebirdPutSegmentCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));

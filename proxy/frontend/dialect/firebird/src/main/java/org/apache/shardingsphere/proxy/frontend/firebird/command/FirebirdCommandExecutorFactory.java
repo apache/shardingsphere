@@ -25,11 +25,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateAndOpenBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
@@ -46,7 +44,6 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.Fir
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchMessageCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchReleaseCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchSyncCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBatchBlobSegmentsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdEndBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdOpenBlobCommandExecutor;
@@ -101,11 +98,10 @@ public final class FirebirdCommandExecutorFactory {
             case OPEN_BLOB2:
                 return new FirebirdOpenBlobCommandExecutor((FirebirdCreateAndOpenBlobCommandPacket) commandPacket, connectionSession, commandPacketType);
             case GET_SEGMENT:
-                return new FirebirdGetSegmentCommandExecutor((FirebirdGetBlobSegmentCommandPacket) commandPacket, connectionSession);
+                return new FirebirdGetSegmentCommandExecutor((FirebirdSegmentCommandPacket) commandPacket, connectionSession);
             case PUT_SEGMENT:
-                return new FirebirdPutSegmentCommandExecutor((FirebirdPutBlobSegmentCommandPacket) commandPacket, connectionSession);
             case BATCH_SEGMENTS:
-                return new FirebirdBatchBlobSegmentsCommandExecutor((FirebirdBatchBlobSegmentsCommandPacket) commandPacket, connectionSession);
+                return new FirebirdPutSegmentCommandExecutor((FirebirdSegmentCommandPacket) commandPacket, connectionSession);
             case SEEK_BLOB:
                 return new FirebirdSeekBlobCommandExecutor((FirebirdSeekBlobCommandPacket) commandPacket, connectionSession);
             case PREPARE_STATEMENT:
