@@ -34,8 +34,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public abstract class AbstractSQLBuilder implements SQLBuilder {
     
-    private static final String TABLE_KEYWORD = "TABLE";
-    
     private final String sql;
     
     private final List<SQLToken> sqlTokens;
@@ -51,7 +49,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         Optional<SQLToken> previousToken = Optional.empty();
         for (int i = 0; i < sqlTokens.size(); i++) {
             SQLToken each = sqlTokens.get(i);
-            boolean tableShorthand = isTableShorthandToken(each);
+            boolean tableShorthand = each instanceof SubstitutableColumnNameToken && ((SubstitutableColumnNameToken) each).isTableShorthand();
             int previousStopIndex = previousToken.map(SQLToken::getStopIndex).orElse(tableShorthand ? -1 : 0);
             if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousStopIndex) {
                 appendRewriteSQL(each, result, i, tableShorthand);
@@ -59,12 +57,6 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
             }
         }
         return result.toString();
-    }
-    
-    private boolean isTableShorthandToken(final SQLToken token) {
-        return token instanceof SubstitutableColumnNameToken && token.getStopIndex() - token.getStartIndex() + 1 == TABLE_KEYWORD.length()
-                && "PostgreSQL".equals(((SubstitutableColumnNameToken) token).getDatabaseType().getType())
-                && sql.regionMatches(true, token.getStartIndex(), TABLE_KEYWORD, 0, TABLE_KEYWORD.length());
     }
     
     private boolean isContainsAttachableToken(final SQLToken sqlToken, final SQLToken previousToken) {

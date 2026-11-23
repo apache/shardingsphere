@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.ReturningSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.assign.AssignmentSegmentBinder;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -69,11 +71,14 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         Collection<InsertValuesSegment> boundValues = bindInsertValues(sqlStatement, binderContext, tableBinderContexts, outerTableBinderContexts);
         SubquerySegment boundInsertSelect = sqlStatement.getInsertSelect().map(optional -> SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> conflictOuterTableBinderContexts = sqlStatement.getOnDuplicateKeyColumns().isPresent()
-                ? createOnConflictOuterContexts(sqlStatement, tableBinderContexts, outerTableBinderContexts)
+        Optional<String> proposedRowAlias = sqlStatement.getOnDuplicateKeyColumns().isPresent()
+                ? new DatabaseTypeRegistry(sqlStatement.getDatabaseType()).getDialectDatabaseMetaData().getSQLOption().getInsertConflictProposedRowAlias()
+                : Optional.empty();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> conflictOuterTableBinderContexts = proposedRowAlias.isPresent() && sqlStatement.getTable().isPresent()
+                ? createOnConflictOuterContexts(sqlStatement.getTable().get(), proposedRowAlias.get(), tableBinderContexts, outerTableBinderContexts)
                 : outerTableBinderContexts;
         OnDuplicateKeyColumnsSegment boundOnDuplicateKeyColumns = sqlStatement.getOnDuplicateKeyColumns()
-                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, conflictOuterTableBinderContexts)).orElse(null);
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, conflictOuterTableBinderContexts, proposedRowAlias.isPresent())).orElse(null);
         ReturningSegment boundReturning = sqlStatement.getReturning()
                 .map(optional -> ReturningSegmentBinder.bind(optional, binderContext, boundTable, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         InsertStatement result = InsertStatement.builder().databaseType(sqlStatement.getDatabaseType()).table(boundTable).insertColumns(boundInsertColumns)
@@ -109,16 +114,12 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
         return result;
     }
     
-    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createOnConflictOuterContexts(final InsertStatement statement,
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createOnConflictOuterContexts(final SimpleTableSegment table, final String proposedRowAlias,
                                                                                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        if (!"PostgreSQL".equals(statement.getDatabaseType().getType()) || !statement.getTable().isPresent()) {
-            return outerTableBinderContexts;
-        }
-        SimpleTableSegment table = statement.getTable().get();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create(outerTableBinderContexts);
         String targetName = table.getAliasName().orElseGet(() -> table.getTableName().getIdentifier().getValue());
-        result.replaceValues(CaseInsensitiveString.of("excluded"), tableBinderContexts.get(CaseInsensitiveString.of(targetName)));
+        result.replaceValues(CaseInsensitiveString.of(proposedRowAlias), tableBinderContexts.get(CaseInsensitiveString.of(targetName)));
         return result;
     }
     

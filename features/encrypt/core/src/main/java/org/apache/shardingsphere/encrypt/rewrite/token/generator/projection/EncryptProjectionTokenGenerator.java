@@ -183,7 +183,7 @@ public final class EncryptProjectionTokenGenerator {
                 ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) each;
                 Collection<Projection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns();
                 if (!actualColumns.isEmpty()) {
-                    result.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext.getSqlStatement().getDatabaseType(), selectStatementContext.getSubqueryType()));
+                    result.add(generateSQLToken(shorthandSegment, actualColumns, selectStatementContext));
                 }
             }
         }
@@ -205,8 +205,9 @@ public final class EncryptProjectionTokenGenerator {
         return Optional.empty();
     }
     
-    private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<Projection> actualColumns,
-                                                          final DatabaseType databaseType, final SubqueryType subqueryType) {
+    private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<Projection> actualColumns, final SelectStatementContext selectStatementContext) {
+        DatabaseType databaseType = selectStatementContext.getSqlStatement().getDatabaseType();
+        SubqueryType subqueryType = selectStatementContext.getSubqueryType();
         Collection<Projection> projections = new LinkedList<>();
         for (Projection each : actualColumns) {
             if (each instanceof ColumnProjection) {
@@ -223,7 +224,7 @@ public final class EncryptProjectionTokenGenerator {
         }
         int startIndex = segment.getOwner().isPresent() ? Math.min(segment.getStartIndex(), segment.getOwner().get().getStartIndex()) : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
-        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, databaseType);
+        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, databaseType, selectStatementContext.getSqlStatement().getProjections().isTableShorthand());
     }
     
     private int getStartIndex(final ColumnProjectionSegment columnSegment) {

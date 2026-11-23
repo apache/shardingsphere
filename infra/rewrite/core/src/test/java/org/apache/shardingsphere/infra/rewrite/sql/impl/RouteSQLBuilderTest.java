@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.RouteUnitAwareSQLTokenFixture;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
@@ -53,11 +52,9 @@ class RouteSQLBuilderTest {
     }
     
     @Test
-    void assertToSQLWithPostgreSQLTableShorthand() {
-        DatabaseType databaseType = mock(DatabaseType.class);
-        when(databaseType.getType()).thenReturn("PostgreSQL");
+    void assertToSQLWithTableShorthand() {
         SubstitutableColumnNameToken token = mock(SubstitutableColumnNameToken.class);
-        when(token.getDatabaseType()).thenReturn(databaseType);
+        when(token.isTableShorthand()).thenReturn(true);
         when(token.getStopIndex()).thenReturn(4);
         RouteUnit routeUnit = createRouteUnit();
         when(token.toString(routeUnit)).thenReturn("foo_column");

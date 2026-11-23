@@ -22,6 +22,11 @@
         <output sql="SELECT t_account_bak.`account_id`, t_account_bak.`cipher_certificate_number` AS `certificate_number`, t_account_bak.`cipher_password` AS `password`, t_account_bak.`cipher_amount` AS `amount` FROM t_account_bak" />
     </rewrite-assertion>
     
+    <rewrite-assertion id="select_with_table_shorthand_for_cipher" db-types="PostgreSQL">
+        <input sql="TABLE t_account_bak" />
+        <output sql="SELECT t_account_bak.&quot;account_id&quot;, t_account_bak.&quot;cipher_certificate_number&quot; AS &quot;certificate_number&quot;, t_account_bak.&quot;cipher_password&quot; AS &quot;password&quot;, t_account_bak.&quot;cipher_amount&quot; AS &quot;amount&quot; FROM t_account_bak" />
+    </rewrite-assertion>
+    
     <rewrite-assertion id="select_with_qualified_shorthand_for_cipher" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account_bak a" />
         <output sql="SELECT a.`account_id`, a.`cipher_certificate_number` AS `certificate_number`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_bak a" />

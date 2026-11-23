@@ -55,12 +55,20 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     @Getter
     private final DatabaseType databaseType;
     
+    @Getter
+    private final boolean tableShorthand;
+    
     public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final DatabaseType databaseType) {
+        this(startIndex, stopIndex, projections, databaseType, false);
+    }
+    
+    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<Projection> projections, final DatabaseType databaseType, final boolean tableShorthand) {
         super(startIndex);
         this.stopIndex = stopIndex;
         quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
         this.projections = projections;
         this.databaseType = databaseType;
+        this.tableShorthand = tableShorthand;
     }
     
     @Override

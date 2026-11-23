@@ -439,6 +439,7 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
         SimpleTableSegment actualFrom = (SimpleTableSegment) actual.getFrom().get();
         assertThat(actualFrom.getTableName().getIdentifier().getValue(), is("foo_table"));
+        assertTrue(actual.getProjections().isTableShorthand());
         ShorthandProjectionSegment actualProjection = (ShorthandProjectionSegment) actual.getProjections().getProjections().iterator().next();
         assertThat(actualProjection.getStartIndex(), is(0));
         assertThat(actualProjection.getStopIndex(), is(4));
