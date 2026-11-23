@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -220,6 +221,70 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_interval_test"));
     }
     
+    @Test
+    void assertRouteWithAsymmetricActualDataNodesToFirstDataSource() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("sbtest1",
+                ShardingRouteEngineFixtureBuilder.createAsymmetricShardingConditions("sbtest1", Collections.singleton(1L)),
+                mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createAsymmetricShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeUnits.size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("sbtest1_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("sbtest1"));
+    }
+
+    @Test
+    void assertRouteWithAsymmetricActualDataNodesToSecondDataSource() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("sbtest1",
+                ShardingRouteEngineFixtureBuilder.createAsymmetricShardingConditions("sbtest1", Collections.singleton(1000L)),
+                mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createAsymmetricShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeUnits.size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("sbtest1_8"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("sbtest1"));
+    }
+
+    @Test
+    void assertRouteWithAsymmetricActualDataNodesToMultipleDataSources() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("sbtest1",
+                ShardingRouteEngineFixtureBuilder.createAsymmetricShardingConditions("sbtest1", Arrays.asList(1L, 1000L, 5000L, 10000L)),
+                mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createAsymmetricShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeUnits.size(), is(3));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("sbtest1_1"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("sbtest1_0"));
+        assertThat(routeUnits.get(2).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(2).getTableMappers().iterator().next().getActualName(), is("sbtest1_8"));
+    }
+
+    @Test
+    void assertRouteWithAsymmetricActualDataNodesWithoutCondition() {
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("sbtest1",
+                new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)),
+                mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = routeEngine.route(ShardingRouteEngineFixtureBuilder.createAsymmetricShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeUnits.size(), is(16));
+        for (int i = 0; i < 8; i++) {
+            assertThat(routeUnits.get(i).getDataSourceMapper().getActualName(), is("ds_0"));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getActualName(), is("sbtest1_" + i));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getLogicName(), is("sbtest1"));
+        }
+        for (int i = 8; i < 16; i++) {
+            assertThat(routeUnits.get(i).getDataSourceMapper().getActualName(), is("ds_1"));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getActualName(), is("sbtest1_" + i));
+            assertThat(routeUnits.get(i).getTableMappers().iterator().next().getLogicName(), is("sbtest1"));
+        }
+    }
+
     private ShardingStandardRouteEngine createShardingStandardRouteEngine(final String logicTableName, final ShardingConditions shardingConditions,
                                                                           final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         return new ShardingStandardRouteEngine(logicTableName, shardingConditions, sqlStatementContext, hintValueContext, new ConfigurationProperties(new Properties()));

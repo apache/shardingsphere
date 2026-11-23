@@ -113,6 +113,22 @@ public final class ShardingRouteEngineFixtureBuilder {
     }
     
     /**
+     * Create asymmetric sharding rule.
+     *
+     * @return created sharding rule
+     */
+    public static ShardingRule createAsymmetricShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.getTables().add(createTableRuleConfiguration("sbtest1", "ds_0.sbtest1_${0..7},ds_1.sbtest1_${8..15}",
+                new StandardShardingStrategyConfiguration("id", "db_mod"), new StandardShardingStrategyConfiguration("id", "tbl_mod16")));
+        shardingRuleConfig.getShardingAlgorithms().put("db_mod", new AlgorithmConfiguration("INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "ds_${id % 16 >> 3}"))));
+        shardingRuleConfig.getShardingAlgorithms().put("tbl_mod16", new AlgorithmConfiguration("INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", "sbtest1_${id % 16}"), new Property("allow-range-query-with-inline-sharding", "true"))));
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+    }
+
+    /**
      * Create binding sharding rule.
      *
      * @return created sharding rule
@@ -298,7 +314,23 @@ public final class ShardingRouteEngineFixtureBuilder {
         result.add(shardingCondition);
         return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
-    
+
+    /**
+     * Create asymmetric sharding conditions.
+     *
+     * @param tableName table name
+     * @param values sharding values
+     * @return created sharding conditions
+     */
+    public static ShardingConditions createAsymmetricShardingConditions(final String tableName, final Collection<Comparable<?>> values) {
+        List<ShardingCondition> result = new LinkedList<>();
+        ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("id", tableName, values);
+        ShardingCondition shardingCondition = new ShardingCondition();
+        shardingCondition.getValues().add(shardingConditionValue);
+        result.add(shardingCondition);
+        return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
+    }
+
     private static Map<String, DataSource> createDataSources() {
         return ImmutableMap.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource());
     }
