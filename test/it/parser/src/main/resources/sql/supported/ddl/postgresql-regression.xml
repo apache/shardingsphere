@@ -117,4 +117,5 @@
     <sql-case id="cluster_index_on_table_postgresql" value="CLUSTER foo_idx ON foo" db-types="PostgreSQL" />
     <sql-case id="drop_database_force_postgresql" value="DROP DATABASE foo_db WITH (FORCE)" db-types="PostgreSQL" />
     <sql-case id="drop_database_force_without_with_postgresql" value="DROP DATABASE foo_db (FORCE)" db-types="PostgreSQL" />
+    <sql-case id="declare_asensitive_cursor_postgresql" value="DECLARE foo_cursor ASENSITIVE CURSOR FOR SELECT id FROM foo" db-types="PostgreSQL" />
 </sql-cases>

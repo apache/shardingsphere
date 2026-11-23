@@ -453,4 +453,16 @@
     <drop-database sql-case-id="drop_database_force_postgresql" force="true" />
 
     <drop-database sql-case-id="drop_database_force_without_with_postgresql" force="true" />
+
+    <cursor sql-case-id="declare_asensitive_cursor_postgresql">
+        <cursor-name name="foo_cursor" start-index="8" stop-index="17" />
+        <select>
+            <from>
+                <simple-table name="foo" start-index="56" stop-index="58" />
+            </from>
+            <projections start-index="48" stop-index="49">
+                <column-projection name="id" start-index="48" stop-index="49" />
+            </projections>
+        </select>
+    </cursor>
 </sql-parser-test-cases>
