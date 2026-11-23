@@ -68,6 +68,9 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
     }
     
     private Object getValue(final TypedPropertyKey propertyKey, final String value) {
+        if (isBooleanType(propertyKey.getType())) {
+            return parseBooleanValue(value);
+        }
         try {
             Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
             checkProxyMetaDataCollectorCron(propertyKey, value);
@@ -78,6 +81,18 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         } catch (final TypedPropertyValueException ignored) {
             throw new InvalidVariableValueException(value);
         }
+    }
+    
+    private boolean isBooleanType(final Class<?> propertyType) {
+        return boolean.class == propertyType || Boolean.class == propertyType;
+    }
+    
+    private boolean parseBooleanValue(final String value) {
+        if ("1".equals(value) || "true".equalsIgnoreCase(value)) {
+            return true;
+        }
+        ShardingSpherePreconditions.checkState("0".equals(value) || "false".equalsIgnoreCase(value), () -> new InvalidVariableValueException(value));
+        return false;
     }
     
     private void checkProxyMetaDataCollectorCron(final TypedPropertyKey propertyKey, final String value) {

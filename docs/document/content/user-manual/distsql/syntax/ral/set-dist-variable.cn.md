@@ -34,6 +34,8 @@ variableValue ::=
 
 - `agent_plugins_enabled` 用于设置 `agent` 插件的启用状态，默认值为 `TRUE`
 
+- 布尔类型属性支持 `TRUE`、`FALSE`、`1`、`0`（大小写不敏感），其他取值将被拒绝
+
 ### 示例
 
 - 设置 ShardingSphere 属性配置
