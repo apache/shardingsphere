@@ -65,7 +65,7 @@ class ColumnReviseEngineTest {
         assertFalse(revisedColumn.isVisible());
         assertFalse(revisedColumn.isUnsigned());
         assertFalse(revisedColumn.isNullable());
-        assertFalse(revisedColumn.isMysqlDatetime());
+        assertFalse(revisedColumn.isDatetime());
     }
     
     @Test
@@ -77,6 +77,6 @@ class ColumnReviseEngineTest {
         Collection<ColumnMetaData> actual = new ColumnReviseEngine<>(rule, reviseEntry).revise("foo_tbl", Collections.singleton(columnMetaData));
         ColumnMetaData actualColumn = actual.iterator().next();
         assertThat(actualColumn.getName(), is("bar_col"));
-        assertTrue(actualColumn.isMysqlDatetime());
+        assertTrue(actualColumn.isDatetime());
     }
 }

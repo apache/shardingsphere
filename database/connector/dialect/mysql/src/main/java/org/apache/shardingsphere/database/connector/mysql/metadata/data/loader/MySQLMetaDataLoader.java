@@ -95,7 +95,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         Collection<ColumnMetaData> result = new LinkedList<>();
         for (ColumnMetaData each : columnMetaDataList) {
             result.add(new ColumnMetaData(each.getName(), each.getDataType(), primaryKeyColumns.contains(each.getName()), each.isGenerated(), each.isCaseSensitive(), each.isVisible(),
-                    each.isUnsigned(), each.isNullable(), each.isMysqlDatetime()));
+                    each.isUnsigned(), each.isNullable(), each.isDatetime()));
         }
         return result;
     }

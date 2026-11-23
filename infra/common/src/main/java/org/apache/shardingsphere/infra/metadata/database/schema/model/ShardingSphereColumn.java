@@ -46,7 +46,7 @@ public final class ShardingSphereColumn {
     
     private final boolean nullable;
     
-    private final boolean mysqlDatetime;
+    private final boolean datetime;
     
     public ShardingSphereColumn(final String name, final int dataType, final boolean primaryKey, final boolean generated, final boolean caseSensitive, final boolean visible, final boolean unsigned,
                                 final boolean nullable) {
@@ -55,6 +55,6 @@ public final class ShardingSphereColumn {
     
     public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
         this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible(),
-                columnMetaData.isUnsigned(), columnMetaData.isNullable(), columnMetaData.isMysqlDatetime());
+                columnMetaData.isUnsigned(), columnMetaData.isNullable(), columnMetaData.isDatetime());
     }
 }

@@ -37,8 +37,8 @@ public final class YamlColumnSwapper implements YamlConfigurationSwapper<YamlSha
         result.setVisible(data.isVisible());
         result.setUnsigned(data.isUnsigned());
         result.setNullable(data.isNullable());
-        if (data.isMysqlDatetime()) {
-            result.setMysqlDatetime(Boolean.TRUE);
+        if (data.isDatetime()) {
+            result.setDatetime(Boolean.TRUE);
         }
         return result;
     }
@@ -46,6 +46,6 @@ public final class YamlColumnSwapper implements YamlConfigurationSwapper<YamlSha
     @Override
     public ShardingSphereColumn swapToObject(final YamlShardingSphereColumn yamlConfig) {
         return new ShardingSphereColumn(yamlConfig.getName(), yamlConfig.getDataType(), yamlConfig.isPrimaryKey(), yamlConfig.isGenerated(), yamlConfig.isCaseSensitive(), yamlConfig.isVisible(),
-                yamlConfig.isUnsigned(), yamlConfig.isNullable(), Boolean.TRUE.equals(yamlConfig.getMysqlDatetime()));
+                yamlConfig.isUnsigned(), yamlConfig.isNullable(), Boolean.TRUE.equals(yamlConfig.getDatetime()));
     }
 }

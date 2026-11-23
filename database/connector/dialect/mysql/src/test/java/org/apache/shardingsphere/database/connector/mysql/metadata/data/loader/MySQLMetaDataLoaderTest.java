@@ -133,7 +133,7 @@ class MySQLMetaDataLoaderTest {
         Collection<ColumnMetaData> actualColumns = actual.iterator().next().getTables().iterator().next().getColumns();
         assertThat(actualColumns.size(), is(11));
         for (ColumnMetaData each : actualColumns) {
-            assertFalse(each.isMysqlDatetime());
+            assertFalse(each.isDatetime());
         }
     }
     
@@ -258,10 +258,10 @@ class MySQLMetaDataLoaderTest {
         assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("mpt", Types.BINARY, false, false, false, true, false, true));
         ColumnMetaData actualDatetimeColumn = columnsIterator.next();
         assertThat(actualDatetimeColumn.getDataType(), is(Types.TIMESTAMP));
-        assertTrue(actualDatetimeColumn.isMysqlDatetime());
+        assertTrue(actualDatetimeColumn.isDatetime());
         ColumnMetaData actualTimestampColumn = columnsIterator.next();
         assertThat(actualTimestampColumn.getDataType(), is(Types.TIMESTAMP));
-        assertFalse(actualTimestampColumn.isMysqlDatetime());
+        assertFalse(actualTimestampColumn.isDatetime());
         assertIndexMetaData(actualTableMetaData.getIndexes(), expectedCompositeIndexExists);
         assertConstraintMetaData(actualTableMetaData.getConstraints(), expectedConstraintExists);
     }

@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
@@ -82,16 +83,17 @@ public final class ColumnMetaDataLoader {
                 }
             }
         }
-        String emptyResultSQL = generateEmptyResultSQL(tableNamePattern, columnNames, databaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        String emptyResultSQL = generateEmptyResultSQL(tableNamePattern, columnNames, dialectDatabaseMetaData);
         try (
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(emptyResultSQL)) {
-            boolean mysql = "MySQL".equals(databaseType.getType());
+            DialectDataTypeOption dataTypeOption = dialectDatabaseMetaData.getDataTypeOption();
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
                 caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                boolean mysqlDatetime = mysql && "DATETIME".equalsIgnoreCase(resultSet.getMetaData().getColumnTypeName(i + 1));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i), mysqlDatetime));
+                boolean datetime = dataTypeOption.isDatetimeDataType(columnTypes.get(i), resultSet.getMetaData().getColumnTypeName(i + 1), databaseType);
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false, nullableFlags.get(i), datetime));
             }
         } catch (final SQLException ex) {
             log.error("Error occurred while loading column meta data, SQL: {}", emptyResultSQL, ex);
@@ -100,8 +102,7 @@ public final class ColumnMetaDataLoader {
         return result;
     }
     
-    private static String generateEmptyResultSQL(final String table, final List<String> columnNames, final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+    private static String generateEmptyResultSQL(final String table, final List<String> columnNames, final DialectDatabaseMetaData dialectDatabaseMetaData) {
         String wrappedColumnNames = columnNames.stream().map(each -> dialectDatabaseMetaData.getQuoteCharacter().wrap(each)).collect(Collectors.joining(","));
         return String.format("SELECT %s FROM %s WHERE 1 != 1", wrappedColumnNames, dialectDatabaseMetaData.getQuoteCharacter().wrap(table));
     }

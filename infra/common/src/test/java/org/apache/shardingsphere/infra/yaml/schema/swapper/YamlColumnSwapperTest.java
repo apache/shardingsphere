@@ -52,16 +52,16 @@ class YamlColumnSwapperTest {
         assertTrue(actual.isVisible());
         assertFalse(actual.isUnsigned());
         assertFalse(actual.isNullable());
-        assertNull(actual.getMysqlDatetime());
-        assertFalse(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).containsKey("mysqlDatetime"));
+        assertNull(actual.getDatetime());
+        assertFalse(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).containsKey("datetime"));
     }
     
     @Test
     void assertSwapToYamlConfigurationWithDatetime() {
         ColumnMetaData columnMetaData = new ColumnMetaData("foo_col", Types.TIMESTAMP, false, false, false, true, false, true, true);
         YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(new ShardingSphereColumn(columnMetaData));
-        assertTrue(actual.getMysqlDatetime());
-        assertTrue(Boolean.TRUE.equals(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).get("mysqlDatetime")));
+        assertTrue(actual.getDatetime());
+        assertTrue(Boolean.TRUE.equals(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).get("datetime")));
     }
     
     @Test
@@ -84,20 +84,20 @@ class YamlColumnSwapperTest {
         assertFalse(actual.isVisible());
         assertTrue(actual.isUnsigned());
         assertTrue(actual.isNullable());
-        assertFalse(actual.isMysqlDatetime());
+        assertFalse(actual.isDatetime());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("datetimeMetadataArguments")
-    void assertSwapToObjectWithDatetimeMetadata(final String name, final String yaml, final boolean expectedMysqlDatetime) {
+    void assertSwapToObjectWithDatetimeMetadata(final String name, final String yaml, final boolean expectedDatetime) {
         ShardingSphereColumn actual = swapper.swapToObject(YamlEngine.unmarshal(yaml, YamlShardingSphereColumn.class));
-        assertTrue(actual.isMysqlDatetime() == expectedMysqlDatetime);
+        assertTrue(actual.isDatetime() == expectedDatetime);
     }
     
     private static Stream<Arguments> datetimeMetadataArguments() {
         return Stream.of(
-                Arguments.of("DATETIME", "name: foo_col\ndataType: 93\nmysqlDatetime: true\n", true),
-                Arguments.of("explicit false", "name: foo_col\ndataType: 93\nmysqlDatetime: false\n", false),
+                Arguments.of("DATETIME", "name: foo_col\ndataType: 93\ndatetime: true\n", true),
+                Arguments.of("explicit false", "name: foo_col\ndataType: 93\ndatetime: false\n", false),
                 Arguments.of("legacy metadata", "name: foo_col\ndataType: 93\n", false));
     }
 }

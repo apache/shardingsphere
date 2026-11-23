@@ -19,7 +19,9 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.loader.t
 
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -31,9 +33,6 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,11 +44,11 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,13 +105,17 @@ class ColumnMetaDataLoaderTest {
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.isPrimaryKey(), is(primaryKey));
         assertThat(actual.isCaseSensitive(), is(caseSensitive));
+        assertFalse(actual.isDatetime());
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("datetimeArguments")
-    void assertLoadDatetime(final String name, final String storageType, final String columnTypeName, final boolean expectedMysqlDatetime) throws SQLException {
-        DatabaseType sourceType = mock(DatabaseType.class);
-        when(sourceType.getType()).thenReturn(storageType);
+    @Test
+    void assertLoadWithDatetime() throws SQLException {
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        DialectDataTypeOption dataTypeOption = mock(DialectDataTypeOption.class);
+        when(DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+        when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(QuoteCharacter.QUOTE);
+        when(dialectDatabaseMetaData.getDataTypeOption()).thenReturn(dataTypeOption);
+        when(dataTypeOption.isDatetimeDataType(Types.TIMESTAMP, "foo_type", databaseType)).thenReturn(true);
         when(columnResultSet.next()).thenReturn(true, false);
         when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
         when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
@@ -120,22 +123,12 @@ class ColumnMetaDataLoaderTest {
         ResultSet queryResultSet = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
         when(queryResultSet.getMetaData()).thenReturn(resultSetMetaData);
-        if ("MySQL".equals(storageType)) {
-            when(resultSetMetaData.getColumnTypeName(1)).thenReturn(columnTypeName);
-        }
+        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("foo_type");
         when(connection.createStatement().executeQuery(anyString())).thenReturn(queryResultSet);
-        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", sourceType);
+        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", databaseType);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getDataType(), is(Types.TIMESTAMP));
-        assertTrue(actual.iterator().next().isMysqlDatetime() == expectedMysqlDatetime);
-    }
-    
-    private static Stream<Arguments> datetimeArguments() {
-        return Stream.of(
-                Arguments.of("MySQL DATETIME", "MySQL", "DATETIME", true),
-                Arguments.of("MySQL TIMESTAMP", "MySQL", "TIMESTAMP", false),
-                Arguments.of("other storage DATETIME", "SQLServer", "DATETIME", false),
-                Arguments.of("missing type name", "MySQL", null, false));
+        assertTrue(actual.iterator().next().isDatetime());
     }
     
     @Test
