@@ -12,6 +12,8 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 
 ### Meta data
 
+For error `10025`, `HY000` is the internal SQLState exposed by ShardingSphere-JDBC and the MySQL protocol. PostgreSQL and openGauss map this error to SQLState `58000` and preserve the re-preparation message.
+
 | Vendor Code | SQL State | Reason                                                                              |
 |-------------|-----------|-------------------------------------------------------------------------------------|
 | 10000       | 42S02     | Database is required.                                                               |
@@ -30,6 +32,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 10016       | HY000     | Cluster repository persist error.                                                   |
 | 10023       | HY000     | Identifier '%s' is ambiguous, matched actual identifiers: %s.                       |
 | 10024       | HY000     | Can not resolve prepared statement metadata because %s.                             |
+| 10025       | HY000     | Table metadata changed; prepare the statement again.                                |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |

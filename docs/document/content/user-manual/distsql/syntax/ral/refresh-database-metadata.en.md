@@ -1,5 +1,5 @@
 +++
-title = "REFRESH DATABASE METADATA FROM GOVERNANCE CENTER"
+title = "REFRESH DATABASE METADATA"
 weight = 10
 aliases = ["/user-manual/shardingsphere-proxy/distsql/syntax/ral/refresh-database-metadata/"]
 +++
@@ -29,7 +29,13 @@ databaseName ::=
 
 - When `databaseName` is not specified, the default is to refresh all database metadata.
 
-- When using `FORCE` to refresh metadata, the latest metadata will be obtained locally and written to the governance center. If without `FORCE`, it will be pulled from the governance center.
+- Refresh loads the latest physical table metadata and validates all related tables before publishing it, regardless of `check-table-metadata-enabled`.
+  Inconsistent structures or partially missing physical tables cause the refresh to fail before publication.
+  The optional `FORCE` keyword does not change this behavior.
+
+- After each node applies a table structure change or removal, statements prepared against that table must be prepared again; otherwise new executions fail with `Table metadata changed; prepare the statement again.`.
+  ShardingSphere-JDBC and the MySQL protocol expose error `10025` (`HY000`); PostgreSQL and openGauss use SQLState `58000` through the existing protocol mapping.
+  Unchanged or unrelated tables keep their existing bindings, and result sets already created remain readable.
 
 ### Example
 

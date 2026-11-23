@@ -27,7 +27,11 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -46,6 +50,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedConstruction;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,6 +61,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -96,7 +102,7 @@ class StorageUnitManagerTest {
             createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
-        verify(metaDataContexts.getMetaData()).putDatabase(any(ShardingSphereDatabase.class));
+        verify(reloadMetaDataContexts.getMetaData()).putDatabase(any(ShardingSphereDatabase.class));
         verifyClosableRuleInvoked(metaDataContexts);
     }
     
@@ -227,5 +233,43 @@ class StorageUnitManagerTest {
     @SneakyThrows(Exception.class)
     private void verifyClosableRuleInvoked(final MetaDataContexts metaDataContexts) {
         verify((AutoCloseable) metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData().getRules().iterator().next()).close();
+    }
+    
+    @Test
+    void assertRegisterWithViewLoadingFailure() {
+        ShardingSphereTable previousTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereMetaData previousMetaData = createBindingMetaData(previousTable);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(previousMetaData, new ShardingSphereStatistics());
+        ShardingSphereTable changedTable = new ShardingSphereTable("foo_tbl",
+                Collections.singleton(new ShardingSphereColumn("foo_col", Types.INTEGER, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
+        MetaDataContexts candidate = new MetaDataContexts(createBindingMetaData(changedTable), new ShardingSphereStatistics());
+        ResourceSwitchManager resourceSwitchManager = mock(ResourceSwitchManager.class);
+        MockedDataSource newDataSource = new MockedDataSource();
+        MockedDataSource staleDataSource = new MockedDataSource();
+        SwitchingResource switchingResource = new SwitchingResource(Collections.singletonMap(new StorageNode("new_ds"), newDataSource),
+                Collections.singletonMap(new StorageNode("stale_ds"), staleDataSource), Collections.emptyList(), Collections.emptyMap());
+        when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
+        MetaDataPersistFacade persistFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        IllegalStateException expectedException = new IllegalStateException("view load failed");
+        when(persistFacade.getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema")).thenThrow(expectedException);
+        StorageUnitManager manager = new StorageUnitManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), resourceSwitchManager, persistFacade);
+        try (
+                MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, switchingResource, metaDataContexts)).thenReturn(candidate))) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.register(DATABASE_NAME, Collections.emptyMap())), sameInstance(expectedException));
+        }
+        assertThat(metaDataContexts.getMetaData(), sameInstance(previousMetaData));
+        assertFalse(previousTable.isBindingInvalidated());
+        Awaitility.await().pollDelay(10L, TimeUnit.MILLISECONDS).until(newDataSource::isClosed);
+        assertFalse(staleDataSource.isClosed());
+    }
+    
+    private ShardingSphereMetaData createBindingMetaData(final ShardingSphereTable table) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(Collections.singleton(database),
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
     }
 }

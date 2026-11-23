@@ -19,10 +19,13 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.revise;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,10 +57,16 @@ public final class SchemaTableMetaDataAggregator {
     }
     
     private void checkUniformed(final String logicTableName, final Collection<TableMetaData> tableMetaDataList) {
-        TableMetaData sample = tableMetaDataList.iterator().next();
+        String sample = getTableStructure(tableMetaDataList.iterator().next());
         Collection<TableMetaDataViolation> violations = tableMetaDataList.stream()
-                .filter(each -> !sample.toString().equals(each.toString())).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
+                .filter(each -> !sample.equals(getTableStructure(each))).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(violations, () -> new RuleAndStorageMetaDataMismatchedException(createErrorReason(logicTableName, violations)));
+    }
+    
+    private String getTableStructure(final TableMetaData tableMetaData) {
+        Collection<IndexMetaData> indexes = tableMetaData.getIndexes().stream().sorted(Comparator.comparing(IndexMetaData::getName)).collect(Collectors.toList());
+        Collection<ConstraintMetaData> constraints = tableMetaData.getConstraints().stream().sorted(Comparator.comparing(ConstraintMetaData::getName)).collect(Collectors.toList());
+        return new TableMetaData(tableMetaData.getName(), tableMetaData.getColumns(), indexes, constraints, tableMetaData.getType()).toString();
     }
     
     private String createErrorReason(final String logicTableName, final Collection<TableMetaDataViolation> violations) {

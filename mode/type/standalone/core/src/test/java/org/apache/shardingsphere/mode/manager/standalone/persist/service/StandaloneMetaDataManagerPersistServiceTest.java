@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -53,6 +54,10 @@ import java.util.Collections;
 import java.util.Properties;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -178,6 +183,25 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(metaDataPersistFacade.getRepository().query("/metadata/foo_db/rules/fixture/unique/active_version")).thenReturn("0");
         metaDataManagerPersistService.alterRuleConfiguration(database, ruleConfig);
         verify(metaDataContextManager.getDatabaseRuleItemManager()).alter(deepEq(databaseRuleNodePath));
+    }
+    
+    @Test
+    void assertCandidatePersistenceFailureDoesNotInvalidateCurrentBindings() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        ShardingSphereTable currentTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(currentTable), Collections.emptyList());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.singleton(currentSchema), props);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), resourceMetaData, new RuleMetaData(Collections.emptyList()), props, databaseType);
+        when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
+        IllegalStateException expectedException = new IllegalStateException("metadata persistence failed");
+        when(metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(eq("foo_db"), any(), any())).thenThrow(expectedException);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> metaDataManagerPersistService.alterRuleConfiguration(database, mock(RuleConfiguration.class)));
+        assertThat(actual, sameInstance(expectedException));
+        assertFalse(currentTable.isBindingInvalidated());
+        assertThat(metaData.getDatabase("foo_db").getSchema("foo_db").getTable("foo_tbl"), sameInstance(currentTable));
+        verify(metaDataContextManager.getDatabaseMetaDataManager(), never()).alterTable(any(), any(), any());
     }
     
     @Test

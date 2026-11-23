@@ -53,7 +53,9 @@ public final class ShardingAggregationDistinctTokenGenerator implements Collecti
     
     private AggregationDistinctToken generateSQLToken(final AggregationDistinctProjection projection) {
         Preconditions.checkArgument(projection.getAlias().isPresent());
-        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get().getValue()) ? projection.getAlias().get().getValue() : null;
+        String derivedAlias = DerivedColumn.isDerivedColumnName(projection.getAlias().get().getValue()) && !projection.getAggregationSegment().getAlias().isPresent()
+                ? projection.getAlias().get().getValue()
+                : null;
         return new AggregationDistinctToken(projection.getStartIndex(), projection.getStopIndex(), projection.getDistinctInnerExpression(), derivedAlias);
     }
 }

@@ -126,11 +126,10 @@ public final class MetaDataContextsFactory {
     }
     
     private ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {
-        ShardingSphereMetaData result = new ShardingSphereMetaData(
-                originalMetaData.getAllDatabases(), originalMetaData.getGlobalResourceMetaData(),
+        Collection<ShardingSphereDatabase> databases = originalMetaData.getAllDatabases().stream().filter(each -> !each.getName().equals(changedDatabase.getName())).collect(Collectors.toList());
+        databases.add(changedDatabase);
+        return new ShardingSphereMetaData(databases, originalMetaData.getGlobalResourceMetaData(),
                 originalMetaData.getGlobalRuleMetaData(), originalMetaData.getProps(), originalMetaData.getProtocolType());
-        result.putDatabase(changedDatabase);
-        return result;
     }
     
     private ShardingSphereDatabase createChangedDatabase(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs,
@@ -172,7 +171,7 @@ public final class MetaDataContextsFactory {
                                                                   final MetaDataContexts originalMetaDataContext) throws SQLException {
         ConfigurationProperties props = originalMetaDataContext.getMetaData().getProps();
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
-        return ShardingSphereDatabaseFactory.createWithRevisionCandidateSchemas(databaseName, protocolType, databaseConfig, props, instanceContext,
+        return ShardingSphereDatabaseFactory.createForRefresh(databaseName, protocolType, databaseConfig, props, instanceContext,
                 originalMetaDataContext.getMetaData().getDatabase(databaseName).getAllSchemas());
     }
     

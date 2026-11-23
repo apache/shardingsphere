@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.StaleStatementMetadataException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
@@ -32,6 +34,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -76,6 +79,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -88,6 +92,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -130,6 +135,39 @@ class FirebirdBatchedStatementsExecutorTest {
         }
         inOrder.verify(preparedStatement).executeBatch();
         inOrder.verify(preparedStatement).close();
+    }
+    
+    @Test
+    void assertCreateExecutorWithStaleMetadata() {
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class);
+        when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        FirebirdServerPreparedStatement preparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", sqlStatementContext, new HintValueContext());
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        schema.removeTable("t");
+        assertThrows(StaleStatementMetadataException.class,
+                () -> new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, Collections.singletonList(Arrays.asList(1, "foo")), false));
+        verifyNoInteractions(connectionSession);
+    }
+    
+    private ShardingSphereSchema createSchema(final InsertStatementContext sqlStatementContext) {
+        ShardingSphereTable table = new ShardingSphereTable("t", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        sqlStatementContext.getTablesContext().getBoundTables().add(table);
+        return new ShardingSphereSchema("DB", databaseType, Collections.singleton(table), Collections.emptyList());
+    }
+    
+    @Test
+    void assertExecuteBatchAfterMetadataChanges() {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        InsertStatementContext sqlStatementContext = mockInsertStatementContext();
+        ShardingSphereSchema schema = createSchema(sqlStatementContext);
+        FirebirdServerPreparedStatement firebirdPreparedStatement = new FirebirdServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", sqlStatementContext, new HintValueContext());
+        FirebirdBatchedStatementsExecutor executor = new FirebirdBatchedStatementsExecutor(mockConnectionSession(), firebirdPreparedStatement, Collections.singletonList(Arrays.asList(1, "foo")),
+                false);
+        schema.removeTable("t");
+        assertThrows(StaleStatementMetadataException.class, executor::executeBatch);
+        verifyNoInteractions(databaseConnectionManager, backendStatement);
     }
     
     @Test
@@ -479,6 +517,7 @@ class FirebirdBatchedStatementsExecutorTest {
                 .build();
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(insertStatement);
+        when(result.getTablesContext()).thenReturn(new TablesContext(Collections.emptyList()));
         return result;
     }
     

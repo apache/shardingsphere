@@ -105,6 +105,7 @@ public final class FirebirdBatchedStatementsExecutor {
     
     public FirebirdBatchedStatementsExecutor(final ConnectionSession connectionSession, final FirebirdServerPreparedStatement preparedStatement, final List<List<Object>> parameterSets,
                                              final boolean multiError) {
+        preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
         jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
         this.multiError = multiError;
         this.connectionSession = connectionSession;
@@ -171,6 +172,7 @@ public final class FirebirdBatchedStatementsExecutor {
      * @throws SQLException SQL exception
      */
     public FirebirdBatchCompletion executeBatch() throws SQLException {
+        preparedStatement.getSqlStatementContext().getTablesContext().checkMetadata();
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         prepareBatchedStatements();
         List<BatchExecution> batchExecutions;

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.metadata.identifier.IdentifierIndex;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -180,6 +182,10 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param database database
      */
     public void putDatabase(final ShardingSphereDatabase database) {
+        ShardingSphereDatabase previousDatabase = getDatabase(database.getName());
+        if (null != previousDatabase) {
+            database.inheritBindings(previousDatabase);
+        }
         databaseIndex.put(database.getName(), database);
     }
     
@@ -193,6 +199,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         if (null == database) {
             return;
         }
+        database.invalidateBindings();
         databaseIndex.remove(database.getName());
         cleanResources(database);
     }
@@ -233,4 +240,38 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     private static DatabaseType resolveProtocolType(final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), getProps(props)) : databases.iterator().next().getProtocolType();
     }
+    
+    /**
+     * Copy a snapshot containing retired tables before publishing new bindings.
+     *
+     * @return this metadata if no table was invalidated, otherwise a snapshot with fresh table bindings
+     */
+    public ShardingSphereMetaData copyIfBindingsInvalidated() {
+        if (getAllDatabases().stream().flatMap(each -> each.getAllSchemas().stream()).flatMap(each -> each.getAllTables().stream()).noneMatch(ShardingSphereTable::isBindingInvalidated)) {
+            return this;
+        }
+        return new ShardingSphereMetaData(getAllDatabases().stream().map(ShardingSphereDatabase::copyIfBindingsInvalidated).collect(Collectors.toList()),
+                globalResourceMetaData, globalRuleMetaData, props, protocolType);
+    }
+    
+    /**
+     * Preserve bindings for unchanged metadata before publishing a replacement.
+     *
+     * @param previous previous metadata
+     */
+    public void inheritBindings(final ShardingSphereMetaData previous) {
+        if (this == previous) {
+            return;
+        }
+        Map<String, ShardingSphereDatabase> databases = getAllDatabases().stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each));
+        previous.getAllDatabases().forEach(each -> {
+            ShardingSphereDatabase database = databases.get(each.getName());
+            if (null == database) {
+                each.invalidateBindings();
+            } else {
+                database.inheritBindings(each);
+            }
+        });
+    }
+    
 }

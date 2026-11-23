@@ -75,6 +75,7 @@ import org.mockito.quality.Strictness;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,6 +112,43 @@ class MySQLComStmtPrepareExecutorTest {
     void setup() {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getAttributeMap().attr(MySQLConstants.CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSets.UTF8MB4_UNICODE_CI);
+    }
+    
+    @Test
+    void assertPrepareWildcardLocally() throws SQLException {
+        when(packet.getSQL()).thenReturn("SELECT * FROM foo_db.user FOR UPDATE");
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        when(connectionSession.getConnectionId()).thenReturn(16);
+        MySQLStatementIdGenerator.getInstance().registerConnection(16);
+        try {
+            ContextManager contextManager = mockContextManager();
+            when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+            when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class)))
+                    .thenThrow(new AssertionError("Ordinary prepare must not probe the backend"));
+            Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(getPrepareOKColumnCount((MySQLComStmtPrepareOKPacket) actualIterator.next()), is(5));
+            for (int columnIndex = 0; columnIndex < 5; columnIndex++) {
+                assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+            }
+            assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+            assertFalse(actualIterator.hasNext());
+            assertThat(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1).getSql(), is("SELECT * FROM foo_db.user FOR UPDATE"));
+        } finally {
+            MySQLStatementIdGenerator.getInstance().unregisterConnection(16);
+        }
+    }
+    
+    private int getPrepareOKColumnCount(final MySQLComStmtPrepareOKPacket packet) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        try {
+            MySQLPacketPayload payload = new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+            packet.write(payload);
+            payload.readInt1();
+            payload.readInt4();
+            return payload.readInt2();
+        } finally {
+            byteBuf.release();
+        }
     }
     
     @Test
@@ -473,17 +511,16 @@ class MySQLComStmtPrepareExecutorTest {
         ShardingSphereDatabase database = createDatabase();
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
         return result;
     }
     
     private ShardingSphereDatabase createDatabase() {
-        ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
-                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
-                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
-                new ShardingSphereColumn("content", Types.CLOB, false, false, false, false, false, true),
-                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, true, true, false),
+                new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, true, true, false),
+                new ShardingSphereColumn("content", Types.CLOB, false, false, false, true, false, true),
+                new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
                 new ConfigurationProperties(new Properties()));
