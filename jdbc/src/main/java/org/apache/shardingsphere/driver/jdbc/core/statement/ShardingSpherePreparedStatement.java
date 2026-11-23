@@ -41,7 +41,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -179,8 +178,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     protected void setParameter(final int parameterIndex, final Object value) throws SQLException {
         int parameterCount = getParameterMetaData().getParameterCount();
         ShardingSpherePreconditions.checkState(parameterIndex >= 1 && parameterIndex <= parameterCount,
-                () -> new SQLException(String.format("Parameter index '%d' is out of range. Number of parameters: %d.", parameterIndex, parameterCount),
-                        XOpenSQLState.INVALID_DESCRIPTOR_INDEX.getValue(), 12023));
+                () -> new SQLException(String.format("Parameter index '%d' is out of range. Number of parameters: %d.", parameterIndex, parameterCount)));
         super.setParameter(parameterIndex, value);
     }
     

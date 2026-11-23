@@ -97,8 +97,6 @@ class ShardingSpherePreparedStatementTest {
         preparedStatement.setObject(3, null);
         SQLException actual = assertThrows(SQLException.class, () -> preparedStatement.setObject(parameterIndex, 1));
         assertThat(actual.getMessage(), is(String.format("Parameter index '%d' is out of range. Number of parameters: 3.", parameterIndex)));
-        assertThat(actual.getSQLState(), is("07009"));
-        assertThat(actual.getErrorCode(), is(12023));
         assertThat(preparedStatement.getParameters(), is(Arrays.asList(10, 10, null)));
     }
     
