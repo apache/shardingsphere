@@ -123,6 +123,18 @@ public final class FirebirdCommandPacketFactory {
      */
     public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
         switch (commandPacketType) {
+            case PING:
+            case ABORT_AUX_CONNECTION:
+                return 4;
+            case CANCEL_EVENTS:
+                return 12;
+            case CONNECT_REQUEST:
+            case AUX_CONNECT:
+                return 16;
+            case RECEIVE:
+            case START:
+            case START_AND_RECEIVE:
+                return 24;
             case COMMIT:
             case PREPARE:
             case ROLLBACK:
@@ -138,6 +150,7 @@ public final class FirebirdCommandPacketFactory {
             case ALLOCATE_STATEMENT:
             case BATCH_RLS:
             case BATCH_CANCEL:
+            case CANCEL:
                 return 8;
             case INFO_BLOB:
             case INFO_DATABASE:
