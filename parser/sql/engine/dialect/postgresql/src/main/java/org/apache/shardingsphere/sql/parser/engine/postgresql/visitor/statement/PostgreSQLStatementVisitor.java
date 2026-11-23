@@ -1764,6 +1764,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             int startIndex = ctx.TABLE().getSymbol().getStartIndex();
             int stopIndex = ctx.TABLE().getSymbol().getStopIndex();
             ProjectionsSegment projections = new ProjectionsSegment(startIndex, stopIndex);
+            projections.setTableShorthand(true);
             projections.getProjections().add(new ShorthandProjectionSegment(startIndex, stopIndex));
             selectStatementBuilder.projections(projections).from((TableSegment) visit(ctx.relationExpr().qualifiedName()));
         } else {

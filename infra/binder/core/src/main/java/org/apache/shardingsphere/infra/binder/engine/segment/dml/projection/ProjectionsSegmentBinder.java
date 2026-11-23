@@ -81,6 +81,7 @@ public final class ProjectionsSegmentBinder {
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
+        result.setTableShorthand(segment.isTableShorthand());
         for (ProjectionSegment each : segment.getProjections()) {
             result.getProjections().add(bind(binderContext, boundTableSegment, result.getProjections(), tableBinderContexts, outerTableBinderContexts, each));
         }

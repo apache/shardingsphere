@@ -103,6 +103,7 @@ class PostgreSQLDatabaseMetaDataTest {
     void assertGetSQLOption() {
         assertThat(dialectDatabaseMetaData.getSQLOption(), isA(PostgreSQLSQLOption.class));
         assertTrue(dialectDatabaseMetaData.getSQLOption().isSupportWholeRowProjection());
+        assertThat(dialectDatabaseMetaData.getSQLOption().getInsertConflictProposedRowAlias(), is(Optional.of("excluded")));
     }
     
     @Test

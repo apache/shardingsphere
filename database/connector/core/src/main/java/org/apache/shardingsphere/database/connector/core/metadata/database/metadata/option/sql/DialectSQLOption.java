@@ -41,4 +41,13 @@ public interface DialectSQLOption {
     default Optional<String> getDummyTableName() {
         return Optional.empty();
     }
+    
+    /**
+     * Get the alias exposing the proposed row in an insert conflict action.
+     *
+     * @return proposed row alias, or empty if unsupported
+     */
+    default Optional<String> getInsertConflictProposedRowAlias() {
+        return Optional.empty();
+    }
 }

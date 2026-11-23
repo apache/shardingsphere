@@ -47,4 +47,7 @@ public final class ProjectionsSegment implements SQLSegment {
     
     @Setter
     private boolean distinctRow;
+    
+    @Setter
+    private boolean tableShorthand;
 }

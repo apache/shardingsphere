@@ -22,6 +22,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
@@ -74,7 +75,25 @@ public final class AssignmentSegmentBinder {
     public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        SegmentType expressionType = "PostgreSQL".equals(binderContext.getSqlStatement().getDatabaseType().getType()) ? SegmentType.PROJECTION : SegmentType.SET_ASSIGNMENT;
+        boolean hasProposedRowAlias =
+                new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getSQLOption().getInsertConflictProposedRowAlias().isPresent();
+        return bind(segment, binderContext, tableBinderContexts, outerTableBinderContexts, hasProposedRowAlias);
+    }
+    
+    /**
+     * Bind on duplicate key columns with the resolved proposed-row alias capability.
+     *
+     * @param segment on duplicate key columns segment
+     * @param binderContext SQL statement binder context
+     * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
+     * @param hasProposedRowAlias whether the dialect exposes a proposed-row alias
+     * @return bound on duplicate key columns segment
+     */
+    public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
+                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final boolean hasProposedRowAlias) {
+        SegmentType expressionType = hasProposedRowAlias ? SegmentType.PROJECTION : SegmentType.SET_ASSIGNMENT;
         OnDuplicateKeyColumnsSegment result = new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
                 .map(each -> bindColumnAssignmentSegment(each, expressionType, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
         segment.getConflictColumns().forEach(each -> result.getConflictColumns().add(

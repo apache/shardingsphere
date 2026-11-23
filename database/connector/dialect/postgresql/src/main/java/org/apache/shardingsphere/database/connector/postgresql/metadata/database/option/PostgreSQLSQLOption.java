@@ -19,6 +19,8 @@ package org.apache.shardingsphere.database.connector.postgresql.metadata.databas
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 
+import java.util.Optional;
+
 /**
  * SQL option of PostgreSQL.
  */
@@ -27,5 +29,10 @@ public final class PostgreSQLSQLOption implements DialectSQLOption {
     @Override
     public boolean isSupportWholeRowProjection() {
         return true;
+    }
+    
+    @Override
+    public Optional<String> getInsertConflictProposedRowAlias() {
+        return Optional.of("excluded");
     }
 }
