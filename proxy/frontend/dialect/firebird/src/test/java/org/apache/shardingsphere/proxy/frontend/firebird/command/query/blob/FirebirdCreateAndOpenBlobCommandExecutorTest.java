@@ -138,7 +138,7 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, false);
         FirebirdSingleHandleCommandPacket closePacket = mock(FirebirdSingleHandleCommandPacket.class);
         when(closePacket.getObjectHandle()).thenReturn(createdResponse.getHandle());
-        new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
+        new FirebirdCancelAndCloseBlobCommandExecutor(closePacket, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB).execute();
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
         Collection<DatabasePacket> actual = new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2).execute();
         FirebirdGenericResponsePacket actualResponse = (FirebirdGenericResponsePacket) actual.iterator().next();
@@ -176,7 +176,7 @@ class FirebirdCreateAndOpenBlobCommandExecutorTest {
         FirebirdGenericResponsePacket createdResponse = createBlobWithSegment(new byte[]{1, 2, 3}, true);
         FirebirdSingleHandleCommandPacket closePacket = mock(FirebirdSingleHandleCommandPacket.class);
         when(closePacket.getObjectHandle()).thenReturn(createdResponse.getHandle());
-        new FirebirdCloseBlobCommandExecutor(closePacket, connectionSession).execute();
+        new FirebirdCancelAndCloseBlobCommandExecutor(closePacket, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB).execute();
         when(packet.getBlobId()).thenReturn(createdResponse.getId());
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) new FirebirdCreateAndOpenBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.OPEN_BLOB2)
                 .execute().iterator().next();

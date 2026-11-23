@@ -46,8 +46,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.Fir
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchMessageCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchSyncCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBatchBlobSegmentsCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCancelBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCloseBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCancelAndCloseBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCreateAndOpenBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetBlobSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutBlobSegmentCommandExecutor;
@@ -82,33 +81,19 @@ public final class FirebirdCommandExecutorFactory {
         switch (commandPacketType) {
             case COMMIT:
                 return new FirebirdCommitTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
-            // case PREPARE:
             case ROLLBACK:
                 return new FirebirdRollbackTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
-            // case UNWIND:
-            // case RELEASE:
-            case CLOSE_BLOB:
-                return new FirebirdCloseBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
             case CANCEL_BLOB:
-                return new FirebirdCancelBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession);
-            // case DETACH:
-            // case DROP_DATABASE:
-            // case SERVICE_DETACH:
-            // case COMMIT_RETAINING:
-            // case ROLLBACK_RETAINING:
+            case CLOSE_BLOB:
+                return new FirebirdCancelAndCloseBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementCommandExecutor(connectionSession);
             case INFO_BLOB:
                 return new FirebirdBlobInfoExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession);
             case INFO_DATABASE:
                 return new FirebirdDatabaseInfoExecutor((FirebirdInfoCommandPacket) commandPacket);
-            // case INFO_REQUEST:
-            // case INFO_TRANSACTION:
-            // case SERVICE_INFO:
             case INFO_SQL:
                 return new FirebirdSQLInfoExecutor((FirebirdInfoCommandPacket) commandPacket, connectionSession);
-            // case INFO_BATCH:
-            // case INFO_CURSOR:
             case TRANSACTION:
                 return new FirebirdStartTransactionCommandExecutor((FirebirdStartTransactionPacket) commandPacket, connectionSession);
             case CREATE_BLOB:

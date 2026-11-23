@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
 import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -37,11 +38,12 @@ import java.util.Collection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdCloseBlobCommandExecutorTest {
+class FirebirdCancelAndCloseBlobCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -65,12 +67,12 @@ class FirebirdCloseBlobCommandExecutorTest {
     }
     
     @Test
-    void assertExecute() {
+    void assertExecuteWithCloseBlob() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         long blobId = 5L;
         FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
         when(packet.getObjectHandle()).thenReturn(blobHandle);
-        FirebirdCloseBlobCommandExecutor executor = new FirebirdCloseBlobCommandExecutor(packet, connectionSession);
+        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
@@ -81,11 +83,38 @@ class FirebirdCloseBlobCommandExecutorTest {
     }
     
     @Test
-    void assertExecuteWithoutBlobWrite() {
+    void assertExecuteWithCloseBlobAndWithoutBlobWrite() {
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
         when(packet.getObjectHandle()).thenReturn(blobHandle);
-        Collection<DatabasePacket> actual = new FirebirdCloseBlobCommandExecutor(packet, connectionSession).execute();
+        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CLOSE_BLOB);
+        Collection<DatabasePacket> actual = executor.execute();
         assertThat(((FirebirdGenericResponsePacket) actual.iterator().next()).getId(), is(0L));
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
+    }
+    
+    @Test
+    void assertExecuteWithCancelBlob() {
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
+        long blobId = 9L;
+        FirebirdBlobWriteCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId, false);
+        when(packet.getObjectHandle()).thenReturn(blobHandle);
+        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CANCEL_BLOB);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
+        DatabasePacket response = actual.iterator().next();
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(0));
+        assertFalse(FirebirdBlobWriteCache.getInstance().getBlobId(CONNECTION_ID, blobHandle).isPresent());
+        assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
+    }
+    
+    @Test
+    void assertExecuteWithCancelBlobAndWithoutBlobWrite() {
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(CONNECTION_ID);
+        when(packet.getObjectHandle()).thenReturn(blobHandle);
+        FirebirdCancelAndCloseBlobCommandExecutor executor = new FirebirdCancelAndCloseBlobCommandExecutor(packet, connectionSession, FirebirdCommandPacketType.CANCEL_BLOB);
+        Collection<DatabasePacket> actual = executor.execute();
+        assertThat(actual.size(), is(1));
         assertThrows(DatabaseProtocolException.class, () -> FirebirdBlobHandleGenerator.getInstance().releaseBlobHandle(CONNECTION_ID, blobHandle));
     }
 }
