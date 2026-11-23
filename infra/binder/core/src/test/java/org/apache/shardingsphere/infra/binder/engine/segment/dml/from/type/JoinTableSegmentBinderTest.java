@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Func
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -218,7 +219,11 @@ class JoinTableSegmentBinderTest {
     void assertBindWithFunctionTable() {
         SimpleTableSegment leftTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         leftTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("o")));
-        FunctionTableSegment rightTable = new FunctionTableSegment(67, 127, new FunctionSegment(80, 98, "explode", "explode(type_array)"));
+        FunctionSegment function = new FunctionSegment(80, 98, "explode", "explode(o.order_id)");
+        ColumnSegment input = new ColumnSegment(90, 97, new IdentifierValue("order_id"));
+        input.setOwner(new OwnerSegment(88, 88, new IdentifierValue("o")));
+        function.getParameters().add(input);
+        FunctionTableSegment rightTable = new FunctionTableSegment(67, 127, function);
         rightTable.setAlias(new AliasSegment(100, 113, new IdentifierValue("exploded_array")));
         rightTable.getColumns().add(new ColumnSegment(118, 127, new IdentifierValue("item_value")));
         JoinTableSegment joinTableSegment = new JoinTableSegment();
@@ -233,6 +238,11 @@ class JoinTableSegmentBinderTest {
         assertThat(actualProjections.size(), is(4));
         assertThat(actualProjections.get(3), isA(ColumnProjectionSegment.class));
         assertThat(actualProjections.get(3).getColumnLabel(), is("item_value"));
+        FunctionSegment actualFunction = (FunctionSegment) ((FunctionTableSegment) actual.getRight()).getTableFunction();
+        ColumnSegment actualInputColumn = (ColumnSegment) actualFunction.getParameters().iterator().next();
+        assertThat(actualInputColumn.getOwner().get().getIdentifier().getValue(), is("o"));
+        assertThat(actualInputColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualInputColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
         assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
         assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("exploded_array")));
     }

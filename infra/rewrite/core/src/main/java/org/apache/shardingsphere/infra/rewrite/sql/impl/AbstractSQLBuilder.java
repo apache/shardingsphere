@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,8 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public abstract class AbstractSQLBuilder implements SQLBuilder {
+    
+    private static final String TABLE_KEYWORD = "TABLE";
     
     private final String sql;
     
@@ -48,20 +51,32 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         Optional<SQLToken> previousToken = Optional.empty();
         for (int i = 0; i < sqlTokens.size(); i++) {
             SQLToken each = sqlTokens.get(i);
-            if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousToken.map(SQLToken::getStopIndex).orElse(0)) {
-                appendRewriteSQL(each, result, i);
+            boolean tableShorthand = isTableShorthandToken(each);
+            int previousStopIndex = previousToken.map(SQLToken::getStopIndex).orElse(tableShorthand ? -1 : 0);
+            if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousStopIndex) {
+                appendRewriteSQL(each, result, i, tableShorthand);
                 previousToken = Optional.of(each);
             }
         }
         return result.toString();
     }
     
+    private boolean isTableShorthandToken(final SQLToken token) {
+        return token instanceof SubstitutableColumnNameToken && token.getStopIndex() - token.getStartIndex() + 1 == TABLE_KEYWORD.length()
+                && "PostgreSQL".equals(((SubstitutableColumnNameToken) token).getDatabaseType().getType())
+                && sql.regionMatches(true, token.getStartIndex(), TABLE_KEYWORD, 0, TABLE_KEYWORD.length());
+    }
+    
     private boolean isContainsAttachableToken(final SQLToken sqlToken, final SQLToken previousToken) {
         return sqlToken instanceof Attachable || previousToken instanceof Attachable;
     }
     
-    private void appendRewriteSQL(final SQLToken sqlToken, final StringBuilder builder, final int currentSQLTokenIndex) {
-        builder.append(getSQLTokenText(sqlToken));
+    private void appendRewriteSQL(final SQLToken sqlToken, final StringBuilder builder, final int currentSQLTokenIndex, final boolean tableShorthand) {
+        if (tableShorthand) {
+            builder.append("SELECT ").append(getSQLTokenText(sqlToken)).append(" FROM");
+        } else {
+            builder.append(getSQLTokenText(sqlToken));
+        }
         builder.append(getConjunctionText(sqlTokens, sql.length(), currentSQLTokenIndex));
     }
     

@@ -74,6 +74,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Ins
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonExtractContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonExtractTextContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonOperatorContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonPathExtractContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonPathExtractTextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NaturalJoinTypeContext;
@@ -353,6 +358,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         if (null != ctx.orOperator()) {
             return Optional.of(ctx.orOperator().getText());
+        }
+        if (null != ctx.qualOp()) {
+            JsonOperatorContext jsonOperator = ctx.qualOp().jsonOperator();
+            if (jsonOperator instanceof JsonExtractContext || jsonOperator instanceof JsonExtractTextContext
+                    || jsonOperator instanceof JsonPathExtractContext || jsonOperator instanceof JsonPathExtractTextContext) {
+                return Optional.of(ctx.qualOp().getText());
+            }
         }
         if (null != ctx.PLUS_()) {
             return Optional.of(ctx.PLUS_().getText());
