@@ -74,6 +74,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Ins
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonExtractContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonExtractTextContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonOperatorContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonPathExtractContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonPathExtractTextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NaturalJoinTypeContext;
@@ -354,6 +359,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         if (null != ctx.orOperator()) {
             return Optional.of(ctx.orOperator().getText());
         }
+        if (null != ctx.qualOp()) {
+            JsonOperatorContext jsonOperator = ctx.qualOp().jsonOperator();
+            if (jsonOperator instanceof JsonExtractContext || jsonOperator instanceof JsonExtractTextContext
+                    || jsonOperator instanceof JsonPathExtractContext || jsonOperator instanceof JsonPathExtractTextContext) {
+                return Optional.of(ctx.qualOp().getText());
+            }
+        }
         if (null != ctx.PLUS_()) {
             return Optional.of(ctx.PLUS_().getText());
         }
@@ -613,14 +625,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
         CollectionValue<ExpressionSegment> result = new CollectionValue<>();
-        if (null != ctx.exprList()) {
-            result.combine((CollectionValue<ExpressionSegment>) visitExprList(ctx.exprList()));
+        for (AExprContext each : ctx.aExpr()) {
+            result.getValue().add((ExpressionSegment) visit(each));
         }
-        result.getValue().add((ExpressionSegment) visit(ctx.aExpr()));
         return result;
     }
     
@@ -903,12 +913,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     private Collection<ExpressionSegment> createInsertValuesSegments(final ExprListContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        if (null != ctx.exprList()) {
-            Collection<ExpressionSegment> tmpResult = createInsertValuesSegments(ctx.exprList());
-            result.addAll(tmpResult);
+        for (AExprContext each : ctx.aExpr()) {
+            result.add((ExpressionSegment) visit(each));
         }
-        ExpressionSegment expr = (ExpressionSegment) visit(ctx.aExpr());
-        result.add(expr);
         return result;
     }
     

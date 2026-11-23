@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.ReturningSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -39,12 +41,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Types;
 import java.util.Arrays;
@@ -55,9 +60,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class DeleteStatementBinderTest {
@@ -97,6 +107,26 @@ class DeleteStatementBinderTest {
         assertThat(actual.getWhere().get().getExpr(), isA(BinaryOperationExpression.class));
         assertThat(((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft(), isA(ColumnSegment.class));
         assertThat(((ColumnSegment) ((BinaryOperationExpression) actual.getWhere().get().getExpr()).getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindReturningWithUsing() {
+        JoinTableSegment relationTable = new JoinTableSegment();
+        DeleteMultiTableSegment table = new DeleteMultiTableSegment();
+        table.setRelationTable(relationTable);
+        ReturningSegment returning = new ReturningSegment(0, 0, new ProjectionsSegment(0, 0));
+        ReturningSegment expectedReturning = new ReturningSegment(0, 0, new ProjectionsSegment(0, 0));
+        DeleteStatement statement = DeleteStatement.builder().databaseType(databaseType).table(table).returning(returning).build();
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        try (
+                MockedStatic<TableSegmentBinder> tableBinder = mockStatic(TableSegmentBinder.class);
+                MockedStatic<ReturningSegmentBinder> returningBinder = mockStatic(ReturningSegmentBinder.class)) {
+            tableBinder.when(() -> TableSegmentBinder.bind(eq(table), same(binderContext), any(), any())).thenReturn(table);
+            returningBinder.when(() -> ReturningSegmentBinder.bind(eq(returning), same(binderContext), same(relationTable), any(), any())).thenReturn(expectedReturning);
+            DeleteStatement actual = new DeleteStatementBinder().bind(statement, binderContext);
+            assertThat(actual.getReturning().get(), sameInstance(expectedReturning));
+            assertThat(actual.getTable(), sameInstance(table));
+        }
     }
     
     @Test

@@ -221,7 +221,7 @@ public final class EncryptProjectionTokenGenerator {
             projections.add(each.getAlias().filter(alias -> !DerivedColumn.isDerivedColumnName(alias.getValue()))
                     .map(optional -> (Projection) new ColumnProjection(null, optional, null, databaseType)).orElse(each));
         }
-        int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
+        int startIndex = segment.getOwner().isPresent() ? Math.min(segment.getStartIndex(), segment.getOwner().get().getStartIndex()) : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
         return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, databaseType);
     }

@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -38,6 +39,10 @@ public final class DeleteStatementContext implements SQLStatementContext, WhereC
     
     public DeleteStatementContext(final DeleteStatement sqlStatement) {
         baseContext = new DeleteStatementBaseContext(sqlStatement);
+    }
+    
+    public DeleteStatementContext(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        baseContext = new DeleteStatementBaseContext(sqlStatement, metaData, currentDatabaseName);
     }
     
     @Override

@@ -40,7 +40,7 @@ Test reuse should stay in local helpers under `test/e2e/mcp`; do not add a test 
 Build and install the MCP E2E dependencies and distribution:
 
 ```bash
-./mvnw -pl test/e2e/mcp,distribution/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+./mvnw -pl test/e2e/mcp,distribution/mcp -Prelease,default-dep -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
 ```
 
 Build the local distribution image:

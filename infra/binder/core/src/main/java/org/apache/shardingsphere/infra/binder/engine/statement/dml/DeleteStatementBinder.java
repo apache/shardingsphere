@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.Returning
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 
@@ -50,8 +51,9 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
                 .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        TableSegment returningTable = boundTable instanceof DeleteMultiTableSegment ? ((DeleteMultiTableSegment) boundTable).getRelationTable() : boundTable;
         ReturningSegment boundReturning = sqlStatement.getReturning()
-                .map(optional -> ReturningSegmentBinder.bind(optional, binderContext, boundTable, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+                .map(optional -> ReturningSegmentBinder.bind(optional, binderContext, returningTable, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy, boundReturning);
     }
     

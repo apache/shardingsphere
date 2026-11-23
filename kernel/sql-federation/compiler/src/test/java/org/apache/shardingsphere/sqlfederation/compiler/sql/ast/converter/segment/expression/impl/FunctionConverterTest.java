@@ -47,6 +47,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -99,6 +100,28 @@ class FunctionConverterTest {
         SqlBasicCall expected = mock(SqlBasicCall.class);
         when(WindowFunctionConverter.convert(segment)).thenReturn(expected);
         assertThat(FunctionConverter.convert(segment), is(expected));
+    }
+    
+    @Test
+    void assertConvertIgnoreNullsWithWindow() {
+        FunctionSegment segment = new FunctionSegment(0, 0, "LAG", "LAG");
+        segment.setIgnoreNulls(true);
+        ExpressionSegment param = new LiteralExpressionSegment(0, 0, 1);
+        segment.getParameters().add(param);
+        WindowItemSegment windowItemSegment = new WindowItemSegment(0, 0);
+        segment.setWindow(windowItemSegment);
+        SqlNode paramNode = mock(SqlNode.class);
+        SqlWindow windowNode = mock(SqlWindow.class);
+        when(ExpressionConverter.convert(param)).thenReturn(Optional.of(paramNode));
+        when(WindowConverter.convertWindowItem(windowItemSegment)).thenReturn(windowNode);
+        SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment);
+        assertThat(actual.getOperator(), sameInstance(SqlStdOperatorTable.OVER));
+        SqlBasicCall actualNullTreatment = (SqlBasicCall) actual.getOperandList().get(0);
+        assertThat(actualNullTreatment.getOperator(), sameInstance(SqlStdOperatorTable.IGNORE_NULLS));
+        SqlBasicCall actualFunction = (SqlBasicCall) actualNullTreatment.getOperandList().get(0);
+        assertThat(actualFunction.getOperator().getName(), is("LAG"));
+        assertThat(actualFunction.getOperandList().get(0), sameInstance(paramNode));
+        assertThat(actual.getOperandList().get(1), sameInstance(windowNode));
     }
     
     @Test

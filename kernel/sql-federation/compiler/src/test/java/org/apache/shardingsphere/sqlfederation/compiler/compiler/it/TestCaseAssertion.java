@@ -20,12 +20,18 @@ package org.apache.shardingsphere.sqlfederation.compiler.compiler.it;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
  * XML definition of test case assertion.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
 public final class TestCaseAssertion {
     
+    @XmlAttribute(name = "expected-result")
     private String expectedResult;
 }

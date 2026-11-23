@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmen
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -68,17 +69,22 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         Collection<InsertValuesSegment> boundValues = bindInsertValues(sqlStatement, binderContext, tableBinderContexts, outerTableBinderContexts);
         SubquerySegment boundInsertSelect = sqlStatement.getInsertSelect().map(optional -> SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> conflictOuterTableBinderContexts = sqlStatement.getOnDuplicateKeyColumns().isPresent()
+                ? createOnConflictOuterContexts(sqlStatement, tableBinderContexts, outerTableBinderContexts)
+                : outerTableBinderContexts;
         OnDuplicateKeyColumnsSegment boundOnDuplicateKeyColumns = sqlStatement.getOnDuplicateKeyColumns()
-                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, conflictOuterTableBinderContexts)).orElse(null);
+        ReturningSegment boundReturning = sqlStatement.getReturning()
+                .map(optional -> ReturningSegmentBinder.bind(optional, binderContext, boundTable, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         InsertStatement result = InsertStatement.builder().databaseType(sqlStatement.getDatabaseType()).table(boundTable).insertColumns(boundInsertColumns)
                 .insertSelect(boundInsertSelect).setAssignment(boundSetAssignment).onDuplicateKeyColumns(boundOnDuplicateKeyColumns)
                 .valueReference(sqlStatement.getValueReference().orElse(null))
-                .returning(sqlStatement.getReturning().map(optional -> ReturningSegmentBinder.bind(optional, binderContext, boundTable, tableBinderContexts, outerTableBinderContexts)).orElse(null))
+                .returning(boundReturning)
                 .errorLogging(sqlStatement.getErrorLogging().orElse(null))
                 .output(sqlStatement.getOutput().orElse(null)).with(boundWith).multiTableInsertType(sqlStatement.getMultiTableInsertType().orElse(null))
                 .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null)).multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
                 .where(sqlStatement.getWhere().map(optional -> org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder.bind(
-                        optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null))
+                        optional, binderContext, tableBinderContexts, conflictOuterTableBinderContexts)).orElse(null))
                 .exec(sqlStatement.getExec().orElse(null)).withTableHint(sqlStatement.getWithTableHint().orElse(null))
                 .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null)).ignore(sqlStatement.isIgnore()).replace(sqlStatement.isReplace())
                 .overwrite(sqlStatement.isOverwrite()).values(new LinkedList<>(boundValues)).build();
@@ -100,6 +106,19 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
             }
             result.add(new InsertValuesSegment(each.getStartIndex(), each.getStopIndex(), boundValues));
         }
+        return result;
+    }
+    
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createOnConflictOuterContexts(final InsertStatement statement,
+                                                                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (!"PostgreSQL".equals(statement.getDatabaseType().getType()) || !statement.getTable().isPresent()) {
+            return outerTableBinderContexts;
+        }
+        SimpleTableSegment table = statement.getTable().get();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create(outerTableBinderContexts);
+        String targetName = table.getAliasName().orElseGet(() -> table.getTableName().getIdentifier().getValue());
+        result.replaceValues(CaseInsensitiveString.of("excluded"), tableBinderContexts.get(CaseInsensitiveString.of(targetName)));
         return result;
     }
     

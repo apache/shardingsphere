@@ -30,6 +30,11 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTok
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,10 +82,53 @@ public final class SQLRewriteContext {
         List<Object> afterGenericParams = new ArrayList<>();
         if (sqlStatementContext instanceof InsertStatementContext) {
             groupedParams.addAll(((InsertStatementContext) sqlStatementContext).getGroupedParameters());
-            // TODO check insert statement whether has beforeGenericParams
-            afterGenericParams.addAll(((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters());
+            InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
+            if (!insertStatementContext.getInsertValueContexts().isEmpty()) {
+                beforeGenericParams.addAll(parameters.subList(0, insertStatementContext.getInsertValueContexts().get(0).getParametersOffset()));
+            } else if (insertStatementContext.getSqlStatement().getTable().isPresent()) {
+                appendDefaultValuesBeforeParameters(insertStatementContext, beforeGenericParams);
+            }
+            appendOnConflictTargetParameters(insertStatementContext, afterGenericParams);
+            afterGenericParams.addAll(insertStatementContext.getOnDuplicateKeyUpdateParameters());
+            insertStatementContext.getSqlStatement().getWhere().ifPresent(where -> appendSegmentParameters(insertStatementContext, where, afterGenericParams));
+            if (!parameters.isEmpty()) {
+                insertStatementContext.getSqlStatement().getReturning().ifPresent(returning -> appendSegmentParameters(insertStatementContext, returning, afterGenericParams));
+            }
         }
         return new GroupedParameterBuilder(groupedParams, beforeGenericParams, afterGenericParams);
+    }
+    
+    private void appendDefaultValuesBeforeParameters(final InsertStatementContext sqlStatementContext, final Collection<Object> beforeGenericParams) {
+        int tableStartIndex = sqlStatementContext.getSqlStatement().getTable().get().getStartIndex();
+        for (ParameterMarkerSegment each : sqlStatementContext.getSqlStatement().getParameterMarkers()) {
+            if (each.getStartIndex() < tableStartIndex) {
+                beforeGenericParams.add(parameters.get(each.getParameterIndex()));
+            }
+        }
+    }
+    
+    private void appendOnConflictTargetParameters(final InsertStatementContext insertStatementContext, final List<Object> afterGenericParams) {
+        if (!insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().isPresent()) {
+            return;
+        }
+        OnDuplicateKeyColumnsSegment conflict = insertStatementContext.getSqlStatement().getOnDuplicateKeyColumns().get();
+        int actionStartIndex = insertStatementContext.getSqlStatement().getWhere().map(WhereSegment::getStartIndex).orElse(Integer.MAX_VALUE);
+        for (ColumnAssignmentSegment each : conflict.getColumns()) {
+            actionStartIndex = Math.min(actionStartIndex, each.getStartIndex());
+        }
+        for (ParameterMarkerSegment each : insertStatementContext.getSqlStatement().getParameterMarkers()) {
+            if (each.getStartIndex() >= conflict.getStartIndex() && each.getStopIndex() <= conflict.getStopIndex() && each.getStartIndex() < actionStartIndex) {
+                afterGenericParams.add(parameters.get(each.getParameterIndex()));
+            }
+        }
+    }
+    
+    private void appendSegmentParameters(final InsertStatementContext insertStatementContext, final SQLSegment segment, final Collection<Object> afterGenericParams) {
+        for (ParameterMarkerSegment each : insertStatementContext.getSqlStatement().getParameterMarkers()) {
+            if (each.getStartIndex() >= segment.getStartIndex() && each.getStopIndex() <= segment.getStopIndex()) {
+                afterGenericParams.add(parameters.get(each.getParameterIndex()));
+            }
+        }
     }
     
     private boolean containsInsertValues(final SQLStatementContext sqlStatementContext) {

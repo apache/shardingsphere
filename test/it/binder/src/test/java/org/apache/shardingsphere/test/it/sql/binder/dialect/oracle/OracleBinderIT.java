@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.test.it.sql.binder.dialect.oracle;
 
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -37,10 +40,53 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SQLBinderITSettings("Oracle")
 class OracleBinderIT extends SQLBinderIT {
+    
+    @Test
+    void assertBindUnparenthesizedFunctionFromDummyTable() {
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", "SELECT ss_noarg_fn FROM DUAL");
+        assertColumnBound(actual.getProjections().getProjections().get(0), "", "ss_noarg_fn");
+    }
+    
+    @Test
+    void assertBindUnparenthesizedFunctionFromDummyTableWithHint() {
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", "/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ SELECT ss_noarg_fn FROM DUAL");
+        assertColumnBound(actual.getProjections().getProjections().get(0), "", "ss_noarg_fn");
+    }
+    
+    @Test
+    void assertBindParenthesizedFunctionFromDummyTable() {
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", "SELECT ss_noarg_fn() FROM DUAL");
+        ProjectionSegment actualProjection = actual.getProjections().getProjections().get(0);
+        assertThat(actualProjection, isA(ExpressionProjectionSegment.class));
+        assertThat(((ExpressionProjectionSegment) actualProjection).getText(), is("ss_noarg_fn()"));
+    }
+    
+    @Test
+    void assertBindDummyNamedCTEColumn() {
+        SelectStatement actual = (SelectStatement) bindSQLStatement("Oracle", "WITH DUAL AS (SELECT order_id AS ss_noarg_fn FROM t_order) SELECT ss_noarg_fn FROM DUAL");
+        assertColumnBound(actual.getProjections().getProjections().get(0), "t_order", "order_id");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {
+            "SELECT ss_noarg_fn FROM t_order",
+            "SELECT ss_noarg_fn FROM DUAL CROSS JOIN t_order",
+            "SELECT missing_col FROM (SELECT order_id FROM t_order) DUAL",
+            "SELECT ss_noarg_fn FROM foo_db_1.DUAL",
+            "SELECT ss_noarg_fn FROM \"DUAL\"",
+            "WITH DUAL AS (SELECT order_id FROM t_order) SELECT missing_col FROM DUAL",
+            "SELECT (SELECT d.missing_col FROM t_order t) FROM DUAL d",
+            "SELECT (SELECT unknown_owner.missing_col FROM t_order t) FROM DUAL d",
+            "/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ SELECT (SELECT d.missing_col FROM t_order t) FROM DUAL d",
+            "/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */ SELECT (SELECT unknown_owner.missing_col FROM t_order t) FROM DUAL d"})
+    void assertBindUnknownColumnOutsideDummyQuery(final String sql) {
+        assertThrows(ColumnNotFoundException.class, () -> bindSQLStatement("Oracle", sql));
+    }
     
     @Test
     void assertBindRemovedUnparenthesizedFunctionNamesAsDerivedColumns() {

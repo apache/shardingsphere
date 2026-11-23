@@ -161,6 +161,7 @@ execute
     | move
     | close
     | cluster
+    | repack
     | alterOperator
     | createOperatorClass
     | alterOperatorClass

@@ -134,6 +134,7 @@ unreservedWord
     | ALSO
     | ALTER
     | ALWAYS
+    | ASENSITIVE
     | ASSERTION
     | ASSIGNMENT
     | AT
@@ -183,6 +184,7 @@ unreservedWord
     | COMMENTS
     | COMMIT
     | COMMITTED
+    | COMPRESSION
     | CONFIGURATION
     | CONFLICT
     | CONNECT
@@ -237,6 +239,7 @@ unreservedWord
     | EXTERNAL
     | FAMILY
     | FILTER
+    | FINALIZE
     | FIRST
     | FOLLOWING
     | FORCE
@@ -374,6 +377,7 @@ unreservedWord
     | RELATIVE
     | RELEASE
     | RENAME
+    | REPACK
     | REPEATABLE
     | REPLACE
     | REPLICA
@@ -512,6 +516,9 @@ unreservedWord
     | USAGE
     | SOURCE
     | TARGET
+    | PLAN
+    | IGNORE
+    | RESPECT
     ;
 
 typeFuncNameKeyword
@@ -557,7 +564,7 @@ owner
     ;
 
 name
-    : identifier
+    : identifier | colNameKeyword
     ;
 
 tableNames
@@ -1126,8 +1133,13 @@ xmlNamespaceEl
 
 funcExpr
     : jsonAggregateFunction filterClause? overClause?
-    | funcApplication withinGroupClause? filterClause? overClause?
+    | funcApplication ({null == $funcApplication.ctx.DISTINCT() && null == $funcApplication.ctx.VARIADIC() && null == $funcApplication.ctx.sortClause()}? withinGroupClause)?
+      filterClause? nullTreatment? overClause?
     | functionExprCommonSubexpr
+    ;
+
+nullTreatment
+    : (IGNORE | RESPECT) NULLS
     ;
 
 withinGroupClause
@@ -1289,7 +1301,27 @@ jsonExistsErrorClause
     ;
 
 jsonTable
-    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTableErrorClause? RP_
+    : JSON_TABLE LP_ jsonValueExpr COMMA_ aExpr (AS colId)? jsonPassingClause? COLUMNS LP_ jsonTableColumn (COMMA_ jsonTableColumn)* RP_ jsonTablePlanClause? jsonTableErrorClause? RP_
+    ;
+
+jsonTablePlanClause
+    : PLAN LP_ jsonTablePlan RP_
+    | PLAN DEFAULT LP_ jsonTableDefaultPlan RP_
+    ;
+
+jsonTableDefaultPlan
+    : (INNER | OUTER) (COMMA_ (UNION | CROSS))?
+    | (UNION | CROSS) (COMMA_ (INNER | OUTER))?
+    ;
+
+jsonTablePlan
+    : name ((INNER | OUTER) jsonTablePlanPrimary)?
+    | jsonTablePlanPrimary UNION jsonTablePlanPrimary (UNION jsonTablePlanPrimary)*
+    | jsonTablePlanPrimary CROSS jsonTablePlanPrimary (CROSS jsonTablePlanPrimary)*
+    ;
+
+jsonTablePlanPrimary
+    : name | LP_ jsonTablePlan RP_
     ;
 
 jsonTableColumn
@@ -1336,8 +1368,7 @@ constTypeName
     ;
 
 exprList
-    : aExpr
-    | exprList COMMA_ aExpr
+    : aExpr (COMMA_ aExpr)*
     ;
 
 extractList
@@ -1821,6 +1852,7 @@ colNameKeyword
     | NATIONAL
     | NCHAR
     | NONE
+    | NORMALIZE
     | NULLIF
     | NUMERIC
     | OUT
@@ -2135,7 +2167,7 @@ encoding
     ;
 
 genericSet
-    : varName (EQ_|TO) (varList | DEFAULT)
+    : varName (EQ_|TO) (varList | DEFAULT | NULL)
     ;
 
 variableResetStmt
