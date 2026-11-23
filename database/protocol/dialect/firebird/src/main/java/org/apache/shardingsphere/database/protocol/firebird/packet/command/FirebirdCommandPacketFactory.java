@@ -143,12 +143,11 @@ public final class FirebirdCommandPacketFactory {
             case INFO_DATABASE:
             case INFO_REQUEST:
             case INFO_TRANSACTION:
+            case SERVICE_INFO:
             case INFO_SQL:
             case INFO_BATCH:
             case INFO_CURSOR:
-                return FirebirdInfoCommandPacket.getLength(payload);
-            case SERVICE_INFO:
-                return FirebirdInfoCommandPacket.getServiceInfoLength(payload);
+                return FirebirdInfoCommandPacket.getLength(commandPacketType, payload);
             case TRANSACTION:
                 return FirebirdStartTransactionPacket.getLength(payload);
             case CREATE_BLOB:

@@ -83,25 +83,16 @@ public final class FirebirdInfoCommandPacket extends FirebirdCommandPacket {
     /**
      * Get length of packet.
      *
+     * @param commandPacketType command packet type for Firebird
      * @param payload Firebird packet payload
      * @return Length of packet
      */
-    public static int getLength(final FirebirdPacketPayload payload) {
+    public static int getLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload) {
         int length = 12;
         length += payload.getBufferLength(length);
+        if (FirebirdCommandPacketType.SERVICE_INFO == commandPacketType) {
+            length += payload.getBufferLength(length);
+        }
         return length + 4;
-    }
-    
-    /**
-     * Get length of service info packet.
-     *
-     * <p>A service info packet contains an additional received items buffer before the buffer length.</p>
-     *
-     * @param payload Firebird packet payload
-     * @return Length of packet
-     */
-    public static int getServiceInfoLength(final FirebirdPacketPayload payload) {
-        int length = 12 + payload.getBufferLength(12);
-        return length + payload.getBufferLength(length) + 4;
     }
 }

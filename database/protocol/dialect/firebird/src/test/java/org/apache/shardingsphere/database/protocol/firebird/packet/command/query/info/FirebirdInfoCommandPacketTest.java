@@ -49,14 +49,14 @@ class FirebirdInfoCommandPacketTest {
     @Test
     void assertGetLength() {
         when(payload.getBufferLength(12)).thenReturn(8);
-        assertThat(FirebirdInfoCommandPacket.getLength(payload), is(24));
+        assertThat(FirebirdInfoCommandPacket.getLength(FirebirdCommandPacketType.INFO_DATABASE, payload), is(24));
     }
     
     @Test
     void assertGetServiceInfoLength() {
         when(payload.getBufferLength(12)).thenReturn(8);
         when(payload.getBufferLength(20)).thenReturn(12);
-        assertThat(FirebirdInfoCommandPacket.getServiceInfoLength(payload), is(36));
+        assertThat(FirebirdInfoCommandPacket.getLength(FirebirdCommandPacketType.SERVICE_INFO, payload), is(36));
     }
     
     @Test
