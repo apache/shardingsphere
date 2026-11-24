@@ -93,6 +93,15 @@ class ShadowStatementTest extends AbstractShadowDriverTest {
     }
     
     @Test
+    void assertInsertMixedBatchCase() throws SQLException {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            assertThat(statement.executeUpdate("INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (1, 'cipher', 'plain'), (2, 'cipher', 'plain'), (3, 'cipher', 'plain')"), is(3));
+        }
+        assertInsertedIds("shadow_jdbc_1", 1);
+        assertInsertedIds("shadow_jdbc_0", 2, 3);
+    }
+    
+    @Test
     void assertUpdateNativeCase() throws SQLException {
         int actual;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {

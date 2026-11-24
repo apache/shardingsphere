@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,11 @@ public final class RouteContext {
     private final Collection<Collection<DataNode>> originalDataNodes = new LinkedList<>();
     
     private final Collection<RouteUnit> routeUnits = new LinkedHashSet<>();
+    
+    /**
+     * Insert value indexes of route units used to split one INSERT statement.
+     */
+    private final Map<RouteUnit, Collection<Integer>> routeUnitInsertValueIndexes = new LinkedHashMap<>();
     
     /**
      * Judge is route for single database and table only or not.

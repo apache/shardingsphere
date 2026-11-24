@@ -117,7 +117,9 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
                 pushDownMetaDataRefreshEngine.refresh(
                         connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props, executionContext.getRouteContext().getRouteUnits());
             }
-            return isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getSqlStatementContext()) ? accumulate(updateCounts) : updateCounts.get(0);
+            boolean needAccumulate = isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getSqlStatementContext())
+                    || !executionContext.getRouteContext().getRouteUnitInsertValueIndexes().isEmpty();
+            return needAccumulate ? accumulate(updateCounts) : updateCounts.get(0);
         } finally {
             processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());
         }

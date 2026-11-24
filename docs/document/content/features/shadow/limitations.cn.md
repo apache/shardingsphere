@@ -30,3 +30,8 @@ SQL 支持列表：
   | BETWEEN                | SELECT/UPDATE/DELETE ... WHERE column BETWEEN value1 AND value2                         | 不支持    |
   | GROUP BY ... HAVING... | SELECT/UPDATE/DELETE ... WHERE ... GROUP BY column HAVING column > value                | 不支持    |
   | 子查询                    | SELECT/UPDATE/DELETE ... WHERE column = (SELECT column FROM table WHERE column = value) | 不支持    |
+
+## 批量 INSERT
+
+多行 INSERT 在列影子算法仅匹配部分值时按插入值逐条路由，匹配的值进入影子数据源，其余值进入生产数据源。
+拆分后的语句会在两个数据源上执行，原子性取决于数据库配置的事务规则。

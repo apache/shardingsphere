@@ -30,4 +30,9 @@ public final class ShadowOrder {
      * Shadow order.
      */
     public static final int ORDER = 55;
+    
+    /**
+     * Shadow rewrite order.
+     */
+    public static final int REWRITE_ORDER = 1;
 }

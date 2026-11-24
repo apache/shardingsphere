@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -26,11 +27,14 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
+import org.apache.shardingsphere.shadow.route.determiner.ShadowInsertValueRouteDecider;
 import org.apache.shardingsphere.shadow.route.retriever.ShadowDataSourceMappingsRetrieverFactory;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -43,9 +47,12 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final ShadowRule rule, final Collection<String> tableNames, final ConfigurationProperties props) {
+        Map<String, String> shadowDataSourceMappings = ShadowDataSourceMappingsRetrieverFactory.newInstance(queryContext).retrieve(rule);
+        if (shadowDataSourceMappings.isEmpty() && decorateMultiValuesInsertRouteContext(routeContext, queryContext, rule)) {
+            return;
+        }
         Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
         Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
-        Map<String, String> shadowDataSourceMappings = ShadowDataSourceMappingsRetrieverFactory.newInstance(queryContext).retrieve(rule);
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String logicName = each.getDataSourceMapper().getLogicName();
             String actualName = each.getDataSourceMapper().getActualName();
@@ -59,6 +66,60 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
         }
         routeContext.getRouteUnits().removeAll(toBeRemovedRouteUnit);
         routeContext.getRouteUnits().addAll(toBeAddedRouteUnit);
+    }
+    
+    private boolean decorateMultiValuesInsertRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShadowRule rule) {
+        if (1 != routeContext.getRouteUnits().size() || !routeContext.getOriginalDataNodes().isEmpty() || routeContext.containsTableSharding()) {
+            return false;
+        }
+        if (!(queryContext.getSqlStatementContext() instanceof InsertStatementContext)) {
+            return false;
+        }
+        InsertStatementContext insertStatementContext = (InsertStatementContext) queryContext.getSqlStatementContext();
+        Collection<String> tableNames = insertStatementContext.getTablesContext().getTableNames();
+        if (tableNames.isEmpty()) {
+            return false;
+        }
+        String tableName = tableNames.iterator().next();
+        if (rule.filterShadowTables(Collections.singleton(tableName)).isEmpty()) {
+            return false;
+        }
+        List<Boolean> shadowRows = new ShadowInsertValueRouteDecider(rule, insertStatementContext).decide();
+        if (!isMixedShadowRows(shadowRows)) {
+            return false;
+        }
+        RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
+        Optional<String> productionDataSourceName = rule.findProductionDataSourceName(routeUnit.getDataSourceMapper().getActualName());
+        if (!productionDataSourceName.isPresent()) {
+            return false;
+        }
+        String shadowDataSourceName = rule.getShadowDataSourceMappings(tableName).get(productionDataSourceName.get());
+        if (null == shadowDataSourceName || shadowDataSourceName.equalsIgnoreCase(productionDataSourceName.get())) {
+            return false;
+        }
+        RouteUnit productionRouteUnit = new RouteUnit(new RouteMapper(routeUnit.getDataSourceMapper().getLogicName(), productionDataSourceName.get()), routeUnit.getTableMappers());
+        RouteUnit shadowRouteUnit = new RouteUnit(new RouteMapper(routeUnit.getDataSourceMapper().getLogicName(), shadowDataSourceName), routeUnit.getTableMappers());
+        Collection<Integer> productionInsertValueIndexes = new LinkedList<>();
+        Collection<Integer> shadowInsertValueIndexes = new LinkedList<>();
+        for (int i = 0; i < shadowRows.size(); i++) {
+            (shadowRows.get(i) ? shadowInsertValueIndexes : productionInsertValueIndexes).add(i);
+        }
+        routeContext.getRouteUnits().clear();
+        routeContext.getRouteUnits().add(productionRouteUnit);
+        routeContext.getRouteUnits().add(shadowRouteUnit);
+        routeContext.getRouteUnitInsertValueIndexes().put(productionRouteUnit, productionInsertValueIndexes);
+        routeContext.getRouteUnitInsertValueIndexes().put(shadowRouteUnit, shadowInsertValueIndexes);
+        return true;
+    }
+    
+    private boolean isMixedShadowRows(final List<Boolean> shadowRows) {
+        boolean shadow = false;
+        boolean production = false;
+        for (boolean each : shadowRows) {
+            shadow = shadow || each;
+            production = production || !each;
+        }
+        return shadow && production;
     }
     
     @Override
