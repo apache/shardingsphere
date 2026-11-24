@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdPingCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -44,6 +47,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -66,6 +70,18 @@ class FirebirdCommandPacketFactoryTest {
             lenient().when(payload.readBuffer().isReadable()).thenReturn(true);
         }
         assertThat(FirebirdCommandPacketFactory.newInstance(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), isA(expectedPacketType));
+    }
+    
+    @Test
+    void assertNewInstanceWithPing() {
+        ByteBuf buffer = Unpooled.buffer(Integer.BYTES).writeInt(FirebirdCommandPacketType.PING.getValue());
+        try {
+            FirebirdPacketPayload packetPayload = new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8);
+            assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PING, packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), isA(FirebirdPingCommandPacket.class));
+            assertThat(buffer.readableBytes(), is(0));
+        } finally {
+            buffer.release();
+        }
     }
     
     @ParameterizedTest(name = "{0}")

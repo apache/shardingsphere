@@ -37,6 +37,8 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdEndDatabaseCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdPingConnectionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
@@ -76,6 +78,8 @@ public final class FirebirdCommandExecutorFactory {
             case COMMIT:
             case ROLLBACK:
                 return new FirebirdEndTransactionCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
+            case DETACH:
+                return new FirebirdEndDatabaseCommandExecutor();
             case CANCEL_BLOB:
             case CLOSE_BLOB:
                 return new FirebirdEndBlobCommandExecutor((FirebirdSingleHandleCommandPacket) commandPacket, connectionSession, commandPacketType);
@@ -108,6 +112,8 @@ public final class FirebirdCommandExecutorFactory {
                 return new FirebirdFetchCommandExecutor((FirebirdFetchStatementPacket) commandPacket, connectionSession);
             case FREE_STATEMENT:
                 return new FirebirdEndStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
+            case PING:
+                return new FirebirdPingConnectionCommandExecutor();
             case BATCH_CREATE:
                 return new FirebirdBatchCreateCommandExecutor((FirebirdBatchCreateCommandPacket) commandPacket, connectionSession);
             case BATCH_MSG:

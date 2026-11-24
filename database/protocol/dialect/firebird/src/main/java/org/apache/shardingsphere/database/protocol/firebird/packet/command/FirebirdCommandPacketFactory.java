@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdPingCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
@@ -56,6 +57,8 @@ public final class FirebirdCommandPacketFactory {
     public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion,
                                                     final int connectionId) {
         switch (commandPacketType) {
+            case PING:
+                return new FirebirdPingCommandPacket(payload);
             case COMMIT:
             case PREPARE:
             case ROLLBACK:
@@ -124,6 +127,7 @@ public final class FirebirdCommandPacketFactory {
     public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
         switch (commandPacketType) {
             case PING:
+                return FirebirdPingCommandPacket.getLength();
             case ABORT_AUX_CONNECTION:
                 return 4;
             case CANCEL_EVENTS:

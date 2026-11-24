@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdPingCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdSingleHandleCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdPingConnectionCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
@@ -96,6 +98,7 @@ class FirebirdCommandExecutorFactoryTest {
     
     private static Stream<Arguments> newInstanceArguments() {
         return Stream.of(
+                Arguments.of("ping", FirebirdCommandPacketType.PING, FirebirdPingCommandPacket.class, FirebirdPingConnectionCommandExecutor.class),
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoCommandPacket.class, FirebirdInfoCommandExecutor.class),
                 Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoCommandPacket.class, FirebirdInfoCommandExecutor.class),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, FirebirdStartTransactionPacket.class, FirebirdStartTransactionCommandExecutor.class),
