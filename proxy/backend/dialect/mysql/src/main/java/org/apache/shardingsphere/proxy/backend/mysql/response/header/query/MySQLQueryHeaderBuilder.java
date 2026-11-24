@@ -54,7 +54,11 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean signed = resultSetMetaData.isSigned(columnIndex);
         boolean notNull = ResultSetMetaData.columnNoNulls == resultSetMetaData.isNullable(columnIndex);
         boolean autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
-        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
+        QueryHeader result = new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
+        if (Types.TIMESTAMP == columnType && resultSetMetaData.getOriginalColumnName(columnIndex).map(optional -> isDatetime(database, schemaName, tableName, optional)).orElse(false)) {
+            result.getProtocolAttributes().put(MYSQL_DATETIME, true);
+        }
+        return result;
     }
     
     private boolean isPrimaryKey(final ShardingSphereDatabase database, final String schemaName, final String tableName, final String columnName,
@@ -79,9 +83,15 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         return result >= 1 && result <= 6 ? result : decimals;
     }
     
+    private boolean isDatetime(final ShardingSphereDatabase database, final String schemaName, final String tableName, final String columnName) {
+        return null != database && Optional.ofNullable(database.getSchema(schemaName)).map(optional -> optional.getTable(tableName)).map(optional -> optional.getColumn(columnName))
+                .map(ShardingSphereColumn::isDatetime).orElse(false);
+    }
+    
     @Override
     @HighFrequencyInvocation
     public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+        queryHeader.getProtocolAttributes().remove(MYSQL_DATETIME);
         if (Types.TIMESTAMP != queryHeader.getColumnType() || !"DATETIME".equalsIgnoreCase(queryHeader.getColumnTypeName())) {
             return;
         }

@@ -20,16 +20,21 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.ColumnIndexOutOfRangeException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * ShardingSphere result set meta data.
@@ -124,6 +129,30 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
             return null == projection ? resultSetMetaData.getColumnName(column) : projection.getColumnName();
         }
         return resultSetMetaData.getColumnName(column);
+    }
+    
+    /**
+     * Get original column name from a corresponding bound projection.
+     *
+     * @param column column index, starting at 1
+     * @return bound original column name, if available
+     * @throws SQLException SQL exception
+     */
+    @HighFrequencyInvocation
+    public Optional<String> getOriginalColumnName(final int column) throws SQLException {
+        if (!(sqlStatementContext instanceof SelectStatementContext)) {
+            return Optional.empty();
+        }
+        List<Projection> projections = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections();
+        if (projections.size() != getColumnCount()) {
+            return Optional.empty();
+        }
+        Projection projection = projections.get(column - 1);
+        if (!(projection instanceof ColumnProjection)) {
+            return Optional.empty();
+        }
+        ColumnSegmentBoundInfo columnBoundInfo = ((ColumnProjection) projection).getColumnBoundInfo();
+        return null == columnBoundInfo || columnBoundInfo.getOriginalTable().getValue().isEmpty() ? Optional.empty() : Optional.of(columnBoundInfo.getOriginalColumn().getValue());
     }
     
     @Override
