@@ -29,7 +29,7 @@ import java.util.Collections;
  * DETACH - end database command executor for Firebird.
  */
 public final class FirebirdEndDatabaseCommandExecutor implements CommandExecutor {
-
+    
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         // TODO implement DETACH
