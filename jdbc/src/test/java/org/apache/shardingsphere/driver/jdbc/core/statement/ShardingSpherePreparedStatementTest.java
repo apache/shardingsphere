@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.statement.type.rul.sql.ParseStatement;
+import org.apache.shardingsphere.driver.executor.engine.batch.preparedstatement.DriverExecuteBatchExecutor;
 import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -81,10 +81,68 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class ShardingSpherePreparedStatementTest {
+    
+    @ParameterizedTest(name = "parameter index {0}")
+    @MethodSource("provideInvalidParameterIndexes")
+    void assertSetObjectWithInvalidIndex(final int parameterIndex) throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = createPreparedStatementWithParameters();
+        preparedStatement.setObject(1, 10);
+        preparedStatement.setObject(2, 10);
+        preparedStatement.setObject(3, null);
+        SQLException actual = assertThrows(SQLException.class, () -> preparedStatement.setObject(parameterIndex, 1));
+        assertThat(actual.getMessage(), is(String.format("Parameter index '%d' is out of range. Number of parameters: 3.", parameterIndex)));
+        assertThat(preparedStatement.getParameters(), is(Arrays.asList(10, 10, null)));
+    }
+    
+    private ShardingSpherePreparedStatement createPreparedStatementWithParameters() throws SQLException {
+        SQLStatement sqlStatement = spy(new SQLStatement(TypedSPILoader.getService(DatabaseType.class, "SQL92")));
+        when(sqlStatement.getParameterCount()).thenReturn(3);
+        return createPreparedStatementWithSQLStatement(sqlStatement);
+    }
+    
+    private static Stream<Integer> provideInvalidParameterIndexes() {
+        return Stream.of(-1, 0, 4);
+    }
+    
+    @Test
+    void assertSetObjectWithoutParameters() throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = createPreparedStatement();
+        SQLException actual = assertThrows(SQLException.class, () -> preparedStatement.setObject(1, 1));
+        assertThat(actual.getMessage(), is("Parameter index '1' is out of range. Number of parameters: 0."));
+        assertTrue(preparedStatement.getParameters().isEmpty());
+    }
+    
+    @Test
+    void assertSetObjectOutOfOrderAndRepeatedly() throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = createPreparedStatementWithParameters();
+        preparedStatement.setObject(3, "foo_status");
+        assertThat(preparedStatement.getParameters(), is(Arrays.asList(null, null, "foo_status")));
+        preparedStatement.setObject(1, 10);
+        preparedStatement.setObject(2, 10);
+        preparedStatement.setObject(1, 11);
+        preparedStatement.setObject(3, null);
+        assertThat(preparedStatement.getParameters(), is(Arrays.asList(11, 10, null)));
+    }
+    
+    @Test
+    void assertAddBatchAfterInvalidParameterIndex() throws SQLException, ReflectiveOperationException {
+        ShardingSpherePreparedStatement preparedStatement = createPreparedStatementWithParameters();
+        DriverExecuteBatchExecutor batchExecutor = mock(DriverExecuteBatchExecutor.class);
+        Plugins.getMemberAccessor().set(ShardingSpherePreparedStatement.class.getDeclaredField("executeBatchExecutor"), preparedStatement, batchExecutor);
+        preparedStatement.setObject(1, 10);
+        preparedStatement.setObject(2, 10);
+        preparedStatement.setObject(3, null);
+        assertThrows(SQLException.class, () -> preparedStatement.setObject(4, 1));
+        preparedStatement.addBatch();
+        verify(batchExecutor).addBatch(argThat(actual -> actual.getParameters().equals(Arrays.asList(10, 10, null))), same(preparedStatement.getUsedDatabase()));
+        assertTrue(preparedStatement.getParameters().isEmpty());
+    }
     
     @Test
     void assertGetQueryTimeoutBeforeExecution() throws SQLException {
@@ -256,12 +314,10 @@ class ShardingSpherePreparedStatementTest {
         ShardingSphereConnection connection = preparedStatement.getConnection();
         when(connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(dialectDatabaseMetaData.getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()).thenReturn(true);
         AtomicReference<DatabaseType> actualProtocolType = new AtomicReference<>();
-        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS), (mock, context) -> {
             actualProtocolType.set((DatabaseType) context.arguments().get(0));
-            when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+            when(mock.getDialectDatabaseMetaData().getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()).thenReturn(true);
         })) {
             SQLException actual = assertThrows(SQLFeatureNotSupportedException.class, preparedStatement::executeUpdate);
             assertThat(actual.getMessage(), is("Current transaction is aborted, commands ignored until end of transaction block."));
@@ -280,9 +336,8 @@ class ShardingSpherePreparedStatementTest {
     }
     
     private MockedConstruction<DatabaseTypeRegistry> mockFailedTransactionOption() {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(dialectDatabaseMetaData.getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()).thenReturn(true);
-        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+        return mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
+                (mock, context) -> when(mock.getDialectDatabaseMetaData().getTransactionOption().isAllowCommitAndRollbackOnlyWhenTransactionFailed()).thenReturn(true));
     }
     
     @Test
@@ -311,11 +366,9 @@ class ShardingSpherePreparedStatementTest {
         DriverExecutorFacade executor = mockExecutor(preparedStatement);
         SQLException expected = new SQLException("foo_failure");
         when(executor.executeUpdate(any(), any(), any(), any(), any(), any())).thenThrow(expected);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
-        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("public"));
         try (
-                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData))) {
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("public")))) {
             assertThat(assertThrows(SQLException.class, preparedStatement::executeUpdate), sameInstance(expected));
             verify(transactionContext).setExceptionOccur(true);
         }
