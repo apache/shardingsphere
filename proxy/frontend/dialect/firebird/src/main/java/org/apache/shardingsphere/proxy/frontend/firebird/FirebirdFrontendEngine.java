@@ -25,9 +25,9 @@ import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngi
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
-import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
+import org.apache.shardingsphere.proxy.frontend.firebird.establishingconnection.FirebirdAuthenticationEngine;
+import org.apache.shardingsphere.proxy.frontend.firebird.establishingconnection.FirebirdConnectionResourceManager;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 /**

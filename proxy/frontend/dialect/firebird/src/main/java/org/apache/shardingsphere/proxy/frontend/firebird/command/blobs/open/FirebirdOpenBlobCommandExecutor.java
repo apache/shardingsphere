@@ -1,0 +1,114 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.open;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.open.FirebirdBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.rowdata.FirebirdBlobBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.FirebirdBlobHandleGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.FirebirdBlobIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.FirebirdBlobReadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.FirebirdBlobWriteCache;
+
+import java.util.Collection;
+import java.util.Collections;
+
+/**
+ * Open blob command executor for Firebird.
+ */
+@RequiredArgsConstructor
+public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
+    
+    private final FirebirdBlobCommandPacket packet;
+    
+    private final ConnectionSession connectionSession;
+    
+    private final FirebirdCommandPacketType commandPacketType;
+    
+    @Override
+    public Collection<DatabasePacket> execute() {
+        if (FirebirdCommandPacketType.CREATE_BLOB == commandPacketType || FirebirdCommandPacketType.CREATE_BLOB2 == commandPacketType) {
+            return createBlob();
+        }
+        return openBlob();
+    }
+    
+    private Collection<DatabasePacket> createBlob() {
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
+        long blobId = FirebirdBlobIdGenerator.getInstance().nextBlobId(connectionSession.getConnectionId());
+        FirebirdBlobWriteCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobId, packet.isStreamBlob());
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
+    }
+    
+    /**
+     * Open a blob.
+     *
+     * <p>A zero BLOB id is the NULL BLOB quad, which Firebird opens as an empty BLOB instead of rejecting it,
+     * so it is registered with empty content rather than reported as an invalid BLOB id. A negative id refers to a
+     * result BLOB returned to the client, while a positive id refers to a BLOB the client created and closed, which
+     * Firebird allows to be opened again.</p>
+     *
+     * <p>Firebird stores the BLOB type with the BLOB and restores it when the BLOB is opened, so the type of a BLOB
+     * created by the client is taken from the blob parameter buffer of its create_blob2. A result BLOB is assembled by
+     * the proxy from backend column data without segment boundaries and carries no stored Firebird type, so it is a
+     * stream BLOB. The empty BLOB opened for the NULL quad is not a stream BLOB, matching Firebird.</p>
+     *
+     * @return response packets
+     */
+    private Collection<DatabasePacket> openBlob() {
+        long blobId = packet.getBlobId();
+        byte[] blobContent = getBlobContent(blobId);
+        int blobHandle = FirebirdBlobHandleGenerator.getInstance().nextBlobHandle(connectionSession.getConnectionId());
+        FirebirdBlobReadCache.getInstance().registerBlob(connectionSession.getConnectionId(), blobHandle, blobContent, isStreamBlob(blobId));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(blobHandle).setId(blobId));
+    }
+    
+    private byte[] getBlobContent(final long blobId) {
+        if (0L == blobId) {
+            return new byte[0];
+        }
+        return blobId < 0L ? getResultBlobContent(blobId) : getCreatedBlobContent(blobId);
+    }
+    
+    private byte[] getResultBlobContent(final long blobId) {
+        byte[] result = FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new InvalidSegstrIdException(blobId));
+        return result;
+    }
+    
+    private byte[] getCreatedBlobContent(final long blobId) {
+        ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
+        return FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId).get();
+    }
+    
+    @HighFrequencyInvocation
+    private boolean isStreamBlob(final long blobId) {
+        if (0L == blobId) {
+            return false;
+        }
+        return blobId < 0L || FirebirdBlobWriteCache.getInstance().isStreamBlob(connectionSession.getConnectionId(), blobId);
+    }
+}
