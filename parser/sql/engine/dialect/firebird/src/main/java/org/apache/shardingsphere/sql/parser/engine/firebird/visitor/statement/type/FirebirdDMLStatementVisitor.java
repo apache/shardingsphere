@@ -386,7 +386,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         getParameterMarkerSegments().add(result);
         return result;
     }
-
+    
     @Override
     public ASTNode visitSkipValue(final SkipValueContext ctx) {
         if (null != ctx.expr()) {
