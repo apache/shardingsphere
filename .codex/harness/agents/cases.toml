@@ -59,7 +59,7 @@ forbidden_actions = ["edit_non_code", "add_abstraction", "change_public_contract
 required_reasons = ["local_code_authorized", "existing_owner_sufficient", "pre_handoff_review_required"]
 required_summary_terms = ["ColumnMetaReader", "readColumns"]
 policy_binding_profile = "code-write"
-policy_assertions = [{source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point."]}]
+policy_assertions = [{source = "implementation-rules", statements = ["Before choosing an implementation, inspect applicable standard language and platform capabilities as well as the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point."]}]
 critical = true
 
 [[cases]]
@@ -4177,7 +4177,7 @@ required_summary_term_groups = [["getSimpleName", "VendorPool"]]
 forbidden_summary_terms = ["A.status=keep", "B.status=change"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect applicable standard language and platform capabilities as well as the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
 
 [[cases]]
 id = "discovery_02"
@@ -4243,7 +4243,7 @@ required_summary_term_groups = [["TYPE", "gauge"]]
 forbidden_summary_terms = ["A.status=keep", "B.status=change", "shared.status=change", "A.owners=[]", "B.owners=[SampleProvider,GenericCollector]"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
+policy_assertions = [{source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect applicable standard language and platform capabilities as well as the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Before adding an interface, SPI, public method, registration mechanism, or bridge, identify why existing capabilities cannot express the confirmed requirement, why the proposed owner owns it, and which confirmed acceptance criterion fails without the addition."]}]
 
 [[cases]]
 id = "discovery_03"
@@ -4988,7 +4988,7 @@ required_summary_terms = ["A.applied=[limit:8]", "A.status=change", "B.target=ac
 forbidden_summary_terms = ["A.status=keep", "B.status=change"]
 critical = true
 policy_binding_profile = "review-pr"
-policy_assertions = [{source = "review-pr-high-risk", statements = ["Keep dialect, protocol, and feature-specific behavior in its owning module.", "Shared code must not acquire target names, protocol identifiers, type-name string checks, or target lifecycle comments without a verified shared contract.", "Treat ownership or implicit-state concerns as blockers only when a reachable contract violation is proven; prefer explicit state only when it is the minimum necessary fix."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point."]}, {source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.", "For a defect, trace the failing path to the violated contract and its maintained owner; for another PR type, establish the goal and responsibilities it must preserve.", "Trace the patch's actual mechanism and compare it with a repair or reuse path in that owner; record why the chosen boundary addresses the cause or accepted goal and what remains outside scope.", "Verify outcome-sensitive assumptions about external calls, dependency versions, configuration and lifecycle, including side effects and resource cost on already-correct supported paths, before accepting the direction."]}]
+policy_assertions = [{source = "review-pr-high-risk", statements = ["Keep dialect, protocol, and feature-specific behavior in its owning module.", "Shared code must not acquire target names, protocol identifiers, type-name string checks, or target lifecycle comments without a verified shared contract.", "Treat ownership or implicit-state concerns as blockers only when a reachable contract violation is proven; prefer explicit state only when it is the minimum necessary fix."]}, {source = "implementation-rules", statements = ["Before choosing an implementation, inspect applicable standard language and platform capabilities as well as the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.", "Among designs that satisfy these prerequisites, first preserve the maintained architecture already present in the repository, including its behavior owners, module boundaries, and design patterns, unless the user explicitly requires an authorized architecture change.", "Prefer direct reuse, then composition or delegation, then an existing extension point."]}, {source = "review-pr", statements = ["`Full path`: trace the relevant production or test entry path end to end; inspect setup, wrappers, earlier calls, generators, and consuming runtime.", "`Counter-evidence`: check the strongest evidence that could disprove the finding, especially author or maintainer replies and version-specific facts.", "`Necessity`: the requested change is required for safety, correctness, or an applicable repository design or contract rule in the selected focus, not merely cleaner or preferable.", "For a defect, trace the failing path to the violated contract and its maintained owner; for another PR type, establish the goal and responsibilities it must preserve.", "Trace the patch's actual mechanism and compare it with a repair or reuse path in that owner; record why the chosen boundary addresses the cause or accepted goal and what remains outside scope.", "Verify outcome-sensitive assumptions about external calls, dependency versions, configuration and lifecycle, including side effects and resource cost on already-correct supported paths, before accepting the direction."]}]
 
 [[cases]]
 id = "parser_review_concise_summary_preserves_evidence"
@@ -5430,3 +5430,58 @@ policy_assertions = [
   { source = "java-javadoc", statements = ["Apply these writing rules to Java declarations and Javadocs added or changed by the current task and to review of that delta.", "Keep the Javadoc coverage, complete user-facing API and SPI contracts, explicit nullable-contract documentation, and constructor restrictions required by `CODE_OF_CONDUCT.md`.", "Describe a class or interface with a short responsibility phrase and a method with a short action phrase, using the existing project Javadoc structure.", "A simple description may closely match the declaration name, such as `License check context.`; do not require extra information merely to avoid restating it.", "Keep `@param`, `@return`, and `@throws` descriptions short and accurate, using the existing project format and tag order.", "Do not add generalized claims such as unused fields being nullable merely because the implementation permits them."] }
 ]
 critical = true
+
+[[cases]]
+id = "design_preflight_compares_standard_capabilities"
+group = "implementation design necessity"
+description = "Distinguishes sufficient standard capabilities, maintained type compatibility, and an explicitly requested extra mechanism."
+phase = "implementation preflight"
+ordinary_loop = false
+profile = "code-analysis"
+semantic_policy_assertions = true
+prompt = '''
+Answer this self-contained read-only design-policy question using only the supplied facts and bound rules.
+Do not inspect files, run commands, edit anything, or produce a Formal Review report.
+A, B and C are independent pre-edit decisions.
+
+A: The confirmed requirement is to reject an invalid JDBC parameter index with SQLException before changing stored parameters, with the invalid index and parameter count in the message.
+The existing owner already has the parsed parameter count, and SQLException(String) satisfies the required exception type and message.
+No maintained consumer requires a specialized exception type, SQLState or vendor code.
+An author proposes a new ParameterBindingException, a new error code and error-code documentation because sibling code uses an exception framework.
+Classify A using standard-api, new-type-required or unchecked.
+
+B: The maintained public compatibility contract requires an existing BindingSQLException type.
+Supported consumer code catches that specific type, and replacing it with ordinary SQLException would bypass that catch.
+The existing type and factory already provide the required behavior.
+Classify B using keep-existing-type, replace-with-standard-api or unchecked.
+
+C: The original user explicitly requests ParameterBindingException with SQLState 07009 and vendor code 12023, and also asks for necessity analysis before implementation.
+Standard SQLException(String, String, int) can express the required message, SQLState and vendor code; no consumer needs the proposed new type.
+No user has yet approved changing the named implementation or diagnostic fields.
+Classify the next pre-edit action using C_action=explain-simplification-first, implement-proposal-without-analysis or silently-ignore-proposal.
+Classify the required diagnostic fields using C_fields=preserve or discard.
+
+Report exactly one assignment for A, B, C_action and C_fields, then briefly explain each using required behavior and maintained contracts.
+'''
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["A=standard-api", "B=keep-existing-type", "C_action=explain-simplification-first", "C_fields=preserve"]
+forbidden_summary_terms = ["A=new-type-required", "A=unchecked", "B=replace-with-standard-api", "B=unchecked", "C_action=implement-proposal-without-analysis", "C_action=silently-ignore-proposal", "C_fields=discard"]
+critical = true
+policy_binding_profile = "code-analysis"
+policy_assertions = [
+  { source = "implementation-rules", statements = [
+    "Before choosing an implementation, inspect applicable standard language and platform capabilities as well as the current behavior owner, relevant architecture and sibling modules for existing capabilities and patterns that fit the required responsibilities, contracts and dependency boundaries.",
+    "Before introducing a new mechanism, identify the confirmed requirement or maintained contract that existing capabilities cannot satisfy.",
+    "When direct reuse can meet the required behavior and maintained contracts with fewer mechanisms than a requested implementation, explain the simpler alternative and its tradeoffs before coding; preserve explicit user constraints unless the user changes them.",
+    "Treat semantic and contract correctness, correct behavior and module ownership, verified compatibility and real boundaries, and every applicable authority, safety, scope, and architecture gate as prerequisites for each design choice.",
+    "A new abstraction must own production behavior, state, or a contract that existing types cannot express and must represent a real, stable variation or boundary.",
+  ] },
+  { source = "agents", statements = [
+    "Evaluate premises that affect correctness, scope, compatibility, safety, or cost.",
+    "Separate evidence from inference; report contradictory or insufficient evidence and the smallest alternative before acting."
+  ] }
+]
