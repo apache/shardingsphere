@@ -31,37 +31,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLBinaryColumnTypeTest {
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("jdbcTypeArguments")
-    void assertValueOfJDBC(final int jdbcType, final MySQLBinaryColumnType expected) {
-        assertThat(MySQLBinaryColumnType.valueOfJDBCType(jdbcType), is(expected));
-    }
-    
-    private static Stream<Arguments> jdbcTypeArguments() {
-        return Stream.of(
-                Arguments.of(Types.BIT, MySQLBinaryColumnType.BIT),
-                Arguments.of(Types.TINYINT, MySQLBinaryColumnType.TINY),
-                Arguments.of(Types.SMALLINT, MySQLBinaryColumnType.SHORT),
-                Arguments.of(Types.INTEGER, MySQLBinaryColumnType.LONG),
-                Arguments.of(Types.BIGINT, MySQLBinaryColumnType.LONGLONG),
-                Arguments.of(Types.FLOAT, MySQLBinaryColumnType.FLOAT),
-                Arguments.of(Types.REAL, MySQLBinaryColumnType.FLOAT),
-                Arguments.of(Types.DOUBLE, MySQLBinaryColumnType.DOUBLE),
-                Arguments.of(Types.NUMERIC, MySQLBinaryColumnType.NEWDECIMAL),
-                Arguments.of(Types.DECIMAL, MySQLBinaryColumnType.NEWDECIMAL),
-                Arguments.of(Types.CHAR, MySQLBinaryColumnType.STRING),
-                Arguments.of(Types.VARCHAR, MySQLBinaryColumnType.VAR_STRING),
-                Arguments.of(Types.LONGVARCHAR, MySQLBinaryColumnType.VAR_STRING),
-                Arguments.of(Types.DATE, MySQLBinaryColumnType.DATE),
-                Arguments.of(Types.TIME, MySQLBinaryColumnType.TIME),
-                Arguments.of(Types.TIMESTAMP, MySQLBinaryColumnType.TIMESTAMP),
-                Arguments.of(Types.BINARY, MySQLBinaryColumnType.LONG_BLOB),
-                Arguments.of(Types.VARBINARY, MySQLBinaryColumnType.TINY_BLOB),
-                Arguments.of(Types.LONGVARBINARY, MySQLBinaryColumnType.BLOB),
-                Arguments.of(Types.NULL, MySQLBinaryColumnType.NULL),
-                Arguments.of(Types.BLOB, MySQLBinaryColumnType.BLOB),
-                Arguments.of(Types.CLOB, MySQLBinaryColumnType.BLOB),
-                Arguments.of(Types.NCLOB, MySQLBinaryColumnType.BLOB));
+    @Test
+    void assertValueOfJDBC() {
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIT), is(MySQLBinaryColumnType.BIT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TINYINT), is(MySQLBinaryColumnType.TINY));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.SMALLINT), is(MySQLBinaryColumnType.SHORT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.INTEGER), is(MySQLBinaryColumnType.LONG));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIGINT), is(MySQLBinaryColumnType.LONGLONG));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.FLOAT), is(MySQLBinaryColumnType.FLOAT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.REAL), is(MySQLBinaryColumnType.FLOAT));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DOUBLE), is(MySQLBinaryColumnType.DOUBLE));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NUMERIC), is(MySQLBinaryColumnType.NEWDECIMAL));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DECIMAL), is(MySQLBinaryColumnType.NEWDECIMAL));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.CHAR), is(MySQLBinaryColumnType.STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARCHAR), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARCHAR), is(MySQLBinaryColumnType.VAR_STRING));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.DATE), is(MySQLBinaryColumnType.DATE));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIME), is(MySQLBinaryColumnType.TIME));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TIMESTAMP), is(MySQLBinaryColumnType.TIMESTAMP));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BINARY), is(MySQLBinaryColumnType.LONG_BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.VARBINARY), is(MySQLBinaryColumnType.TINY_BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.LONGVARBINARY), is(MySQLBinaryColumnType.BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NULL), is(MySQLBinaryColumnType.NULL));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.CLOB), is(MySQLBinaryColumnType.BLOB));
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NCLOB), is(MySQLBinaryColumnType.BLOB));
     }
     
     @ParameterizedTest(name = "{0}")

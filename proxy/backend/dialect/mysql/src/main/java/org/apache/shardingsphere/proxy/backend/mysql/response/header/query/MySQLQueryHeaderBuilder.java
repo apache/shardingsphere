@@ -55,7 +55,8 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean notNull = ResultSetMetaData.columnNoNulls == resultSetMetaData.isNullable(columnIndex);
         boolean autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
         QueryHeader result = new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
-        if (Types.TIMESTAMP == columnType && resultSetMetaData.getOriginalColumnName(columnIndex).map(optional -> isDatetime(database, schemaName, tableName, optional)).orElse(false)) {
+        if (Types.TIMESTAMP == columnType && null != database
+                && resultSetMetaData.getSelectStatementContext().map(optional -> MySQLDatetimeProjectionResolver.isDatetime(optional, database, columnIndex)).orElse(false)) {
             result.getProtocolAttributes().put(MYSQL_DATETIME, true);
         }
         return result;
@@ -81,11 +82,6 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         }
         int result = columnLength - 11;
         return result >= 1 && result <= 6 ? result : decimals;
-    }
-    
-    private boolean isDatetime(final ShardingSphereDatabase database, final String schemaName, final String tableName, final String columnName) {
-        return null != database && Optional.ofNullable(database.getSchema(schemaName)).map(optional -> optional.getTable(tableName)).map(optional -> optional.getColumn(columnName))
-                .map(ShardingSphereColumn::isDatetime).orElse(false);
     }
     
     @Override

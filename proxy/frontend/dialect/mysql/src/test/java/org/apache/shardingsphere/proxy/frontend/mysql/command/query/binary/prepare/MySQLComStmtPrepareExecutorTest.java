@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -66,6 +67,9 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
@@ -75,18 +79,23 @@ import org.mockito.quality.Strictness;
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -175,6 +184,61 @@ class MySQLComStmtPrepareExecutorTest {
         } finally {
             MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
         }
+    }
+    
+    @ParameterizedTest(name = "{0}: {3}")
+    @MethodSource("localTemporalProjectionCases")
+    void assertPrepareLocalTemporalResultType(final String scenario, final String sql, final boolean hinted, final MySQLBinaryColumnType expectedColumnType) throws SQLException {
+        when(packet.getSQL()).thenReturn(sql);
+        HintValueContext hintValueContext = new HintValueContext();
+        if (hinted) {
+            hintValueContext.setDataSourceName("foo_ds");
+        }
+        when(packet.getHintValueContext()).thenReturn(hintValueContext);
+        int connectionId = 18;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        ContextManager contextManager = mockContextManager();
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db");
+        ShardingSphereSchema schema = database.getSchema("foo_db");
+        ShardingSphereTable table = schema.getTable("user");
+        Collection<ShardingSphereColumn> columns = new ArrayList<>(table.getAllColumns());
+        columns.add(new ShardingSphereColumn("foo_date", Types.DATE, false, false, false, true, false, true));
+        schema.putTable(new ShardingSphereTable(table.getName(), columns, table.getAllIndexes(), table.getAllConstraints()));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        database.getResourceMetaData().getStorageUnits().put("foo_ds", storageUnit);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class)))
+                .thenAnswer(invocation -> fail("Local projection metadata must not load backend metadata"));
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        try {
+            Iterator<DatabasePacket> actual = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            assertThat(actual.next(), isA(MySQLComStmtPrepareOKPacket.class));
+            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(expectedColumnType.getValue()));
+            assertThat(actual.next(), isA(MySQLEofPacket.class));
+            assertFalse(actual.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertTrue(actualPreparedStatement.getParameterColumnTypes().isEmpty());
+        } finally {
+            MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
+        }
+    }
+    
+    private static Stream<Arguments> localTemporalProjectionCases() {
+        return Stream.of(
+                Arguments.of("hint-derived-timestamp", "SELECT user.mysql_datetime FROM (SELECT mysql_timestamp AS mysql_datetime FROM user) user", true, MySQLBinaryColumnType.TIMESTAMP),
+                Arguments.of("hint-physical-datetime", "SELECT user.mysql_datetime FROM user", true, MySQLBinaryColumnType.DATETIME),
+                Arguments.of("union-timestamp-datetime", "SELECT mysql_timestamp AS foo_value FROM user UNION ALL SELECT mysql_datetime FROM user", false, MySQLBinaryColumnType.DATETIME),
+                Arguments.of("union-datetime-timestamp", "SELECT mysql_datetime AS foo_value FROM user UNION ALL SELECT mysql_timestamp FROM user", false, MySQLBinaryColumnType.DATETIME),
+                Arguments.of("union-timestamp-timestamp", "SELECT mysql_timestamp AS foo_value FROM user UNION ALL SELECT mysql_timestamp FROM user", false, MySQLBinaryColumnType.TIMESTAMP),
+                Arguments.of("derived-union", "SELECT foo_derived.foo_value FROM (SELECT mysql_timestamp AS foo_value FROM user UNION ALL SELECT mysql_datetime FROM user) foo_derived",
+                        false, MySQLBinaryColumnType.DATETIME),
+                Arguments.of("bound-derived-timestamp", "SELECT foo_derived.mysql_datetime FROM (SELECT mysql_timestamp AS mysql_datetime FROM user) foo_derived", false,
+                        MySQLBinaryColumnType.TIMESTAMP),
+                Arguments.of("hint-non-temporal", "SELECT user.name FROM user", true, MySQLBinaryColumnType.VAR_STRING),
+                Arguments.of("datetime-union-null", "SELECT mysql_datetime AS foo_value FROM user UNION ALL SELECT NULL FROM user", false, MySQLBinaryColumnType.DATETIME),
+                Arguments.of("date-union-timestamp", "SELECT foo_date AS foo_value FROM user UNION ALL SELECT mysql_timestamp FROM user", false, MySQLBinaryColumnType.DATETIME));
     }
     
     @Test

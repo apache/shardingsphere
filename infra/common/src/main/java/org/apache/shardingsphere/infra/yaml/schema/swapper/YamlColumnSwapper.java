@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 
+import java.sql.Types;
+
 /**
  * YAML column swapper.
  */
@@ -37,8 +39,8 @@ public final class YamlColumnSwapper implements YamlConfigurationSwapper<YamlSha
         result.setVisible(data.isVisible());
         result.setUnsigned(data.isUnsigned());
         result.setNullable(data.isNullable());
-        if (data.isDatetime()) {
-            result.setDatetime(Boolean.TRUE);
+        if (Types.TIMESTAMP == data.getDataType()) {
+            result.setDatetime(data.getDatetime());
         }
         return result;
     }
@@ -46,6 +48,6 @@ public final class YamlColumnSwapper implements YamlConfigurationSwapper<YamlSha
     @Override
     public ShardingSphereColumn swapToObject(final YamlShardingSphereColumn yamlConfig) {
         return new ShardingSphereColumn(yamlConfig.getName(), yamlConfig.getDataType(), yamlConfig.isPrimaryKey(), yamlConfig.isGenerated(), yamlConfig.isCaseSensitive(), yamlConfig.isVisible(),
-                yamlConfig.isUnsigned(), yamlConfig.isNullable(), Boolean.TRUE.equals(yamlConfig.getDatetime()));
+                yamlConfig.isUnsigned(), yamlConfig.isNullable(), Types.TIMESTAMP == yamlConfig.getDataType() ? yamlConfig.getDatetime() : Boolean.FALSE);
     }
 }

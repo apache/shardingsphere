@@ -28,9 +28,6 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectS
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -140,37 +137,25 @@ class ShardingSphereResultSetMetaDataTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("originalColumnNameArguments")
-    void assertGetOriginalColumnName(final String name, final ResultSetMetaData metaData, final SQLStatementContext context, final Optional<String> expected) throws SQLException {
-        Optional<String> actual = new ShardingSphereResultSetMetaData(metaData, null, context).getOriginalColumnName(1);
+    @MethodSource("selectStatementContextArguments")
+    void assertGetSelectStatementContext(final String name, final ResultSetMetaData metaData, final SQLStatementContext context,
+                                         final Optional<SelectStatementContext> expected) throws SQLException {
+        Optional<SelectStatementContext> actual = new ShardingSphereResultSetMetaData(metaData, null, context).getSelectStatementContext();
         assertThat(actual, is(expected));
     }
     
-    private static Stream<Arguments> originalColumnNameArguments() throws SQLException {
-        Projection expression = mock(Projection.class);
-        when(expression.getColumnLabel()).thenReturn("foo_expression");
-        SelectStatementContext derived = createColumnContext(Arrays.asList(createOriginalColumnProjection("foo_alias", "foo_datetime"), mock(DerivedProjection.class)));
+    private static Stream<Arguments> selectStatementContextArguments() throws SQLException {
+        SelectStatementContext matching = createColumnContext(Collections.singletonList(mock(Projection.class)));
+        SelectStatementContext unexpanded = createColumnContext(Arrays.asList(new ShorthandProjection(null, Collections.emptyList()), mock(Projection.class)));
+        SelectStatementContext derived = createColumnContext(Arrays.asList(new ColumnProjection("foo_table", "foo_col", "foo_alias",
+                TypedSPILoader.getService(DatabaseType.class, "MySQL")), mock(DerivedProjection.class)));
         when(derived.containsDerivedProjections()).thenReturn(true);
         return Stream.of(
-                Arguments.of("ordinary", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(createOriginalColumnProjection("foo_datetime", "foo_datetime"))),
-                        Optional.of("foo_datetime")),
-                Arguments.of("timestamp-alias", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(createOriginalColumnProjection("foo_datetime", "foo_timestamp"))),
-                        Optional.of("foo_timestamp")),
-                Arguments.of("datetime-alias", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(createOriginalColumnProjection("foo_alias", "foo_datetime"))),
-                        Optional.of("foo_datetime")),
+                Arguments.of("matching", createPhysicalColumnMetaData(1), matching, Optional.of(matching)),
                 Arguments.of("non-select", mock(ResultSetMetaData.class), mock(SQLStatementContext.class), Optional.empty()),
-                Arguments.of("expression", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(expression)), Optional.empty()),
-                Arguments.of("unexpanded-shorthand", createPhysicalColumnMetaData(3), createColumnContext(Arrays.asList(new ShorthandProjection(null, Collections.emptyList()),
-                        createOriginalColumnProjection("foo_alias", "foo_datetime"))), Optional.empty()),
-                Arguments.of("hidden-derived-column", mock(ResultSetMetaData.class), derived, Optional.of("foo_datetime")),
-                Arguments.of("unbound-qualified-column", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(new ColumnProjection(new IdentifierValue("foo_table"),
-                        new IdentifierValue("foo_datetime"), null, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, null,
-                        new ColumnSegmentBoundInfo(new IdentifierValue("foo_datetime"))))), Optional.empty()),
-                Arguments.of("missing-bound-info", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(new ColumnProjection("foo_table", "foo_datetime", null,
-                        TypedSPILoader.getService(DatabaseType.class, "MySQL")))), Optional.empty()),
-                Arguments.of("bound-temporary-table", createPhysicalColumnMetaData(1), createColumnContext(Collections.singletonList(new ColumnProjection(null, new IdentifierValue("foo_alias"),
-                        null, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, null,
-                        new ColumnSegmentBoundInfo(null, new IdentifierValue("foo_table"), new IdentifierValue("foo_datetime"), TableSourceType.TEMPORARY_TABLE)))), Optional.of("foo_datetime")));
+                Arguments.of("without-statement", mock(ResultSetMetaData.class), null, Optional.empty()),
+                Arguments.of("unexpanded-shorthand", createPhysicalColumnMetaData(3), unexpanded, Optional.empty()),
+                Arguments.of("hidden-derived-column", mock(ResultSetMetaData.class), derived, Optional.of(derived)));
     }
     
     private static SelectStatementContext createColumnContext(final Collection<Projection> projections) {
@@ -178,11 +163,6 @@ class ShardingSphereResultSetMetaDataTest {
         SelectStatementContext result = mock(SelectStatementContext.class);
         when(result.getProjectionsContext()).thenReturn(projectionsContext);
         return result;
-    }
-    
-    private static ColumnProjection createOriginalColumnProjection(final String name, final String originalColumn) {
-        return new ColumnProjection(null, new IdentifierValue(name), null, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, null,
-                new ColumnSegmentBoundInfo(null, new IdentifierValue("foo_table"), new IdentifierValue(originalColumn), TableSourceType.PHYSICAL_TABLE));
     }
     
     private static ResultSetMetaData createPhysicalColumnMetaData(final int columnCount) throws SQLException {

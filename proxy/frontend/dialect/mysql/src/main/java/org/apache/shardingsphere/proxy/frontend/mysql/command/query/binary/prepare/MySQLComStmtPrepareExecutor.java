@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.mysql.response.header.query.MySQLDatetimeProjectionResolver;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -150,13 +151,17 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<MySQLPacket> createProjectionColumnDefinition41PacketsByLocalMetadata(final SelectStatementContext selectStatementContext, final int characterSet) {
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         ShardingSphereSchema schema = getSchema(selectStatementContext);
+        String databaseName = selectStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getCurrentDatabaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         Collection<MySQLPacket> result = new ArrayList<>(projections.size());
+        int columnIndex = 1;
         for (Projection each : projections) {
             ColumnProjection columnProjection = (ColumnProjection) each;
+            boolean mysqlDatetime = MySQLDatetimeProjectionResolver.isDatetime(selectStatementContext, database, columnIndex++);
             result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
                     .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
                     .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(column),
-                            MySQLBinaryColumnType.valueOfJDBCType(column.getDataType(), column.isDatetime())))
+                            mysqlDatetime ? MySQLBinaryColumnType.DATETIME : MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
                     .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
         }
         return result;

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.MockedStatic;
 
@@ -41,7 +41,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -142,59 +141,46 @@ class MySQLQueryHeaderBuilderTest {
         assertThat(actual.getTable(), is(actual.getTable()));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @CsvSource({"ordinary,foo_datetime,foo_datetime", "derived-alias,foo_alias,foo_datetime", "derived-alias-collision,foo_timestamp,foo_datetime"})
-    void assertBuildWithLocalDatetime(final String name, final String columnName, final String originalColumnName) throws SQLException {
+    @Test
+    void assertBuildWithLocalDatetime() throws SQLException {
         ShardingSphereResultSetMetaData metaData = mock(ShardingSphereResultSetMetaData.class);
-        when(metaData.getTableName(1)).thenReturn("foo_table");
-        when(metaData.getColumnName(1)).thenReturn(columnName);
-        when(metaData.getOriginalColumnName(1)).thenReturn(Optional.of(originalColumnName));
+        SelectStatementContext context = mock(SelectStatementContext.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getName()).thenReturn("foo_db");
         when(metaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
-        when(metaData.getColumnTypeName(1)).thenReturn("TIMESTAMP");
-        QueryHeader actual = queryHeaderBuilder.build(metaData, createTemporalDatabase(), "foo_alias", "foo_alias", 1);
-        assertTrue(Boolean.TRUE.equals(actual.getProtocolAttributes().get(MySQLQueryHeaderBuilder.MYSQL_DATETIME)));
-        assertThat(actual.getColumnType(), is(Types.TIMESTAMP));
-    }
-    
-    private static ShardingSphereDatabase createTemporalDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
-        when(result.getName()).thenReturn("foo_db");
-        ShardingSphereColumn datetime = new ShardingSphereColumn("foo_datetime", Types.TIMESTAMP, false, false, false, true, false, true, true);
-        ShardingSphereColumn timestamp = new ShardingSphereColumn("foo_timestamp", Types.TIMESTAMP, false, false, false, true, false, true);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.getTable("foo_table")).thenReturn(new ShardingSphereTable("foo_table", Arrays.asList(datetime, timestamp), Collections.emptyList(), Collections.emptyList()));
-        when(result.getSchema("foo_db")).thenReturn(schema);
-        return result;
+        when(metaData.getSelectStatementContext()).thenReturn(Optional.of(context));
+        try (MockedStatic<MySQLDatetimeProjectionResolver> mocked = mockStatic(MySQLDatetimeProjectionResolver.class)) {
+            mocked.when(() -> MySQLDatetimeProjectionResolver.isDatetime(context, database, 1)).thenReturn(true);
+            QueryHeader actual = queryHeaderBuilder.build(metaData, database, "foo_col", "foo_alias", 1);
+            assertTrue(Boolean.TRUE.equals(actual.getProtocolAttributes().get(MySQLQueryHeaderBuilder.MYSQL_DATETIME)));
+            assertThat(actual.getColumnType(), is(Types.TIMESTAMP));
+        }
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("localNonDatetimeArguments")
-    void assertBuildWithoutLocalDatetime(final String name, final ShardingSphereDatabase database, final int columnType, final String tableName,
-                                         final String columnName, final String originalColumnName) throws SQLException {
+    void assertBuildWithoutLocalDatetime(final String name, final int columnType, final boolean hasDatabase, final boolean hasContext) throws SQLException {
         ShardingSphereResultSetMetaData metaData = mock(ShardingSphereResultSetMetaData.class);
-        when(metaData.getTableName(1)).thenReturn(tableName);
-        when(metaData.getColumnName(1)).thenReturn(columnName);
-        when(metaData.getColumnType(1)).thenReturn(columnType);
-        if (Types.TIMESTAMP == columnType) {
-            when(metaData.getOriginalColumnName(1)).thenReturn(Optional.ofNullable(originalColumnName));
+        ShardingSphereDatabase database = hasDatabase ? mock(ShardingSphereDatabase.class) : null;
+        if (hasDatabase) {
+            when(database.getName()).thenReturn("foo_db");
         }
-        QueryHeader actual = queryHeaderBuilder.build(metaData, database, "foo_datetime", "foo_datetime", 1);
-        assertTrue(actual.getProtocolAttributes().isEmpty());
+        when(metaData.getColumnType(1)).thenReturn(columnType);
+        if (Types.TIMESTAMP == columnType && hasDatabase) {
+            when(metaData.getSelectStatementContext()).thenReturn(hasContext ? Optional.of(mock(SelectStatementContext.class)) : Optional.empty());
+        }
+        try (MockedStatic<MySQLDatetimeProjectionResolver> ignored = mockStatic(MySQLDatetimeProjectionResolver.class)) {
+            QueryHeader actual = queryHeaderBuilder.build(metaData, database, "foo_col", "foo_alias", 1);
+            assertTrue(actual.getProtocolAttributes().isEmpty());
+        }
     }
     
     private static Stream<Arguments> localNonDatetimeArguments() {
-        ShardingSphereDatabase databaseWithoutSchema = mock(ShardingSphereDatabase.class);
-        when(databaseWithoutSchema.getName()).thenReturn("foo_db");
         return Stream.of(
-                Arguments.of("timestamp-alias-collision", createTemporalDatabase(), Types.TIMESTAMP, "foo_table", "foo_timestamp", "foo_timestamp"),
-                Arguments.of("derived-timestamp-alias-collision", createTemporalDatabase(), Types.TIMESTAMP, "foo_table", "foo_datetime", "foo_timestamp"),
-                Arguments.of("unbound-alias-collision", createTemporalDatabase(), Types.TIMESTAMP, "foo_table", "foo_datetime", null),
-                Arguments.of("non-temporal", createTemporalDatabase(), Types.INTEGER, "foo_table", "foo_datetime", "foo_datetime"),
-                Arguments.of("unknown-column", createTemporalDatabase(), Types.TIMESTAMP, "foo_table", "foo_unknown", "foo_unknown"),
-                Arguments.of("unknown-table", createTemporalDatabase(), Types.TIMESTAMP, "foo_unknown", "foo_datetime", "foo_datetime"),
-                Arguments.of("expression", createTemporalDatabase(), Types.TIMESTAMP, "", "foo_datetime", "foo_datetime"),
-                Arguments.of("unknown-schema", databaseWithoutSchema, Types.TIMESTAMP, "foo_table", "foo_datetime", "foo_datetime"),
-                Arguments.of("no-database", null, Types.TIMESTAMP, "foo_table", "foo_datetime", "foo_datetime"));
+                Arguments.of("unconfirmed-type", Types.TIMESTAMP, true, true),
+                Arguments.of("without-context", Types.TIMESTAMP, true, false),
+                Arguments.of("non-temporal", Types.INTEGER, true, false),
+                Arguments.of("without-database", Types.TIMESTAMP, false, false));
     }
     
     @ParameterizedTest(name = "{0}")
