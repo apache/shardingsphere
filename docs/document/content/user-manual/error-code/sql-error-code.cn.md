@@ -106,6 +106,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 14002       | 44000     | Max length of unique resource name '%s' exceeded, should be less than 45.                 |
 | 14003       | 25000     | Transaction timeout should more than 0.                                                   |
 | 14004       | 25000     | Close transaction manager failed.                                                         |
+| 14005       | 25000     | Acquire global clock commit lock timeout of '%d' milliseconds.                            |
 | 14200       | 25000     | Failed to create '%s' XA data source.                                                     |
 | 14201       | 25000     | Can not start new XA transaction in a active transaction.                                 |
 | 14400       | 44000     | No application id within 'seata.conf' file.                                               |

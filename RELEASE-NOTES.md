@@ -84,6 +84,7 @@
 1. Proxy: Fix empty array literal decoding in PostgreSQL array parameter decoder - [#39137](https://github.com/apache/shardingsphere/pull/39137)
 1. Proxy: Fix incorrect generated key handling for explicit auto-increment values - [#38810](https://github.com/apache/shardingsphere/pull/38810)
 1. Proxy: Fix microseconds decoded as nanoseconds in MySQL binary TIME value - [#39138](https://github.com/apache/shardingsphere/pull/39138)
+1. Proxy: Fail transaction commit instead of skipping it when the global clock commit lock times out - [#35041](https://github.com/apache/shardingsphere/issues/35041)
 1. Proxy: Avoid consuming following prepared statement parameter bytes for zero-length MySQL binary TIME values - [#39233](https://github.com/apache/shardingsphere/pull/39233)
 1. Proxy: Fix MySQL BLOB data corruption when string-like prepared statement parameters target BLOB columns - [#39072](https://github.com/apache/shardingsphere/pull/39072)
 1. Proxy: Add MySQL exception mapping for ColumnNotFoundException - [#39126](https://github.com/apache/shardingsphere/pull/39126)

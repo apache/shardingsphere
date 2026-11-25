@@ -32,6 +32,15 @@ public final class FixtureGlobalClockProvider implements GlobalClockProvider {
     }
     
     @Override
+    public boolean tryLock(final long timeoutMillis) {
+        return true;
+    }
+    
+    @Override
+    public void unlock() {
+    }
+    
+    @Override
     public Object getType() {
         return "FIXTURE.FIXTURE";
     }

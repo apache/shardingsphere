@@ -100,14 +100,6 @@ public interface TransactionHook<T extends ShardingSphereRule> extends OrderedSP
     void afterCommit(T rule, DatabaseType databaseType, Collection<Connection> connections, TransactionConnectionContext transactionContext);
     
     /**
-     * Whether to need lock when transaction committed.
-     *
-     * @param rule rule
-     * @return need lock or not
-     */
-    boolean isNeedLockWhenCommit(T rule);
-    
-    /**
      * Process before rolling back the transaction.
      *
      * @param rule rule

@@ -37,4 +37,17 @@ public interface GlobalClockProvider extends TypedSPI {
      * @return next timestamp
      */
     long getNextTimestamp();
+    
+    /**
+     * Try to acquire the lock for committing transaction.
+     *
+     * @param timeoutMillis timeout milliseconds to wait for the lock
+     * @return whether the lock is acquired by current thread
+     */
+    boolean tryLock(long timeoutMillis);
+    
+    /**
+     * Release the lock for committing transaction held by current thread.
+     */
+    void unlock();
 }
