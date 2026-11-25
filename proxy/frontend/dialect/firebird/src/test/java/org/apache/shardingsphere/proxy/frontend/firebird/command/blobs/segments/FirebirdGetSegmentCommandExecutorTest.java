@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.segments;
 
-import lombok.SneakyThrows;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.segments.FirebirdGetBlobSegmentResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.segments.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.FirebirdBlobHandleGenerator;
@@ -35,16 +37,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -108,7 +110,7 @@ class FirebirdGetSegmentCommandExecutorTest {
         assertThat(actualPackets.size(), is(1));
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(2));
-        assertNull(actualGenericPacket.getData());
+        assertThat(getResponseData(actualGenericPacket), is(new byte[0]));
     }
     
     @Test
@@ -118,7 +120,7 @@ class FirebirdGetSegmentCommandExecutorTest {
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(2));
-        assertNull(actualGenericPacket.getData());
+        assertThat(getResponseData(actualGenericPacket), is(new byte[0]));
     }
     
     @Test
@@ -140,7 +142,6 @@ class FirebirdGetSegmentCommandExecutorTest {
         Collection<DatabasePacket> actualPackets = executor.execute();
         FirebirdGenericResponsePacket actualGenericPacket = (FirebirdGenericResponsePacket) actualPackets.iterator().next();
         assertThat(actualGenericPacket.getHandle(), is(1));
-        assertThat(actualGenericPacket.getData(), isA(FirebirdGetBlobSegmentResponsePacket.class));
         assertThat(getResponseSegment(actualGenericPacket), is(new byte[]{1, 2}));
     }
     
@@ -215,8 +216,24 @@ class FirebirdGetSegmentCommandExecutorTest {
         return Stream.of(Arguments.of("buffer filled", 5, 0), Arguments.of("room for segment length only", 7, 0), Arguments.of("room for another segment", 8, 2));
     }
     
-    @SneakyThrows(ReflectiveOperationException.class)
     private byte[] getResponseSegment(final FirebirdGenericResponsePacket responsePacket) {
-        return (byte[]) Plugins.getMemberAccessor().get(FirebirdGetBlobSegmentResponsePacket.class.getDeclaredField("segment"), responsePacket.getData());
+        ByteBuffer buffer = ByteBuffer.wrap(getResponseData(responsePacket)).order(ByteOrder.LITTLE_ENDIAN);
+        int length = Short.toUnsignedInt(buffer.getShort());
+        assertThat(buffer.remaining(), is(length));
+        byte[] result = new byte[length];
+        buffer.get(result);
+        return result;
+    }
+    
+    private byte[] getResponseData(final FirebirdGenericResponsePacket responsePacket) {
+        ByteBuf buffer = Unpooled.buffer();
+        try {
+            FirebirdPacketPayload payload = new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8);
+            responsePacket.write(payload);
+            payload.skipReserved(2 * Integer.BYTES + Long.BYTES);
+            return ByteBufUtil.getBytes(payload.readBuffer());
+        } finally {
+            buffer.release();
+        }
     }
 }

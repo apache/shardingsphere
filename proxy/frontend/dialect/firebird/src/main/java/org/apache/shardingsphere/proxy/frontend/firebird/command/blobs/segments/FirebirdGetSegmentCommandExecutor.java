@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.segments
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrHandleException;
-import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.segments.FirebirdGetBlobSegmentResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.segments.FirebirdSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -66,13 +65,17 @@ public final class FirebirdGetSegmentCommandExecutor implements CommandExecutor 
         int connectionId = connectionSession.getConnectionId();
         int blobHandle = FirebirdBlobHandleGenerator.getInstance().resolveBlobHandle(connectionId, packet.getBlobHandle());
         ShardingSpherePreconditions.checkState(FirebirdBlobHandleGenerator.getInstance().isAllocated(connectionId, blobHandle), () -> new InvalidSegstrHandleException(blobHandle));
-        Optional<BlobSegment> blobSegment = FirebirdBlobReadCache.getInstance().readSegment(connectionId, blobHandle, getMaxSegmentDataLength());
+        Optional<BlobSegment> blobSegment = FirebirdBlobReadCache.getInstance().readSegment(connectionId, blobHandle, getMaxSegmentDataLength(), SEGMENT_LENGTH_PREFIX_SIZE);
         if (!blobSegment.isPresent()) {
             return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(SEGMENT_STATE_EOF));
         }
         BlobSegment segment = blobSegment.get();
-        int segmentState = segment.isComplete() ? getLastSegmentState(segment.getData().length) : SEGMENT_STATE_PARTIAL;
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setData(new FirebirdGetBlobSegmentResponsePacket(segment.getData())));
+        byte[] responseData = segment.getData();
+        int segmentLength = responseData.length - SEGMENT_LENGTH_PREFIX_SIZE;
+        responseData[0] = (byte) segmentLength;
+        responseData[1] = (byte) (segmentLength >>> Byte.SIZE);
+        int segmentState = segment.isComplete() ? getLastSegmentState(segmentLength) : SEGMENT_STATE_PARTIAL;
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(segmentState).setDataBuffer(responseData));
     }
     
     private int getMaxSegmentDataLength() {

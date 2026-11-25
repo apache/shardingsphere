@@ -36,10 +36,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -136,6 +138,26 @@ class FirebirdGenericResponsePacketTest {
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_string);
         verify(payload).writeString("foo_error");
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_end);
+    }
+    
+    @Test
+    void assertWriteWithDataBufferReplacingPacket() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        FirebirdPacket data = mock(FirebirdPacket.class);
+        byte[] dataBuffer = {1, 2, 3};
+        FirebirdGenericResponsePacket.getPacket().setData(data).setDataBuffer(dataBuffer).write(payload);
+        verify(payload).writeBuffer(dataBuffer);
+        verifyNoInteractions(data);
+    }
+    
+    @Test
+    void assertWriteWithPacketReplacingDataBuffer() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readableBytes()).thenReturn(4, 8);
+        FirebirdPacket data = mock(FirebirdPacket.class);
+        FirebirdGenericResponsePacket.getPacket().setDataBuffer(new byte[]{1}).setData(data).write(payload);
+        verify(data).write(payload);
+        verify(payload, never()).writeBuffer(any(byte[].class));
     }
     
     @Test

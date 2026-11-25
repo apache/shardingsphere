@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.generic;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
@@ -35,6 +36,9 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     private long id;
     
     private FirebirdPacket data;
+    
+    @Getter(AccessLevel.NONE)
+    private byte[] dataBuffer;
     
     private FirebirdStatusVector statusVector;
     
@@ -90,6 +94,19 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      */
     public FirebirdGenericResponsePacket setData(final FirebirdPacket packet) {
         data = packet;
+        dataBuffer = null;
+        return this;
+    }
+    
+    /**
+     * Set the encoded contents of the response data buffer.
+     *
+     * @param buffer response data without its length or padding
+     * @return this instance with updated data
+     */
+    public FirebirdGenericResponsePacket setDataBuffer(final byte[] buffer) {
+        dataBuffer = buffer;
+        data = null;
         return this;
     }
     
@@ -140,7 +157,9 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         payload.writeInt4(writeZeroStatementId ? 0 : handle);
         writeZeroStatementId = false;
         payload.writeInt8(id);
-        if (null != data) {
+        if (null != dataBuffer) {
+            payload.writeBuffer(dataBuffer);
+        } else if (null != data) {
             payload.getByteBuf().writeZero(4);
             int index = payload.getByteBuf().readableBytes();
             data.write(payload);

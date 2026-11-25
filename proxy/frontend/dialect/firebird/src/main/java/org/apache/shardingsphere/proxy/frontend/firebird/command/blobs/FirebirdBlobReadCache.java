@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -93,12 +92,26 @@ public final class FirebirdBlobReadCache {
      * @return optional segment data
      */
     public Optional<BlobSegment> readSegment(final int connectionId, final int blobHandle, final int maximumLength) {
+        return readSegment(connectionId, blobHandle, maximumLength, 0);
+    }
+    
+    /**
+     * Read segment data into a buffer with room for a prefix.
+     *
+     * @param connectionId connection id
+     * @param blobHandle blob handle
+     * @param maximumLength maximum segment length excluding the prefix
+     * @param prefixLength number of bytes reserved before the segment data
+     * @return optional segment data with the reserved prefix
+     */
+    public Optional<BlobSegment> readSegment(final int connectionId, final int blobHandle, final int maximumLength, final int prefixLength) {
         BlobReadCursor cursor = getCursorMap(connectionId).get(blobHandle);
         if (null == cursor || 0 == cursor.getRemainingSize()) {
             return Optional.empty();
         }
         int segmentLength = Math.min(maximumLength, cursor.getRemainingSize());
-        byte[] data = Arrays.copyOfRange(cursor.content, cursor.offset, cursor.offset + segmentLength);
+        byte[] data = new byte[prefixLength + segmentLength];
+        System.arraycopy(cursor.content, cursor.offset, data, prefixLength, segmentLength);
         cursor.offset += segmentLength;
         return Optional.of(new BlobSegment(data, 0 == cursor.getRemainingSize()));
     }

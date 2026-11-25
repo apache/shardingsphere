@@ -99,6 +99,16 @@ class FirebirdBlobReadCacheTest {
     }
     
     @Test
+    void assertReadSegmentWithReservedPrefix() {
+        CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2, 3}, true);
+        Optional<BlobSegment> actual = CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2, 2);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getData(), is(new byte[]{0, 0, 1, 2}));
+        assertFalse(actual.get().isComplete());
+        assertThat(CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2).get().getData(), is(new byte[]{3}));
+    }
+    
+    @Test
     void assertReadCompleteSegmentKeepsCursor() {
         CACHE.registerBlob(CONNECTION_ID, BLOB_HANDLE, new byte[]{1, 2}, true);
         Optional<BlobSegment> actual = CACHE.readSegment(CONNECTION_ID, BLOB_HANDLE, 2);
