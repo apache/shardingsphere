@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Unar
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.interval.IntervalUnitExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -90,6 +91,11 @@ public final class ExpressionConverter {
     public static Optional<SqlNode> convert(final ExpressionSegment segment) {
         if (null == segment) {
             return Optional.empty();
+        }
+        if (segment instanceof TemporalLiteralExpressionSegment && !((TemporalLiteralExpressionSegment) segment).getDataType().isEmpty()) {
+            TemporalLiteralExpressionSegment temporalLiteral = (TemporalLiteralExpressionSegment) segment;
+            LiteralExpressionSegment literal = new LiteralExpressionSegment(temporalLiteral.getStartIndex(), temporalLiteral.getStopIndex(), temporalLiteral.getLiterals());
+            return TypeCastExpressionConverter.convert(new TypeCastExpression(segment.getStartIndex(), segment.getStopIndex(), temporalLiteral.getText(), literal, temporalLiteral.getDataType()));
         }
         if (segment instanceof LiteralExpressionSegment) {
             return LiteralExpressionConverter.convert((LiteralExpressionSegment) segment, null);

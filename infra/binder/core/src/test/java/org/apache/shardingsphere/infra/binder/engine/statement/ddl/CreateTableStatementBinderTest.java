@@ -26,11 +26,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -49,6 +51,22 @@ import static org.mockito.Mockito.when;
 class CreateTableStatementBinderTest {
     
     private final DatabaseType hiveDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Hive");
+    
+    @Test
+    void assertBindCreateTableAsExecute() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        ExecuteStatement executeStatement = new ExecuteStatement(databaseType);
+        executeStatement.setStatementName(new IdentifierValue("p"));
+        executeStatement.getArguments().add(new LiteralExpressionSegment(43, 43, 1));
+        CreateTableStatement createTableStatement = CreateTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(13, 18, new IdentifierValue("t_ctas")))).executeStatement(executeStatement).build();
+        CreateTableStatement actual = new CreateTableStatementBinder().bind(createTableStatement, new SQLStatementBinderContext(
+                createHiveMetaData(), "sharding_db", new HintValueContext(), createTableStatement, Collections.emptyList()));
+        assertTrue(actual.getExecuteStatement().isPresent());
+        assertThat(actual.getExecuteStatement().get().getStatementName().get().getValue(), is("p"));
+        assertThat(actual.getExecuteStatement().get().getArguments().size(), is(1));
+        assertThat(((LiteralExpressionSegment) actual.getExecuteStatement().get().getArguments().get(0)).getLiterals(), is(1));
+    }
     
     @Test
     void assertBindCreateTableAsSelectWithSelectSchema() {

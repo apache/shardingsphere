@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
@@ -42,7 +43,8 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean isWriteRouteStatement(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !isSelectStatement(sqlStatement);
+        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !isSelectStatement(sqlStatement)
+                || !SQLStatementContextExtractor.getDataModificationBaseContexts(sqlStatementContext).isEmpty();
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {

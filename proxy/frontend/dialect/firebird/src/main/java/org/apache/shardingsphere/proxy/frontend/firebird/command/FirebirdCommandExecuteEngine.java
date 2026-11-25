@@ -18,17 +18,22 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command;
 
 import io.netty.channel.ChannelHandlerContext;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdConnectionProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -44,6 +49,7 @@ import java.util.Optional;
 /**
  * Command execute engine for Firebird.
  */
+@Slf4j
 public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
@@ -58,8 +64,31 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     }
     
     @Override
+    @HighFrequencyInvocation
     public CommandExecutor getCommandExecutor(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) {
+        logCommand(type, packet, connectionSession);
         return FirebirdCommandExecutorFactory.newInstance((FirebirdCommandPacketType) type, packet, connectionSession);
+    }
+    
+    private void logCommand(final CommandPacketType type, final CommandPacket packet, final ConnectionSession connectionSession) {
+        if (!log.isDebugEnabled()) {
+            return;
+        }
+        int connectionId = connectionSession.getConnectionId();
+        if (packet instanceof FirebirdPrepareStatementPacket) {
+            FirebirdPrepareStatementPacket preparePacket = (FirebirdPrepareStatementPacket) packet;
+            log.debug("Firebird command: connectionId={}, operation={}, statementId={}, transactionId={}, sqlDialect={}", connectionId, type, preparePacket.getStatementId(),
+                    preparePacket.getTransactionId(), preparePacket.getSqlDialect());
+        } else if (packet instanceof FirebirdExecuteStatementPacket) {
+            FirebirdExecuteStatementPacket executePacket = (FirebirdExecuteStatementPacket) packet;
+            log.debug("Firebird command: connectionId={}, operation={}, statementId={}, transactionId={}, parameterCount={}", connectionId, type, executePacket.getStatementId(),
+                    executePacket.getTransactionId(), executePacket.getParameterValues().size());
+        } else if (packet instanceof FirebirdFetchStatementPacket) {
+            FirebirdFetchStatementPacket fetchPacket = (FirebirdFetchStatementPacket) packet;
+            log.debug("Firebird command: connectionId={}, operation={}, statementId={}, fetchSize={}", connectionId, type, fetchPacket.getStatementId(), fetchPacket.getFetchSize());
+        } else {
+            log.debug("Firebird command: connectionId={}, operation={}", connectionId, type);
+        }
     }
     
     @Override

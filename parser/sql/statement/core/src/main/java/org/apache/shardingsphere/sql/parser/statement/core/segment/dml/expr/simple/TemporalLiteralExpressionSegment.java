@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple;
 
+import lombok.Getter;
+
 /**
  * Temporal literal expression segment.
  */
@@ -24,9 +26,17 @@ public final class TemporalLiteralExpressionSegment extends LiteralExpressionSeg
     
     private final String text;
     
+    @Getter
+    private final String dataType;
+    
     public TemporalLiteralExpressionSegment(final int startIndex, final int stopIndex, final Object literals, final String text) {
+        this(startIndex, stopIndex, literals, text, "");
+    }
+    
+    public TemporalLiteralExpressionSegment(final int startIndex, final int stopIndex, final Object literals, final String text, final String dataType) {
         super(startIndex, stopIndex, literals);
         this.text = text;
+        this.dataType = dataType;
     }
     
     @Override

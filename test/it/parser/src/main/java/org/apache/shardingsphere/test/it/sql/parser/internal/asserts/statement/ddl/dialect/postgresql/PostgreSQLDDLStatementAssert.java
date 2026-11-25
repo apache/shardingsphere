@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLI
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLListenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLOpenStatement;
+import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLRepackStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.aggregate.PostgreSQLCreateAggregateStatement;
@@ -64,6 +65,10 @@ import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.statistics.
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.subscription.PostgreSQLAlterSubscriptionStatement;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.ddl.subscription.PostgreSQLCreateSubscriptionStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.policy.PolicyAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.postgresql.type.PostgreSQLClusterStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.postgresql.type.PostgreSQLDeclareStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.postgresql.type.PostgreSQLListenStatementAssert;
@@ -94,6 +99,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLNotifyStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLOpenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLReindexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLRepackStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLSecurityLabelStmtStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.PostgreSQLUnlistenStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.postgresql.aggregate.PostgreSQLCreateAggregateStatementTestCase;
@@ -151,6 +157,8 @@ public final class PostgreSQLDDLStatementAssert {
             PostgreSQLDeclareStatementAssert.assertIs(assertContext, (PostgreSQLDeclareStatement) actual, (PostgreSQLDeclareStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLClusterStatement) {
             PostgreSQLClusterStatementAssert.assertIs(assertContext, (PostgreSQLClusterStatement) actual, (PostgreSQLClusterStatementTestCase) expected);
+        } else if (actual instanceof PostgreSQLRepackStatement) {
+            assertRepack(assertContext, (PostgreSQLRepackStatement) actual, (PostgreSQLRepackStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLListenStatement) {
             PostgreSQLListenStatementAssert.assertIs(assertContext, (PostgreSQLListenStatement) actual, (PostgreSQLListenStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLUnlistenStatement) {
@@ -163,6 +171,23 @@ public final class PostgreSQLDDLStatementAssert {
             PostgreSQLSecurityLabelStmtStatementAssert.assertIs(assertContext, (PostgreSQLSecurityLabelStmtStatement) actual, (PostgreSQLSecurityLabelStmtStatementTestCase) expected);
         } else if (actual instanceof PostgreSQLOpenStatement) {
             PostgreSQLOpenStatementAssert.assertIs(assertContext, (PostgreSQLOpenStatement) actual, (PostgreSQLOpenStatementTestCase) expected);
+        }
+    }
+    
+    private static void assertRepack(final SQLCaseAssertContext assertContext, final PostgreSQLRepackStatement actual, final PostgreSQLRepackStatementTestCase expected) {
+        assertThat(assertContext.getText("Repack table presence assertion error: "), actual.getTable().isPresent(), is(null != expected.getTable()));
+        if (null != expected.getTable()) {
+            TableAssert.assertIs(assertContext, actual.getTable().get(), expected.getTable());
+        }
+        assertThat(assertContext.getText("Repack index presence assertion error: "), actual.getIndex().isPresent(), is(null != expected.getIndex()));
+        if (null != expected.getIndex()) {
+            IndexAssert.assertIs(assertContext, actual.getIndex().get(), expected.getIndex());
+        }
+        assertThat(assertContext.getText("Repack index mode assertion error: "), actual.isUsingIndex(), is(expected.isUsingIndex()));
+        ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getColumns());
+        assertThat(assertContext.getText("Repack options presence assertion error: "), actual.getOptions().isPresent(), is(null != expected.getOptions()));
+        if (null != expected.getOptions()) {
+            PolicyAssert.assertProperties(assertContext, actual.getOptions().get(), expected.getOptions());
         }
     }
     

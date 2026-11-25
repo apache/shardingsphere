@@ -68,4 +68,7 @@
     <sql-case id="set_decryption_double_quoted_oracle" value="SET DECRYPTION IDENTIFIED BY &quot;N0Way!&quot;" db-types="Oracle" />
     <sql-case id="set_extproc_dlls_empty_oracle" value="SET EXTPROC_DLLS=" db-types="Oracle" />
     <sql-case id="set_extproc_dlls_list_oracle" value="SET EXTPROC_DLLS=DLL1:DLL2" db-types="Oracle" />
+    <sql-case id="set_search_path_null_pg" value="SET search_path = NULL" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="set_search_path_null_to_pg" value="SET search_path TO NULL" db-types="PostgreSQL" case-types="Literal" />
+    <sql-case id="set_search_path_quoted_null_control_pg" value="SET search_path = 'NULL'" db-types="PostgreSQL" case-types="Literal" />
 </sql-cases>

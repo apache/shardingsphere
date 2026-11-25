@@ -171,6 +171,10 @@ public final class ExpressionExtractor {
             }
             if (each instanceof FunctionSegment) {
                 extractParameterMarkerExpressions(segments, ((FunctionSegment) each).getParameters());
+                ((FunctionSegment) each).getFilter().ifPresent(filter -> extractParameterMarkerExpressions(segments, Collections.singleton(filter)));
+            }
+            if (each instanceof AggregationProjectionSegment) {
+                extractParameterMarkerExpressions(segments, getAggregationExpressions((AggregationProjectionSegment) each));
             }
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
@@ -212,6 +216,15 @@ public final class ExpressionExtractor {
                 segments.add((ParameterMarkerExpressionSegment) each);
             }
         }
+    }
+    
+    private static Collection<ExpressionSegment> getAggregationExpressions(final AggregationProjectionSegment expression) {
+        if (!expression.getFilter().isPresent()) {
+            return expression.getParameters();
+        }
+        Collection<ExpressionSegment> result = new LinkedList<>(expression.getParameters());
+        result.add(expression.getFilter().get());
+        return result;
     }
     
     private static void extractParameterMarkerInCaseWhenExpression(final List<ParameterMarkerExpressionSegment> segments, final CaseWhenExpression expression) {
@@ -269,7 +282,7 @@ public final class ExpressionExtractor {
         }
         Collection<ColumnSegment> result = new LinkedList<>();
         if (expression instanceof AggregationProjectionSegment) {
-            for (ExpressionSegment each : ((AggregationProjectionSegment) expression).getParameters()) {
+            for (ExpressionSegment each : getAggregationExpressions((AggregationProjectionSegment) expression)) {
                 result.addAll(extractColumns(each, containsSubQuery));
             }
         }
@@ -318,6 +331,7 @@ public final class ExpressionExtractor {
             for (ExpressionSegment each : ((FunctionSegment) expression).getParameters()) {
                 result.addAll(extractColumns(each, containsSubQuery));
             }
+            ((FunctionSegment) expression).getFilter().ifPresent(filter -> result.addAll(extractColumns(filter, containsSubQuery)));
         }
         if (expression instanceof InExpression) {
             result.addAll(extractColumns(((InExpression) expression).getLeft(), containsSubQuery));
@@ -453,6 +467,7 @@ public final class ExpressionExtractor {
             for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
                 extractSubqueryCompareExpressionsFromExpression(result, each);
             }
+            ((FunctionSegment) expressionSegment).getFilter().ifPresent(filter -> extractSubqueryCompareExpressionsFromExpression(result, filter));
         }
         if (expressionSegment instanceof CaseWhenExpression) {
             CaseWhenExpression caseWhenExpression = (CaseWhenExpression) expressionSegment;

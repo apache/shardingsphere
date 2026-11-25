@@ -74,7 +74,7 @@ public interface QueryResult extends ExecuteResult, AutoCloseable {
      * Get CharacterStream.
      *
      * @param columnIndex column index
-     * @return reader
+     * @return reader, or null if the column value is SQL NULL
      * @throws SQLException SQL exception
      */
     Reader getCharacterStream(int columnIndex) throws SQLException;

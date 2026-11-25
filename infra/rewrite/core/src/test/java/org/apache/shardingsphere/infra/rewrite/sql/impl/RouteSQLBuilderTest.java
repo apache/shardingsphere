@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rewrite.sql.impl;
 
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.RouteUnitAwareSQLTokenFixture;
 import org.apache.shardingsphere.infra.rewrite.sql.fixture.SQLTokenFixture;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import java.util.Collections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RouteSQLBuilderTest {
     
@@ -47,6 +49,16 @@ class RouteSQLBuilderTest {
     void assertToSQLWithRouteUnitAwareSQLToken() {
         assertThat(new RouteSQLBuilder("SELECT * FROM tbl WHERE id=?", Collections.singletonList(new RouteUnitAwareSQLTokenFixture(14, 16)), createRouteUnit()).toSQL(),
                 is("SELECT * FROM tbl_0 WHERE id=?"));
+    }
+    
+    @Test
+    void assertToSQLWithTableShorthand() {
+        SubstitutableColumnNameToken token = mock(SubstitutableColumnNameToken.class);
+        when(token.isTableShorthand()).thenReturn(true);
+        when(token.getStopIndex()).thenReturn(4);
+        RouteUnit routeUnit = createRouteUnit();
+        when(token.toString(routeUnit)).thenReturn("foo_column");
+        assertThat(new RouteSQLBuilder("TABLE foo_table", Collections.singletonList(token), routeUnit).toSQL(), is("SELECT foo_column FROM foo_table"));
     }
     
     private RouteUnit createRouteUnit() {

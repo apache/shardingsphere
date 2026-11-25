@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql;
 
+import java.util.Optional;
+
 /**
  * Dialect SQL option.
  */
@@ -29,5 +31,23 @@ public interface DialectSQLOption {
      */
     default boolean isSupportWholeRowProjection() {
         return false;
+    }
+    
+    /**
+     * Get dummy table name.
+     *
+     * @return dummy table name, or empty if not declared
+     */
+    default Optional<String> getDummyTableName() {
+        return Optional.empty();
+    }
+    
+    /**
+     * Get the alias exposing the proposed row in an insert conflict action.
+     *
+     * @return proposed row alias, or empty if unsupported
+     */
+    default Optional<String> getInsertConflictProposedRowAlias() {
+        return Optional.empty();
     }
 }

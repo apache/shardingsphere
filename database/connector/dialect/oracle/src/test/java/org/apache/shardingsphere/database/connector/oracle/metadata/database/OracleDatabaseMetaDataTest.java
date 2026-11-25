@@ -27,12 +27,14 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaSemantics;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleFunctionOption;
+import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSQLOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -124,5 +126,12 @@ class OracleDatabaseMetaDataTest {
     @Test
     void assertGetFunctionOption() {
         assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(OracleFunctionOption.class));
+    }
+    
+    @Test
+    void assertGetSQLOption() {
+        DialectSQLOption actual = dialectDatabaseMetaData.getSQLOption();
+        assertThat(actual, isA(OracleSQLOption.class));
+        assertThat(actual.getDummyTableName(), is(Optional.of("DUAL")));
     }
 }

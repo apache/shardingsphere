@@ -21,4 +21,7 @@
     <sql-case id="drop_materialized_view_if_exists" value="DROP MATERIALIZED VIEW IF EXISTS tid_matview;" db-types="PostgreSQL" />
     <sql-case id="drop_materialized_view_basic" value="DROP MATERIALIZED VIEW sales_mv" db-types="Hive" />
     <sql-case id="drop_materialized_view_with_db" value="DROP MATERIALIZED VIEW db1.sales_mv" db-types="Hive" />
+    <sql-case id="drop_materialized_view_schema_targets" value="DROP MATERIALIZED VIEW IF EXISTS public.foo_mview CASCADE" db-types="PostgreSQL" />
+    <sql-case id="drop_materialized_view_multiple_targets" value="DROP MATERIALIZED VIEW public.foo_mview, archive.bar_mview RESTRICT" db-types="PostgreSQL" />
+    <sql-case id="drop_materialized_view_quoted_targets" value="DROP MATERIALIZED VIEW IF EXISTS &quot;Foo.Schema&quot;.&quot;Bar.View&quot;" db-types="PostgreSQL" />
 </sql-cases>
