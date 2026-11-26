@@ -17,7 +17,7 @@
 
 # Optional Cross-Cutting Skills
 
-The Skills in this file are optional workflow accelerators, not prerequisites. Availability alone is not a trigger. When an optional Skill is available and its trigger below applies, prefer it and use only the smallest matching Skill set. If it is unavailable, skip the Skill itself and continue with the applicable repository gates and ordinary workflow. Do not install, create, reconstruct, or treat the absence of an optional Skill as a blocker. Mention the absence only when the user explicitly requested the Skill or it leaves a material residual risk.
+The Skills in this file are optional workflow accelerators, not prerequisites. Availability alone is not a trigger. When an optional Skill is available and its trigger below applies, prefer it and use only the smallest matching Skill set. If it is unavailable, skip the Skill itself and continue with the applicable repository gates and ordinary workflow. Do not install, create, reconstruct, or treat the absence of an optional Skill as a blocker. Mention the absence only when the user explicitly requested the Skill, requested availability reporting for a recommended Skill list, or it leaves a material residual risk.
 
 Skipping a Skill never waives compatibility, correctness, security, scope, verification, or completion requirements. Using a Skill never expands the frozen task scope, allowed modules or files, acceptance checklist, write or remote authority, Git authority, or tool permissions. `AGENTS.md` prevails when a Skill conflicts with it.
 
