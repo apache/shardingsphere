@@ -17,10 +17,29 @@
 
 # Optional Cross-Cutting Skills
 
-The Skills in this file are optional workflow accelerators, not prerequisites. Availability alone is not a trigger. When an optional Skill is available and its trigger below applies, prefer it and use only the smallest matching Skill set. If it is unavailable, skip the Skill itself and continue with the applicable repository gates and ordinary workflow. Do not install, create, reconstruct, or treat the absence of an optional Skill as a blocker. Mention the absence only when the user explicitly requested the Skill, requested availability reporting for a recommended Skill list, or it leaves a material residual risk.
+The Skills in this file are optional workflow accelerators, not prerequisites. Availability alone is not a trigger. When an optional Skill is available and its trigger below applies, prefer it and use only the smallest matching Skill set. If it is unavailable, skip the Skill itself and continue with the applicable repository gates and ordinary workflow. Do not install, create, reconstruct, or treat the absence of an optional Skill as a blocker.
+For read-only tasks, mention the absence only when the user explicitly requested the Skill or it leaves a material residual risk.
 
 Skipping a Skill never waives compatibility, correctness, security, scope, verification, or completion requirements. Using a Skill never expands the frozen task scope, allowed modules or files, acceptance checklist, write or remote authority, Git authority, or tool permissions. `AGENTS.md` prevails when a Skill conflicts with it.
 
+## Recommended Skill Availability
+
+Before the first code-affecting write of each task, check every Skill listed under Task-Specific Use, including those whose triggers do not apply to the task.
+Use the active Skill catalog's path first.
+If the entry is omitted or unusable, check `<CODEX_HOME>/skills/<name>/SKILL.md` (default Codex home: `~/.codex`) and `~/.agents/skills/<name>/SKILL.md`.
+Probe only these known paths without recursive scans or network access, and confirm each candidate file exists, is nonempty, and is readable.
+
+Read the full instructions only for available Skills whose triggers apply, and follow the task-specific rules below.
+Combine all missing, unreadable, empty, or otherwise unloadable recommended Skills and their reasons into one warning per coding task, then continue with the existing workflow without claiming those Skills were used.
+Do not automatically install missing Skills during this check.
+Reuse availability and reading results within the same task unless the relevant files or installation state change.
+This warning-and-continue fallback never downgrades a required repository policy, validation, verification, or review gate.
+
+## Task-Specific Use
+
+- Every coding task: read and apply `$ponytail` when available before the first code-affecting write.
+  [Ponytail](https://github.com/DietrichGebert/ponytail/tree/main/skills/ponytail) is installed independently; its absence follows the availability check above.
+  Limit its guidance to the current task even if the Skill requests session-wide persistence, and preserve the repository's architecture, compatibility, validation, verification, review, and reporting requirements.
 - Implementation or review whose correctness depends on the current version of an external framework or library: use `$source-driven-development` when available. Identify the applicable version from repository dependency metadata, verify the relevant decision against authoritative primary documentation, record the source, and mark anything that cannot be verified as unverified. This verification remains required without the Skill. Do not invoke it for version-independent local logic.
 - Designing, adding, or changing a public API, SPI, extension, loading or registration contract, module boundary, externally visible interface, or cross-module type contract: use `$api-and-interface-design` when available before implementation. Apply the Architecture Change Gate in `AGENTS.md` and the contract rules in `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md` whether or not the Skill is available; using it does not authorize the change or expand the confirmed scope.
 - An unexpected test, build, runtime, or behavior failure: use `$debugging-and-error-recovery` when available. Stop unrelated implementation, preserve evidence, reproduce, localize, reduce, identify the root cause, and verify the result. Add focused regression protection only when the root cause is an in-scope production defect and the test protects meaningful owned behavior; do not add a test for an environment, infrastructure, or unrelated failure. A failure never authorizes an out-of-boundary fix or a Git write.

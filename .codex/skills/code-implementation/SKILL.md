@@ -11,6 +11,7 @@ description: "Implement, fix, refactor, or remove repository code under required
 
 Read every selected reference through EOF before relying on it. Do not substitute catalog metadata, a summary, another Skill, or ordinary coding judgment for a required repository source.
 
+- Before the first code-affecting write, read `.codex/context/cross-cutting-skills.md` through EOF and complete its recommended Skill availability check.
 - For every code-affecting write, read `.codex/skills/code-implementation/references/rules/implementation.md`.
 - Before loading the testing rules, use these routing facts: for Maven source trees only `src/main/**` may be the subject of added or updated tests; a change confined to `src/test/**` requires no additional coverage; and a script, configuration, policy, or harness change needs tests only when an existing focused test mechanism protects its behavior. Read `.codex/skills/code-implementation/references/rules/testing.md` before assessing test scenarios for changed `src/main/**` behavior, satisfying requested test or coverage work, or creating or changing a test.
 - Read `.codex/skills/code-implementation/references/rules/artifact-removal-and-contract-impact.md` before removing or replacing an owner, classifying an artifact as unused or removable, changing a public or externally visible contract, or modifying an affected snapshot, golden file, registration, loading path, or workflow filter.
