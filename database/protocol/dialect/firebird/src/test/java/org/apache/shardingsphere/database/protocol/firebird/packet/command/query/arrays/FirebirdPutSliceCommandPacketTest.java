@@ -57,16 +57,31 @@ class FirebirdPutSliceCommandPacketTest {
                         new byte[]{0, 0, 0, 1, -1, -1, -1, -2}),
                 Arguments.of("two padded CHAR values with relation and field names", new byte[]{1, 2, 1, 'R', 4, 1, 'F', 6, 1, BlrConstants.blr_text, 3, 0, (byte) 255}, 6,
                         new byte[]{'a', 'b', 'c', 0, 'd', 'e', 'f', 0}),
+                Arguments.of("four padded CHAR values", new byte[]{1, 6, 1, BlrConstants.blr_text, 3, 0, (byte) 255}, 12, new byte[16]),
+                Arguments.of("CHAR with character set", new byte[]{1, 6, 1, BlrConstants.blr_text2, 4, 0, 3, 0, (byte) 255}, 3, new byte[4]),
                 Arguments.of("VARCHAR values of different lengths", new byte[]{1, 6, 1, BlrConstants.blr_varying, 5, 0, (byte) 255}, 14,
                         new byte[]{0, 0, 0, 1, 'a', 0, 0, 0, 0, 0, 0, 5, 'b', 'c', 'd', 'e', 'f', 0, 0, 0}),
                 Arguments.of("VARCHAR value with a character set", new byte[]{1, 6, 1, BlrConstants.blr_varying2, 4, 0, 5, 0, (byte) 255}, 7,
                         new byte[]{0, 0, 0, 1, 'a', 0, 0, 0}),
+                Arguments.of("CSTRING without a character set", new byte[]{1, 6, 1, BlrConstants.blr_cstring, 5, 0, (byte) 255}, 5, new byte[]{0, 0, 0, 1, 'a', 0, 0, 0}),
                 Arguments.of("CSTRING with a character set", new byte[]{1, 6, 1, BlrConstants.blr_cstring2, 4, 0, 5, 0, (byte) 255}, 5, new byte[]{0, 0, 0, 1, 'a', 0, 0, 0}),
                 Arguments.of("short decimal float", new byte[]{1, 6, 1, BlrConstants.blr_dec64, (byte) 255}, 8, new byte[8]),
                 Arguments.of("long decimal float", new byte[]{1, 6, 1, BlrConstants.blr_dec128, (byte) 255}, 16, new byte[16]),
+                Arguments.of("64-bit integer", new byte[]{1, 6, 1, BlrConstants.blr_int64, 0, (byte) 255}, 8, new byte[8]),
+                Arguments.of("128-bit integer", new byte[]{1, 6, 1, BlrConstants.blr_int128, 0, (byte) 255}, 16, new byte[16]),
+                Arguments.of("quad", new byte[]{1, 6, 1, BlrConstants.blr_quad, 0, (byte) 255}, 8, new byte[8]),
+                Arguments.of("float", new byte[]{1, 6, 1, BlrConstants.blr_float, (byte) 255}, 4, new byte[4]),
+                Arguments.of("double", new byte[]{1, 6, 1, BlrConstants.blr_double, (byte) 255}, 8, new byte[8]),
+                Arguments.of("legacy double", new byte[]{1, 6, 1, BlrConstants.blr_d_float, (byte) 255}, 8, new byte[8]),
+                Arguments.of("date", new byte[]{1, 6, 1, BlrConstants.blr_sql_date, (byte) 255}, 4, new byte[4]),
+                Arguments.of("time", new byte[]{1, 6, 1, BlrConstants.blr_sql_time, (byte) 255}, 4, new byte[4]),
+                Arguments.of("timestamp", new byte[]{1, 6, 1, BlrConstants.blr_timestamp, (byte) 255}, 8, new byte[8]),
+                Arguments.of("time with time zone", new byte[]{1, 6, 1, BlrConstants.blr_sql_time_tz, (byte) 255}, 8, new byte[8]),
                 Arguments.of("timestamp with time zone", new byte[]{1, 6, 1, BlrConstants.blr_timestamp_tz, (byte) 255}, 12, new byte[12]),
                 Arguments.of("extended time with time zone", new byte[]{1, 6, 1, BlrConstants.blr_ex_time_tz, (byte) 255}, 8, new byte[12]),
-                Arguments.of("boolean padded to four bytes", new byte[]{1, 6, 1, BlrConstants.blr_bool, (byte) 255}, 1, new byte[]{1, 0, 0, 0}));
+                Arguments.of("extended timestamp with time zone", new byte[]{1, 6, 1, BlrConstants.blr_ex_timestamp_tz, (byte) 255}, 12, new byte[16]),
+                Arguments.of("boolean padded to four bytes", new byte[]{1, 6, 1, BlrConstants.blr_bool, (byte) 255}, 1, new byte[]{1, 0, 0, 0}),
+                Arguments.of("two boolean values", new byte[]{1, 6, 1, BlrConstants.blr_bool, (byte) 255}, 2, new byte[]{1, 0, 0, 0, 0, 0, 0, 0}));
     }
     
     @Test
@@ -96,8 +111,10 @@ class FirebirdPutSliceCommandPacketTest {
         return Stream.of(
                 Arguments.of("negative native length", new byte[]{1, 6, 1, BlrConstants.blr_long, 0, (byte) 255}, -1),
                 Arguments.of("invalid SDL version", new byte[]{2, 6, 1, BlrConstants.blr_long, 0, (byte) 255}, 4),
+                Arguments.of("descriptor without element", new byte[]{1}, 4),
                 Arguments.of("missing descriptor", new byte[]{1, (byte) 255}, 4),
                 Arguments.of("invalid element count", new byte[]{1, 6, 2, BlrConstants.blr_long, 0, (byte) 255}, 4),
+                Arguments.of("unsupported element type", new byte[]{1, 6, 1, 127, (byte) 255}, 4),
                 Arguments.of("zero declared text width", new byte[]{1, 6, 1, BlrConstants.blr_text, 0, 0, (byte) 255}, 1),
                 Arguments.of("zero native VARCHAR width", new byte[]{1, 6, 1, BlrConstants.blr_varying, -2, -1, (byte) 255}, 1));
     }
@@ -118,6 +135,43 @@ class FirebirdPutSliceCommandPacketTest {
         ByteBuf input = createRequest(new byte[]{1, 6, 1, BlrConstants.blr_short, 0, (byte) 255}, 4, new byte[]{0, 0, 0, 1, 0, 0, 0, 2});
         try {
             assertThat(FirebirdPutSliceCommandPacket.getLength(new FirebirdPacketPayload(input, StandardCharsets.UTF_8)), is(52));
+        } finally {
+            input.release();
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("sliceCases")
+    void assertGetLengthForSliceTypes(final String name, final byte[] descriptor, final int nativeLength, final byte[] data) {
+        ByteBuf input = createRequest(descriptor, nativeLength, data);
+        try {
+            int expected = input.readableBytes();
+            input.writeInt(FirebirdCommandPacketType.COMMIT.getValue());
+            assertThat(FirebirdPutSliceCommandPacket.getLength(new FirebirdPacketPayload(input, StandardCharsets.UTF_8)), is(expected));
+            assertThat(input.readerIndex(), is(Integer.BYTES));
+        } finally {
+            input.release();
+        }
+    }
+    
+    @Test
+    void assertGetLengthWithIncompleteFixedData() {
+        ByteBuf input = createRequest(new byte[]{1, 6, 1, BlrConstants.blr_short, 0, (byte) 255}, 4, new byte[0]);
+        try {
+            assertThat(FirebirdPutSliceCommandPacket.getLength(new FirebirdPacketPayload(input, StandardCharsets.UTF_8)), is(52));
+            assertThat(input.readerIndex(), is(Integer.BYTES));
+        } finally {
+            input.release();
+        }
+    }
+    
+    @Test
+    void assertGetLengthWithIncompleteVariableData() {
+        ByteBuf input = createRequest(new byte[]{1, 6, 1, BlrConstants.blr_varying, 5, 0, (byte) 255}, 7, new byte[]{0, 0, 0, 1});
+        try {
+            FirebirdPacketPayload payload = new FirebirdPacketPayload(input, StandardCharsets.UTF_8);
+            assertThrows(IndexOutOfBoundsException.class, () -> FirebirdPutSliceCommandPacket.getLength(payload));
+            assertThat(input.readerIndex(), is(Integer.BYTES));
         } finally {
             input.release();
         }
