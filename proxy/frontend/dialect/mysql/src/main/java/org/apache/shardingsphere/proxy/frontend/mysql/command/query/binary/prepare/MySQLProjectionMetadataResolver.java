@@ -19,8 +19,10 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
@@ -83,14 +85,16 @@ public final class MySQLProjectionMetadataResolver {
             int visibleColumnCount = ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, actualResultSetMetaData);
             Collection<MySQLPacket> result = new ArrayList<>(visibleColumnCount);
             DatabaseType actualType = null;
+            DialectDataTypeOption dataTypeOption = null;
             for (int columnIndex = 1; columnIndex <= visibleColumnCount; columnIndex++) {
                 QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, columnIndex);
                 boolean mysqlDatetime = Types.TIMESTAMP == queryHeader.getColumnType() && "DATETIME".equalsIgnoreCase(queryHeader.getColumnTypeName());
                 if (mysqlDatetime) {
                     if (null == actualType) {
                         actualType = DatabaseTypeFactory.get(actualPreparedStatement.getConnection().getMetaData());
+                        dataTypeOption = new DatabaseTypeRegistry(actualType).getDialectDatabaseMetaData().getDataTypeOption();
                     }
-                    mysqlDatetime = "MySQL".equals(actualType.getType());
+                    mysqlDatetime = dataTypeOption.isDatetimeDataType(queryHeader.getColumnType(), queryHeader.getColumnTypeName(), actualType);
                 }
                 result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet, mysqlDatetime));
             }

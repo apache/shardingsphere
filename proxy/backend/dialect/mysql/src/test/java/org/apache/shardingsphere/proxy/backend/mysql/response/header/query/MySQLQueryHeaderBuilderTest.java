@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
@@ -53,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -185,24 +188,33 @@ class MySQLQueryHeaderBuilderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("datetimeStorageArguments")
-    void assertAppendProtocolAttributesWithDatetime(final String name, final DatabaseType storageType, final Map<String, Object> expected) throws SQLException {
+    void assertAppendProtocolAttributesWithDatetime(final String name, final DatabaseType storageType, final boolean datetime, final Map<String, Object> expected) throws SQLException {
         QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
         actual.getProtocolAttributes().put(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true);
         ResultSet resultSet = mock(ResultSet.class, RETURNS_DEEP_STUBS);
-        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class)) {
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        DialectDataTypeOption dataTypeOption = mock(DialectDataTypeOption.class);
+        when(dialectDatabaseMetaData.getDataTypeOption()).thenReturn(dataTypeOption);
+        if (datetime) {
+            when(dataTypeOption.isDatetimeDataType(Types.TIMESTAMP, "DATETIME", storageType)).thenReturn(true);
+        }
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class); MockedStatic<DatabaseTypedSPILoader> mockedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             mocked.when(() -> DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData())).thenReturn(storageType);
+            mockedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, storageType)).thenReturn(dialectDatabaseMetaData);
             queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
         }
         assertThat(actual.getProtocolAttributes(), is(expected));
+        verify(dialectDatabaseMetaData).getDataTypeOption();
+        verify(dataTypeOption).isDatetimeDataType(Types.TIMESTAMP, "DATETIME", storageType);
     }
     
     private static Stream<Arguments> datetimeStorageArguments() {
         DatabaseType sqlserver = mock(DatabaseType.class);
-        when(sqlserver.getType()).thenReturn("SQLServer");
         return Stream.of(
-                Arguments.of("mysql", TypedSPILoader.getService(DatabaseType.class, "MySQL"), Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)),
-                Arguments.of("sqlserver", sqlserver, Collections.emptyMap()),
-                Arguments.of("mysql-trunk-only", TypedSPILoader.getService(DatabaseType.class, "H2"), Collections.emptyMap()));
+                Arguments.of("mysql", TypedSPILoader.getService(DatabaseType.class, "MySQL"), true, Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)),
+                Arguments.of("mysql-provider-false", TypedSPILoader.getService(DatabaseType.class, "MySQL"), false, Collections.emptyMap()),
+                Arguments.of("sqlserver", sqlserver, false, Collections.emptyMap()),
+                Arguments.of("mysql-trunk-only", TypedSPILoader.getService(DatabaseType.class, "H2"), false, Collections.emptyMap()));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -211,7 +223,11 @@ class MySQLQueryHeaderBuilderTest {
         QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_column", "foo_column", jdbcType, typeName, 26, 6, true, false, false, false);
         actual.getProtocolAttributes().put(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true);
         ResultSet resultSet = mock(ResultSet.class);
-        queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
+        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class); MockedStatic<DatabaseTypedSPILoader> mockedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
+            mocked.verifyNoInteractions();
+            mockedSPILoader.verifyNoInteractions();
+        }
         assertTrue(actual.getProtocolAttributes().isEmpty());
         verifyNoInteractions(resultSet);
     }

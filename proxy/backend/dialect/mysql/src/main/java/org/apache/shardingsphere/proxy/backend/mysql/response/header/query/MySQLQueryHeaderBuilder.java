@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -92,7 +93,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
             return;
         }
         DatabaseType actualType = DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData());
-        if ("MySQL".equals(actualType.getType())) {
+        if (new DatabaseTypeRegistry(actualType).getDialectDatabaseMetaData().getDataTypeOption().isDatetimeDataType(queryHeader.getColumnType(), queryHeader.getColumnTypeName(), actualType)) {
             queryHeader.getProtocolAttributes().put(MYSQL_DATETIME, true);
         }
     }
