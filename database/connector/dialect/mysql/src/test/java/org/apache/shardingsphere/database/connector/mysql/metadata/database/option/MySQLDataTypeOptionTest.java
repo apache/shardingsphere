@@ -18,24 +18,17 @@
 package org.apache.shardingsphere.database.connector.mysql.metadata.database.option;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigInteger;
 import java.sql.Types;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MySQLDataTypeOptionTest {
     
@@ -89,26 +82,5 @@ class MySQLDataTypeOptionTest {
     void assertIsBinaryDataType() {
         assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY, null));
         assertFalse(dataTypeOption.isBinaryDataType(Types.INTEGER, null));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("datetimeArguments")
-    void assertIsDatetimeDataType(final String name, final String storageType, final int sqlType, final String dataTypeName, final boolean expected) {
-        DatabaseType databaseType = mock(DatabaseType.class);
-        when(databaseType.getType()).thenReturn(storageType);
-        assertTrue(dataTypeOption.isDatetimeDataType(sqlType, dataTypeName, databaseType) == expected);
-    }
-    
-    private static Stream<Arguments> datetimeArguments() {
-        return Stream.of(
-                Arguments.of("MySQL DATETIME", "MySQL", Types.TIMESTAMP, "DATETIME", true),
-                Arguments.of("MySQL lowercase datetime", "MySQL", Types.TIMESTAMP, "datetime", true),
-                Arguments.of("MySQL TIMESTAMP", "MySQL", Types.TIMESTAMP, "TIMESTAMP", false),
-                Arguments.of("different JDBC type", "MySQL", Types.DATE, "DATETIME", false),
-                Arguments.of("missing native type", "MySQL", Types.TIMESTAMP, null, false),
-                Arguments.of("empty native type", "MySQL", Types.TIMESTAMP, "", false),
-                Arguments.of("other storage DATETIME", "SQLServer", Types.TIMESTAMP, "DATETIME", false),
-                Arguments.of("MariaDB delegated option", "MariaDB", Types.TIMESTAMP, "DATETIME", false),
-                Arguments.of("H2 MySQL trunk", "H2", Types.TIMESTAMP, "DATETIME", false));
     }
 }

@@ -43,9 +43,4 @@ public final class YamlShardingSphereColumn implements YamlConfiguration {
     private boolean unsigned;
     
     private boolean nullable;
-    
-    /**
-     * {@code null} means that DATETIME has not been confirmed.
-     */
-    private Boolean datetime;
 }

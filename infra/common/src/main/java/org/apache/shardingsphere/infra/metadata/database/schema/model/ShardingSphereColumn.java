@@ -46,27 +46,8 @@ public final class ShardingSphereColumn {
     
     private final boolean nullable;
     
-    /**
-     * {@code null} means that the original temporal type has not been loaded.
-     */
-    private final Boolean datetime;
-    
-    public ShardingSphereColumn(final String name, final int dataType, final boolean primaryKey, final boolean generated, final boolean caseSensitive, final boolean visible, final boolean unsigned,
-                                final boolean nullable) {
-        this(name, dataType, primaryKey, generated, caseSensitive, visible, unsigned, nullable, false);
-    }
-    
     public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
-        this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible(),
-                columnMetaData.isUnsigned(), columnMetaData.isNullable(), columnMetaData.isDatetime());
-    }
-    
-    /**
-     * Judge whether the original type is confirmed as DATETIME.
-     *
-     * @return whether the original type is DATETIME
-     */
-    public boolean isDatetime() {
-        return Boolean.TRUE.equals(datetime);
+        this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(),
+                columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned(), columnMetaData.isNullable());
     }
 }

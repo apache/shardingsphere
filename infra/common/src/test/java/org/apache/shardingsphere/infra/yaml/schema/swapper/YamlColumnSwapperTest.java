@@ -17,19 +17,13 @@
 
 package org.apache.shardingsphere.infra.yaml.schema.swapper;
 
-import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereColumn;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Types;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlColumnSwapperTest {
@@ -48,32 +42,6 @@ class YamlColumnSwapperTest {
         assertTrue(actual.isVisible());
         assertFalse(actual.isUnsigned());
         assertFalse(actual.isNullable());
-        assertNull(actual.getDatetime());
-        assertFalse(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).containsKey("datetime"));
-    }
-    
-    @Test
-    void assertSwapToYamlConfigurationWithDatetime() {
-        ColumnMetaData columnMetaData = new ColumnMetaData("foo_col", Types.TIMESTAMP, false, false, false, true, false, true, true);
-        YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(new ShardingSphereColumn(columnMetaData));
-        assertTrue(actual.getDatetime());
-        assertTrue(Boolean.TRUE.equals(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).get("datetime")));
-    }
-    
-    @Test
-    void assertSwapToYamlConfigurationWithTimestamp() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.TIMESTAMP, false, false, false, true, false, true, false);
-        YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(column);
-        assertFalse(actual.getDatetime());
-        assertTrue(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).containsKey("datetime"));
-    }
-    
-    @Test
-    void assertSwapToYamlConfigurationWithUnknownTemporalType() {
-        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.TIMESTAMP, false, false, false, true, false, true, null);
-        YamlShardingSphereColumn actual = swapper.swapToYamlConfiguration(column);
-        assertNull(actual.getDatetime());
-        assertFalse(YamlEngine.unmarshal(YamlEngine.marshal(actual), Map.class).containsKey("datetime"));
     }
     
     @Test
@@ -96,27 +64,5 @@ class YamlColumnSwapperTest {
         assertFalse(actual.isVisible());
         assertTrue(actual.isUnsigned());
         assertTrue(actual.isNullable());
-        assertFalse(actual.isDatetime());
-    }
-    
-    @Test
-    void assertSwapToObjectWithDatetime() {
-        ShardingSphereColumn actual = swapper.swapToObject(YamlEngine.unmarshal("name: foo_col\ndataType: 93\ndatetime: true\n", YamlShardingSphereColumn.class));
-        assertTrue(actual.getDatetime());
-        assertTrue(actual.isDatetime());
-    }
-    
-    @Test
-    void assertSwapToObjectWithTimestamp() {
-        ShardingSphereColumn actual = swapper.swapToObject(YamlEngine.unmarshal("name: foo_col\ndataType: 93\ndatetime: false\n", YamlShardingSphereColumn.class));
-        assertFalse(actual.getDatetime());
-        assertFalse(actual.isDatetime());
-    }
-    
-    @Test
-    void assertSwapToObjectWithUnknownTemporalType() {
-        ShardingSphereColumn actual = swapper.swapToObject(YamlEngine.unmarshal("name: foo_col\ndataType: 93\n", YamlShardingSphereColumn.class));
-        assertNull(actual.getDatetime());
-        assertFalse(actual.isDatetime());
     }
 }

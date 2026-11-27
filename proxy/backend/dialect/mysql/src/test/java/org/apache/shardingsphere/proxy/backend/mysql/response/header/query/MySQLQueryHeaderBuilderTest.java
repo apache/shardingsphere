@@ -17,35 +17,38 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
-import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockedStatic;
 
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -53,12 +56,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings({ProxyContext.class, DatabaseTypeFactory.class})
 class MySQLQueryHeaderBuilderTest {
     
     private final QueryHeaderBuilder queryHeaderBuilder = DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, TypedSPILoader.getService(DatabaseType.class, "MySQL"));
@@ -87,7 +92,7 @@ class MySQLQueryHeaderBuilderTest {
     @Test
     void assertBuild() throws SQLException {
         ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), "order_id", "order_id", 1);
         assertThat(actual.getSchema(), is("foo_db"));
         assertThat(actual.getTable(), is("t_logic_order"));
         assertThat(actual.getColumnLabel(), is("order_id"));
@@ -101,139 +106,20 @@ class MySQLQueryHeaderBuilderTest {
         assertTrue(actual.isAutoIncrement());
     }
     
-    @Test
-    void assertBuildWithoutPrimaryKeyColumn() throws SQLException {
-        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
-        assertFalse(new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), resultSetMetaData.getColumnName(2), resultSetMetaData.getColumnLabel(2), 2).isPrimaryKey());
+    private ShardingSphereResultSetMetaData createResultSetMetaData() throws SQLException {
+        return createResultSetMetaData("t_logic_order", 1);
     }
     
-    @Test
-    void assertBuildWithAliasColumnAndOriginalPrimaryKey() throws SQLException {
-        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), "order_id_alias", "order_id_alias", 1);
-        assertTrue(actual.isPrimaryKey());
-    }
-    
-    @Test
-    void assertBuildWithNullDatabase() throws SQLException {
-        ShardingSphereResultSetMetaData resultSetMetaData = createActualResultSetMetaData("t_order");
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, null, resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
-        assertFalse(actual.isPrimaryKey());
-        assertThat(actual.getTable(), is("t_order"));
-    }
-    
-    @Test
-    void assertBuildWithNullSchema() throws SQLException {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getAllSchemas()).thenReturn(Collections.emptyList());
-        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
-        when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
-        when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
-        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData("t_order");
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, database, resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
-        assertFalse(actual.isPrimaryKey());
-        assertThat(actual.getTable(), is("t_order"));
-    }
-    
-    @Test
-    void assertBuildWithoutDataNodeContainedRule() throws SQLException {
-        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
-        QueryHeader actual = new MySQLQueryHeaderBuilder().build(
-                resultSetMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), resultSetMetaData.getColumnName(1), resultSetMetaData.getColumnLabel(1), 1);
-        assertFalse(actual.isPrimaryKey());
-        assertThat(actual.getTable(), is(actual.getTable()));
-    }
-    
-    @Test
-    void assertBuildWithLocalDatetime() throws SQLException {
-        ShardingSphereResultSetMetaData metaData = mock(ShardingSphereResultSetMetaData.class);
-        SelectStatementContext context = mock(SelectStatementContext.class);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("foo_db");
-        when(metaData.getColumnType(1)).thenReturn(Types.TIMESTAMP);
-        when(metaData.getSelectStatementContext()).thenReturn(Optional.of(context));
-        try (MockedStatic<MySQLDatetimeProjectionResolver> mocked = mockStatic(MySQLDatetimeProjectionResolver.class)) {
-            mocked.when(() -> MySQLDatetimeProjectionResolver.isDatetime(context, database, 1)).thenReturn(true);
-            QueryHeader actual = queryHeaderBuilder.build(metaData, database, "foo_col", "foo_alias", 1);
-            assertTrue(Boolean.TRUE.equals(actual.getProtocolAttributes().get(MySQLQueryHeaderBuilder.MYSQL_DATETIME)));
-            assertThat(actual.getColumnType(), is(Types.TIMESTAMP));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("localNonDatetimeArguments")
-    void assertBuildWithoutLocalDatetime(final String name, final int columnType, final boolean hasDatabase, final boolean hasContext) throws SQLException {
-        ShardingSphereResultSetMetaData metaData = mock(ShardingSphereResultSetMetaData.class);
-        ShardingSphereDatabase database = hasDatabase ? mock(ShardingSphereDatabase.class) : null;
-        if (hasDatabase) {
-            when(database.getName()).thenReturn("foo_db");
-        }
-        when(metaData.getColumnType(1)).thenReturn(columnType);
-        if (Types.TIMESTAMP == columnType && hasDatabase) {
-            when(metaData.getSelectStatementContext()).thenReturn(hasContext ? Optional.of(mock(SelectStatementContext.class)) : Optional.empty());
-        }
-        try (MockedStatic<MySQLDatetimeProjectionResolver> ignored = mockStatic(MySQLDatetimeProjectionResolver.class)) {
-            QueryHeader actual = queryHeaderBuilder.build(metaData, database, "foo_col", "foo_alias", 1);
-            assertTrue(actual.getProtocolAttributes().isEmpty());
-        }
-    }
-    
-    private static Stream<Arguments> localNonDatetimeArguments() {
-        return Stream.of(
-                Arguments.of("unconfirmed-type", Types.TIMESTAMP, true, true),
-                Arguments.of("without-context", Types.TIMESTAMP, true, false),
-                Arguments.of("non-temporal", Types.INTEGER, true, false),
-                Arguments.of("without-database", Types.TIMESTAMP, false, false));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("datetimeStorageArguments")
-    void assertAppendProtocolAttributesWithDatetime(final String name, final DatabaseType storageType, final boolean datetime, final Map<String, Object> expected) throws SQLException {
-        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
-        actual.getProtocolAttributes().put(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true);
-        ResultSet resultSet = mock(ResultSet.class, RETURNS_DEEP_STUBS);
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        DialectDataTypeOption dataTypeOption = mock(DialectDataTypeOption.class);
-        when(dialectDatabaseMetaData.getDataTypeOption()).thenReturn(dataTypeOption);
-        if (datetime) {
-            when(dataTypeOption.isDatetimeDataType(Types.TIMESTAMP, "DATETIME", storageType)).thenReturn(true);
-        }
-        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class); MockedStatic<DatabaseTypedSPILoader> mockedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mocked.when(() -> DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData())).thenReturn(storageType);
-            mockedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, storageType)).thenReturn(dialectDatabaseMetaData);
-            queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
-        }
-        assertThat(actual.getProtocolAttributes(), is(expected));
-        verify(dialectDatabaseMetaData).getDataTypeOption();
-        verify(dataTypeOption).isDatetimeDataType(Types.TIMESTAMP, "DATETIME", storageType);
-    }
-    
-    private static Stream<Arguments> datetimeStorageArguments() {
-        DatabaseType sqlserver = mock(DatabaseType.class);
-        return Stream.of(
-                Arguments.of("mysql", TypedSPILoader.getService(DatabaseType.class, "MySQL"), true, Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)),
-                Arguments.of("mysql-provider-false", TypedSPILoader.getService(DatabaseType.class, "MySQL"), false, Collections.emptyMap()),
-                Arguments.of("sqlserver", sqlserver, false, Collections.emptyMap()),
-                Arguments.of("mysql-trunk-only", TypedSPILoader.getService(DatabaseType.class, "H2"), false, Collections.emptyMap()));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("nonDatetimeArguments")
-    void assertAppendProtocolAttributesWithoutDatetime(final String name, final int jdbcType, final String typeName) throws SQLException {
-        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_column", "foo_column", jdbcType, typeName, 26, 6, true, false, false, false);
-        actual.getProtocolAttributes().put(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true);
-        ResultSet resultSet = mock(ResultSet.class);
-        try (MockedStatic<DatabaseTypeFactory> mocked = mockStatic(DatabaseTypeFactory.class); MockedStatic<DatabaseTypedSPILoader> mockedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
-            mocked.verifyNoInteractions();
-            mockedSPILoader.verifyNoInteractions();
-        }
-        assertTrue(actual.getProtocolAttributes().isEmpty());
-        verifyNoInteractions(resultSet);
-    }
-    
-    private static Stream<Arguments> nonDatetimeArguments() {
-        return Stream.of(Arguments.of("non-temporal", Types.INTEGER, "INTEGER"), Arguments.of("timestamp", Types.TIMESTAMP, "TIMESTAMP"), Arguments.of("missing-type-name", Types.TIMESTAMP, ""));
+    private ShardingSphereResultSetMetaData createResultSetMetaData(final String tableName, final int columnIndex) throws SQLException {
+        ShardingSphereResultSetMetaData result = mock(ShardingSphereResultSetMetaData.class);
+        when(result.getTableName(columnIndex)).thenReturn(tableName);
+        when(result.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
+        when(result.isSigned(columnIndex)).thenReturn(true);
+        when(result.isAutoIncrement(columnIndex)).thenReturn(true);
+        when(result.getColumnDisplaySize(columnIndex)).thenReturn(1);
+        when(result.getScale(columnIndex)).thenReturn(1);
+        when(result.isNullable(columnIndex)).thenReturn(ResultSetMetaData.columnNoNulls);
+        return result;
     }
     
     private ShardingSphereDatabase createDatabase() {
@@ -243,38 +129,35 @@ class MySQLQueryHeaderBuilderTest {
         when(schema.getTable("t_logic_order")).thenReturn(new ShardingSphereTable(
                 "t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id", Collections.emptyList(), false)), Collections.emptyList()));
         when(result.getSchema("foo_db")).thenReturn(schema);
-        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
-        when(ruleAttribute.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
-        when(result.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         when(result.getName()).thenReturn("foo_db");
         return result;
     }
     
-    private ShardingSphereResultSetMetaData createResultSetMetaData() throws SQLException {
-        return createResultSetMetaData("t_logic_order");
+    @Test
+    void assertBuildWithoutPrimaryKeyColumn() throws SQLException {
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData("t_logic_order", 2);
+        assertFalse(new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), "expr", "expr", 2).isPrimaryKey());
     }
     
-    private ShardingSphereResultSetMetaData createResultSetMetaData(final String tableName) throws SQLException {
-        ShardingSphereResultSetMetaData result = mock(ShardingSphereResultSetMetaData.class);
-        when(result.getTableName(1)).thenReturn(tableName);
-        when(result.getTableName(2)).thenReturn(tableName);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
-        when(result.getColumnName(2)).thenReturn("expr");
-        when(result.getColumnType(1)).thenReturn(Types.INTEGER);
-        when(result.isSigned(1)).thenReturn(true);
-        when(result.isAutoIncrement(1)).thenReturn(true);
-        when(result.getColumnDisplaySize(1)).thenReturn(1);
-        when(result.getScale(1)).thenReturn(1);
-        when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
-        return result;
+    @Test
+    void assertBuildWithAliasColumnAndOriginalPrimaryKey() throws SQLException {
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
+        when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, createDatabase(), "order_id_alias", "order_id_alias", 1);
+        assertTrue(actual.isPrimaryKey());
+    }
+    
+    @Test
+    void assertBuildWithNullDatabase() throws SQLException {
+        ShardingSphereResultSetMetaData resultSetMetaData = createActualResultSetMetaData("t_order");
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, null, "order_id", "order_id", 1);
+        assertFalse(actual.isPrimaryKey());
+        assertThat(actual.getTable(), is("t_order"));
     }
     
     private ShardingSphereResultSetMetaData createActualResultSetMetaData(final String tableName) throws SQLException {
         ResultSetMetaData result = mock(ResultSetMetaData.class);
         when(result.getTableName(1)).thenReturn(tableName);
-        when(result.getColumnLabel(1)).thenReturn("order_id");
-        when(result.getColumnName(1)).thenReturn("order_id");
         when(result.getColumnType(1)).thenReturn(Types.INTEGER);
         when(result.isSigned(1)).thenReturn(true);
         when(result.isAutoIncrement(1)).thenReturn(true);
@@ -282,5 +165,102 @@ class MySQLQueryHeaderBuilderTest {
         when(result.getScale(1)).thenReturn(1);
         when(result.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         return new ShardingSphereResultSetMetaData(result, null, null);
+    }
+    
+    @Test
+    void assertBuildWithNullSchema() throws SQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData("t_order", 1);
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, database, "order_id", "order_id", 1);
+        assertFalse(actual.isPrimaryKey());
+        assertThat(actual.getTable(), is("t_order"));
+    }
+    
+    @Test
+    void assertBuildWithoutDataNodeContainedRule() throws SQLException {
+        ShardingSphereResultSetMetaData resultSetMetaData = createResultSetMetaData();
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(resultSetMetaData, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), "order_id", "order_id", 1);
+        assertFalse(actual.isPrimaryKey());
+        assertThat(actual.getTable(), is(actual.getTable()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("datetimeStorageArguments")
+    void assertAppendProtocolAttributesWithDatetime(final String name, final DatabaseType storageType, final Map<String, Object> expected) throws SQLException {
+        mockFederationRule();
+        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
+        ResultSet resultSet = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        when(DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData())).thenReturn(storageType);
+        queryHeaderBuilder.appendProtocolAttributes(Collections.singleton(actual), resultSet);
+        assertThat(actual.getProtocolAttributes(), is(expected));
+    }
+    
+    private SQLFederationRule mockFederationRule() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        SQLFederationRule result = mock(SQLFederationRule.class);
+        RuleMetaData ruleMetaData = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData();
+        doReturn(result).when(ruleMetaData).getSingleRule(SQLFederationRule.class);
+        return result;
+    }
+    
+    private static Stream<Arguments> datetimeStorageArguments() {
+        DatabaseType sqlserver = mock(DatabaseType.class);
+        when(sqlserver.getType()).thenReturn("SQLServer");
+        return Stream.of(
+                Arguments.of("mysql", TypedSPILoader.getService(DatabaseType.class, "MySQL"), Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)),
+                Arguments.of("sqlserver", sqlserver, Collections.emptyMap()),
+                Arguments.of("mysql-trunk-only", TypedSPILoader.getService(DatabaseType.class, "H2"), Collections.emptyMap()));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nonDatetimeArguments")
+    void assertAppendProtocolAttributesWithoutDatetime(final String name, final int jdbcType, final String typeName) throws SQLException {
+        mockFederationRule();
+        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_column", "foo_column", jdbcType, typeName, 26, 6, true, false, false, false);
+        ResultSet resultSet = mock(ResultSet.class);
+        queryHeaderBuilder.appendProtocolAttributes(Collections.singleton(actual), resultSet);
+        assertTrue(actual.getProtocolAttributes().isEmpty());
+        verifyNoInteractions(resultSet);
+    }
+    
+    private static Stream<Arguments> nonDatetimeArguments() {
+        return Stream.of(Arguments.of("non-temporal", Types.INTEGER, "INTEGER"), Arguments.of("timestamp", Types.TIMESTAMP, "TIMESTAMP"), Arguments.of("missing-type-name", Types.TIMESTAMP, ""));
+    }
+    
+    @Test
+    void assertAppendProtocolAttributesWithMultipleDatetimeColumns() throws SQLException {
+        mockFederationRule();
+        QueryHeader first = new QueryHeader("foo_db", "foo_table", "foo_first", "foo_first", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
+        QueryHeader second = new QueryHeader("foo_db", "foo_table", "foo_second", "foo_second", Types.TIMESTAMP, "datetime", 26, 6, true, false, false, false);
+        ResultSet resultSet = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(resultSet.getStatement().getConnection().getMetaData()).thenReturn(metaData);
+        when(DatabaseTypeFactory.get(metaData)).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        queryHeaderBuilder.appendProtocolAttributes(Arrays.asList(first, second), resultSet);
+        assertThat(first.getProtocolAttributes(), is(Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)));
+        assertThat(second.getProtocolAttributes(), is(Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)));
+        verify(resultSet.getStatement().getConnection()).getMetaData();
+    }
+    
+    @Test
+    void assertAppendProtocolAttributesWithFederationEnabled() throws SQLException {
+        SQLFederationRule federationRule = mockFederationRule();
+        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
+        when(federationRule.isSqlFederationEnabled()).thenReturn(true);
+        ResultSet resultSet = mock(ResultSet.class);
+        queryHeaderBuilder.appendProtocolAttributes(Collections.singleton(actual), resultSet);
+        assertTrue(actual.getProtocolAttributes().isEmpty());
+        verifyNoInteractions(resultSet);
+    }
+    
+    @Test
+    void assertAppendProtocolAttributesWithSingleHeader() throws SQLException {
+        mockFederationRule();
+        QueryHeader actual = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
+        ResultSet resultSet = mock(ResultSet.class, RETURNS_DEEP_STUBS);
+        when(DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData())).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        queryHeaderBuilder.appendProtocolAttributes(actual, resultSet);
+        assertThat(actual.getProtocolAttributes(), is(Collections.singletonMap(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true)));
     }
 }

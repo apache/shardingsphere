@@ -19,10 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
@@ -38,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
@@ -46,7 +45,9 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Projection metadata resolver for MySQL prepared statements.
@@ -84,17 +85,17 @@ public final class MySQLProjectionMetadataResolver {
             QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(database.getProtocolType());
             int visibleColumnCount = ShardingSphereResultSetUtils.getVisibleColumnCount(selectStatementContext, actualResultSetMetaData);
             Collection<MySQLPacket> result = new ArrayList<>(visibleColumnCount);
+            boolean federationEnabled = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()
+                    .getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).isSqlFederationEnabled();
             DatabaseType actualType = null;
-            DialectDataTypeOption dataTypeOption = null;
             for (int columnIndex = 1; columnIndex <= visibleColumnCount; columnIndex++) {
                 QueryHeader queryHeader = queryHeaderBuilderEngine.build(selectStatementContext, resultSetMetaData, database, columnIndex);
-                boolean mysqlDatetime = Types.TIMESTAMP == queryHeader.getColumnType() && "DATETIME".equalsIgnoreCase(queryHeader.getColumnTypeName());
+                boolean mysqlDatetime = !federationEnabled && isDatetime(actualResultSetMetaData, columnIndex);
                 if (mysqlDatetime) {
                     if (null == actualType) {
                         actualType = DatabaseTypeFactory.get(actualPreparedStatement.getConnection().getMetaData());
-                        dataTypeOption = new DatabaseTypeRegistry(actualType).getDialectDatabaseMetaData().getDataTypeOption();
                     }
-                    mysqlDatetime = dataTypeOption.isDatetimeDataType(queryHeader.getColumnType(), queryHeader.getColumnTypeName(), actualType);
+                    mysqlDatetime = "MySQL".equals(actualType.getType());
                 }
                 result.add(createMySQLColumnDefinition41Packet(queryHeader, characterSet, mysqlDatetime));
             }
@@ -108,6 +109,10 @@ public final class MySQLProjectionMetadataResolver {
             result.add(new MySQLColumnDefinition41Packet(characterSet, 0, "", "", "", "", "", 0, MySQLBinaryColumnType.VAR_STRING, 0, false));
         }
         return result;
+    }
+    
+    private static boolean isDatetime(final ResultSetMetaData resultSetMetaData, final int columnIndex) throws SQLException {
+        return Types.TIMESTAMP == resultSetMetaData.getColumnType(columnIndex) && "DATETIME".equalsIgnoreCase(resultSetMetaData.getColumnTypeName(columnIndex));
     }
     
     private static MySQLColumnDefinition41Packet createMySQLColumnDefinition41Packet(final QueryHeader queryHeader, final int characterSet, final boolean mysqlDatetime) {
@@ -144,5 +149,37 @@ public final class MySQLProjectionMetadataResolver {
     
     private static boolean isCharacterLargeObject(final int jdbcType) {
         return Types.CLOB == jdbcType || Types.NCLOB == jdbcType;
+    }
+    
+    /**
+     * Resolve native MySQL DATETIME column indexes.
+     *
+     * @param connectionSession connection session
+     * @param preparedStatement prepared statement
+     * @return confirmed DATETIME column indexes
+     * @throws SQLException SQL exception
+     */
+    @HighFrequencyInvocation
+    public static Set<Integer> resolveDatetimeColumnIndexes(final ConnectionSession connectionSession, final MySQLServerPreparedStatement preparedStatement) throws SQLException {
+        try (PreparedStatement actualPreparedStatement = MySQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
+            ResultSetMetaData resultSetMetaData = actualPreparedStatement.getMetaData();
+            if (null == resultSetMetaData) {
+                return Collections.emptySet();
+            }
+            int columnCount = resultSetMetaData.getColumnCount();
+            Set<Integer> result = new HashSet<>(columnCount, 1F);
+            DatabaseType actualType = null;
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                if (isDatetime(resultSetMetaData, columnIndex)) {
+                    if (null == actualType) {
+                        actualType = DatabaseTypeFactory.get(actualPreparedStatement.getConnection().getMetaData());
+                    }
+                    if ("MySQL".equals(actualType.getType())) {
+                        result.add(columnIndex);
+                    }
+                }
+            }
+            return result;
+        }
     }
 }

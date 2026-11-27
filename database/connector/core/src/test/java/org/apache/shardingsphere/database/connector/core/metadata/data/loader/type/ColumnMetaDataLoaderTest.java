@@ -19,17 +19,11 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.loader.t
 
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureAssertion;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.log.LogCaptureSettings;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,17 +42,13 @@ import java.util.Iterator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({MockitoExtension.class, LogCaptureExtension.class, AutoMockExtension.class})
+@ExtendWith({MockitoExtension.class, LogCaptureExtension.class})
 @LogCaptureSettings(suppressOutput = true)
-@StaticMockSettings(DatabaseTypedSPILoader.class)
 class ColumnMetaDataLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -71,7 +61,6 @@ class ColumnMetaDataLoaderTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        when(DatabaseTypedSPILoader.getService(any(), any(DatabaseType.class))).thenReturn(TypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType));
         when(connection.getCatalog()).thenReturn("catalog");
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(true, false);
@@ -105,30 +94,6 @@ class ColumnMetaDataLoaderTest {
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.isPrimaryKey(), is(primaryKey));
         assertThat(actual.isCaseSensitive(), is(caseSensitive));
-        assertFalse(actual.isDatetime());
-    }
-    
-    @Test
-    void assertLoadWithDatetime() throws SQLException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        DialectDataTypeOption dataTypeOption = mock(DialectDataTypeOption.class);
-        when(DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-        when(dialectDatabaseMetaData.getQuoteCharacter()).thenReturn(QuoteCharacter.QUOTE);
-        when(dialectDatabaseMetaData.getDataTypeOption()).thenReturn(dataTypeOption);
-        when(dataTypeOption.isDatetimeDataType(Types.TIMESTAMP, "foo_type", databaseType)).thenReturn(true);
-        when(columnResultSet.next()).thenReturn(true, false);
-        when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
-        when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
-        when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.TIMESTAMP);
-        ResultSet queryResultSet = mock(ResultSet.class);
-        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(queryResultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("foo_type");
-        when(connection.createStatement().executeQuery(anyString())).thenReturn(queryResultSet);
-        Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", databaseType);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next().getDataType(), is(Types.TIMESTAMP));
-        assertTrue(actual.iterator().next().isDatetime());
     }
     
     @Test

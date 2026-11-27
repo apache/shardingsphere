@@ -19,19 +19,22 @@ package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -55,12 +58,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean signed = resultSetMetaData.isSigned(columnIndex);
         boolean notNull = ResultSetMetaData.columnNoNulls == resultSetMetaData.isNullable(columnIndex);
         boolean autoIncrement = resultSetMetaData.isAutoIncrement(columnIndex);
-        QueryHeader result = new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
-        if (Types.TIMESTAMP == columnType && null != database
-                && resultSetMetaData.getSelectStatementContext().map(optional -> MySQLDatetimeProjectionResolver.isDatetime(optional, database, columnIndex)).orElse(false)) {
-            result.getProtocolAttributes().put(MYSQL_DATETIME, true);
-        }
-        return result;
+        return new QueryHeader(schemaName, tableName, columnLabel, columnName, columnType, columnTypeName, columnLength, decimals, signed, primaryKey, notNull, autoIncrement);
     }
     
     private boolean isPrimaryKey(final ShardingSphereDatabase database, final String schemaName, final String tableName, final String columnName,
@@ -88,13 +86,26 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     @Override
     @HighFrequencyInvocation
     public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
-        queryHeader.getProtocolAttributes().remove(MYSQL_DATETIME);
-        if (Types.TIMESTAMP != queryHeader.getColumnType() || !"DATETIME".equalsIgnoreCase(queryHeader.getColumnTypeName())) {
+        appendProtocolAttributes(Collections.singleton(queryHeader), resultSet);
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public void appendProtocolAttributes(final Collection<QueryHeader> queryHeaders, final ResultSet resultSet) throws SQLException {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).isSqlFederationEnabled()) {
             return;
         }
-        DatabaseType actualType = DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData());
-        if (new DatabaseTypeRegistry(actualType).getDialectDatabaseMetaData().getDataTypeOption().isDatetimeDataType(queryHeader.getColumnType(), queryHeader.getColumnTypeName(), actualType)) {
-            queryHeader.getProtocolAttributes().put(MYSQL_DATETIME, true);
+        DatabaseType storageType = null;
+        for (QueryHeader each : queryHeaders) {
+            if (Types.TIMESTAMP != each.getColumnType() || !"DATETIME".equalsIgnoreCase(each.getColumnTypeName())) {
+                continue;
+            }
+            if (null == storageType) {
+                storageType = DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData());
+            }
+            if ("MySQL".equals(storageType.getType())) {
+                each.getProtocolAttributes().put(MYSQL_DATETIME, true);
+            }
         }
     }
     

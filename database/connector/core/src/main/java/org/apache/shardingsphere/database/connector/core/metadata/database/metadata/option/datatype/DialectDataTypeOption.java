@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -67,16 +65,4 @@ public interface DialectDataTypeOption {
      * @return is binary type or not
      */
     boolean isBinaryDataType(int sqlType, String dataTypeName);
-    
-    /**
-     * Whether the native data type is DATETIME.
-     *
-     * @param sqlType value of java.sql.Types
-     * @param dataTypeName native data type name, null means JDBC type only
-     * @param storageType actual storage database type
-     * @return whether the data type is confirmed as DATETIME
-     */
-    default boolean isDatetimeDataType(final int sqlType, final String dataTypeName, final DatabaseType storageType) {
-        return false;
-    }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.driver.jdbc.adapter.WrapperAdapter;
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * ShardingSphere result set meta data.
@@ -126,21 +124,6 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
             return null == projection ? resultSetMetaData.getColumnName(column) : projection.getColumnName();
         }
         return resultSetMetaData.getColumnName(column);
-    }
-    
-    /**
-     * Get SELECT context matching the visible result columns.
-     *
-     * @return matching SELECT context, if available
-     * @throws SQLException SQL exception
-     */
-    @HighFrequencyInvocation
-    public Optional<SelectStatementContext> getSelectStatementContext() throws SQLException {
-        if (!(sqlStatementContext instanceof SelectStatementContext)) {
-            return Optional.empty();
-        }
-        SelectStatementContext context = (SelectStatementContext) sqlStatementContext;
-        return context.getProjectionsContext().getExpandProjections().size() == getColumnCount() ? Optional.of(context) : Optional.empty();
     }
     
     @Override

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.database.connector.mysql.metadata.database.opt
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DefaultDataTypeOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.math.BigInteger;
 import java.sql.Types;
@@ -87,10 +86,5 @@ public final class MySQLDataTypeOption implements DialectDataTypeOption {
     @Override
     public boolean isBinaryDataType(final int sqlType, final String dataTypeName) {
         return delegate.isBinaryDataType(sqlType, dataTypeName);
-    }
-    
-    @Override
-    public boolean isDatetimeDataType(final int sqlType, final String dataTypeName, final DatabaseType storageType) {
-        return "MySQL".equals(storageType.getType()) && Types.TIMESTAMP == sqlType && "DATETIME".equalsIgnoreCase(dataTypeName);
     }
 }

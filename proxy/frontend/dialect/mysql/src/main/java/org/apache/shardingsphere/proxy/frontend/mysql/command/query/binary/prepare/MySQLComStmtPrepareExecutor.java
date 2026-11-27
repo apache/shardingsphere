@@ -31,12 +31,14 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.bi
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.PreparedStatementMetadataResolutionException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -44,7 +46,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.mysql.response.header.query.MySQLDatetimeProjectionResolver;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -52,6 +53,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQL
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -62,6 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * COM_STMT_PREPARE command executor for MySQL.
@@ -125,7 +128,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<MySQLPacket> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet,
                                                                               final MySQLServerPreparedStatement serverPreparedStatement) {
         if (isProjectionMetadataDerivableLocally(selectStatementContext)) {
-            return createProjectionColumnDefinition41PacketsByLocalMetadata(selectStatementContext, characterSet);
+            return createProjectionColumnDefinition41PacketsByLocalMetadata(selectStatementContext, characterSet, serverPreparedStatement);
         }
         return loadProjectionColumnDefinition41Packets(selectStatementContext, characterSet, serverPreparedStatement);
     }
@@ -148,23 +151,41 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return true;
     }
     
-    private Collection<MySQLPacket> createProjectionColumnDefinition41PacketsByLocalMetadata(final SelectStatementContext selectStatementContext, final int characterSet) {
+    private Collection<MySQLPacket> createProjectionColumnDefinition41PacketsByLocalMetadata(final SelectStatementContext selectStatementContext, final int characterSet,
+                                                                                             final MySQLServerPreparedStatement serverPreparedStatement) {
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         ShardingSphereSchema schema = getSchema(selectStatementContext);
-        String databaseName = selectStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getCurrentDatabaseName);
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        Set<Integer> datetimeColumnIndexes = loadDatetimeColumnIndexes(projections, schema, serverPreparedStatement);
         Collection<MySQLPacket> result = new ArrayList<>(projections.size());
         int columnIndex = 1;
         for (Projection each : projections) {
             ColumnProjection columnProjection = (ColumnProjection) each;
-            boolean mysqlDatetime = MySQLDatetimeProjectionResolver.isDatetime(selectStatementContext, database, columnIndex++);
+            boolean mysqlDatetime = datetimeColumnIndexes.contains(columnIndex++);
             result.add(Optional.ofNullable(schema.getTable(columnProjection.getOriginalTable().getValue()))
                     .map(table -> table.getColumn(columnProjection.getOriginalColumn().getValue()))
-                    .map(column -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(column),
-                            mysqlDatetime ? MySQLBinaryColumnType.DATETIME : MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())))
+                    .map(optional -> createMySQLColumnDefinition41Packet(characterSet, calculateProjectionColumnDefinitionFlag(optional),
+                            mysqlDatetime ? MySQLBinaryColumnType.DATETIME : MySQLBinaryColumnType.valueOfJDBCType(optional.getDataType())))
                     .orElseGet(() -> createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING)));
         }
         return result;
+    }
+    
+    @HighFrequencyInvocation
+    private Set<Integer> loadDatetimeColumnIndexes(final Collection<Projection> projections, final ShardingSphereSchema schema, final MySQLServerPreparedStatement serverPreparedStatement) {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).isSqlFederationEnabled()) {
+            return Collections.emptySet();
+        }
+        for (Projection each : projections) {
+            ColumnProjection columnProjection = (ColumnProjection) each;
+            if (Types.TIMESTAMP == schema.getTable(columnProjection.getOriginalTable().getValue()).getColumn(columnProjection.getOriginalColumn().getValue()).getDataType()) {
+                try {
+                    return MySQLProjectionMetadataResolver.resolveDatetimeColumnIndexes(connectionSession, serverPreparedStatement);
+                } catch (final SQLException | PreparedStatementMetadataResolutionException ignored) {
+                    return Collections.emptySet();
+                }
+            }
+        }
+        return Collections.emptySet();
     }
     
     private Collection<MySQLPacket> loadProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet,

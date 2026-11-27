@@ -545,10 +545,12 @@ class StandardDatabaseProxyConnectorTest {
         QueryResult queryResult = mock(QueryResult.class);
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(queryResultMetaData.getColumnCount()).thenReturn(1);
+        when(queryResultMetaData.getColumnCount()).thenReturn(2);
         when(queryResultMetaData.getResultSetMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnName(1)).thenReturn("order_id");
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("order_id");
+        when(resultSetMetaData.getColumnName(2)).thenReturn("foo_text");
+        when(resultSetMetaData.getColumnLabel(2)).thenReturn("foo_text");
         when(queryResult.getMetaData()).thenReturn(queryResultMetaData);
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(queryResult));
         engine.add(resultSet);
@@ -560,7 +562,9 @@ class StandardDatabaseProxyConnectorTest {
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(dialectTransactionOption);
         QueryHeaderBuilder queryHeaderBuilder = mock(QueryHeaderBuilder.class);
         QueryHeader queryHeader = new QueryHeader("", "", "order_id", "order_id", Types.INTEGER, "int4", 4, 0, true, false, false, false);
+        QueryHeader textQueryHeader = new QueryHeader("", "", "foo_text", "foo_text", Types.VARCHAR, "varchar", 32, 0, false, false, false, false);
         when(queryHeaderBuilder.build(any(ShardingSphereResultSetMetaData.class), any(), eq("order_id"), eq("order_id"), eq(1))).thenReturn(queryHeader);
+        when(queryHeaderBuilder.build(any(ShardingSphereResultSetMetaData.class), any(), eq("foo_text"), eq("foo_text"), eq(2))).thenReturn(textQueryHeader);
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
@@ -579,7 +583,8 @@ class StandardDatabaseProxyConnectorTest {
             assertTrue(engine.next());
             assertNotNull(engine.getRowData());
             verify(queryHeaderBuilder).build(any(ShardingSphereResultSetMetaData.class), any(), eq("order_id"), eq("order_id"), eq(1));
-            verify(queryHeaderBuilder).appendProtocolAttributes(queryHeader, resultSet);
+            verify(queryHeaderBuilder).build(any(ShardingSphereResultSetMetaData.class), any(), eq("foo_text"), eq("foo_text"), eq(2));
+            verify(queryHeaderBuilder).appendProtocolAttributes(Arrays.asList(queryHeader, textQueryHeader), resultSet);
         }
     }
     

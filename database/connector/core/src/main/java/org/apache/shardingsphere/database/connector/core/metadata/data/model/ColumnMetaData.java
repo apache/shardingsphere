@@ -44,11 +44,4 @@ public final class ColumnMetaData {
     private final boolean unsigned;
     
     private final boolean nullable;
-    
-    private final boolean datetime;
-    
-    public ColumnMetaData(final String name, final int dataType, final boolean primaryKey, final boolean generated, final boolean caseSensitive, final boolean visible, final boolean unsigned,
-                          final boolean nullable) {
-        this(name, dataType, primaryKey, generated, caseSensitive, visible, unsigned, nullable, false);
-    }
 }
