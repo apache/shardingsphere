@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cach
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobHandleGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.generator.FirebirdBlobIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,13 +67,18 @@ class FirebirdOpenBlobCommandExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
     
+    private int transactionId;
+    
     @BeforeEach
     void setup() {
         FirebirdBlobHandleGenerator.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobReadCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobWriteCache.getInstance().registerConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().registerConnection(CONNECTION_ID);
+        transactionId = FirebirdTransactionIdGenerator.getInstance().nextTransactionId(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        when(packet.getTransactionId()).thenReturn(transactionId);
     }
     
     @AfterEach
@@ -81,6 +88,7 @@ class FirebirdOpenBlobCommandExecutorTest {
         FirebirdBlobWriteCache.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
         FirebirdBlobBinaryProtocolValue.unregisterConnection(CONNECTION_ID);
+        FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -166,6 +174,13 @@ class FirebirdOpenBlobCommandExecutorTest {
         when(packet.getBlobId()).thenReturn(-99L);
         FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
         assertThrows(InvalidSegstrIdException.class, executor::execute);
+    }
+    
+    @Test
+    void assertExecuteWithUnknownTransactionHandle() {
+        when(packet.getTransactionId()).thenReturn(transactionId + 1);
+        FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
+        assertThrows(InvalidTransactionHandleException.class, executor::execute);
     }
     
     private FirebirdGenericResponsePacket createBlobWithSegment(final byte[] segment, final boolean streamBlob) {

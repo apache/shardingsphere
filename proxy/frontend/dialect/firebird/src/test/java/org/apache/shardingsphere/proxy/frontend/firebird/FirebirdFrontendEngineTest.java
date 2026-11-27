@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -125,6 +126,7 @@ class FirebirdFrontendEngineTest {
     }
     
     private static Stream<Arguments> recoverableExceptionArguments() {
-        return Stream.of(Arguments.of(new InTransactionException()), Arguments.of(new InvalidBatchStatementTypeException()), Arguments.of(new InvalidBatchHandleException(1)));
+        return Stream.of(Arguments.of(new InTransactionException()), Arguments.of(new InvalidBatchStatementTypeException()), Arguments.of(new InvalidBatchHandleException(1)),
+                Arguments.of(new InvalidTransactionHandleException(42)));
     }
 }

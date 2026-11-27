@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchStatementTypeException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.firebird.codec.FirebirdPacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -54,8 +55,17 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
         }
     }
     
+    /**
+     * Judge whether an exception names something other than the session's own tracked transaction, so rejecting it never leaves that transaction
+     * in error. An unknown transaction handle ({@link InvalidTransactionHandleException}) names a transaction other than the one this session is
+     * tracking; marking the tracked transaction failed here would roll back its otherwise-successful work at commit.
+     *
+     * @param exception exception to judge
+     * @return whether the exception is recoverable
+     */
     private boolean isRecoverableException(final Exception exception) {
-        return exception instanceof InTransactionException || exception instanceof InvalidBatchStatementTypeException || exception instanceof InvalidBatchHandleException;
+        return exception instanceof InTransactionException || exception instanceof InvalidBatchStatementTypeException || exception instanceof InvalidBatchHandleException
+                || exception instanceof InvalidTransactionHandleException;
     }
     
     @Override
