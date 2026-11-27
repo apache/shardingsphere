@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.exception.firebird.exception.protocol;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.admin;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import java.util.Collection;
+import java.util.Collections;
 
-class ExcessTransactionsExceptionTest {
+/**
+ * Cancel command executor for Firebird.
+ */
+public final class FirebirdCancelCommandExecutor implements CommandExecutor {
     
-    @Test
-    void assertGetMessage() {
-        ExcessTransactionsException actual = new ExcessTransactionsException(1);
-        assertThat(actual.getMessage(), is("Attempt to start more than 1 transactions"));
-        assertThat(actual.getMaxTransactions(), is(1));
+    @Override
+    public Collection<DatabasePacket> execute() {
+        // TODO cancel the executing operation on fb_cancel_raise and track fb_cancel_disable and fb_cancel_enable as Firebird server does
+        return Collections.emptyList();
     }
 }

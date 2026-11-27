@@ -36,7 +36,13 @@ import java.util.List;
 @Setter
 public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     
+    private static final int FLAG_HAS_CURSOR = 1;
+    
+    private static final int FLAG_REPEAT_EXECUTE = 2;
+    
     private FirebirdSQLInfoReturnValue type;
+    
+    private boolean statementFlagsRequested;
     
     private final List<FirebirdReturnColumnPacket> describeSelect = new ArrayList<>();
     
@@ -45,6 +51,9 @@ public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         writeInt(FirebirdSQLInfoPacketType.STMT_TYPE, type.getCode(), payload);
+        if (statementFlagsRequested) {
+            writeInt(FirebirdSQLInfoPacketType.STMT_FLAGS, getStatementFlags(), payload);
+        }
         writeCode(FirebirdSQLInfoPacketType.SELECT, payload);
         writeInt(FirebirdSQLInfoPacketType.DESCRIBE_VARS, describeSelect.size(), payload);
         for (FirebirdReturnColumnPacket column : describeSelect) {
@@ -56,6 +65,18 @@ public final class FirebirdPrepareStatementReturnPacket extends FirebirdPacket {
             column.write(payload);
         }
         writeCode(FirebirdCommonInfoPacketType.END, payload);
+    }
+    
+    private int getStatementFlags() {
+        switch (type) {
+            case DDL:
+                return 0;
+            case SELECT:
+            case SELECT_FOR_UPD:
+                return FLAG_HAS_CURSOR | FLAG_REPEAT_EXECUTE;
+            default:
+                return FLAG_REPEAT_EXECUTE;
+        }
     }
     
     static void writeCode(final FirebirdInfoPacketType code, final FirebirdPacketPayload payload) {

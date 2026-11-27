@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
@@ -35,8 +37,11 @@ public final class FirebirdDatabaseInfoExecutor implements CommandExecutor {
     
     private final FirebirdInfoPacket packet;
     
+    private final ConnectionSession connectionSession;
+    
     @Override
     public Collection<DatabasePacket> execute() {
-        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdDatabaseInfoReturnPacket(packet.getInfoItems())));
+        int attachmentCharsetId = connectionSession.getAttributeMap().attr(FirebirdConstant.ATTACHMENT_CHARSET_ID).get();
+        return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdDatabaseInfoReturnPacket(packet.getInfoItems(), attachmentCharsetId)));
     }
 }

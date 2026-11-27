@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
@@ -90,6 +91,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -171,6 +173,30 @@ class FirebirdPrepareStatementCommandExecutorTest {
     void assertExecuteWithUnsupportedStatement() {
         when(packet.getSQL()).thenReturn("DROP ROLE foo_role");
         assertThrows(UnsupportedSQLOperationException.class, () -> new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("statementFlagsRequests")
+    void assertExecuteWithStatementFlags(final String name, final FirebirdSQLInfoPacketType[] requestedItems) throws SQLException {
+        when(packet.nextItem()).thenReturn(true, requestedItems.length > 1, false);
+        when(packet.getCurrentItem()).thenReturn(requestedItems[0], requestedItems[requestedItems.length - 1]);
+        FirebirdPrepareStatementReturnPacket actual = executeAndGetReturnPacket();
+        assertThat(actual.getType(), is(FirebirdSQLInfoReturnValue.SELECT));
+        assertTrue(actual.isStatementFlagsRequested());
+    }
+    
+    private static Stream<Arguments> statementFlagsRequests() {
+        return Stream.of(
+                Arguments.of("type_then_flags", new FirebirdSQLInfoPacketType[]{FirebirdSQLInfoPacketType.STMT_TYPE, FirebirdSQLInfoPacketType.STMT_FLAGS}),
+                Arguments.of("flags_then_type", new FirebirdSQLInfoPacketType[]{FirebirdSQLInfoPacketType.STMT_FLAGS, FirebirdSQLInfoPacketType.STMT_TYPE}),
+                Arguments.of("flags_only", new FirebirdSQLInfoPacketType[]{FirebirdSQLInfoPacketType.STMT_FLAGS}));
+    }
+    
+    @Test
+    void assertExecuteWithUnsupportedInfo() {
+        when(packet.getCurrentItem()).thenReturn(FirebirdSQLInfoPacketType.GET_PLAN);
+        DatabaseProtocolException actual = assertThrows(DatabaseProtocolException.class, () -> new FirebirdPrepareStatementCommandExecutor(packet, connectionSession).execute());
+        assertThat(actual.getMessage(), is("Unknown statement info request type 22"));
     }
     
     private FirebirdPrepareStatementReturnPacket executeAndGetReturnPacket() throws SQLException {

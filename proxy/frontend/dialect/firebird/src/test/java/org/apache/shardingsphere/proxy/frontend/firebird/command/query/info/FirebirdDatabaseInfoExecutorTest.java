@@ -17,19 +17,25 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.info;
 
+import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.database.FirebirdDatabaseInfoReturnPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdDatabaseInfoExecutorTest {
@@ -37,12 +43,18 @@ class FirebirdDatabaseInfoExecutorTest {
     @Mock
     private FirebirdInfoPacket packet;
     
-    @Test
-    void assertExecute() {
-        FirebirdDatabaseInfoExecutor executor = new FirebirdDatabaseInfoExecutor(packet);
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ConnectionSession connectionSession;
+    
+    @ParameterizedTest(name = "charset {0}")
+    @ValueSource(ints = {0, 3, 4, 52})
+    void assertExecute(final int attachmentCharsetId) {
+        when(connectionSession.getAttributeMap().attr(FirebirdConstant.ATTACHMENT_CHARSET_ID).get()).thenReturn(attachmentCharsetId);
+        FirebirdDatabaseInfoExecutor executor = new FirebirdDatabaseInfoExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         FirebirdGenericResponsePacket responsePacket = (FirebirdGenericResponsePacket) actual.iterator().next();
         assertThat(responsePacket.getData(), isA(FirebirdDatabaseInfoReturnPacket.class));
+        assertThat(((FirebirdDatabaseInfoReturnPacket) responsePacket.getData()).getAttachmentCharsetId(), is(attachmentCharsetId));
     }
 }

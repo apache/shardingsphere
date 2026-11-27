@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,6 +64,31 @@ class FirebirdInfoPacketTest {
         List<FirebirdInfoPacketType> infoItems = actual.getInfoItems();
         assertThat(infoItems.get(0), is(FirebirdSQLInfoPacketType.RECORDS));
         assertThat(infoItems.get(1), is(FirebirdCommonInfoPacketType.END));
+    }
+    
+    @Test
+    void assertNewInstanceWithDataAfterEnd() {
+        ByteBuf buffer = Unpooled.wrappedBuffer(new byte[]{1, 0});
+        try {
+            when(payload.readBuffer()).thenReturn(buffer);
+            FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
+            assertThat(actual.getInfoItems(), is(Collections.singletonList(FirebirdCommonInfoPacketType.END)));
+            assertThat(buffer.readableBytes(), is(1));
+        } finally {
+            buffer.release();
+        }
+    }
+    
+    @Test
+    void assertNewInstanceWithoutEnd() {
+        ByteBuf buffer = Unpooled.wrappedBuffer(new byte[]{(byte) FirebirdSQLInfoPacketType.RECORDS.getCode()});
+        try {
+            when(payload.readBuffer()).thenReturn(buffer);
+            FirebirdInfoPacket actual = new FirebirdInfoPacket(payload, FirebirdSQLInfoPacketType::valueOf);
+            assertThat(actual.getInfoItems(), is(Collections.singletonList(FirebirdSQLInfoPacketType.RECORDS)));
+        } finally {
+            buffer.release();
+        }
     }
     
     @Test

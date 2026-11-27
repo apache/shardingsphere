@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -28,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,6 +43,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -50,6 +56,29 @@ class FirebirdPrepareStatementReturnPacketTest {
     
     @Mock
     private FirebirdPacketPayload payload;
+    
+    @ParameterizedTest(name = "{0}, flags requested: {1}")
+    @CsvSource({"SELECT, true, 3", "SELECT_FOR_UPD, true, 3", "INSERT, true, 2", "EXEC_PROCEDURE, true, 2", "DDL, true, 0", "SELECT, false, 0"})
+    void assertWriteStatementFlags(final FirebirdSQLInfoReturnValue type, final boolean flagsRequested, final int expectedFlags) {
+        ByteBuf buffer = Unpooled.buffer();
+        try {
+            FirebirdPrepareStatementReturnPacket packet = new FirebirdPrepareStatementReturnPacket();
+            packet.setType(type);
+            packet.setStatementFlagsRequested(flagsRequested);
+            packet.write((PacketPayload) new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8));
+            assertThat(buffer.readUnsignedByte(), is((short) 21));
+            assertThat(buffer.readUnsignedShortLE(), is(4));
+            assertThat(buffer.readIntLE(), is(type.getCode()));
+            if (flagsRequested) {
+                assertThat(buffer.readUnsignedByte(), is((short) 27));
+                assertThat(buffer.readUnsignedShortLE(), is(4));
+                assertThat(buffer.readIntLE(), is(expectedFlags));
+            }
+            assertThat(ByteBufUtil.hexDump(buffer), is("0407040000000000050704000000000001"));
+        } finally {
+            buffer.release();
+        }
+    }
     
     @Test
     void assertWriteWithDescribeColumns() {

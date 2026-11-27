@@ -31,7 +31,6 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchParametersRequiredException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.CannotUpdateOldBlobException;
-import org.apache.shardingsphere.database.exception.firebird.exception.protocol.ExcessTransactionsException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchMessageFormatException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchParameterVersionException;
@@ -96,9 +95,6 @@ public final class FirebirdDialectExceptionMapper implements SQLDialectException
         }
         if (sqlDialectException instanceof InvalidTransactionHandleException) {
             return toSQLException(FirebirdVendorError.INVALID_TRANSACTION_HANDLE);
-        }
-        if (sqlDialectException instanceof ExcessTransactionsException) {
-            return toSQLException(FirebirdVendorError.EXCESS_TRANSACTIONS, ((ExcessTransactionsException) sqlDialectException).getMaxTransactions());
         }
         if (sqlDialectException instanceof DialectSQLParsingException) {
             return toSQLException(FirebirdVendorError.DYNAMIC_SQL_ERROR, sqlDialectException.getMessage());
