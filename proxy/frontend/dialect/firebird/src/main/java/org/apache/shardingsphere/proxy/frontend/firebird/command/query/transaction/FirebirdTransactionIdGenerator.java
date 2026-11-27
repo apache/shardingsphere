@@ -32,6 +32,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class FirebirdTransactionIdGenerator {
     
+    /**
+     * Firebird's {@code INVALID_OBJECT} sentinel ({@code rem_port::getHandle} in {@code remote.h}). Under the lazy-send protocol, native Firebird
+     * resolves it to the connection's most recently allocated object of any type, since the client has not yet received that object's real handle.
+     * This resolves it only to the connection's most recently started transaction, since nothing tracks the most recently allocated object across
+     * every handle type; a lazy-send client that allocates a different kind of object between starting a transaction and referencing this sentinel
+     * is not covered.
+     */
+    private static final int LAZY_RESPONSE_OBJECT_ID = 0xFFFF;
+    
     private static final FirebirdTransactionIdGenerator INSTANCE = new FirebirdTransactionIdGenerator();
     
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
@@ -73,11 +82,12 @@ public final class FirebirdTransactionIdGenerator {
      * Judge whether transaction is active for connection.
      *
      * @param connectionId connection ID
-     * @param transactionId transaction ID
+     * @param transactionId transaction ID, or {@link #LAZY_RESPONSE_OBJECT_ID} for the connection's most recently started transaction
      * @return is transaction active or not
      */
     public boolean isTransactionActive(final int connectionId, final int transactionId) {
-        return getActiveTransactions(connectionId).contains(transactionId);
+        int actualTransactionId = LAZY_RESPONSE_OBJECT_ID == transactionId ? getTransactionId(connectionId) : transactionId;
+        return getActiveTransactions(connectionId).contains(actualTransactionId);
     }
     
     /**
