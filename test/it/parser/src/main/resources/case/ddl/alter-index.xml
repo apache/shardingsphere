@@ -67,14 +67,17 @@
     </alter-index>
     
     <alter-index sql-case-id="alter_index_rebuild">
+        <index name="order_index" start-index="12" stop-index="22" />
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>
     
     <alter-index sql-case-id="alter_index_with_quota_bracket">
+        <index name="order_index" start-delimiter="[" end-delimiter="]" start-index="12" stop-index="24" />
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="29" stop-index="37" />
     </alter-index>
 
     <alter-index sql-case-id="alter_index_with_reorganize">
+        <index name="order_index" start-index="12" stop-index="22" />
         <table name="t_order" start-index="27" stop-index="33" />
     </alter-index>
 
@@ -142,9 +145,23 @@
         <index name="prod_idx" start-index="12" stop-index="19" />
     </alter-index>
     
-    <alter-index sql-case-id="alter_index_alter_column" />
-    <alter-index sql-case-id="alter_index_with_schema" />
-    <alter-index sql-case-id="alter_index_set_tablespace" />
+    <alter-index sql-case-id="alter_index_alter_column">
+        <index name="t_order_idx" start-index="12" stop-index="22" />
+    </alter-index>
+    <alter-index sql-case-id="alter_index_with_schema">
+        <index name="t_order_idx" start-index="12" stop-index="29">
+            <owner name="public" start-index="12" stop-index="17" />
+        </index>
+    </alter-index>
+    <alter-index sql-case-id="alter_index_set_tablespace">
+        <index name="distributors" start-index="12" stop-index="23" />
+    </alter-index>
+
+    <alter-index sql-case-id="alter_index_set_tablespace_with_schema">
+        <index name="t_order_idx" start-index="12" stop-index="29">
+            <owner name="public" start-index="12" stop-index="17" />
+        </index>
+    </alter-index>
 
     <alter-index sql-case-id="alter_index_rebuild_basic">
         <index name="idx_product_id" start-index="12" stop-index="25" />

@@ -66,6 +66,7 @@ public final class DropIndexStatementAssert {
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+        assertThat(assertContext.getText("Index segment count assertion error: "), actual.getIndexes().size(), is(expected.getIndexes().size()));
         int count = 0;
         for (IndexSegment each : actual.getIndexes()) {
             IndexAssert.assertIs(assertContext, each, expected.getIndexes().get(count));

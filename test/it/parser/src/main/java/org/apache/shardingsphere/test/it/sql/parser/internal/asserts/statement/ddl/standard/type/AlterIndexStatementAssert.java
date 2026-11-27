@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
@@ -60,8 +61,12 @@ public final class AlterIndexStatementAssert {
     }
     
     private static void assertIndex(final SQLCaseAssertContext assertContext, final AlterIndexStatement actual, final AlterIndexStatementTestCase expected) {
-        if (actual.getIndex().isPresent()) {
-            IndexAssert.assertIs(assertContext, actual.getIndex().get(), expected.getIndex());
+        Optional<IndexSegment> actualIndexSegment = actual.getIndex();
+        if (null == expected.getIndex()) {
+            assertFalse(actualIndexSegment.isPresent(), assertContext.getText("Actual index segment should not exist."));
+        } else {
+            assertTrue(actualIndexSegment.isPresent(), assertContext.getText("Actual index segment should exist."));
+            IndexAssert.assertIs(assertContext, actualIndexSegment.get(), expected.getIndex());
         }
     }
 }

@@ -27,7 +27,7 @@
                 </table-bound>
             </simple-table>
         </table>
-        <index name="idx_name" start-index="13" stop-index="20" />
+        <index name="idx_user_bt" start-index="13" stop-index="23" />
         <column start-index="56" stop-index="62" name="user_id">
             <column-bound>
                 <original-database name="foo_db_1" />
