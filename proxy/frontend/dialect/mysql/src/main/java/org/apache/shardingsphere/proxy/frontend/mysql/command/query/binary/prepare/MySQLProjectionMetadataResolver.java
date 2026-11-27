@@ -161,25 +161,17 @@ public final class MySQLProjectionMetadataResolver {
      */
     @HighFrequencyInvocation
     public static Set<Integer> resolveDatetimeColumnIndexes(final ConnectionSession connectionSession, final MySQLServerPreparedStatement preparedStatement) throws SQLException {
-        try (PreparedStatement actualPreparedStatement = MySQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
-            ResultSetMetaData resultSetMetaData = actualPreparedStatement.getMetaData();
-            if (null == resultSetMetaData) {
-                return Collections.emptySet();
-            }
-            int columnCount = resultSetMetaData.getColumnCount();
-            Set<Integer> result = new HashSet<>(columnCount, 1F);
-            DatabaseType actualType = null;
-            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                if (isDatetime(resultSetMetaData, columnIndex)) {
-                    if (null == actualType) {
-                        actualType = DatabaseTypeFactory.get(actualPreparedStatement.getConnection().getMetaData());
-                    }
-                    if ("MySQL".equals(actualType.getType())) {
-                        result.add(columnIndex);
-                    }
-                }
-            }
-            return result;
+        ResultSetMetaData resultSetMetaData = MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, preparedStatement);
+        if (null == resultSetMetaData) {
+            return Collections.emptySet();
         }
+        int columnCount = resultSetMetaData.getColumnCount();
+        Set<Integer> result = new HashSet<>(columnCount, 1F);
+        for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+            if (isDatetime(resultSetMetaData, columnIndex)) {
+                result.add(columnIndex);
+            }
+        }
+        return result;
     }
 }

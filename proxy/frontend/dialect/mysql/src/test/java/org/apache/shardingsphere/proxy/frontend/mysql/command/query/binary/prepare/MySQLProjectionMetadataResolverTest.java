@@ -167,13 +167,10 @@ class MySQLProjectionMetadataResolverTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("datetimeColumnArguments")
-    void assertResolveDatetimeColumnIndexes(final String name, final int jdbcType, final String typeName, final String storageType,
-                                            final Set<Integer> expected, final int expectedStorageLookups) throws SQLException {
+    void assertResolveDatetimeColumnIndexes(final String name, final int jdbcType, final String typeName, final Set<Integer> expected) throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
-        when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(2);
         for (int columnIndex = 1; columnIndex <= 2; columnIndex++) {
             when(resultSetMetaData.getColumnType(columnIndex)).thenReturn(jdbcType);
@@ -181,47 +178,33 @@ class MySQLProjectionMetadataResolverTest {
                 when(resultSetMetaData.getColumnTypeName(columnIndex)).thenReturn(typeName);
             }
         }
-        if (0 != expectedStorageLookups) {
-            DatabaseType actualType = mock(DatabaseType.class);
-            when(actualType.getType()).thenReturn(storageType);
-            Connection connection = mock(Connection.class);
-            DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-            when(preparedStatement.getConnection()).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(databaseMetaData);
-            when(DatabaseTypeFactory.get(databaseMetaData)).thenReturn(actualType);
-        }
-        when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenReturn(preparedStatement);
+        when(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, serverPreparedStatement)).thenReturn(resultSetMetaData);
         Set<Integer> actual = MySQLProjectionMetadataResolver.resolveDatetimeColumnIndexes(connectionSession, serverPreparedStatement);
         assertThat(actual, is(expected));
-        verify(preparedStatement, times(expectedStorageLookups)).getConnection();
-        verify(preparedStatement).close();
     }
     
     private static Stream<Arguments> datetimeColumnArguments() {
         return Stream.of(
-                Arguments.of("mysql-datetime", Types.TIMESTAMP, "DATETIME", "MySQL", ImmutableSet.of(1, 2), 1),
-                Arguments.of("case-insensitive", Types.TIMESTAMP, "datetime", "MySQL", ImmutableSet.of(1, 2), 1),
-                Arguments.of("other-storage", Types.TIMESTAMP, "DATETIME", "SQLServer", Collections.emptySet(), 1),
-                Arguments.of("timestamp", Types.TIMESTAMP, "TIMESTAMP", "MySQL", Collections.emptySet(), 0),
-                Arguments.of("date", Types.DATE, "DATETIME", "MySQL", Collections.emptySet(), 0),
-                Arguments.of("integer", Types.INTEGER, "INT", "MySQL", Collections.emptySet(), 0));
+                Arguments.of("mysql-datetime", Types.TIMESTAMP, "DATETIME", ImmutableSet.of(1, 2)),
+                Arguments.of("case-insensitive", Types.TIMESTAMP, "datetime", ImmutableSet.of(1, 2)),
+                Arguments.of("timestamp", Types.TIMESTAMP, "TIMESTAMP", Collections.emptySet()),
+                Arguments.of("date", Types.DATE, "DATETIME", Collections.emptySet()),
+                Arguments.of("integer", Types.INTEGER, "INT", Collections.emptySet()));
     }
     
     @Test
     void assertResolveDatetimeColumnIndexesWithNullMetadata() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenReturn(preparedStatement);
+        when(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, serverPreparedStatement)).thenReturn(null);
         assertTrue(MySQLProjectionMetadataResolver.resolveDatetimeColumnIndexes(connectionSession, serverPreparedStatement).isEmpty());
-        verify(preparedStatement).close();
     }
     
     @Test
     void assertResolveDatetimeColumnIndexesWithSQLException() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         MySQLServerPreparedStatement serverPreparedStatement = mock(MySQLServerPreparedStatement.class);
-        when(MySQLPreparedStatementMetadataFactory.load(connectionSession, serverPreparedStatement)).thenThrow(SQLException.class);
+        when(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, serverPreparedStatement)).thenThrow(SQLException.class);
         assertThrows(SQLException.class, () -> MySQLProjectionMetadataResolver.resolveDatetimeColumnIndexes(connectionSession, serverPreparedStatement));
     }
     
