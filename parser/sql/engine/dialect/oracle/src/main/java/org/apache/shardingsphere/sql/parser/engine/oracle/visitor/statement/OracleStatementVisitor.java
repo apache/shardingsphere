@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.runtime.tree.Trees;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
@@ -893,6 +894,17 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         return result;
     }
     
+    /**
+     * Register parameter markers in a parse subtree without building its expression segments.
+     *
+     * @param context parse subtree
+     */
+    protected final void registerParameterMarkers(final ParseTree context) {
+        for (ParseTree each : Trees.findAllRuleNodes(context, OracleStatementParser.RULE_parameterMarker)) {
+            createParameterMarkerExpressionSegment((ParameterMarkerContext) each);
+        }
+    }
+    
     protected ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerContext ctx) {
         return createParameterMarkerExpressionSegment((ParameterMarkerValue) visit(ctx), ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
     }
@@ -1028,11 +1040,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     private Collection<ExpressionSegment> getAnalyticFunctionParameters(final AnalyticFunctionContext ctx) {
-        Collection<ExpressionSegment> result = new LinkedList<>();
-        List<ExprContext> exprContexts = ctx.expr();
-        if (!exprContexts.isEmpty()) {
-            result.add((ExpressionSegment) visit(exprContexts.get(0)));
-        }
+        Collection<ExpressionSegment> result = getExpressions(ctx.expr());
         if (null != ctx.leadLagInfo()) {
             for (ExprContext each : ctx.leadLagInfo().expr()) {
                 result.add((ExpressionSegment) visit(each));
@@ -1150,7 +1158,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public ASTNode visitWindowingClause(final WindowingClauseContext ctx) {
-        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), Collections.emptyList());
+        return new CommonExpressionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx), getExpressions(ctx.expr()));
     }
     
     @Override
@@ -1555,6 +1563,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     @Override
     public ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
+        if (null != ctx.trimOperands()) {
+            registerParameterMarkers(ctx.trimOperands());
+        }
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }

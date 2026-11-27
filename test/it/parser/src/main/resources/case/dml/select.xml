@@ -8097,7 +8097,7 @@
         </order-by>
     </select>
     
-    <select sql-case-id="select_oracle_model_cv_parameter">
+    <select sql-case-id="select_oracle_model_cv_parameter" parameters="2" parameter-marker-count="1">
         <from>
             <simple-table name="t_product" start-index="40" stop-index="48" />
         </from>
@@ -8115,7 +8115,7 @@
         </order-by>
     </select>
     
-    <select sql-case-id="select_oracle_model_partition_cv_parameter">
+    <select sql-case-id="select_oracle_model_partition_cv_parameter" parameters="1" parameter-marker-count="1">
         <from>
             <simple-table name="t_product" start-index="52" stop-index="60" />
         </from>
@@ -8134,6 +8134,52 @@
             <column-item name="category_id" order-direction="ASC" start-index="257" stop-index="267" />
             <column-item name="product_id" order-direction="ASC" start-index="270" stop-index="279" />
         </order-by>
+    </select>
+
+    <select sql-case-id="select_oracle_analytic_window_and_trim_parameters" parameters="2, 1, 1, x" parameter-marker-count="4">
+        <projections start-index="7" stop-index="120">
+            <expression-projection text="NTH_VALUE(price, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING)" start-index="7" stop-index="93">
+                <expr>
+                    <function function-name="NTH_VALUE" text="NTH_VALUE(price, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING)" start-index="7" stop-index="93">
+                        <parameter>
+                            <column name="price" start-index="17" stop-index="21" />
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="24" stop-index="24" />
+                        </parameter>
+                        <window-item start-index="27" stop-index="93">
+                            <order-by start-index="33" stop-index="51">
+                                <column-item name="product_id" order-direction="ASC" start-index="42" stop-index="51" />
+                            </order-by>
+                            <frame>
+                                <common-expression text="ROWS BETWEEN ? PRECEDING AND ? FOLLOWING" start-index="53" stop-index="92">
+                                    <children>
+                                        <expression>
+                                            <parameter-marker-expression parameter-index="1" start-index="66" stop-index="66" />
+                                        </expression>
+                                        <expression>
+                                            <parameter-marker-expression parameter-index="2" start-index="82" stop-index="82" />
+                                        </expression>
+                                    </children>
+                                </common-expression>
+                            </frame>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="TRIM(? FROM product_name)" start-index="96" stop-index="120">
+                <expr>
+                    <function function-name="TRIM" text="TRIM(? FROM product_name)" start-index="96" stop-index="120">
+                        <parameter>
+                            <column name="product_name" start-index="108" stop-index="119" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_product" start-index="127" stop-index="135" />
+        </from>
     </select>
 
     <select sql-case-id="select_with_trim_function_multi">
