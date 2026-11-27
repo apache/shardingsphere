@@ -8137,28 +8137,28 @@
     </select>
 
     <select sql-case-id="select_oracle_analytic_window_and_trim_parameters" parameters="2, 1, 1, x" parameter-marker-count="4">
-        <projections start-index="7" stop-index="120">
-            <expression-projection text="NTH_VALUE(price, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING)" start-index="7" stop-index="93">
+        <projections start-index="7" stop-index="123">
+            <expression-projection text="NTH_VALUE(&quot;pri?ce&quot;, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING)" start-index="7" stop-index="96">
                 <expr>
-                    <function function-name="NTH_VALUE" text="NTH_VALUE(price, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING)" start-index="7" stop-index="93">
+                    <function function-name="NTH_VALUE" text="NTH_VALUE(&quot;pri?ce&quot;, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING)" start-index="7" stop-index="96">
                         <parameter>
-                            <column name="price" start-index="17" stop-index="21" />
+                            <column name="pri?ce" start-delimiter="&quot;" end-delimiter="&quot;" start-index="17" stop-index="24" />
                         </parameter>
                         <parameter>
-                            <parameter-marker-expression parameter-index="0" start-index="24" stop-index="24" />
+                            <parameter-marker-expression parameter-index="0" start-index="27" stop-index="27" />
                         </parameter>
-                        <window-item start-index="27" stop-index="93">
-                            <order-by start-index="33" stop-index="51">
-                                <column-item name="product_id" order-direction="ASC" start-index="42" stop-index="51" />
+                        <window-item start-index="30" stop-index="96">
+                            <order-by start-index="36" stop-index="54">
+                                <column-item name="product_id" order-direction="ASC" start-index="45" stop-index="54" />
                             </order-by>
                             <frame>
-                                <common-expression text="ROWS BETWEEN ? PRECEDING AND ? FOLLOWING" start-index="53" stop-index="92">
+                                <common-expression text="ROWS BETWEEN ? PRECEDING AND ? FOLLOWING" start-index="56" stop-index="95">
                                     <children>
                                         <expression>
-                                            <parameter-marker-expression parameter-index="1" start-index="66" stop-index="66" />
+                                            <parameter-marker-expression parameter-index="1" start-index="69" stop-index="69" />
                                         </expression>
                                         <expression>
-                                            <parameter-marker-expression parameter-index="2" start-index="82" stop-index="82" />
+                                            <parameter-marker-expression parameter-index="2" start-index="85" stop-index="85" />
                                         </expression>
                                     </children>
                                 </common-expression>
@@ -8167,18 +8167,21 @@
                     </function>
                 </expr>
             </expression-projection>
-            <expression-projection text="TRIM(? FROM product_name)" start-index="96" stop-index="120">
+            <expression-projection text="TRIM(? FROM product_name)" start-index="99" stop-index="123">
                 <expr>
-                    <function function-name="TRIM" text="TRIM(? FROM product_name)" start-index="96" stop-index="120">
+                    <function function-name="TRIM" text="TRIM(? FROM product_name)" start-index="99" stop-index="123">
                         <parameter>
-                            <column name="product_name" start-index="108" stop-index="119" />
+                            <parameter-marker-expression parameter-index="3" start-index="104" stop-index="104" />
+                        </parameter>
+                        <parameter>
+                            <column name="product_name" start-index="111" stop-index="122" />
                         </parameter>
                     </function>
                 </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="t_product" start-index="127" stop-index="135" />
+            <simple-table name="t_product" start-index="130" stop-index="138" />
         </from>
     </select>
 

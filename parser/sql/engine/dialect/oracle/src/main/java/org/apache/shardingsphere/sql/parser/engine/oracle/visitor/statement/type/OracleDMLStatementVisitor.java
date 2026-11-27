@@ -1650,7 +1650,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.selectSubquery());
+        return visitScalarSubquery(ctx.selectSubquery());
     }
     
     @Override

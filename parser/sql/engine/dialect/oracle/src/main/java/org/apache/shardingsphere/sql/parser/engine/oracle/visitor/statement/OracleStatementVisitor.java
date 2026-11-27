@@ -220,7 +220,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     private final Collection<ParameterMarkerSegment> globalParameterMarkerSegments = new LinkedList<>();
     
-    private final Collection<ParameterMarkerSegment> statementParameterMarkerSegments = new LinkedList<>();
+    private Collection<ParameterMarkerSegment> statementParameterMarkerSegments = new LinkedList<>();
     
     private final List<SQLStatementSegment> sqlStatementsInPlsql = new ArrayList<>();
     
@@ -264,6 +264,9 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
                 continue;
             }
             if (advanceInAlternativeQuotedText(sql, state)) {
+                continue;
+            }
+            if (advanceInQuotedIdentifier(sql, state)) {
                 continue;
             }
             if (advanceInOrToggleStringLiteral(sql, state)) {
@@ -353,6 +356,22 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             default:
                 return quoteDelimiter;
         }
+    }
+    
+    private boolean advanceInQuotedIdentifier(final String sql, final ParameterMarkerScanState state) {
+        if (state.inStringLiteral || '"' != sql.charAt(state.index)) {
+            return false;
+        }
+        while (++state.index < sql.length()) {
+            char ch = sql.charAt(state.index);
+            if ('\\' == ch) {
+                state.index++;
+            } else if ('"' == ch) {
+                state.index++;
+                break;
+            }
+        }
+        return true;
     }
     
     private boolean advanceInOrToggleStringLiteral(final String sql, final ParameterMarkerScanState state) {
@@ -895,14 +914,18 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     /**
-     * Register parameter markers in a parse subtree without building its expression segments.
+     * Register parameter markers from a parse subtree.
      *
      * @param context parse subtree
+     * @return registered marker expressions
      */
-    protected final void registerParameterMarkers(final ParseTree context) {
-        for (ParseTree each : Trees.findAllRuleNodes(context, OracleStatementParser.RULE_parameterMarker)) {
-            createParameterMarkerExpressionSegment((ParameterMarkerContext) each);
+    protected final Collection<ParameterMarkerExpressionSegment> registerParameterMarkers(final ParseTree context) {
+        Collection<ParseTree> markerNodes = Trees.findAllRuleNodes(context, OracleStatementParser.RULE_parameterMarker);
+        Collection<ParameterMarkerExpressionSegment> result = new ArrayList<>(markerNodes.size());
+        for (ParseTree each : markerNodes) {
+            result.add(createParameterMarkerExpressionSegment((ParameterMarkerContext) each));
         }
+        return result;
     }
     
     protected ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final ParameterMarkerContext ctx) {
@@ -1564,7 +1587,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     public ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
         if (null != ctx.trimOperands()) {
-            registerParameterMarkers(ctx.trimOperands());
+            result.getParameters().addAll(registerParameterMarkers(ctx.trimOperands()));
         }
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
@@ -1753,6 +1776,24 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         Collection<ParameterMarkerSegment> result = new LinkedList<>(statementParameterMarkerSegments);
         statementParameterMarkerSegments.clear();
         return result;
+    }
+    
+    /**
+     * Visit a scalar subquery and keep its parameter markers separate from preceding outer markers.
+     *
+     * @param context select subquery context
+     * @return parsed subquery
+     */
+    protected final SelectStatement visitScalarSubquery(final ParseTree context) {
+        Collection<ParameterMarkerSegment> outerParameterMarkers = statementParameterMarkerSegments;
+        statementParameterMarkerSegments = new LinkedList<>();
+        try {
+            SelectStatement result = (SelectStatement) visit(context);
+            outerParameterMarkers.addAll(result.getParameterMarkers());
+            return result;
+        } finally {
+            statementParameterMarkerSegments = outerParameterMarkers;
+        }
     }
     
     /**
