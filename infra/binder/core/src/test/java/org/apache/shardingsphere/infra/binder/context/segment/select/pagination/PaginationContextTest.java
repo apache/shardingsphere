@@ -25,11 +25,14 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -109,6 +112,21 @@ class PaginationContextTest {
     @Test
     void assertGetActualRowCountWithNullRowCountSegment() {
         assertNull(new PaginationContext(getOffsetSegment(), null, getParameters()).getActualRowCount().orElse(null));
+    }
+    
+    @Test
+    void assertGetActualValuesWithExpressionLimitValueSegment() {
+        PaginationContext paginationContext = new PaginationContext(getOffsetSegmentWithExpressionLimitValueSegment(), getRowCountSegmentWithExpressionLimitValueSegment(), Collections.emptyList());
+        assertThat(paginationContext.getActualOffset(), is(1L));
+        assertThat(paginationContext.getActualRowCount().orElse(null), is(2L));
+    }
+    
+    private PaginationValueSegment getOffsetSegmentWithExpressionLimitValueSegment() {
+        return new ExpressionLimitValueSegment(0, 0, new LiteralExpressionSegment(0, 0, 1));
+    }
+    
+    private PaginationValueSegment getRowCountSegmentWithExpressionLimitValueSegment() {
+        return new ExpressionLimitValueSegment(0, 0, new BinaryOperationExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, 1), "+", "1 + 1"));
     }
     
     private PaginationValueSegment getOffsetSegmentWithNumberLiteralPaginationValueSegment() {

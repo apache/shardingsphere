@@ -88,6 +88,14 @@ public final class PaginationContext {
     }
     
     private Long getValueFromExpression(final ExpressionSegment expressionSegment, final List<Object> params) {
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
+            return null == literals ? null : getLongValue(literals);
+        }
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            Object obj = null == params || params.isEmpty() ? null : params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            return null == obj ? null : getLongValue(obj);
+        }
         if (expressionSegment instanceof BinaryOperationExpression) {
             return getValueFromBinaryOperationExpression((BinaryOperationExpression) expressionSegment, params);
         }
