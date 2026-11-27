@@ -78,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MergeU
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelColumnClausesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModelExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiColumnForLoopContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableElementContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.MultiTableInsertIntoClauseContext;
@@ -932,6 +933,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 result.getCellAssignmentSelects().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
             }
         }
+        for (ModelExprContext each : ctx.mainModel().modelRulesClause().modelExpr()) {
+            registerParameterMarkers(each);
+        }
         return result;
     }
     
@@ -1646,7 +1650,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.selectSubquery());
+        return visitScalarSubquery(ctx.selectSubquery());
     }
     
     @Override
