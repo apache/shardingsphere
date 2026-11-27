@@ -306,9 +306,24 @@ class ShardingTableRuleStatementCheckerTest {
         itemConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "inline_table"));
         ruleConfig.getTables().add(itemConfig);
         ruleConfig.getShardingAlgorithms().put("inline_table", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "${order_id % 2}"))));
-        Collection<ShardingTableReferenceRuleConfiguration> groups =
-                Collections.singleton(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        Collection<ShardingTableReferenceRuleConfiguration> groups = Collections.singleton(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         assertFalse(ShardingTableRuleStatementChecker.isValidBindingTableGroups(groups, ruleConfig));
+    }
+    
+    @Test
+    void assertCheckAlterationWithAlphabeticalSuffixOnBindingTables() {
+        ShardingRuleConfiguration ruleConfig = createBindingTableRuleConfiguration();
+        Collection<AbstractTableRuleSegment> rules = Arrays.asList(createAlteredBindingTableRule("t_order", "ds_0.t_order_${['a','b']}"),
+                createAlteredBindingTableRule("t_order_item", "ds_0.t_order_item_${['a','b']}"));
+        assertThrows(InvalidRuleConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, ruleConfig));
+    }
+    
+    @Test
+    void assertCheckAlterationWithNumericSuffixOnBindingTables() {
+        ShardingRuleConfiguration ruleConfig = createBindingTableRuleConfiguration();
+        Collection<AbstractTableRuleSegment> rules = Arrays.asList(createAlteredBindingTableRule("t_order", "ds_0.t_order_${0..1}"),
+                createAlteredBindingTableRule("t_order_item", "ds_0.t_order_item_${0..1}"));
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, ruleConfig));
     }
     
     @Test
@@ -375,6 +390,22 @@ class ShardingTableRuleStatementCheckerTest {
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         result.getKeyGenerators().put("existing_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        return result;
+    }
+    
+    private static ShardingRuleConfiguration createBindingTableRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_${0..1}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", "ds_0.t_order_item_${0..1}"));
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        result.getShardingAlgorithms().put("inline_table", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+        return result;
+    }
+    
+    private AbstractTableRuleSegment createAlteredBindingTableRule(final String logicTable, final String dataNodes) {
+        TableRuleSegment result = new TableRuleSegment(logicTable, Collections.singleton(dataNodes), null, null);
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", logicTable + "_${order_id % 2}")))));
         return result;
     }
     

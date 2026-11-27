@@ -130,25 +130,7 @@ public final class ShardingTableRuleStatementChecker {
         toBeCheckedRuleConfig.setBindingTableGroups(bindingTableGroups);
         Collection<String> dataSourceNames = getRequiredDataSources(toBeCheckedRuleConfig);
         dataSourceNames.addAll(getRequiredDataSources(currentRuleConfig));
-        return check(toBeCheckedRuleConfig, dataSourceNames) && isBindingTableSuffixValid(bindingTableGroups, toBeCheckedRuleConfig, dataSourceNames);
-    }
-    
-    private static boolean isBindingTableSuffixValid(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups, final ShardingRuleConfiguration ruleConfig,
-                                                     final Collection<String> dataSourceNames) {
-        Map<String, ShardingTable> shardingTables = createShardingTables(ruleConfig, dataSourceNames);
-        for (ShardingTableReferenceRuleConfiguration each : bindingTableGroups) {
-            Collection<String> bindingTables = Splitter.on(",").trimResults().splitToList(each.getReference());
-            if (bindingTables.size() <= 1) {
-                continue;
-            }
-            for (String logicTable : bindingTables) {
-                ShardingTable shardingTable = shardingTables.get(logicTable.toLowerCase());
-                if (null != shardingTable && !ShardingRuleChecker.hasValidNumericSuffix(shardingTable)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return check(toBeCheckedRuleConfig, dataSourceNames);
     }
     
     private static ShardingRuleConfiguration createToBeCheckedShardingRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
@@ -197,7 +179,13 @@ public final class ShardingTableRuleStatementChecker {
                 ? new NoneShardingStrategyConfiguration()
                 : checkedConfig.getDefaultTableShardingStrategy();
         return isValidBindingTableConfiguration(shardingTables, new BindingTableCheckedConfiguration(allDataSourceNames, shardingAlgorithms, checkedConfig.getShardingAlgorithms(),
-                checkedConfig.getBindingTableGroups(), defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, checkedConfig.getDefaultShardingColumn()));
+                checkedConfig.getBindingTableGroups(), defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, checkedConfig.getDefaultShardingColumn()))
+                && isBindingTableSuffixValid(checkedConfig.getBindingTableGroups(), shardingTables);
+    }
+    
+    private static boolean isBindingTableSuffixValid(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups, final Map<String, ShardingTable> shardingTables) {
+        return bindingTableGroups.stream().map(each -> Splitter.on(",").trimResults().splitToList(each.getReference())).flatMap(Collection::stream)
+                .map(each -> shardingTables.get(each.toLowerCase())).allMatch(each -> null == each || ShardingRuleChecker.hasValidNumericSuffix(each));
     }
     
     private static Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
@@ -631,7 +619,8 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static String getTableDataNodePrefix(final String logicTable, final String tableName) {
-        return tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.TABLE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
+        return tableName.startsWith(logicTable)
+                ? logicTable + ShardingTableConstants.TABLE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
                 : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
     }
     

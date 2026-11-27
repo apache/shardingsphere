@@ -158,7 +158,8 @@ public final class ShardingTable {
     }
     
     private String getTableDataNodePrefix(final String tableName) {
-        return tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.TABLE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
+        return tableName.startsWith(logicTable)
+                ? logicTable + ShardingTableConstants.TABLE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
                 : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
     }
     
