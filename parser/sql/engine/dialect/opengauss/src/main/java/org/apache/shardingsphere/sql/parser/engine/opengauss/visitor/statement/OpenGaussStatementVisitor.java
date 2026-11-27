@@ -679,8 +679,16 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     @Override
     public ASTNode visitExprList(final ExprListContext ctx) {
         CollectionValue<ExpressionSegment> result = new CollectionValue<>();
-        for (AExprContext each : ctx.aExpr()) {
+        for (AExprContext each : extractAExprs(ctx)) {
             result.getValue().add((ExpressionSegment) visit(each));
+        }
+        return result;
+    }
+    
+    private Collection<AExprContext> extractAExprs(final ExprListContext ctx) {
+        LinkedList<AExprContext> result = new LinkedList<>();
+        for (ExprListContext each = ctx; null != each; each = each.exprList()) {
+            result.addFirst(each.aExpr());
         }
         return result;
     }
@@ -964,7 +972,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     private Collection<ExpressionSegment> createInsertValuesSegments(final ExprListContext ctx) {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        for (AExprContext each : ctx.aExpr()) {
+        for (AExprContext each : extractAExprs(ctx)) {
             result.add((ExpressionSegment) visit(each));
         }
         return result;
