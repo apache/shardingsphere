@@ -78,7 +78,7 @@ public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
     private byte[] getCreatedBlobContent(final long blobId) {
         ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
-        return FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId).get();
+        return FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId).orElseThrow(() -> new InvalidSegstrIdException(blobId));
     }
     
     @HighFrequencyInvocation

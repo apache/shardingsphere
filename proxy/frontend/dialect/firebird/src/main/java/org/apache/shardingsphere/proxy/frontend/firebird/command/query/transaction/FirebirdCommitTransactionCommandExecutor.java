@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.cache.FirebirdBlobWriteCache;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -50,6 +51,7 @@ public final class FirebirdCommitTransactionCommandExecutor implements CommandEx
             new ProxyBackendTransactionManager(connectionSession.getDatabaseConnectionManager()).commit();
         }
         FirebirdTransactionIdGenerator.getInstance().closeTransaction(connectionSession.getConnectionId(), transactionHandle);
+        FirebirdBlobWriteCache.getInstance().removeTransaction(connectionSession.getConnectionId(), transactionHandle);
         return Collections.singleton(new FirebirdGenericResponsePacket());
     }
     

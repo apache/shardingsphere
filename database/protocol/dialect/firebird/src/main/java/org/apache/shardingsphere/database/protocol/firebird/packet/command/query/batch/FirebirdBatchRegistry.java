@@ -60,6 +60,39 @@ public final class FirebirdBatchRegistry {
     }
     
     /**
+     * Mark the native reset of default BLOB flags after record-count validation.
+     *
+     * @param connectionId registered connection ID
+     */
+    public void markBatchStreamDefaultsReset(final int connectionId) {
+        batchRegistry.get(connectionId).batchCreatePhase = BatchCreatePhase.DEFAULTS_RESET;
+    }
+    
+    /**
+     * Mark entry into the native batch creation API for the current connection command.
+     *
+     * @param connectionId registered connection ID
+     */
+    public void markBatchCreationAttempt(final int connectionId) {
+        batchRegistry.get(connectionId).batchCreatePhase = BatchCreatePhase.API_INVOKED;
+    }
+    
+    /**
+     * Consume the native CREATE phase when the current command response is written.
+     *
+     * <p>Connection flow control permits one dispatched command until its response completes.</p>
+     *
+     * @param connectionId connection ID
+     * @return phase reached by the command
+     */
+    public BatchCreatePhase consumeBatchCreatePhase(final int connectionId) {
+        ConnectionBatches batches = batchRegistry.get(connectionId);
+        BatchCreatePhase result = batches.batchCreatePhase;
+        batches.batchCreatePhase = BatchCreatePhase.NONE;
+        return result;
+    }
+    
+    /**
      * Register batch metadata.
      *
      * @param connectionId connection ID
@@ -156,7 +189,19 @@ public final class FirebirdBatchRegistry {
         batchRegistry.remove(connectionId);
     }
     
+    /**
+     * Native CREATE phases that change BLOB framing state.
+     */
+    public enum BatchCreatePhase {
+        
+        NONE,
+        DEFAULTS_RESET,
+        API_INVOKED
+    }
+    
     private static final class ConnectionBatches {
+        
+        private volatile BatchCreatePhase batchCreatePhase = BatchCreatePhase.NONE;
         
         private final Map<Integer, FirebirdBatchStatement> statements = new ConcurrentHashMap<>();
         

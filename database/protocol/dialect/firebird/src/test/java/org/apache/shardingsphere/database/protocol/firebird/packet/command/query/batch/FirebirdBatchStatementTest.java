@@ -17,17 +17,56 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobBufferFormatException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBlobContinuationBpbException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchBpbTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentExceedsBlobException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSegmentTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchSmallDataException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.BatchTooBigException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.RepeatedBatchBlobIdException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdBatchStatementTest {
+    
+    private static final byte[] SEGMENTED_BPB = {1, 3, 1, 0};
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("nativeMessageLayoutArguments")
+    void assertCreateWithNativeMessageLayout(final String name, final List<FirebirdBatchColumnDescriptor> columnDescriptors, final int expectedLength) {
+        FirebirdBatchStatement actual = new FirebirdBatchStatement(32, columnDescriptors, 1024L);
+        assertThat(actual.getAlignedMessageLength(), is(expectedLength));
+    }
+    
+    private static Stream<Arguments> nativeMessageLayoutArguments() {
+        return Stream.of(
+                Arguments.of("empty_message", Collections.emptyList(), 0),
+                Arguments.of("smallint", Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.SHORT, 2, 0, 0)), 4),
+                Arguments.of("odd_text_null_indicator", Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.TEXT, 3, 0, 0)), 6),
+                Arguments.of("bigint_trailing_alignment", Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0)), 16),
+                Arguments.of("maximum_alignment_before_last_field",
+                        Arrays.asList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0), new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.SHORT, 2, 0, 10)), 16));
+    }
     
     @Test
     void assertAddParameterValues() {
@@ -42,7 +81,7 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertCreateWithRecordCounts() {
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, true, false);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, true, false, false);
         assertTrue(batchStatement.isRecordCounts());
         assertFalse(batchStatement.isMultiError());
         assertThat(batchStatement.getBufferSize(), is(1024L));
@@ -50,18 +89,420 @@ class FirebirdBatchStatementTest {
     
     @Test
     void assertCreateWithMultiError() {
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, false, true);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L, false, true, true);
         assertTrue(batchStatement.isMultiError());
         assertFalse(batchStatement.isRecordCounts());
+        assertTrue(batchStatement.isBlobStreamAllowed());
+    }
+    
+    @Test
+    void assertHasBatchBlobIdColumn() {
+        FirebirdBatchColumnDescriptor batchBlobIdColumn = new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.BLOB, 8, 0, 0);
+        batchBlobIdColumn.setBatchBlobId(true);
+        assertTrue(new FirebirdBatchStatement(32, Collections.singletonList(batchBlobIdColumn), 1024L).hasBatchBlobIdColumn());
+    }
+    
+    @Test
+    void assertHasBatchBlobIdColumnWithQuadBlob() {
+        FirebirdBatchColumnDescriptor quadBlobColumn = new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.BLOB, 8, 0, 0);
+        assertFalse(new FirebirdBatchStatement(32, Collections.singletonList(quadBlobColumn), 1024L).hasBatchBlobIdColumn());
+    }
+    
+    @Test
+    void assertAppendBlobStream() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 2, 0).writeBytes(new byte[]{1, 2}), 20L);
+        assertThat(batchStatement.getBlobStreamSize(), is(20L));
+        assertThat(batchStatement.getBlobBuffer().iterator().next(), is(new byte[]{0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0}));
+    }
+    
+    @Test
+    void assertAppendBlobStreamAtBufferLimit() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 16L);
+        batchStatement.addSize(16L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 0, 0), 16L);
+        assertThat(batchStatement.getBlobStreamSize(), is(16L));
+        assertThat(batchStatement.getAccumulatedSize(), is(16L));
+        assertThat(batchStatement.getBlobBuffer().iterator().next(), is(ByteBufUtil.getBytes(createRestoredHeader(1, 0, 0))));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithBufferSizeExceeded() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 16L);
+        BatchTooBigException actual = assertThrows(BatchTooBigException.class, () -> batchStatement.appendBlobStream(createBlobHeader(1L, 16, 0).writeZero(16), 32L));
+        assertThat(actual.getStatementHandle(), is(32));
+        assertTrue(batchStatement.getBlobBuffer().isEmpty());
+        assertThat(batchStatement.getBlobStreamSize(), is(0L));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithCumulativeBufferSizeExceeded() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 24L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 8, 0), 16L);
+        batchStatement.appendBlobStream(Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4, 5, 6, 7, 8}), 8L);
+        assertThrows(BatchTooBigException.class, () -> batchStatement.appendBlobStream(createBlobHeader(2L, 0, 0), 16L));
+        assertThat(batchStatement.getBlobStreamSize(), is(24L));
+        assertThat(batchStatement.getBlobBuffer().size(), is(2));
+        assertThat(batchStatement.readStreamBlobs().iterator().next().getData().toByteArray(), is(new byte[]{1, 2, 3, 4, 5, 6, 7, 8}));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithDeferredHeaderAtBufferLimit() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 28L);
+        ByteBuf data = createBlobHeader(1L, 12, 0).writeZero(12);
+        batchStatement.appendBlobStream(data, 40L);
+        assertThat(batchStatement.getBlobStreamSize(), is(28L));
+        assertThat(batchStatement.getBlobBuffer().iterator().next(), is(ByteBufUtil.getBytes(createRestoredHeader(1, 12, 0).writeZero(12))));
+    }
+    
+    @Test
+    void assertAppendBlobStreamAfterQuotaErrorAndReset() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 32L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 28, 0).writeZero(16), 32L);
+        assertThrows(BatchTooBigException.class, () -> batchStatement.appendBlobStream(Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4}), 4L));
+        batchStatement.reset();
+        ByteBuf data = Unpooled.wrappedBuffer(new byte[]{5, 6, 7, 8, 9, 10, 11, 12}, ByteBufUtil.getBytes(createBlobHeader(2L, 0, 0)));
+        batchStatement.appendBlobStream(data, 24L);
+        assertThat(batchStatement.getBlobStreamSize(), is(24L));
+        assertThat(batchStatement.getBlobBuffer().size(), is(1));
+        byte[] expected = ByteBufUtil.getBytes(Unpooled.wrappedBuffer(new byte[]{5, 6, 7, 8, 9, 10, 11, 12}, ByteBufUtil.getBytes(createRestoredHeader(2, 0, 0))));
+        assertThat(batchStatement.getBlobBuffer().iterator().next(), is(expected));
+    }
+    
+    @Test
+    void assertAppendBlobStreamAfterClearingMemoryCache() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 16L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 0, 0), 16L);
+        batchStatement.clearBlobStream();
+        batchStatement.appendBlobStream(createBlobHeader(2L, 0, 0), 16L);
+        assertThat(batchStatement.getBlobStreamSize(), is(16L));
+        assertThat(batchStatement.getBlobBuffer().size(), is(1));
+    }
+    
+    @Test
+    void assertAppendBlobStreamAfterClearingLargeBuffer() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 131080L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 131064, 0).writeZero(131064), 131080L);
+        batchStatement.clearBlobStream();
+        assertThrows(BatchTooBigException.class, () -> batchStatement.appendBlobStream(createBlobHeader(2L, 0, 0), 16L));
+        assertThat(batchStatement.getBlobStreamSize(), is(131080L));
+        assertTrue(batchStatement.getBlobBuffer().isEmpty());
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithLongBatchBlobId() {
+        ByteBuf data = createBlobHeader(0x100000002L, 5, 0);
+        data.writeBytes("abcde".getBytes(StandardCharsets.US_ASCII));
+        byte[] actual = appendBlobStream(createBatchStatement(), data, 24L);
+        ByteBuf expected = Unpooled.buffer().writeIntLE(1).writeIntLE(2).writeIntLE(5).writeIntLE(0).writeBytes("abcde".getBytes(StandardCharsets.US_ASCII)).writeZero(3);
+        assertThat(actual, is(ByteBufUtil.getBytes(expected)));
+        assertThat(data.readerIndex(), is(21));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithSegmentedBlobAndBpb() {
+        ByteBuf data = createBlobHeader(10L, 14, SEGMENTED_BPB.length);
+        data.writeBytes(SEGMENTED_BPB);
+        data.writeInt(3);
+        data.writeBytes("abc".getBytes(StandardCharsets.US_ASCII));
+        data.writeInt(2);
+        data.writeBytes("de".getBytes(StandardCharsets.US_ASCII));
+        byte[] actual = appendBlobStream(createBatchStatement(), data, 32L);
+        ByteBuf expected = createRestoredHeader(10, 14, SEGMENTED_BPB.length).writeBytes(SEGMENTED_BPB).writeShortLE(3).writeBytes("abc".getBytes(StandardCharsets.US_ASCII)).writeZero(1)
+                .writeShortLE(2).writeBytes("de".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        assertThat(actual, is(ByteBufUtil.getBytes(expected)));
+        assertThat(data.readerIndex(), is(33));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithBlobSplitAcrossPackets() {
+        FirebirdBatchStatement batchStatement = createBatchStatement();
+        ByteBuf firstData = createBlobHeader(1L, 20, 0);
+        firstData.writeBytes(new byte[16]);
+        appendBlobStream(batchStatement, firstData, 32L);
+        ByteBuf secondData = Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4});
+        assertThat(appendBlobStream(batchStatement, secondData, 4L), is(new byte[]{1, 2, 3, 4}));
+        assertThat(secondData.readerIndex(), is(4));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithHeaderSentInNextPacket() {
+        ByteBuf data = createBlobHeader(1L, 12, 0);
+        data.writeBytes(new byte[12]);
+        data.writeInt(1);
+        byte[] actual = appendBlobStream(createBatchStatement(), data, 40L);
+        assertThat(actual, is(ByteBufUtil.getBytes(createRestoredHeader(1, 12, 0).writeZero(12))));
+        assertThat(data.readerIndex(), is(28));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithDefaultSegmentedBpb() {
+        FirebirdBatchStatement batchStatement = createBatchStatement();
+        batchStatement.getBlobStream().setDefaultBpb(Unpooled.wrappedBuffer(SEGMENTED_BPB));
+        ByteBuf data = createBlobHeader(1L, 4, 0);
+        data.writeInt(2);
+        data.writeBytes(new byte[]{7, 8});
+        byte[] actual = appendBlobStream(batchStatement, data, 20L);
+        assertThat(actual, is(ByteBufUtil.getBytes(createRestoredHeader(1, 4, 0).writeShortLE(2).writeBytes(new byte[]{7, 8}))));
+        assertThat(data.readerIndex(), is(22));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithDefaultStreamBpb() {
+        FirebirdBatchStatement batchStatement = createBatchStatement();
+        batchStatement.getBlobStream().setDefaultBpb(Unpooled.wrappedBuffer(new byte[]{1, 3, 4, 1, 0, 0, 0}));
+        ByteBuf data = createBlobHeader(1L, 4, 0);
+        data.writeBytes(new byte[]{7, 8, 9, 10});
+        byte[] actual = appendBlobStream(batchStatement, data, 20L);
+        assertThat(actual, is(ByteBufUtil.getBytes(createRestoredHeader(1, 4, 0).writeBytes(new byte[]{7, 8, 9, 10}))));
+        assertThat(data.readerIndex(), is(20));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithBpbLongerThanBlob() {
+        ByteBuf data = createBlobHeader(1L, 2, 4);
+        data.writeBytes(new byte[]{1, 3, 1, 1});
+        data.writeBytes(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
+        byte[] actual = appendBlobStream(createBatchStatement(), data, 32L);
+        assertThat(actual, is(ByteBufUtil.getBytes(createRestoredHeader(1, 2, 4).writeBytes(new byte[]{1, 3, 1, 1}).writeBytes(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}))));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithSegmentHeaderBeyondBlob() {
+        ByteBuf data = createBlobHeader(1L, 9, SEGMENTED_BPB.length);
+        data.writeBytes(SEGMENTED_BPB);
+        data.writeInt(2);
+        data.writeBytes(new byte[]{1, 2});
+        data.writeInt(2);
+        data.writeBytes(new byte[]{3, 4});
+        byte[] actual = appendBlobStream(createBatchStatement(), data, 28L);
+        assertThat(actual, is(ByteBufUtil.getBytes(createRestoredHeader(1, 9, SEGMENTED_BPB.length).writeBytes(SEGMENTED_BPB).writeShortLE(2).writeBytes(new byte[]{1, 2}).writeShortLE(2)
+                .writeBytes(new byte[]{3, 4}))));
+    }
+    
+    @Test
+    void assertAppendBlobStreamWithIncompleteData() {
+        ByteBuf data = createBlobHeader(1L, 5, 0);
+        data.writeBytes(new byte[2]);
+        assertThrows(IndexOutOfBoundsException.class, () -> appendBlobStream(createBatchStatement(), data, 24L));
+    }
+    
+    private static FirebirdBatchStatement createBatchStatement() {
+        return new FirebirdBatchStatement(1, Collections.emptyList(), 1024L, false, false, true);
+    }
+    
+    private static byte[] appendBlobStream(final FirebirdBatchStatement batchStatement, final ByteBuf data, final long length) {
+        batchStatement.appendBlobStream(data, length);
+        List<byte[]> portions = new ArrayList<>(batchStatement.getBlobBuffer());
+        return portions.get(portions.size() - 1);
+    }
+    
+    private static ByteBuf createRestoredHeader(final int batchBlobId, final int blobLength, final int bpbLength) {
+        return Unpooled.buffer().writeIntLE(0).writeIntLE(batchBlobId).writeIntLE(blobLength).writeIntLE(bpbLength);
+    }
+    
+    @Test
+    void assertReadStreamBlobs() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        ByteBuf data = createBlobHeader(1L, 2, 0).writeBytes(new byte[]{1, 2});
+        data.writeBytes(createBlobHeader(0L, 1, 0)).writeByte(3);
+        data.writeBytes(createBlobHeader(2L, 1, 0)).writeByte(4);
+        batchStatement.appendBlobStream(data, 60L);
+        List<FirebirdBatchStreamBlob> actual = new ArrayList<>(batchStatement.readStreamBlobs());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getBatchBlobId(), is(1L));
+        assertThat(actual.get(0).getBpb(), is(new byte[]{1, 3, 1, 1}));
+        assertFalse(actual.get(0).isSegmented());
+        assertThat(actual.get(0).getData().toByteArray(), is(new byte[]{1, 2, 3}));
+        assertThat(actual.get(1).getBatchBlobId(), is(2L));
+        assertThat(actual.get(1).getData().toByteArray(), is(new byte[]{4}));
+    }
+    
+    @Test
+    void assertReadSegmentedStreamBlobContinuation() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        ByteBuf data = createBlobHeader(1L, 7, 4).writeBytes(new byte[]{1, 3, 1, 0}).writeInt(1).writeByte(1);
+        data.writeBytes(createBlobHeader(0L, 9, 0)).writeBytes(new byte[]{3, 0, 2, 3, 4, 0, 1, 0, 5});
+        batchStatement.appendBlobStream(data, 52L);
+        FirebirdBatchStreamBlob actual = batchStatement.readStreamBlobs().iterator().next();
+        assertTrue(actual.isSegmented());
+        assertThat(actual.getData().toByteArray(), is(new byte[]{1, 2, 3, 4, 5}));
+    }
+    
+    @Test
+    void assertReadStreamBlobWithSegmentedContinuation() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.getBlobStream().setDefaultBpb(Unpooled.wrappedBuffer(new byte[]{1, 3, 1, 0}));
+        ByteBuf data = createBlobHeader(1L, 6, 4).writeBytes(new byte[]{1, 3, 1, 1}).writeBytes(new byte[]{1, 2});
+        data.writeBytes(createBlobHeader(0L, 4, 0)).writeInt(2).writeBytes(new byte[]{(byte) 0xAA, (byte) 0xBB});
+        batchStatement.appendBlobStream(data, 44L);
+        assertThat(batchStatement.readStreamBlobs().iterator().next().getData().toByteArray(), is(new byte[]{1, 2, 2, 0, (byte) 0xAA, (byte) 0xBB}));
+    }
+    
+    @Test
+    void assertReadStreamBlobsAfterResetInsideLongBlob() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 100, 0).writeZero(16), 32L);
+        batchStatement.reset();
+        ByteBuf data = Unpooled.buffer().writeIntLE(0).writeIntLE(2).writeIntLE(3).writeIntLE(0).writeBytes(new byte[]{1, 2, 3, 0});
+        batchStatement.appendBlobStream(data, 20L);
+        List<FirebirdBatchStreamBlob> actual = new ArrayList<>(batchStatement.readStreamBlobs());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getBatchBlobId(), is(2L));
+        assertThat(actual.get(0).getData().toByteArray(), is(new byte[]{1, 2, 3}));
+    }
+    
+    @Test
+    void assertReadStreamBlobsAfterResetInsideShortBlob() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 20, 0).writeZero(16), 32L);
+        batchStatement.reset();
+        ByteBuf data = Unpooled.buffer().writeIntLE(0).writeInt(2).writeInt(3).writeInt(0).writeBytes(new byte[]{0, 3, 2, 1});
+        batchStatement.appendBlobStream(data, 20L);
+        List<FirebirdBatchStreamBlob> actual = new ArrayList<>(batchStatement.readStreamBlobs());
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getBatchBlobId(), is(2L));
+        assertThat(actual.get(0).getData().toByteArray(), is(new byte[]{1, 2, 3}));
+    }
+    
+    @Test
+    void assertReadStreamBlobPutBoundaries() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        ByteBuf data = createBlobHeader(1L, 11, 4).writeBytes(new byte[]{1, 3, 1, 0}).writeInt(1).writeByte(0xD0).writeInt(1).writeByte(0xB2);
+        batchStatement.appendBlobStream(data, 28L);
+        FirebirdBatchStreamBlob actual = batchStatement.readStreamBlobs().iterator().next();
+        assertThat(actual.getData().toByteArray(), is(new byte[]{(byte) 0xD0, (byte) 0xB2}));
+        assertThat(actual.getDataEnds().stream().toArray(), is(new int[]{1, 2}));
+    }
+    
+    @Test
+    void assertReadStreamBlobWithNativePutLength() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 65536L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 32769, 0).writeZero(32769), 32788L);
+        FirebirdBatchStreamBlob actual = batchStatement.readStreamBlobs().iterator().next();
+        assertThat(actual.getData().size(), is(32769));
+        assertThat(actual.getDataEnds().stream().toArray(), is(new int[]{32768, 32769}));
+    }
+    
+    @Test
+    void assertReadStreamBlobAcrossCacheWindow() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 262144L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 131072, 0).writeZero(131072), 131088L);
+        FirebirdBatchStreamBlob actual = batchStatement.readStreamBlobs().iterator().next();
+        assertThat(actual.getData().size(), is(131072));
+        assertThat(actual.getDataEnds().stream().toArray(), is(new int[]{32768, 65536, 98304, 131056, 131072}));
+    }
+    
+    @Test
+    void assertReadBlobHeaderAcrossCacheWindow() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 262144L);
+        ByteBuf data = createBlobHeader(1L, 131052, 0).writeZero(131052).writeBytes(createBlobHeader(2L, 1, 0)).writeByte(42);
+        batchStatement.appendBlobStream(data, 131088L);
+        List<FirebirdBatchStreamBlob> actual = new ArrayList<>(batchStatement.readStreamBlobs());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(1).getBatchBlobId(), is(2L));
+        assertThat(actual.get(1).getData().toByteArray(), is(new byte[]{42}));
+    }
+    
+    @Test
+    void assertReadBpbAcrossCacheWindow() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 262144L);
+        ByteBuf data = createBlobHeader(1L, 131040, 0).writeZero(131040).writeBytes(createBlobHeader(2L, 5, 4)).writeBytes(new byte[]{1, 3, 1, 1}).writeByte(42);
+        batchStatement.appendBlobStream(data, 131080L);
+        List<FirebirdBatchStreamBlob> actual = new ArrayList<>(batchStatement.readStreamBlobs());
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(1).getBpb(), is(new byte[]{1, 3, 1, 1}));
+        assertThat(actual.get(1).getData().toByteArray(), is(new byte[]{42}));
+    }
+    
+    @Test
+    void assertReadSegmentAcrossCacheWindow() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 262144L);
+        ByteBuf data = createBlobHeader(1L, 131032, 0).writeZero(131032).writeBytes(createBlobHeader(2L, 9, 4)).writeBytes(new byte[]{1, 3, 1, 0}).writeInt(3).writeBytes(new byte[]{41, 42, 43});
+        batchStatement.appendBlobStream(data, 131076L);
+        List<FirebirdBatchStreamBlob> actual = new ArrayList<>(batchStatement.readStreamBlobs());
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.get(1).isSegmented());
+        assertThat(actual.get(1).getData().toByteArray(), is(new byte[]{41, 42, 43}));
+        assertThat(actual.get(1).getDataEnds().stream().toArray(), is(new int[]{3}));
+    }
+    
+    @Test
+    void assertReadStreamBlobWithBpbLongerThanBlob() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 2, 4).writeBytes(new byte[]{1, 3, 1, 1}).writeBytes(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}), 32L);
+        assertThat(batchStatement.readStreamBlobs().iterator().next().getData().toByteArray(), is(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}));
+    }
+    
+    @Test
+    void assertReadStreamBlobsWithIncompleteHeader() {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.appendBlobStream(createBlobHeader(1L, 20, 0).writeZero(16), 32L);
+        batchStatement.reset();
+        batchStatement.appendBlobStream(Unpooled.wrappedBuffer(new byte[]{1, 2, 3, 4}), 4L);
+        assertThat(assertThrows(BatchSmallDataException.class, batchStatement::readStreamBlobs).getBufferName(), is("BLOB"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidStreamBlobArguments")
+    void assertReadInvalidStreamBlobs(final String name, final ByteBuf data, final long length, final Class<? extends RuntimeException> expectedException) {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 1024L);
+        batchStatement.getBlobIds().put(3L, 30L);
+        batchStatement.appendBlobStream(data, length);
+        assertThrows(expectedException, batchStatement::readStreamBlobs);
+    }
+    
+    private static Stream<Arguments> invalidStreamBlobArguments() {
+        return Stream.of(
+                Arguments.of("continuation_with_bpb", createBlobHeader(0L, 4, 4).writeBytes(new byte[]{1, 3, 1, 1}), 20L, BatchBlobContinuationBpbException.class),
+                Arguments.of("continuation_without_blob", createBlobHeader(0L, 2, 0).writeBytes(new byte[]{1, 2}), 20L, BatchBlobBufferFormatException.class),
+                Arguments.of("incomplete_bpb", createBlobHeader(1L, 12, 8).writeBytes(new byte[]{1, 3, 1, 0}), 20L, BatchBpbTooBigException.class),
+                Arguments.of("segment_exceeds_blob", createBlobHeader(1L, 4, 4).writeBytes(new byte[]{1, 3, 1, 0}).writeBytes(createBlobHeader(0L, 4, 0)).writeBytes(new byte[]{9, 0, 1, 2}), 40L,
+                        BatchSegmentExceedsBlobException.class),
+                Arguments.of("incomplete_segment", createBlobHeader(1L, 12, 4).writeBytes(new byte[]{1, 3, 1, 0}).writeInt(6).writeBytes(new byte[]{1, 2}), 24L, BatchSegmentTooBigException.class),
+                Arguments.of("registered_blob_id", createBlobHeader(3L, 0, 0), 16L, RepeatedBatchBlobIdException.class),
+                Arguments.of("repeated_stream_blob_id", createBlobHeader(1L, 0, 0).writeBytes(createBlobHeader(1L, 0, 0)), 32L, RepeatedBatchBlobIdException.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("clearBlobStreamArguments")
+    void assertClearBlobStream(final String name, final int blobLength, final long expectedBlobStreamSize) {
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(32, Collections.emptyList(), 16L + blobLength);
+        batchStatement.appendBlobStream(createBlobHeader(1L, blobLength, 0).writeZero(blobLength), 16L + blobLength);
+        batchStatement.getStreamBlobContents().put(2L, new byte[]{1});
+        batchStatement.clearBlobStream();
+        assertTrue(batchStatement.getBlobBuffer().isEmpty());
+        assertThat(batchStatement.getBlobStreamSize(), is(expectedBlobStreamSize));
+        assertThat(batchStatement.getStreamBlobContents().size(), is(1));
+    }
+    
+    private static Stream<Arguments> clearBlobStreamArguments() {
+        return Stream.of(Arguments.of("empty_blob", 0, 0L), Arguments.of("memory_cache_limit", 131056, 0L), Arguments.of("temporary_file", 131064, 131080L));
     }
     
     @Test
     void assertReset() {
-        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(100);
+        FirebirdBatchStatement batchStatement = new FirebirdBatchStatement(100, Collections.singletonList(new FirebirdBatchColumnDescriptor(FirebirdBinaryColumnType.INT64, 8, 0, 0)), 1024L);
         batchStatement.addParameterValues(Collections.singletonList("foo"));
         batchStatement.addSize(10L);
+        batchStatement.getBlobIds().put(1L, 2L);
+        batchStatement.getStreamBlobContents().put(3L, new byte[]{1});
+        batchStatement.appendBlobStream(createBlobHeader(4L, 0, 0), 16L);
+        FirebirdBatchStatement otherBatchStatement = new FirebirdBatchStatement(101);
+        otherBatchStatement.getBlobIds().put(1L, 3L);
         batchStatement.reset();
         assertTrue(batchStatement.getParameterValues().isEmpty());
         assertThat(batchStatement.getAccumulatedSize(), is(0L));
+        assertTrue(batchStatement.getBlobIds().isEmpty());
+        assertTrue(batchStatement.getStreamBlobContents().isEmpty());
+        assertTrue(batchStatement.getBlobBuffer().isEmpty());
+        assertThat(batchStatement.getBlobStreamSize(), is(0L));
+        assertThat(otherBatchStatement.getBlobIds(), is(Collections.singletonMap(1L, 3L)));
+        assertThat(batchStatement.getAlignedMessageLength(), is(16));
+        assertThat(otherBatchStatement.getAlignedMessageLength(), is(0));
+    }
+    
+    private static ByteBuf createBlobHeader(final long batchBlobId, final int blobLength, final int bpbLength) {
+        return Unpooled.buffer().writeLong(batchBlobId).writeInt(blobLength).writeInt(bpbLength);
     }
 }

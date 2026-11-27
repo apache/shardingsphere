@@ -36,12 +36,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -132,5 +143,48 @@ class FirebirdConnectionResourceManagerTest {
         inOrder.verify(fetchStatementCache).unregisterConnection(CONNECTION_ID);
         inOrder.verify(batchStatementManager).unregisterConnection(CONNECTION_ID);
         assertNull(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()));
+    }
+    
+    @Test
+    void assertUnregisterConnectionWhenWriteReleaseFails() {
+        when(FirebirdBlobWriteCache.getInstance()).thenCallRealMethod();
+        when(FirebirdBlobReadCache.getInstance()).thenCallRealMethod();
+        FirebirdBlobWriteCache writes = FirebirdBlobWriteCache.getInstance();
+        FirebirdBlobReadCache reads = FirebirdBlobReadCache.getInstance();
+        FirebirdConnectionResourceManager resources = FirebirdConnectionResourceManager.getInstance();
+        resources.registerConnection(CONNECTION_ID);
+        byte[] expectedBlobContent = new byte[]{1, 2, 3};
+        writes.registerBlob(CONNECTION_ID, 11, 21L, 31, false);
+        writes.appendSegment(CONNECTION_ID, 11, expectedBlobContent);
+        writes.closeWrite(CONNECTION_ID, 11);
+        writes.useBlobData(CONNECTION_ID, 21L, 31);
+        reads.registerBlob(CONNECTION_ID, 12, expectedBlobContent, false);
+        reads.registerBlob(2, 12, expectedBlobContent, false);
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
+        when(payload.getConnectionId()).thenReturn(CONNECTION_ID);
+        new FirebirdBlobBinaryProtocolValue().write(payload, expectedBlobContent);
+        ArgumentCaptor<Long> blobIdCaptor = ArgumentCaptor.forClass(Long.class);
+        verify(payload).writeInt8(blobIdCaptor.capture());
+        ArgumentCaptor<Path> backingFileCaptor = ArgumentCaptor.forClass(Path.class);
+        IOException expected = new IOException("foo_delete_failure");
+        try {
+            try (MockedStatic<Files> mocked = mockStatic(Files.class)) {
+                mocked.when(() -> Files.delete(any(Path.class))).thenThrow(expected);
+                assertThat(assertThrows(IOException.class, () -> resources.unregisterConnection(CONNECTION_ID)), sameInstance(expected));
+                mocked.verify(() -> Files.delete(backingFileCaptor.capture()));
+                assertFalse(reads.getTotalSize(CONNECTION_ID, 12).isPresent());
+                assertTrue(reads.getTotalSize(2, 12).isPresent());
+                assertNull(FirebirdBlobBinaryProtocolValue.getBlobContent(CONNECTION_ID, blobIdCaptor.getValue()));
+                verify(connectionProtocolVersion).unsetProtocolVersion(CONNECTION_ID);
+                verify(fetchStatementCache).unregisterConnection(CONNECTION_ID);
+                verify(batchStatementManager).unregisterConnection(CONNECTION_ID);
+            }
+            assertTrue(Files.exists(backingFileCaptor.getValue()));
+            assertThat(writes.getBlobData(CONNECTION_ID, 21L).get(), is(expectedBlobContent));
+        } finally {
+            resources.unregisterConnection(CONNECTION_ID);
+            reads.unregisterConnection(2);
+        }
+        assertFalse(Files.exists(backingFileCaptor.getValue()));
     }
 }
