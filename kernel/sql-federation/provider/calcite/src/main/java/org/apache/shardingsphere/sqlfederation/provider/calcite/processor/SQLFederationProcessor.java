@@ -119,9 +119,18 @@ public final class SQLFederationProcessor {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         String originalDatabase = tableSegment.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalDatabase().getValue()).orElse(currentDatabaseName);
         String originalScheme = tableSegment.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalSchema().getValue()).orElse(currentSchemaName);
-        SchemaPlus currentSchemaPlus = dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? getNestedSchemaPlus(schemaPlus, originalDatabase, originalScheme, sql)
-                : getSchemaPlus(schemaPlus, originalDatabase, sql);
-        return currentSchemaPlus.tables().get(tableSegment.getTableName().getIdentifier().getValue());
+        String tableName = tableSegment.getTableName().getIdentifier().getValue();
+        if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
+            return getNestedSchemaPlus(schemaPlus, originalDatabase, originalScheme, sql).tables().get(tableName);
+        }
+        SchemaPlus databaseSchemaPlus = getSchemaPlus(schemaPlus, originalDatabase, sql);
+        Table result = databaseSchemaPlus.tables().get(tableName);
+        return null == result ? getSubSchemaTable(databaseSchemaPlus, originalScheme, tableName) : result;
+    }
+    
+    private Table getSubSchemaTable(final SchemaPlus databaseSchemaPlus, final String schemaName, final String tableName) {
+        SchemaPlus subSchemaPlus = databaseSchemaPlus.subSchemas().get(schemaName);
+        return null == subSchemaPlus ? null : subSchemaPlus.tables().get(tableName);
     }
     
     private SchemaPlus getNestedSchemaPlus(final SchemaPlus schemaPlus, final String databaseName, final String schemaName, final String sql) {

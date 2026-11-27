@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeImpl;
+import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.Table;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.calcite.schema.impl.ViewTable;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeBuilder;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.type.SQLFederationDataTypeFactory;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -45,9 +47,12 @@ public final class SQLFederationSchema extends AbstractSchema {
     
     private final Map<String, Table> tableMap;
     
-    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final DatabaseType protocolType) {
+    private final Map<String, Schema> subSchemaMap;
+    
+    public SQLFederationSchema(final String schemaName, final ShardingSphereSchema schema, final Collection<ShardingSphereSchema> subSchemas, final DatabaseType protocolType) {
         name = schemaName;
         tableMap = createTableMap(schema, protocolType);
+        subSchemaMap = createSubSchemaMap(subSchemas, protocolType);
     }
     
     private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType) {
@@ -66,5 +71,13 @@ public final class SQLFederationSchema extends AbstractSchema {
         RelDataType relDataType = SQLFederationDataTypeBuilder.build(table, protocolType, SQLFederationDataTypeFactory.getInstance());
         ShardingSphereView view = schema.getView(table.getName());
         return new ViewTable(new JavaTypeFactoryImpl().getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
+    }
+    
+    private Map<String, Schema> createSubSchemaMap(final Collection<ShardingSphereSchema> subSchemas, final DatabaseType protocolType) {
+        Map<String, Schema> result = new CaseInsensitiveMap<>(subSchemas.size(), 1F);
+        for (ShardingSphereSchema each : subSchemas) {
+            result.put(each.getName(), new SQLFederationSchema(each.getName(), each, Collections.emptyList(), protocolType));
+        }
+        return result;
     }
 }

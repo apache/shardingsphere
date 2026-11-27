@@ -67,17 +67,6 @@ public final class SystemSchemaManager {
     /**
      * Judge whether the current table is system table.
      *
-     * @param schema schema
-     * @param tableName table name
-     * @return is system table or not
-     */
-    public static boolean isSystemTable(final String schema, final String tableName) {
-        return DATABASE_TYPE_AND_SYSTEM_SCHEMA_MANAGER_MAP.entrySet().stream().anyMatch(entry -> entry.getValue().getTables(schema).contains(tableName));
-    }
-    
-    /**
-     * Judge whether the current table is system table.
-     *
      * @param databaseType database type
      * @param schema schema
      * @param tableName table name
