@@ -225,6 +225,12 @@ class MySQLComStmtPrepareExecutorTest {
         }
     }
     
+    private MySQLPacketPayload createPayload(final MySQLColumnDefinition41Packet packet) {
+        ByteBuf byteBuf = Unpooled.buffer();
+        packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
+        return new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+    }
+    
     @Test
     void assertPrepareLocalTemporalProjectionWithFederation() throws SQLException {
         ContextManager contextManager = mockLocalTemporalContext();
@@ -290,6 +296,24 @@ class MySQLComStmtPrepareExecutorTest {
         } finally {
             MySQLStatementIdGenerator.getInstance().unregisterConnection(17);
         }
+    }
+    
+    private int getColumnDefinitionType(final MySQLColumnDefinition41Packet packet) {
+        MySQLPacketPayload payload = createPayload(packet);
+        skipColumnDefinitionStrings(payload);
+        payload.readIntLenenc();
+        payload.skipReserved(2);
+        payload.skipReserved(4);
+        return payload.readInt1();
+    }
+    
+    private void skipColumnDefinitionStrings(final MySQLPacketPayload payload) {
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
     }
     
     private static Stream<Arguments> temporalProjectionWithParametersArguments() {
@@ -523,30 +547,6 @@ class MySQLComStmtPrepareExecutorTest {
         skipColumnDefinitionStrings(payload);
         payload.readIntLenenc();
         return payload.readInt2();
-    }
-    
-    private int getColumnDefinitionType(final MySQLColumnDefinition41Packet packet) {
-        MySQLPacketPayload payload = createPayload(packet);
-        skipColumnDefinitionStrings(payload);
-        payload.readIntLenenc();
-        payload.skipReserved(2);
-        payload.skipReserved(4);
-        return payload.readInt1();
-    }
-    
-    private MySQLPacketPayload createPayload(final MySQLColumnDefinition41Packet packet) {
-        ByteBuf byteBuf = Unpooled.buffer();
-        packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
-        return new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-    }
-    
-    private void skipColumnDefinitionStrings(final MySQLPacketPayload payload) {
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
-        payload.readStringLenenc();
     }
     
     @Test

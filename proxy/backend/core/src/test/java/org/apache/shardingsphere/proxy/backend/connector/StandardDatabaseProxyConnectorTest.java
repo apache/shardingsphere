@@ -552,8 +552,10 @@ class StandardDatabaseProxyConnectorTest {
         when(resultSetMetaData.getColumnName(2)).thenReturn("foo_text");
         when(resultSetMetaData.getColumnLabel(2)).thenReturn("foo_text");
         when(queryResult.getMetaData()).thenReturn(queryResultMetaData);
-        when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(queryResult));
-        engine.add(resultSet);
+        when(queryResult.getJDBCResultSet()).thenReturn(Optional.of(resultSet));
+        when(proxySQLExecutor.execute(executionContext)).thenReturn(Arrays.asList(queryResult, mock(QueryResult.class)));
+        ResultSet otherResultSet = mock(ResultSet.class);
+        setField(engine, "cachedResultSets", Arrays.asList(otherResultSet, resultSet));
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         when(mergedResult.getValue(1, Object.class)).thenReturn(1);

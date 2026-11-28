@@ -308,8 +308,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
             result.add(queryHeaderBuilderEngine.build(sqlStatementContext, resultSetMetaData, database, columnIndex));
         }
-        if (!cachedResultSets.isEmpty()) {
-            queryHeaderBuilderEngine.appendProtocolAttributes(result, cachedResultSets.iterator().next());
+        Optional<ResultSet> jdbcResultSet = queryResultSample.getJDBCResultSet();
+        if (jdbcResultSet.isPresent()) {
+            queryHeaderBuilderEngine.appendProtocolAttributes(result, jdbcResultSet.get());
         }
         return result;
     }
