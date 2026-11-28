@@ -37,6 +37,8 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -59,6 +61,22 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ProxyJDBCExecutorTest {
+    
+    private Object originalBackendHandlerFactory;
+    
+    private Object originalDistSQLBackendHandlerFactory;
+    
+    @BeforeEach
+    void saveHandlerFactories() throws ReflectiveOperationException {
+        originalBackendHandlerFactory = Plugins.getMemberAccessor().get(ProxyContext.class.getDeclaredField("backendHandlerFactory"), ProxyContext.getInstance());
+        originalDistSQLBackendHandlerFactory = Plugins.getMemberAccessor().get(ProxyContext.class.getDeclaredField("distSQLBackendHandlerFactory"), ProxyContext.getInstance());
+    }
+    
+    @AfterEach
+    void restoreHandlerFactories() throws ReflectiveOperationException {
+        Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("backendHandlerFactory"), ProxyContext.getInstance(), originalBackendHandlerFactory);
+        Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("distSQLBackendHandlerFactory"), ProxyContext.getInstance(), originalDistSQLBackendHandlerFactory);
+    }
     
     @Test
     void assertExecuteWithCallbacks() throws SQLException, ReflectiveOperationException {

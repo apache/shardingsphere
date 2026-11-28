@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rul.RULStatement;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.session.connection.transaction.Transactio
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.distsql.DistSQLStatementContext;
@@ -73,10 +74,12 @@ import java.util.Optional;
 /**
  * Proxy backend handler factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class ProxyBackendHandlerFactory {
     
     private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_STANDARD_SQL_STATEMENT_TYPES = Arrays.asList(DCLStatement.class, RenameTableStatement.class);
+    
+    private final ContextManager contextManager;
     
     /**
      * Create new instance of backend handler.
@@ -112,6 +115,7 @@ public final class ProxyBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
+    @HighFrequencyInvocation
     public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final QueryContext queryContext,
                                                   final ConnectionSession connectionSession, final boolean preferPreparedStatement) throws SQLException {
         connectionSession.setQueryContext(queryContext);
@@ -119,34 +123,12 @@ public final class ProxyBackendHandlerFactory {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         checkAllowedSQLStatementWhenTransactionFailed(databaseType, sqlStatement, connectionSession.getConnectionContext().getTransactionContext());
         checkSupportedSQLStatement(databaseType, sqlStatement);
-        checkClusterState(databaseType, sqlStatement);
+        ProxyBackendHandlerFactory factory = ProxyContext.getInstance().getBackendHandlerFactory();
+        factory.checkClusterState(databaseType, sqlStatement);
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipProxyBackendHandler(sqlStatement);
         }
-        if (sqlStatement instanceof DistSQLStatement) {
-            checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
-            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, queryContext, connectionSession);
-        }
-        handleAutoCommit(sqlStatement, connectionSession);
-        if (sqlStatement instanceof TCLStatement) {
-            return TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
-        }
-        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminProxyBackendHandlerFactory.newInstance(
-                databaseType, sqlStatementContext, connectionSession, queryContext.getSql(), queryContext.getParameters());
-        if (databaseAdminHandler.isPresent()) {
-            return databaseAdminHandler.get();
-        }
-        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, connectionSession);
-        if (databaseOperateHandler.isPresent()) {
-            return databaseOperateHandler.get();
-        }
-        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
-                ? sqlStatementContext.getTablesContext().getDatabaseName().get()
-                : connectionSession.getUsedDatabaseName();
-        if (null != databaseName) {
-            checkSQLExecution(queryContext, connectionSession.getConnectionContext().getGrantee(), databaseName);
-        }
-        return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
+        return factory.createBackendHandler(databaseType, queryContext, connectionSession, preferPreparedStatement, sqlStatementContext, sqlStatement);
     }
     
     private static void checkAllowedSQLStatementWhenTransactionFailed(final DatabaseType databaseType, final SQLStatement sqlStatement,
@@ -170,9 +152,37 @@ public final class ProxyBackendHandlerFactory {
                 Collections.emptyList(), Collections.emptyList(), UNSUPPORTED_STANDARD_SQL_STATEMENT_TYPES, unsupportedDialectSQLStatementTypes).isSupported(sqlStatement);
     }
     
-    private static void checkClusterState(final DatabaseType databaseType, final SQLStatement sqlStatement) {
-        ShardingSphereState currentState = ProxyContext.getInstance().getContextManager().getStateContext().getState();
+    private void checkClusterState(final DatabaseType databaseType, final SQLStatement sqlStatement) {
+        ShardingSphereState currentState = contextManager.getStateContext().getState();
         TypedSPILoader.findService(ProxyClusterStateChecker.class, currentState).ifPresent(optional -> optional.check(sqlStatement, databaseType));
+    }
+    
+    private ProxyBackendHandler createBackendHandler(final DatabaseType databaseType, final QueryContext queryContext, final ConnectionSession connectionSession,
+                                                     final boolean preferPreparedStatement, final SQLStatementContext sqlStatementContext, final SQLStatement sqlStatement) throws SQLException {
+        if (sqlStatement instanceof DistSQLStatement) {
+            checkSupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
+            return DistSQLProxyBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, queryContext, connectionSession);
+        }
+        handleAutoCommit(sqlStatement, connectionSession);
+        if (sqlStatement instanceof TCLStatement) {
+            return TCLProxyBackendHandlerFactory.newInstance(queryContext, connectionSession);
+        }
+        Optional<ProxyBackendHandler> databaseAdminHandler = DatabaseAdminProxyBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession,
+                queryContext.getSql(), queryContext.getParameters());
+        if (databaseAdminHandler.isPresent()) {
+            return databaseAdminHandler.get();
+        }
+        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateProxyBackendHandler(sqlStatement, connectionSession);
+        if (databaseOperateHandler.isPresent()) {
+            return databaseOperateHandler.get();
+        }
+        String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
+                ? sqlStatementContext.getTablesContext().getDatabaseName().get()
+                : connectionSession.getUsedDatabaseName();
+        if (null != databaseName) {
+            checkSQLExecution(queryContext, connectionSession.getConnectionContext().getGrantee(), databaseName);
+        }
+        return DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, preferPreparedStatement);
     }
     
     private static void checkSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {

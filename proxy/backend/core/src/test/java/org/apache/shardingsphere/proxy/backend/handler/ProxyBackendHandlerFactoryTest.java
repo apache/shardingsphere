@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseProxyBackend
 import org.apache.shardingsphere.proxy.backend.handler.data.type.UnicastDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.database.type.CreateDatabaseProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.database.type.DropDatabaseProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLQueryProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLUpdateProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipProxyBackendHandler;
@@ -124,6 +125,10 @@ class ProxyBackendHandlerFactoryTest {
         ContextManager contextManager = mockContextManager();
         when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ProxyBackendHandlerFactory backendHandlerFactory = new ProxyBackendHandlerFactory(contextManager);
+        DistSQLProxyBackendHandlerFactory distSQLBackendHandlerFactory = new DistSQLProxyBackendHandlerFactory(contextManager);
+        when(ProxyContext.getInstance().getBackendHandlerFactory()).thenReturn(backendHandlerFactory);
+        when(ProxyContext.getInstance().getDistSQLBackendHandlerFactory()).thenReturn(distSQLBackendHandlerFactory);
     }
     
     private ConnectionContext mockConnectionContext() {
