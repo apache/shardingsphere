@@ -50,6 +50,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class SetDistVariableExecutorTest {
@@ -77,7 +78,13 @@ class SetDistVariableExecutorTest {
                                 .getProperty("proxy-frontend-database-protocol-type"), is("FIXTURE"))),
                 Arguments.of("valid cron property", new SetDistVariableStatement("proxy_meta_data_collector_cron", "0 0/5 * * * ?"),
                         (Consumer<ContextManager>) contextManager -> assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps()
-                                .getProperty("proxy-meta-data-collector-cron"), is("0 0/5 * * * ?"))));
+                                .getProperty("proxy-meta-data-collector-cron"), is("0 0/5 * * * ?"))),
+                Arguments.of("boolean property with numeric enabled value", new SetDistVariableStatement("sql_show", "1"),
+                        (Consumer<ContextManager>) contextManager -> assertTrue(
+                                (Boolean) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW))),
+                Arguments.of("boolean property with numeric disabled value", new SetDistVariableStatement("agent_plugins_enabled", "0"),
+                        (Consumer<ContextManager>) contextManager -> assertFalse(
+                                (Boolean) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED))));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -100,6 +107,8 @@ class SetDistVariableExecutorTest {
                 Arguments.of("unsupported variable", new SetDistVariableStatement("unknown", "1"), UnsupportedVariableException.class),
                 Arguments.of("invalid numeric value", new SetDistVariableStatement("proxy_frontend_flush_threshold", "invalid"), InvalidVariableValueException.class),
                 Arguments.of("invalid cron expression", new SetDistVariableStatement("proxy_meta_data_collector_cron", "invalid"), InvalidVariableValueException.class),
-                Arguments.of("empty cron expression", new SetDistVariableStatement("proxy_meta_data_collector_cron", ""), InvalidVariableValueException.class));
+                Arguments.of("empty cron expression", new SetDistVariableStatement("proxy_meta_data_collector_cron", ""), InvalidVariableValueException.class),
+                Arguments.of("invalid boolean value", new SetDistVariableStatement("sql_show", "invalid"), InvalidVariableValueException.class),
+                Arguments.of("unsupported boolean value", new SetDistVariableStatement("sql_show", "2"), InvalidVariableValueException.class));
     }
 }
