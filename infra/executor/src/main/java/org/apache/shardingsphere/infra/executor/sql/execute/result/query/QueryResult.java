@@ -64,8 +64,8 @@ public interface QueryResult extends ExecuteResult, AutoCloseable {
      * Get input stream.
      *
      * @param columnIndex column index
-     * @param type class type of data value
-     * @return input stream
+     * @param type stream type, such as Ascii, Unicode or Binary
+     * @return input stream, or null if the column value is SQL NULL
      * @throws SQLException SQL exception
      */
     InputStream getInputStream(int columnIndex, String type) throws SQLException;
