@@ -29,7 +29,46 @@ IDENTIFIER_
     ;
 
 STRING_
-    : (SQ_ ('\'\'' | ~'\'')* SQ_)
+    : SINGLE_QUOTED_TEXT_
+    | ALTERNATIVE_QUOTED_TEXT_
+    ;
+
+fragment SINGLE_QUOTED_TEXT_
+    : SQ_ ('\'\'' | ~'\'')* SQ_
+    ;
+
+fragment ALTERNATIVE_QUOTED_TEXT_
+    : Q SQ_ '(' .*? ')' SQ_
+    | Q SQ_ '[' .*? ']' SQ_
+    | Q SQ_ '{' .*? '}' SQ_
+    | Q SQ_ '<' .*? '>' SQ_
+    | Q SQ_ ')' .*? ')' SQ_
+    | Q SQ_ ']' .*? ']' SQ_
+    | Q SQ_ '}' .*? '}' SQ_
+    | Q SQ_ '>' .*? '>' SQ_
+    | Q SQ_ '!' .*? '!' SQ_
+    | Q SQ_ '"' .*? '"' SQ_
+    | Q SQ_ '#' .*? '#' SQ_
+    | Q SQ_ '$' .*? '$' SQ_
+    | Q SQ_ '%' .*? '%' SQ_
+    | Q SQ_ '&' .*? '&' SQ_
+    | Q SQ_ '*' .*? '*' SQ_
+    | Q SQ_ '+' .*? '+' SQ_
+    | Q SQ_ ',' .*? ',' SQ_
+    | Q SQ_ '-' .*? '-' SQ_
+    | Q SQ_ '.' .*? '.' SQ_
+    | Q SQ_ '/' .*? '/' SQ_
+    | Q SQ_ ':' .*? ':' SQ_
+    | Q SQ_ ';' .*? ';' SQ_
+    | Q SQ_ '=' .*? '=' SQ_
+    | Q SQ_ '?' .*? '?' SQ_
+    | Q SQ_ '@' .*? '@' SQ_
+    | Q SQ_ '\\' .*? '\\' SQ_
+    | Q SQ_ '^' .*? '^' SQ_
+    | Q SQ_ '_' .*? '_' SQ_
+    | Q SQ_ '`' .*? '`' SQ_
+    | Q SQ_ '|' .*? '|' SQ_
+    | Q SQ_ '~' .*? '~' SQ_
     ;
 
 NUMBER_
