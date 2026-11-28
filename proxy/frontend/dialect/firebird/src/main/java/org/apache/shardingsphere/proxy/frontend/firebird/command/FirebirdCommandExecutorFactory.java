@@ -45,6 +45,8 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.arrays.FirebirdGetSliceCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.arrays.FirebirdPutSliceCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCreateCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
@@ -115,6 +117,10 @@ public final class FirebirdCommandExecutorFactory {
                 return new FirebirdAllocateStatementCommandExecutor(connectionSession);
             case PREPARE_STATEMENT:
                 return new FirebirdPrepareStatementCommandExecutor((FirebirdPrepareStatementPacket) commandPacket, connectionSession);
+            case GET_SLICE:
+                return new FirebirdGetSliceCommandExecutor();
+            case PUT_SLICE:
+                return new FirebirdPutSliceCommandExecutor();
             case EXECUTE:
             case EXECUTE2:
                 return new FirebirdExecuteStatementCommandExecutor((FirebirdExecuteStatementPacket) commandPacket, connectionSession);

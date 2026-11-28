@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.arrays.FirebirdGetSliceCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.arrays.FirebirdPutSliceCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
@@ -91,6 +93,10 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdCancelBlobCommandPacket(payload);
             case CLOSE_BLOB:
                 return new FirebirdCloseBlobCommandPacket(payload);
+            case GET_SLICE:
+                return new FirebirdGetSliceCommandPacket(payload);
+            case PUT_SLICE:
+                return new FirebirdPutSliceCommandPacket(payload);
             case ALLOCATE_STATEMENT:
                 return new FirebirdAllocateStatementPacket(payload);
             case PREPARE_STATEMENT:
@@ -160,6 +166,10 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdCancelBlobCommandPacket.getLength();
             case CLOSE_BLOB:
                 return FirebirdCloseBlobCommandPacket.getLength();
+            case GET_SLICE:
+                return FirebirdGetSliceCommandPacket.getLength(payload);
+            case PUT_SLICE:
+                return FirebirdPutSliceCommandPacket.getLength(payload);
             case ALLOCATE_STATEMENT:
                 return FirebirdAllocateStatementPacket.getLength();
             case PREPARE_STATEMENT:
