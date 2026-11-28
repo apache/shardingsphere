@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.Returning
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
@@ -94,6 +95,9 @@ public final class ReturningSegmentBinder {
     private static Optional<OwnerSegment> getReturningProjectionOwner(final ProjectionSegment projection) {
         if (projection instanceof ShorthandProjectionSegment) {
             return ((ShorthandProjectionSegment) projection).getOwner();
+        }
+        if (projection instanceof ColumnProjectionSegment) {
+            return ((ColumnProjectionSegment) projection).getColumn().getOwner();
         }
         if (!(projection instanceof ExpressionProjectionSegment)) {
             return Optional.empty();
