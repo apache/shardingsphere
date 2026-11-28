@@ -206,8 +206,7 @@ class RouteSQLRewriteEngineTest {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
         when(statementContext.getInsertSelectContext()).thenReturn(null);
-        when(statementContext.getGroupedParameters()).thenReturn(
-                Arrays.asList(Collections.singletonList(1), Collections.singletonList(2), Collections.singletonList(3)));
+        when(statementContext.getGroupedParameters()).thenReturn(Arrays.asList(Collections.singletonList(1), Collections.singletonList(2), Collections.singletonList(3)));
         when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
         when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
@@ -276,12 +275,12 @@ class RouteSQLRewriteEngineTest {
     }
     
     private Map<String, StorageUnit> mockStorageUnits(final DatabaseType databaseType) {
-        StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageType()).thenReturn(databaseType);
-        Map<String, StorageUnit> storageUnits = new HashMap<>(2, 1F);
-        storageUnits.put("ds_0", result);
-        storageUnits.put("ds_1", result);
-        return storageUnits;
+        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
+        result.put("ds_0", storageUnit);
+        result.put("ds_1", storageUnit);
+        return result;
     }
     
     @Test

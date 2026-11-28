@@ -168,6 +168,15 @@ public final class DriverExecutorFacade implements AutoCloseable {
         return executeExecutor.getResultSet(database, queryContext, statement, statements);
     }
     
+    /**
+     * Judge whether the last execution splits one INSERT statement into multiple route units.
+     *
+     * @return is insert value split or not
+     */
+    public boolean isInsertValueSplit() {
+        return updateExecutor.isInsertValueSplit() || executeExecutor.isInsertValueSplit();
+    }
+    
     @Override
     public void close() throws SQLException {
         sqlFederationEngine.close();

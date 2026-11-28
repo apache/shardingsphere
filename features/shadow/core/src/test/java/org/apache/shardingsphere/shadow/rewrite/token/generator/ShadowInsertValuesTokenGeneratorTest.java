@@ -51,12 +51,33 @@ class ShadowInsertValuesTokenGeneratorTest {
         RouteContext routeContext = new RouteContext();
         routeContext.getRouteUnitInsertValueIndexes().put(firstRouteUnit, Collections.singletonList(0));
         routeContext.getRouteUnitInsertValueIndexes().put(secondRouteUnit, Collections.singletonList(1));
-        ShadowInsertValuesTokenGenerator generator = new ShadowInsertValuesTokenGenerator(routeContext);
+        ShadowInsertValuesTokenGenerator generator = new ShadowInsertValuesTokenGenerator(routeContext, "");
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
         ShadowInsertValuesToken actual = (ShadowInsertValuesToken) generator.generateSQLToken(sqlStatementContext);
         assertThat(actual.toString(firstRouteUnit), is("(1, 'foo')"));
         assertThat(actual.toString(secondRouteUnit), is("(2, 'bar')"));
         assertThat(actual.toString(), is("(1, 'foo'), (2, 'bar')"));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenWithOriginalLiteralText() {
+        String sql = "INSERT INTO foo_tbl VALUES (E'line\\nbreak', 'O''Reilly')";
+        String firstLiteral = "E'line\\nbreak'";
+        int firstStart = sql.indexOf(firstLiteral);
+        int secondStart = sql.indexOf("'O''Reilly'");
+        InsertValueContext insertValueContext = mock(InsertValueContext.class);
+        when(insertValueContext.getValueExpressions()).thenReturn(Arrays.asList(
+                new LiteralExpressionSegment(firstStart, firstStart + firstLiteral.length() - 1, "line\nbreak"),
+                new LiteralExpressionSegment(secondStart, secondStart + "'O''Reilly'".length() - 1, "O'Reilly")));
+        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
+        when(sqlStatementContext.getSqlStatement().getValues()).thenReturn(Collections.singletonList(new InsertValuesSegment(10, 30, Collections.emptyList())));
+        RouteUnit routeUnit = new RouteUnit(new RouteMapper("logic_ds", "ds_0"), Collections.emptyList());
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnitInsertValueIndexes().put(routeUnit, Collections.singletonList(0));
+        ShadowInsertValuesTokenGenerator generator = new ShadowInsertValuesTokenGenerator(routeContext, sql);
+        ShadowInsertValuesToken actual = (ShadowInsertValuesToken) generator.generateSQLToken(sqlStatementContext);
+        assertThat(actual.toString(routeUnit), is("(E'line\\nbreak', 'O''Reilly')"));
     }
     
     private InsertValueContext createInsertValueContext(final Object orderId, final String cipher) {

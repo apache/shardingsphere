@@ -26,7 +26,9 @@ import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.spi.column.PreciseColumnShadowValue;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,31 +45,31 @@ class ShadowInsertValueRouteDeciderTest {
     
     @Test
     void assertDecide() {
-        ShadowRule rule = mockShadowRule();
-        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(sqlStatementContext.getInsertColumnNames()).thenReturn(Arrays.asList("order_id", "user_id"));
-        List<InsertValueContext> insertValueContexts = Arrays.asList(createInsertValueContext(1, 0), createInsertValueContext(2, 1), createInsertValueContext(3, 0));
-        when(sqlStatementContext.getInsertValueContexts()).thenReturn(insertValueContexts);
-        List<Boolean> actual = new ShadowInsertValueRouteDecider(rule, sqlStatementContext).decide();
+        ShadowRule rule = mockShadowRule(createMatchValueAlgorithm(1));
+        InsertStatementContext sqlStatementContext = mockInsertStatementContext(Arrays.asList("order_id", "user_id"), 0, 1, 0);
+        Collection<Boolean> actual = new ShadowInsertValueRouteDecider(rule, sqlStatementContext).decide();
         assertThat(actual, is(Arrays.asList(false, true, false)));
     }
     
     @Test
+    void assertDecideWithDifferentAlgorithms() {
+        ShadowRule rule = mockShadowRule(createMatchValueAlgorithm(1), createMatchValueAlgorithm(2));
+        InsertStatementContext sqlStatementContext = mockInsertStatementContext(Arrays.asList("order_id", "user_id"), 1, 2, 3);
+        Collection<Boolean> actual = new ShadowInsertValueRouteDecider(rule, sqlStatementContext).decide();
+        assertThat(actual, is(Arrays.asList(true, true, false)));
+    }
+    
+    @Test
     void assertDecideWithoutShadowColumn() {
-        ShadowRule rule = mockShadowRule();
-        InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(sqlStatementContext.getInsertColumnNames()).thenReturn(Collections.singletonList("order_id"));
-        InsertValueContext insertValueContext = createInsertValueContext(1, 0);
-        when(sqlStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
-        List<Boolean> actual = new ShadowInsertValueRouteDecider(rule, sqlStatementContext).decide();
+        ShadowRule rule = mockShadowRule(createMatchValueAlgorithm(1));
+        InsertStatementContext sqlStatementContext = mockInsertStatementContext(Collections.singletonList("order_id"), 1);
+        Collection<Boolean> actual = new ShadowInsertValueRouteDecider(rule, sqlStatementContext).decide();
         assertThat(actual, is(Collections.singletonList(false)));
     }
     
     @Test
     void assertDecideWithUnsupportedInsertValue() {
-        ShadowRule rule = mockShadowRule();
+        ShadowRule rule = mockShadowRule(createMatchValueAlgorithm(1));
         InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
         when(sqlStatementContext.getInsertColumnNames()).thenReturn(Arrays.asList("order_id", "user_id"));
@@ -78,22 +80,38 @@ class ShadowInsertValueRouteDeciderTest {
         assertThrows(UnsupportedShadowInsertValueException.class, decider::decide);
     }
     
-    @SuppressWarnings("unchecked")
-    private ShadowRule mockShadowRule() {
-        ShadowRule result = mock(ShadowRule.class);
-        when(result.getShadowColumnNames(ShadowOperationType.INSERT, "t_order")).thenReturn(Collections.singletonList("user_id"));
-        ColumnShadowAlgorithm<Comparable<?>> algorithm = mock(ColumnShadowAlgorithm.class);
-        when(algorithm.isShadow(any())).thenAnswer(invocation -> {
-            PreciseColumnShadowValue<Comparable<?>> shadowValue = invocation.getArgument(0);
-            return Integer.valueOf(1).equals(shadowValue.getValue());
-        });
-        when(result.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "t_order", "user_id")).thenReturn(Collections.singletonList(algorithm));
+    private InsertStatementContext mockInsertStatementContext(final List<String> insertColumnNames, final Object... userIds) {
+        InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(result.getInsertColumnNames()).thenReturn(insertColumnNames);
+        List<InsertValueContext> insertValueContexts = new ArrayList<>(userIds.length);
+        for (Object each : userIds) {
+            insertValueContexts.add(createInsertValueContext(each));
+        }
+        when(result.getInsertValueContexts()).thenReturn(insertValueContexts);
         return result;
     }
     
-    private InsertValueContext createInsertValueContext(final Object orderId, final Object userId) {
+    @SuppressWarnings("unchecked")
+    private ShadowRule mockShadowRule(final ColumnShadowAlgorithm<Comparable<?>>... algorithms) {
+        ShadowRule result = mock(ShadowRule.class);
+        when(result.getShadowColumnNames(ShadowOperationType.INSERT, "t_order")).thenReturn(Collections.singletonList("user_id"));
+        when(result.getColumnShadowAlgorithms(ShadowOperationType.INSERT, "t_order", "user_id")).thenReturn(Arrays.asList(algorithms));
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private ColumnShadowAlgorithm<Comparable<?>> createMatchValueAlgorithm(final Object matchedValue) {
+        ColumnShadowAlgorithm<Comparable<?>> result = mock(ColumnShadowAlgorithm.class);
+        when(result.isShadow(any())).thenAnswer(invocation -> {
+            PreciseColumnShadowValue<Comparable<?>> shadowValue = invocation.getArgument(0);
+            return matchedValue.equals(shadowValue.getValue());
+        });
+        return result;
+    }
+    
+    private InsertValueContext createInsertValueContext(final Object userId) {
         InsertValueContext result = mock(InsertValueContext.class);
-        when(result.getLiteralValue(0)).thenReturn(Optional.of(orderId));
         when(result.getLiteralValue(1)).thenReturn(Optional.of(userId));
         return result;
     }

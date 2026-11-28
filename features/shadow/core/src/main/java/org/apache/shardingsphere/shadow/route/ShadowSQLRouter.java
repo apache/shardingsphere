@@ -34,7 +34,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -76,6 +75,9 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
             return false;
         }
         InsertStatementContext insertStatementContext = (InsertStatementContext) queryContext.getSqlStatementContext();
+        if (queryContext.getHintValueContext().isSkipSQLRewrite() || insertStatementContext.getSqlStatement().getReturning().isPresent()) {
+            return false;
+        }
         Collection<String> tableNames = insertStatementContext.getTablesContext().getTableNames();
         if (tableNames.isEmpty()) {
             return false;
@@ -84,8 +86,8 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
         if (rule.filterShadowTables(Collections.singleton(tableName)).isEmpty()) {
             return false;
         }
-        List<Boolean> shadowRows = new ShadowInsertValueRouteDecider(rule, insertStatementContext).decide();
-        if (!isMixedShadowRows(shadowRows)) {
+        Collection<Boolean> shadowRows = new ShadowInsertValueRouteDecider(rule, insertStatementContext).decide();
+        if (!shadowRows.contains(Boolean.TRUE)) {
             return false;
         }
         RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
@@ -97,29 +99,36 @@ public final class ShadowSQLRouter implements DecorateSQLRouter<ShadowRule> {
         if (null == shadowDataSourceName || shadowDataSourceName.equalsIgnoreCase(productionDataSourceName.get())) {
             return false;
         }
-        RouteUnit productionRouteUnit = new RouteUnit(new RouteMapper(routeUnit.getDataSourceMapper().getLogicName(), productionDataSourceName.get()), routeUnit.getTableMappers());
+        if (isMixedShadowRows(shadowRows)) {
+            addSplitInsertRouteUnits(routeContext, routeUnit, shadowRows, productionDataSourceName.get(), shadowDataSourceName);
+        } else {
+            routeContext.getRouteUnits().clear();
+            routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(routeUnit.getDataSourceMapper().getLogicName(), shadowDataSourceName), routeUnit.getTableMappers()));
+        }
+        return true;
+    }
+    
+    private boolean isMixedShadowRows(final Collection<Boolean> shadowRows) {
+        return shadowRows.contains(Boolean.TRUE) && shadowRows.contains(Boolean.FALSE);
+    }
+    
+    private void addSplitInsertRouteUnits(final RouteContext routeContext, final RouteUnit routeUnit,
+                                          final Collection<Boolean> shadowRows, final String productionDataSourceName, final String shadowDataSourceName) {
+        RouteUnit productionRouteUnit =
+                new RouteUnit(new RouteMapper(routeUnit.getDataSourceMapper().getLogicName(), productionDataSourceName), routeUnit.getTableMappers());
         RouteUnit shadowRouteUnit = new RouteUnit(new RouteMapper(routeUnit.getDataSourceMapper().getLogicName(), shadowDataSourceName), routeUnit.getTableMappers());
         Collection<Integer> productionInsertValueIndexes = new LinkedList<>();
         Collection<Integer> shadowInsertValueIndexes = new LinkedList<>();
-        for (int i = 0; i < shadowRows.size(); i++) {
-            (shadowRows.get(i) ? shadowInsertValueIndexes : productionInsertValueIndexes).add(i);
+        int index = 0;
+        for (boolean each : shadowRows) {
+            (each ? shadowInsertValueIndexes : productionInsertValueIndexes).add(index);
+            index++;
         }
         routeContext.getRouteUnits().clear();
         routeContext.getRouteUnits().add(productionRouteUnit);
         routeContext.getRouteUnits().add(shadowRouteUnit);
         routeContext.getRouteUnitInsertValueIndexes().put(productionRouteUnit, productionInsertValueIndexes);
         routeContext.getRouteUnitInsertValueIndexes().put(shadowRouteUnit, shadowInsertValueIndexes);
-        return true;
-    }
-    
-    private boolean isMixedShadowRows(final List<Boolean> shadowRows) {
-        boolean shadow = false;
-        boolean production = false;
-        for (boolean each : shadowRows) {
-            shadow = shadow || each;
-            production = production || !each;
-        }
-        return shadow && production;
     }
     
     @Override

@@ -36,5 +36,6 @@ SQL support list
 
 ## Batch INSERT
 
-Multi-row INSERT values are routed per value when the column shadow algorithms match only part of them, so matching values go to the shadow data source and the remaining values go to the production data source.
+Multi-row INSERT values are routed per value when the column shadow algorithms match only part of them and the target table is not sharded, so matching values go to the shadow data source and the remaining values go to the production data source.
+When the route contains table sharding, another rule owns the route units, or the INSERT contains a RETURNING clause, the statement keeps the statement-level behavior and the shadow mapping of the whole statement decides the data source.
 The split statement runs on both data sources, so atomicity relies on the transaction rule configured for the database.

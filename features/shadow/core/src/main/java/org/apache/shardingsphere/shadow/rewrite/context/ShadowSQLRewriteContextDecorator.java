@@ -39,7 +39,7 @@ public final class ShadowSQLRewriteContextDecorator implements SQLRewriteContext
         if (routeContext.getRouteUnitInsertValueIndexes().isEmpty()) {
             return;
         }
-        sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(new ShadowInsertValuesTokenGenerator(routeContext)));
+        sqlRewriteContext.addSQLTokenGenerators(Collections.singleton(new ShadowInsertValuesTokenGenerator(routeContext, sqlRewriteContext.getSql())));
     }
     
     @Override

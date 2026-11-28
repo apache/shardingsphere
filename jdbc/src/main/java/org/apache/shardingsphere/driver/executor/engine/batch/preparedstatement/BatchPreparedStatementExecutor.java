@@ -126,10 +126,11 @@ public final class BatchPreparedStatementExecutor {
      * Execute batch.
      *
      * @param sqlStatementContext SQL statement context
+     * @param insertValueSplit whether the batch splits INSERT statements into multiple route units
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
+    public int[] executeBatch(final SQLStatementContext sqlStatementContext, final boolean insertValueSplit) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(database.getProtocolType(), database.getResourceMetaData(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
             
@@ -148,7 +149,7 @@ public final class BatchPreparedStatementExecutor {
         if (results.isEmpty()) {
             return new int[0];
         }
-        return isNeedAccumulate(sqlStatementContext) ? accumulate(results) : results.get(0);
+        return isNeedAccumulate(sqlStatementContext) || insertValueSplit ? accumulate(results) : results.get(0);
     }
     
     private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {

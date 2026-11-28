@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.route.determiner;
 
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -27,9 +28,9 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.spi.ShadowOperationType;
 import org.apache.shardingsphere.shadow.spi.column.ColumnShadowAlgorithm;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Shadow insert value route decider.
@@ -54,34 +55,41 @@ public final class ShadowInsertValueRouteDecider {
      *
      * @return shadow routing flags ordered by insert value
      */
-    public List<Boolean> decide() {
-        List<Boolean> result = new LinkedList<>();
-        for (int i = 0; i < sqlStatementContext.getInsertValueContexts().size(); i++) {
-            result.add(isShadow(i));
+    public Collection<Boolean> decide() {
+        Collection<Boolean> result = new ArrayList<>(sqlStatementContext.getInsertValueContexts().size());
+        for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
+            result.add(isShadow(each));
         }
         return result;
     }
     
-    private boolean isShadow(final int insertValueIndex) {
+    private boolean isShadow(final InsertValueContext insertValueContext) {
         for (String each : rule.getShadowColumnNames(ShadowOperationType.INSERT, tableName)) {
-            int columnIndex = sqlStatementContext.getInsertColumnNames().indexOf(each);
-            if (columnIndex < 0) {
-                continue;
-            }
-            Comparable<?> columnValue = getColumnValue(insertValueIndex, columnIndex);
-            for (ColumnShadowAlgorithm<Comparable<?>> algorithm : rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, tableName, each)) {
-                if (ColumnShadowAlgorithmDeterminer.isShadow(algorithm,
-                        new ShadowCondition(tableName, ShadowOperationType.INSERT, new ShadowColumnCondition(tableName, each, Collections.singletonList(columnValue))))) {
-                    return true;
-                }
+            if (isMatchAnyColumnShadowAlgorithm(insertValueContext, each)) {
+                return true;
             }
         }
         return false;
     }
     
-    private Comparable<?> getColumnValue(final int insertValueIndex, final int columnIndex) {
-        Object result = sqlStatementContext.getInsertValueContexts().get(insertValueIndex).getLiteralValue(columnIndex)
-                .orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
+    private boolean isMatchAnyColumnShadowAlgorithm(final InsertValueContext insertValueContext, final String shadowColumnName) {
+        int columnIndex = sqlStatementContext.getInsertColumnNames().indexOf(shadowColumnName);
+        if (columnIndex < 0) {
+            return false;
+        }
+        Comparable<?> columnValue = getColumnValue(insertValueContext, columnIndex);
+        ShadowCondition shadowCondition = new ShadowCondition(tableName, ShadowOperationType.INSERT,
+                new ShadowColumnCondition(tableName, shadowColumnName, Collections.singletonList(columnValue)));
+        for (ColumnShadowAlgorithm<Comparable<?>> each : rule.getColumnShadowAlgorithms(ShadowOperationType.INSERT, tableName, shadowColumnName)) {
+            if (ColumnShadowAlgorithmDeterminer.isShadow(each, shadowCondition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Comparable<?> getColumnValue(final InsertValueContext insertValueContext, final int columnIndex) {
+        Object result = insertValueContext.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
         ShardingSpherePreconditions.checkState(result instanceof Comparable<?>, () -> new UnsupportedShadowInsertValueException(columnIndex));
         return (Comparable<?>) result;
     }

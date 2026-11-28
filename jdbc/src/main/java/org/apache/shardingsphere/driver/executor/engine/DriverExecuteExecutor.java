@@ -126,6 +126,15 @@ public final class DriverExecuteExecutor {
     }
     
     /**
+     * Judge whether the last execution splits one INSERT statement into multiple route units.
+     *
+     * @return is insert value split or not
+     */
+    public boolean isInsertValueSplit() {
+        return jdbcPushDownExecutor.isInsertValueSplit();
+    }
+    
+    /**
      * Get result set.
      *
      * @param database database

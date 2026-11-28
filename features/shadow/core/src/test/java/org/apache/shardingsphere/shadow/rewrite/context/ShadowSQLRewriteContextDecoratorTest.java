@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -55,7 +56,7 @@ class ShadowSQLRewriteContextDecoratorTest {
         decorator.decorate(mock(ShadowRule.class), new ConfigurationProperties(new Properties()), sqlRewriteContext, routeContext);
         sqlRewriteContext.generateSQLTokens();
         assertThat(sqlRewriteContext.getSqlTokens().size(), is(1));
-        assertTrue(sqlRewriteContext.getSqlTokens().get(0) instanceof ShadowInsertValuesToken);
+        assertThat(sqlRewriteContext.getSqlTokens().get(0), isA(ShadowInsertValuesToken.class));
         assertThat(decorator.getTypeClass().getName(), is(ShadowRule.class.getName()));
     }
     

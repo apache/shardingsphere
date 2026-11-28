@@ -80,6 +80,8 @@ public final class DriverJDBCPushDownExecuteExecutor {
      */
     private DatabaseType storageType;
     
+    private boolean insertValueSplit;
+    
     /**
      * Execute.
      *
@@ -96,11 +98,21 @@ public final class DriverJDBCPushDownExecuteExecutor {
     @HighFrequencyInvocation
     public boolean execute(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        insertValueSplit = !executionContext.getRouteContext().getRouteUnitInsertValueIndexes().isEmpty();
         storageType = executionContext.getExecutionUnits().isEmpty()
                 ? null
                 : database.getResourceMetaData().getStorageUnits().get(executionContext.getExecutionUnits().iterator().next().getDataSourceName()).getStorageType();
         return new DriverTransactionalExecutor(connection).execute(
                 database, executionContext, () -> doExecute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback));
+    }
+    
+    /**
+     * Judge whether the last execution splits one INSERT statement into multiple route units.
+     *
+     * @return is insert value split or not
+     */
+    public boolean isInsertValueSplit() {
+        return insertValueSplit;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

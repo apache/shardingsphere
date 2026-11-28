@@ -68,11 +68,22 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
+    private boolean insertValueSplit;
+    
     public DriverJDBCPushDownExecuteUpdateExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor) {
         this.connection = connection;
         processId = connection.getProcessId();
         props = metaData.getProps();
         this.jdbcExecutor = jdbcExecutor;
+    }
+    
+    /**
+     * Judge whether the last execution splits one INSERT statement into multiple route units.
+     *
+     * @return is insert value split or not
+     */
+    public boolean isInsertValueSplit() {
+        return insertValueSplit;
     }
     
     /**
@@ -97,6 +108,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private int doExecuteUpdate(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                 final StatementExecuteUpdateCallback updateCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+        insertValueSplit = !executionContext.getRouteContext().getRouteUnitInsertValueIndexes().isEmpty();
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(processId, database.getName(), connection.getDatabaseConnectionManager().getConnectionContext().getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
@@ -117,8 +129,7 @@ public final class DriverJDBCPushDownExecuteUpdateExecutor {
                 pushDownMetaDataRefreshEngine.refresh(
                         connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database, props, executionContext.getRouteContext().getRouteUnits());
             }
-            boolean needAccumulate = isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getSqlStatementContext())
-                    || !executionContext.getRouteContext().getRouteUnitInsertValueIndexes().isEmpty();
+            boolean needAccumulate = isNeedAccumulate(database.getRuleMetaData().getRules(), executionContext.getSqlStatementContext()) || insertValueSplit;
             return needAccumulate ? accumulate(updateCounts) : updateCounts.get(0);
         } finally {
             processEngine.completeSQLExecution(executionGroupContext.getReportContext().getProcessId());

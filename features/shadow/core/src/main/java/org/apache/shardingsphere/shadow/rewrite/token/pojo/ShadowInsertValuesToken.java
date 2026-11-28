@@ -23,7 +23,9 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.Ins
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Insert values token for shadow.
@@ -40,19 +42,25 @@ public final class ShadowInsertValuesToken extends InsertValuesToken implements 
     @Override
     public String toString(final RouteUnit routeUnit) {
         Collection<Integer> insertValueIndexes = null == routeUnit ? null : dataSourceInsertValueIndexes.get(routeUnit.getDataSourceMapper().getActualName());
-        if (null == insertValueIndexes) {
-            return getAllInsertValues();
-        }
-        StringBuilder result = new StringBuilder();
-        for (int each : insertValueIndexes) {
-            result.append(getInsertValues().get(each)).append(", ");
-        }
-        return 0 == result.length() ? "" : result.delete(result.length() - 2, result.length()).toString();
+        return null == insertValueIndexes ? getAllInsertValues() : getInsertValues(insertValueIndexes);
     }
     
     @Override
     public String toString() {
         return getAllInsertValues();
+    }
+    
+    private String getInsertValues(final Collection<Integer> insertValueIndexes) {
+        Set<Integer> indexes = new HashSet<>(insertValueIndexes);
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (InsertValue each : getInsertValues()) {
+            if (indexes.contains(count)) {
+                result.append(each).append(", ");
+            }
+            count++;
+        }
+        return 0 == result.length() ? "" : result.delete(result.length() - 2, result.length()).toString();
     }
     
     private String getAllInsertValues() {

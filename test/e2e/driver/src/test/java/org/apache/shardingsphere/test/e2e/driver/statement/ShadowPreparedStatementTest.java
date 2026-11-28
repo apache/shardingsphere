@@ -30,6 +30,7 @@ import java.sql.Statement;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
     
@@ -44,6 +45,12 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
     private static final String DELETE_SQL = "DELETE FROM t_encrypt WHERE id = ?";
     
     private static final String SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = ?";
+    
+    private static final String MIXED_BATCH_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)";
+    
+    private static final String MIXED_BATCH_INSERT_WITH_SKIP_REWRITE_SQL = "/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ " + MIXED_BATCH_INSERT_SQL;
+    
+    private static final String TWO_ROWS_BATCH_INSERT_SQL = "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (?, ?, ?), (?, ?, ?)";
     
     @AfterEach
     void clean() throws SQLException {
@@ -94,22 +101,68 @@ class ShadowPreparedStatementTest extends AbstractShadowDriverTest {
     
     @Test
     void assertInsertMixedBatchCase() throws SQLException {
-        try (
-                PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(
-                        "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)")) {
-            preparedStatement.setObject(1, 1);
-            preparedStatement.setString(2, "cipher");
-            preparedStatement.setString(3, "plain");
-            preparedStatement.setObject(4, 2);
-            preparedStatement.setString(5, "cipher");
-            preparedStatement.setString(6, "plain");
-            preparedStatement.setObject(7, 3);
-            preparedStatement.setString(8, "cipher");
-            preparedStatement.setString(9, "plain");
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(MIXED_BATCH_INSERT_SQL)) {
+            setInsertParameters(preparedStatement, 1, 2, 3);
             assertThat(preparedStatement.executeUpdate(), is(3));
         }
         assertInsertedIds("shadow_jdbc_1", 1);
         assertInsertedIds("shadow_jdbc_0", 2, 3);
+    }
+    
+    @Test
+    void assertInsertMixedBatchUpdateCountCase() throws SQLException {
+        int actual;
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(MIXED_BATCH_INSERT_SQL)) {
+            setInsertParameters(preparedStatement, 1, 2, 3);
+            assertFalse(preparedStatement.execute());
+            actual = preparedStatement.getUpdateCount();
+        }
+        assertThat(actual, is(3));
+        assertInsertedIds("shadow_jdbc_1", 1);
+        assertInsertedIds("shadow_jdbc_0", 2, 3);
+    }
+    
+    @Test
+    void assertInsertMixedBatchWhenSQLRewriteSkippedCase() throws SQLException {
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(MIXED_BATCH_INSERT_WITH_SKIP_REWRITE_SQL)) {
+            setInsertParameters(preparedStatement, 1, 2, 3);
+            assertThat(preparedStatement.executeUpdate(), is(3));
+        }
+        assertInsertedIds("shadow_jdbc_1");
+        assertInsertedIds("shadow_jdbc_0", 1, 2, 3);
+    }
+    
+    @Test
+    void assertInsertMixedBatchWithExecuteBatchCase() throws SQLException {
+        int[] actual;
+        try (PreparedStatement preparedStatement = getShadowDataSource().getConnection().prepareStatement(TWO_ROWS_BATCH_INSERT_SQL)) {
+            setInsertParameters(preparedStatement, 1, 2);
+            preparedStatement.addBatch();
+            setInsertParameters(preparedStatement, 3, 4);
+            preparedStatement.addBatch();
+            actual = preparedStatement.executeBatch();
+        }
+        assertThat(actual.length, is(2));
+        assertThat(actual[0], is(2));
+        assertThat(actual[1], is(2));
+        assertInsertedIds("shadow_jdbc_1", 1);
+        assertInsertedIds("shadow_jdbc_0", 2, 3, 4);
+    }
+    
+    private void setInsertParameters(final PreparedStatement preparedStatement, final int firstId, final int secondId) throws SQLException {
+        preparedStatement.setObject(1, firstId);
+        preparedStatement.setString(2, "cipher");
+        preparedStatement.setString(3, "plain");
+        preparedStatement.setObject(4, secondId);
+        preparedStatement.setString(5, "cipher");
+        preparedStatement.setString(6, "plain");
+    }
+    
+    private void setInsertParameters(final PreparedStatement preparedStatement, final int firstId, final int secondId, final int thirdId) throws SQLException {
+        setInsertParameters(preparedStatement, firstId, secondId);
+        preparedStatement.setObject(7, thirdId);
+        preparedStatement.setString(8, "cipher");
+        preparedStatement.setString(9, "plain");
     }
     
     @Test

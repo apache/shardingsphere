@@ -23,16 +23,19 @@ import org.apache.shardingsphere.infra.binder.context.segment.insert.values.Inse
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValue;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValuesToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.shadow.rewrite.token.pojo.ShadowInsertValuesToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -45,6 +48,8 @@ public final class ShadowInsertValuesTokenGenerator implements OptionalSQLTokenG
     
     private final RouteContext routeContext;
     
+    private final String sql;
+    
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && !((InsertStatementContext) sqlStatementContext).getInsertValueContexts().isEmpty();
@@ -55,7 +60,9 @@ public final class ShadowInsertValuesTokenGenerator implements OptionalSQLTokenG
         Collection<InsertValuesSegment> insertValuesSegments = sqlStatementContext.getSqlStatement().getValues();
         ShadowInsertValuesToken result = new ShadowInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments), getDataSourceInsertValueIndexes());
         for (InsertValueContext each : sqlStatementContext.getInsertValueContexts()) {
-            result.getInsertValues().add(new InsertValue(new LinkedList<>(each.getValueExpressions())));
+            InsertValue insertValue = new InsertValue(new LinkedList<>(each.getValueExpressions()));
+            putOriginalSQLTokens(insertValue, each.getValueExpressions());
+            result.getInsertValues().add(insertValue);
         }
         return result;
     }
@@ -82,5 +89,41 @@ public final class ShadowInsertValuesTokenGenerator implements OptionalSQLTokenG
             result.put(entry.getKey().getDataSourceMapper().getActualName(), entry.getValue());
         }
         return result;
+    }
+    
+    private void putOriginalSQLTokens(final InsertValue insertValue, final List<ExpressionSegment> valueExpressions) {
+        for (int i = 0; i < valueExpressions.size(); i++) {
+            ExpressionSegment each = valueExpressions.get(i);
+            if (isValidOriginalSQLRange(each)) {
+                insertValue.putSubstitutedSQLToken(i, new OriginalSQLToken(each.getStartIndex(), each.getStopIndex(), sql.substring(each.getStartIndex(), each.getStopIndex() + 1)));
+            }
+        }
+    }
+    
+    private boolean isValidOriginalSQLRange(final ExpressionSegment expressionSegment) {
+        return 0 <= expressionSegment.getStartIndex() && expressionSegment.getStartIndex() <= expressionSegment.getStopIndex() && expressionSegment.getStopIndex() < sql.length();
+    }
+    
+    private static final class OriginalSQLToken extends SQLToken {
+        
+        private final int stopIndex;
+        
+        private final String text;
+        
+        private OriginalSQLToken(final int startIndex, final int stopIndex, final String text) {
+            super(startIndex);
+            this.stopIndex = stopIndex;
+            this.text = text;
+        }
+        
+        @Override
+        public int getStopIndex() {
+            return stopIndex;
+        }
+        
+        @Override
+        public String toString() {
+            return text;
+        }
     }
 }
