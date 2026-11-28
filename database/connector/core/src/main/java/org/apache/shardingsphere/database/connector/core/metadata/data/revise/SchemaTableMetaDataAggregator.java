@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorag
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -56,8 +57,30 @@ public final class SchemaTableMetaDataAggregator {
     private void checkUniformed(final String logicTableName, final Collection<TableMetaData> tableMetaDataList) {
         TableMetaData sample = tableMetaDataList.iterator().next();
         Collection<TableMetaDataViolation> violations = tableMetaDataList.stream()
-                .filter(each -> !sample.toString().equals(each.toString())).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
+                .filter(each -> !isSameTableMetaData(sample, each)).map(each -> new TableMetaDataViolation(each.getName(), each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkMustEmpty(violations, () -> new RuleAndStorageMetaDataMismatchedException(createErrorReason(logicTableName, violations)));
+    }
+    
+    private boolean isSameTableMetaData(final TableMetaData sample, final TableMetaData actual) {
+        if (!sample.getName().equals(actual.getName()) || sample.getType() != actual.getType()) {
+            return false;
+        }
+        return new ArrayList<>(sample.getColumns()).equals(new ArrayList<>(actual.getColumns()))
+                && isSameIgnoringOrder(sample.getIndexes(), actual.getIndexes())
+                && isSameIgnoringOrder(sample.getConstraints(), actual.getConstraints());
+    }
+    
+    private boolean isSameIgnoringOrder(final Collection<?> sample, final Collection<?> actual) {
+        if (sample.size() != actual.size()) {
+            return false;
+        }
+        Collection<Object> remaining = new LinkedList<>(actual);
+        for (Object each : sample) {
+            if (!remaining.remove(each)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private String createErrorReason(final String logicTableName, final Collection<TableMetaDataViolation> violations) {

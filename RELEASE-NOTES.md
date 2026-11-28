@@ -59,6 +59,7 @@
 1. Metadata: Fix MySQL metadata loading fallback when JDBC catalog is null for named tables - [#38855](https://github.com/apache/shardingsphere/pull/38855)
 1. Metadata: Fix Oracle metadata version comparison skipping identity and collation columns on 18c and later - [#39104](https://github.com/apache/shardingsphere/pull/39104)
 1. Metadata: Fix wrong logic table metadata when config same actual table name in different storage unit - [#39157](https://github.com/apache/shardingsphere/pull/39157)
+1. Metadata: Fix false positive of table metadata consistency check for identical physical tables - [#40549](https://github.com/apache/shardingsphere/pull/40549)
 1. DistSQL: Fix case-sensitive storage unit matching in `SHOW RULES USED STORAGE UNIT` - [#38848](https://github.com/apache/shardingsphere/pull/38848)
 1. DistSQL: Use case-insensitive table name matching in broadcast create and drop executors - [#39200](https://github.com/apache/shardingsphere/pull/39200)
 1. DistSQL: Remove unused ADDRESS_RANDOM_REPLACE keyword that reserved identifiers in mask DistSQL - [#39363](https://github.com/apache/shardingsphere/pull/39363)

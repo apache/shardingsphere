@@ -19,6 +19,8 @@ package org.apache.shardingsphere.database.connector.core.metadata.data.revise;
 
 import org.apache.shardingsphere.database.connector.core.exception.RuleAndStorageMetaDataMismatchedException;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.junit.jupiter.api.Test;
 
@@ -71,6 +73,58 @@ class SchemaTableMetaDataAggregatorTest {
         assertThat(actual.iterator().next().getName(), is("foo_tbl"));
     }
     
+    @Test
+    void assertAggregateWithSameStructureAndDifferentIndexOrder() {
+        SchemaTableMetaDataAggregator aggregator = new SchemaTableMetaDataAggregator(true);
+        TableMetaData firstTableMetaData = createTableMetaData("foo_tbl", Arrays.asList(createIndexMetaData("foo_idx_a"), createIndexMetaData("foo_idx_b")), Collections.emptyList());
+        TableMetaData secondTableMetaData = createTableMetaData("foo_tbl", Arrays.asList(createIndexMetaData("foo_idx_b"), createIndexMetaData("foo_idx_a")), Collections.emptyList());
+        Collection<TableMetaData> actual = aggregator.aggregate(Collections.singletonMap("foo_tbl", Arrays.asList(firstTableMetaData, secondTableMetaData)));
+        assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertAggregateWithSameStructureAndDifferentConstraintOrder() {
+        SchemaTableMetaDataAggregator aggregator = new SchemaTableMetaDataAggregator(true);
+        TableMetaData firstTableMetaData = createTableMetaData("foo_tbl", Collections.emptyList(),
+                Arrays.asList(new ConstraintMetaData("foo_fk_a", "foo_ref_tbl"), new ConstraintMetaData("foo_fk_b", "foo_ref_tbl")));
+        TableMetaData secondTableMetaData = createTableMetaData("foo_tbl", Collections.emptyList(),
+                Arrays.asList(new ConstraintMetaData("foo_fk_b", "foo_ref_tbl"), new ConstraintMetaData("foo_fk_a", "foo_ref_tbl")));
+        Collection<TableMetaData> actual = aggregator.aggregate(Collections.singletonMap("foo_tbl", Arrays.asList(firstTableMetaData, secondTableMetaData)));
+        assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertAggregateWithSameStructureAndIdentityComparedCollection() {
+        SchemaTableMetaDataAggregator aggregator = new SchemaTableMetaDataAggregator(true);
+        TableMetaData firstTableMetaData = createTableMetaData("foo_tbl",
+                Collections.unmodifiableCollection(Arrays.asList(createIndexMetaData("foo_idx_a"), createIndexMetaData("foo_idx_b"))), Collections.emptyList());
+        TableMetaData secondTableMetaData = createTableMetaData("foo_tbl", Arrays.asList(createIndexMetaData("foo_idx_a"), createIndexMetaData("foo_idx_b")), Collections.emptyList());
+        Collection<TableMetaData> actual = aggregator.aggregate(Collections.singletonMap("foo_tbl", Arrays.asList(firstTableMetaData, secondTableMetaData)));
+        assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertAggregateWithDifferentIndexThrowsException() {
+        SchemaTableMetaDataAggregator aggregator = new SchemaTableMetaDataAggregator(true);
+        TableMetaData firstTableMetaData = createTableMetaData("foo_tbl", Collections.singletonList(createIndexMetaData("foo_idx_a")), Collections.emptyList());
+        IndexMetaData uniqueIndexMetaData = createIndexMetaData("foo_idx_a");
+        uniqueIndexMetaData.setUnique(true);
+        TableMetaData secondTableMetaData = createTableMetaData("foo_tbl", Collections.singletonList(uniqueIndexMetaData), Collections.emptyList());
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> aggregator.aggregate(Collections.singletonMap("foo_tbl", Arrays.asList(firstTableMetaData, secondTableMetaData))));
+        assertTrue(actual.getMessage().contains("foo_tbl"));
+    }
+    
+    @Test
+    void assertAggregateWithDifferentConstraintThrowsException() {
+        SchemaTableMetaDataAggregator aggregator = new SchemaTableMetaDataAggregator(true);
+        TableMetaData firstTableMetaData = createTableMetaData("foo_tbl", Collections.emptyList(), Collections.singletonList(new ConstraintMetaData("foo_fk", "foo_ref_tbl")));
+        TableMetaData secondTableMetaData = createTableMetaData("foo_tbl", Collections.emptyList(), Collections.singletonList(new ConstraintMetaData("foo_fk", "bar_ref_tbl")));
+        RuleAndStorageMetaDataMismatchedException actual = assertThrows(RuleAndStorageMetaDataMismatchedException.class,
+                () -> aggregator.aggregate(Collections.singletonMap("foo_tbl", Arrays.asList(firstTableMetaData, secondTableMetaData))));
+        assertTrue(actual.getMessage().contains("foo_tbl"));
+    }
+    
     private TableMetaData createTableMetaData(final String tableName, final String columnName) {
         return createTableMetaData(tableName, columnName, null);
     }
@@ -80,5 +134,14 @@ class SchemaTableMetaDataAggregatorTest {
         TableMetaData result = new TableMetaData(tableName, Collections.singleton(columnMetaData), Collections.emptyList(), Collections.emptyList());
         result.setStorageUnitName(storageUnitName);
         return result;
+    }
+    
+    private TableMetaData createTableMetaData(final String tableName, final Collection<IndexMetaData> indexes, final Collection<ConstraintMetaData> constraints) {
+        ColumnMetaData columnMetaData = new ColumnMetaData("foo_col", Types.INTEGER, true, false, true, true, false, false);
+        return new TableMetaData(tableName, Collections.singleton(columnMetaData), indexes, constraints);
+    }
+    
+    private IndexMetaData createIndexMetaData(final String indexName) {
+        return new IndexMetaData(indexName, Collections.singletonList("foo_col"));
     }
 }
