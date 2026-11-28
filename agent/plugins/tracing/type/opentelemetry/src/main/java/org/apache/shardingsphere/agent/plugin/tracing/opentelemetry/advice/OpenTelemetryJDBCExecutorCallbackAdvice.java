@@ -95,6 +95,7 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     @Override
+    @HighFrequencyInvocation
     public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         PendingSpan pending = PENDING_SPANS.remove((JDBCExecutionUnit) args[0]);
         if (null != pending) {
