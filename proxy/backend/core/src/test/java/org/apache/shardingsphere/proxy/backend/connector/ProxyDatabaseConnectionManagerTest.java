@@ -84,6 +84,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,6 +104,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
@@ -675,6 +682,87 @@ class ProxyDatabaseConnectionManagerTest {
         databaseConnectionManager.closeAllResources();
         assertTrue(databaseConnectionManager.getClosed().get());
         verify(cachedConnection).rollback();
+    }
+    
+    @Test
+    void assertCloseAllResourcesWhileCommandExecuting() throws SQLException, BackendConnectionException {
+        ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
+        getProxyBackendHandlers().add(handler);
+        Connection cachedConnection = prepareCachedConnections();
+        databaseConnectionManager.markCommandExecuting();
+        assertTrue(databaseConnectionManager.closeAllResources().isEmpty());
+        assertTrue(databaseConnectionManager.getClosed().get());
+        verify(handler).cancel();
+        verify(handler, never()).close();
+        verify(cachedConnection, never()).close();
+        databaseConnectionManager.closeExecutionResources();
+        verify(handler).close();
+        verify(cachedConnection).close();
+    }
+    
+    @Test
+    void assertCloseAllResourcesWhileCommandExecutingInTransaction() throws SQLException, BackendConnectionException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        Connection cachedConnection = prepareCachedConnections();
+        databaseConnectionManager.markCommandExecuting();
+        databaseConnectionManager.closeAllResources();
+        verify(cachedConnection, never()).rollback();
+        verify(cachedConnection, never()).close();
+        databaseConnectionManager.closeExecutionResources();
+        verify(cachedConnection).rollback();
+        verify(cachedConnection).close();
+    }
+    
+    @Test
+    void assertCloseAllResourcesWhileCommandExecutingWithCancelFailure() throws SQLException {
+        ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
+        SQLException expected = new SQLException("cancel");
+        doThrow(expected).when(handler).cancel();
+        getProxyBackendHandlers().add(handler);
+        databaseConnectionManager.markCommandExecuting();
+        assertThat(databaseConnectionManager.closeAllResources(), is(Collections.singletonList(expected)));
+    }
+    
+    @Test
+    void assertCloseExecutionResourcesWhileCancelling() throws SQLException, BackendConnectionException, InterruptedException, ExecutionException {
+        CountDownLatch cancelStarted = new CountDownLatch(1);
+        CountDownLatch connectionClosed = new CountDownLatch(1);
+        ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
+        doAnswer(invocation -> {
+            cancelStarted.countDown();
+            assertFalse(connectionClosed.await(100L, TimeUnit.MILLISECONDS));
+            return null;
+        }).when(handler).cancel();
+        getProxyBackendHandlers().add(handler);
+        Connection cachedConnection = prepareCachedConnections();
+        doAnswer(invocation -> {
+            connectionClosed.countDown();
+            return null;
+        }).when(cachedConnection).close();
+        databaseConnectionManager.markCommandExecuting();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        try {
+            Future<Collection<SQLException>> closeAllResourcesFuture = executorService.submit(databaseConnectionManager::closeAllResources);
+            assertTrue(cancelStarted.await(5L, TimeUnit.SECONDS));
+            databaseConnectionManager.closeExecutionResources();
+            assertTrue(closeAllResourcesFuture.get().isEmpty());
+        } finally {
+            executorService.shutdownNow();
+        }
+        verify(cachedConnection).close();
+    }
+    
+    @Test
+    void assertCloseAllResourcesAfterCommandFinished() throws SQLException, BackendConnectionException {
+        ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
+        getProxyBackendHandlers().add(handler);
+        databaseConnectionManager.markCommandExecuting();
+        databaseConnectionManager.closeExecutionResources();
+        getProxyBackendHandlers().add(handler);
+        Connection cachedConnection = prepareCachedConnections();
+        databaseConnectionManager.closeAllResources();
+        verify(handler, never()).cancel();
+        verify(cachedConnection).close();
     }
     
     @SuppressWarnings("unchecked")
