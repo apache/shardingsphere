@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.constant.buffer;
 
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdValueFormat;
-import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdDatabaseParameterBufferType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.databases.FirebirdDatabaseParameterBufferType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

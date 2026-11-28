@@ -78,7 +78,9 @@ public enum FirebirdVendorError implements VendorError {
     
     CANNOT_UPDATE_OLD_BLOB(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_cannot_update_old_blob, "cannot update old BLOB"),
     
-    INVALID_SEGSTR_TYPE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_type, "invalid BLOB type for operation");
+    INVALID_SEGSTR_TYPE(XOpenSQLState.SYNTAX_ERROR, ISCConstants.isc_bad_segstr_type, "invalid BLOB type for operation"),
+    
+    FEATURE_NOT_SUPPORTED(XOpenSQLState.FEATURE_NOT_SUPPORTED, ISCConstants.isc_wish_list, "%s");
     
     private final SQLState sqlState;
     

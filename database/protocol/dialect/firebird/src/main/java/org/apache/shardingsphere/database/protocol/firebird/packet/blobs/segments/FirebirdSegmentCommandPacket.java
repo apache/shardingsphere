@@ -1,0 +1,89 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.database.protocol.firebird.packet.blobs.segments;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import lombok.Getter;
+import org.apache.shardingsphere.database.exception.core.exception.protocol.DatabaseProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
+/**
+ * Firebird segment command packet.
+ */
+@Getter
+public final class FirebirdSegmentCommandPacket extends FirebirdCommandPacket {
+    
+    private final int blobHandle;
+    
+    private final int segmentLength;
+    
+    private final Collection<byte[]> segments;
+    
+    public FirebirdSegmentCommandPacket(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload) {
+        payload.skipReserved(4);
+        blobHandle = payload.readBlobHandle();
+        segmentLength = payload.readInt4();
+        segments = parseSegments(payload.readBuffer(), commandPacketType);
+    }
+    
+    private Collection<byte[]> parseSegments(final ByteBuf buffer, final FirebirdCommandPacketType commandPacketType) {
+        if (FirebirdCommandPacketType.GET_SEGMENT == commandPacketType) {
+            return Collections.emptyList();
+        }
+        if (FirebirdCommandPacketType.PUT_SEGMENT == commandPacketType) {
+            return Collections.singletonList(ByteBufUtil.getBytes(buffer));
+        }
+        return readBatchSegments(buffer);
+    }
+    
+    private Collection<byte[]> readBatchSegments(final ByteBuf buffer) {
+        Collection<byte[]> result = new LinkedList<>();
+        while (buffer.isReadable()) {
+            ShardingSpherePreconditions.checkState(buffer.readableBytes() >= Short.BYTES, () -> new DatabaseProtocolException("Truncated batch BLOB segment length"));
+            int segmentLength = buffer.readUnsignedShortLE();
+            ShardingSpherePreconditions.checkState(buffer.readableBytes() >= segmentLength, () -> new DatabaseProtocolException("Batch BLOB segment declares %d bytes, but only %d bytes remain",
+                    segmentLength, buffer.readableBytes()));
+            byte[] segmentData = new byte[segmentLength];
+            buffer.readBytes(segmentData);
+            result.add(segmentData);
+        }
+        return result;
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
+    }
+    
+    /**
+     * Get length of packet.
+     *
+     * @param payload Firebird packet payload
+     * @return length of packet
+     */
+    public static int getLength(final FirebirdPacketPayload payload) {
+        return 12 + payload.getBufferLength(12);
+    }
+}

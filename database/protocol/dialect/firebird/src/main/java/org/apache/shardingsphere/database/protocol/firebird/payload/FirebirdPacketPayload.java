@@ -51,7 +51,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 8-bit representation of Firebird {@code UCHAR} and returns a Java {@code int} value.</p>
      *
      * @return unsigned integer read from 1 byte
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L57">Firebird UCHAR</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L57">Firebird UCHAR</a>
      */
     public int readInt1Unsigned() {
         return byteBuf.readUnsignedByte();
@@ -64,7 +64,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * Firebird defines {@code SCHAR} as C++ {@code char}, whose signedness is platform-dependent.</p>
      *
      * @return signed integer read from 1 byte
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L55">Firebird SCHAR</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L55">Firebird SCHAR</a>
      */
     public int readInt1() {
         return byteBuf.readByte();
@@ -76,7 +76,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 8 bits of a Firebird {@code SCHAR} or {@code UCHAR} value.</p>
      *
      * @param value integer whose low 8 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L55-L57">Firebird SCHAR and UCHAR</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L55-L57">Firebird SCHAR and UCHAR</a>
      */
     public void writeInt1(final int value) {
         byteBuf.writeByte(value);
@@ -88,7 +88,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 16-bit representation of Firebird {@code USHORT} in big-endian order and returns a Java {@code int} value.</p>
      *
      * @return unsigned integer read from 2 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L59">Firebird USHORT</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L59">Firebird USHORT</a>
      */
     public int readInt2() {
         return byteBuf.readUnsignedShort();
@@ -100,7 +100,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 16-bit representation of Firebird {@code SSHORT} in big-endian order and returns a Java {@code int} value.</p>
      *
      * @return signed integer read from 2 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L58">Firebird SSHORT</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L58">Firebird SSHORT</a>
      */
     public int readInt2Signed() {
         return byteBuf.readShort();
@@ -112,7 +112,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 16 bits of a Firebird {@code SSHORT} or {@code USHORT} value in big-endian order.</p>
      *
      * @param value integer whose low 16 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L58-L59">Firebird SSHORT and USHORT</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L58-L59">Firebird SSHORT and USHORT</a>
      */
     public void writeInt2(final int value) {
         byteBuf.writeShort(value);
@@ -124,7 +124,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 16-bit representation of Firebird {@code USHORT} in little-endian order and returns a Java {@code int} value.</p>
      *
      * @return unsigned integer read from 2 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L59">Firebird USHORT</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L59">Firebird USHORT</a>
      */
     public int readInt2LE() {
         return byteBuf.readUnsignedShortLE();
@@ -136,7 +136,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 16-bit representation of Firebird {@code SSHORT} in little-endian order and returns a Java {@code int} value.</p>
      *
      * @return signed integer read from 2 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L58">Firebird SSHORT</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L58">Firebird SSHORT</a>
      */
     public int readInt2SignedLE() {
         return byteBuf.readShortLE();
@@ -148,7 +148,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 16 bits of a Firebird {@code SSHORT} or {@code USHORT} value in little-endian order.</p>
      *
      * @param value integer whose low 16 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L58-L59">Firebird SSHORT and USHORT</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L58-L59">Firebird SSHORT and USHORT</a>
      */
     public void writeInt2LE(final int value) {
         byteBuf.writeShortLE(value);
@@ -160,7 +160,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 32-bit representation of Firebird {@code SLONG} in big-endian order and returns a Java {@code int} value.</p>
      *
      * @return signed integer read from 4 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L38-L49">Firebird SLONG</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L38-L49">Firebird SLONG</a>
      */
     public int readInt4() {
         return byteBuf.readInt();
@@ -172,7 +172,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 32-bit representation of Firebird {@code SLONG} in little-endian order and returns a Java {@code int} value.</p>
      *
      * @return signed integer read from 4 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L38-L49">Firebird SLONG</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L38-L49">Firebird SLONG</a>
      */
     public int readInt4LE() {
         return byteBuf.readIntLE();
@@ -186,7 +186,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * A Firebird {@code OBJCT} handle is transmitted as 4 bytes in big-endian order.</p>
      *
      * @return BLOB handle in the range 0 to 65535
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.h#L160">Firebird OBJCT (USHORT)</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.h#L153">Firebird OBJCT (USHORT)</a>
      */
     public int readBlobHandle() {
         return byteBuf.readInt() & 0xFFFF;
@@ -198,7 +198,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 32-bit representation of Firebird {@code ULONG} in big-endian order and returns a Java {@code long} value.</p>
      *
      * @return unsigned integer read from 4 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L38-L49">Firebird ULONG</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L38-L49">Firebird ULONG</a>
      */
     public long readInt4Unsigned() {
         return byteBuf.readUnsignedInt();
@@ -210,7 +210,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 32-bit representation of Firebird {@code ULONG} in little-endian order and returns a Java {@code long} value.</p>
      *
      * @return unsigned integer read from 4 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L38-L49">Firebird ULONG</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L38-L49">Firebird ULONG</a>
      */
     public long readInt4UnsignedLE() {
         return byteBuf.readUnsignedIntLE();
@@ -222,7 +222,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 32 bits of a Firebird {@code SLONG} or {@code ULONG} value in big-endian order.</p>
      *
      * @param value integer whose low 32 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L38-L49">Firebird SLONG and ULONG</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L38-L49">Firebird SLONG and ULONG</a>
      */
     public void writeInt4(final int value) {
         byteBuf.writeInt(value);
@@ -234,7 +234,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 32 bits of a Firebird {@code SLONG} or {@code ULONG} value in little-endian order.</p>
      *
      * @param value integer whose low 32 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L38-L49">Firebird SLONG and ULONG</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L38-L49">Firebird SLONG and ULONG</a>
      */
     public void writeInt4LE(final int value) {
         byteBuf.writeIntLE(value);
@@ -246,7 +246,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 64-bit representation of Firebird {@code SINT64} in big-endian order and returns a Java {@code long} value.</p>
      *
      * @return signed integer read from 8 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L61-L67">Firebird SINT64</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L61-L67">Firebird SINT64</a>
      */
     public long readInt8() {
         return byteBuf.readLong();
@@ -258,7 +258,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 64-bit representation of Firebird {@code SINT64} in little-endian order and returns a Java {@code long} value.</p>
      *
      * @return signed integer read from 8 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L61-L67">Firebird SINT64</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L61-L67">Firebird SINT64</a>
      */
     public long readInt8LE() {
         return byteBuf.readLongLE();
@@ -270,7 +270,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 64-bit representation of Firebird {@code FB_UINT64} in big-endian order and returns a Java {@link BigInteger} value.</p>
      *
      * @return integer in the range 0 to 18446744073709551615
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L61-L67">Firebird FB_UINT64</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L61-L67">Firebird FB_UINT64</a>
      */
     public BigInteger readInt8Unsigned() {
         long value = byteBuf.readLong();
@@ -283,7 +283,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the 64-bit representation of Firebird {@code FB_UINT64} in little-endian order and returns a Java {@link BigInteger} value.</p>
      *
      * @return integer in the range 0 to 18446744073709551615
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L61-L67">Firebird FB_UINT64</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L61-L67">Firebird FB_UINT64</a>
      */
     public BigInteger readInt8UnsignedLE() {
         long value = byteBuf.readLongLE();
@@ -296,7 +296,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 64 bits of a Firebird {@code SINT64} or {@code FB_UINT64} value in big-endian order.</p>
      *
      * @param value integer whose low 64 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L61-L67">Firebird SINT64 and FB_UINT64</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L61-L67">Firebird SINT64 and FB_UINT64</a>
      */
     public void writeInt8(final long value) {
         byteBuf.writeLong(value);
@@ -308,7 +308,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the low 64 bits of a Firebird {@code SINT64} or {@code FB_UINT64} value in little-endian order.</p>
      *
      * @param value integer whose low 64 bits are written to the buffer
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L61-L67">Firebird SINT64 and FB_UINT64</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L61-L67">Firebird SINT64 and FB_UINT64</a>
      */
     public void writeInt8LE(final long value) {
         byteBuf.writeLongLE(value);
@@ -321,7 +321,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      *
      * @param count number of bytes to read
      * @return {@link ByteBuf} containing the specified number of bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L57">Firebird UCHAR</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L57">Firebird UCHAR</a>
      */
     public ByteBuf readBytes(final int count) {
         return byteBuf.readSlice(count);
@@ -333,7 +333,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes raw Firebird {@code UCHAR} bytes without a length prefix or padding.</p>
      *
      * @param value byte array to write
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L57">Firebird UCHAR</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L57">Firebird UCHAR</a>
      */
     public void writeBytes(final byte[] value) {
         byteBuf.writeBytes(value);
@@ -345,7 +345,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads the Firebird {@code CSTRING} wire representation: a 32-bit big-endian length, data bytes and padding to a multiple of 4 bytes.</p>
      *
      * @return {@link ByteBuf} containing the data without the length prefix or padding
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
      */
     public ByteBuf readBuffer() {
         int length = byteBuf.readInt();
@@ -360,7 +360,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the Firebird {@code CSTRING} wire representation: a 32-bit big-endian length, data bytes and padding to a multiple of 4 bytes.</p>
      *
      * @param value byte array to write
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
      */
     public void writeBuffer(final byte[] value) {
         byteBuf.writeInt(value.length);
@@ -374,7 +374,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes the Firebird {@code CSTRING} wire representation: a 32-bit big-endian length, data bytes and padding to a multiple of 4 bytes.</p>
      *
      * @param buffer buffer containing the data to write
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
      */
     public void writeBuffer(final ByteBuf buffer) {
         byteBuf.writeInt(buffer.writerIndex());
@@ -388,7 +388,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Reads a Firebird protocol {@code String}, encoded as a {@code Buffer}, using the payload character set.</p>
      *
      * @return string decoded using the payload character set
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L1395-L1450">Firebird counted string encoding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L1395-L1450">Firebird counted string encoding</a>
      */
     public String readString() {
         return readBuffer().toString(charset);
@@ -400,7 +400,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Writes a Firebird protocol {@code String}, encoded as a {@code Buffer}, using the payload character set.</p>
      *
      * @param value string to write using the payload character set
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L1395-L1450">Firebird counted string encoding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L1395-L1450">Firebird counted string encoding</a>
      */
     public void writeString(final String value) {
         writeBuffer(value.getBytes(charset));
@@ -412,7 +412,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * <p>Skips raw reserved Firebird {@code UCHAR} bytes without interpreting them as a numeric value.</p>
      *
      * @param length number of bytes to skip
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/include/fb_types.h#L57">Firebird UCHAR</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/include/fb_types.h#L57">Firebird UCHAR</a>
      */
     public void skipReserved(final int length) {
         byteBuf.skipBytes(length);
@@ -425,7 +425,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * Padding is not a separate scalar type.</p>
      *
      * @param length length of the data preceding the padding
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/common/xdr.cpp#L547-L587">Firebird XDR padding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/common/xdr.cpp#L579-L617">Firebird XDR padding</a>
      */
     public void skipPadding(final int length) {
         byteBuf.skipBytes(getPadding(length));
@@ -438,7 +438,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      * Padding is not a separate scalar type.</p>
      *
      * @param length length of the data preceding the padding
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/common/xdr.cpp#L547-L587">Firebird XDR padding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/common/xdr.cpp#L579-L617">Firebird XDR padding</a>
      */
     @HighFrequencyInvocation
     public void writePadding(final int length) {
@@ -453,7 +453,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      *
      * @param length length of the data preceding the padding
      * @return number of bytes needed to align the data to a multiple of 4 bytes
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/common/xdr.cpp#L547-L587">Firebird XDR padding calculation</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/common/xdr.cpp#L579-L617">Firebird XDR padding calculation</a>
      */
     public int getPadding(final int length) {
         return (4 - length) & 3;
@@ -466,7 +466,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
      *
      * @param index index of the length prefix in the buffer
      * @return buffer length including the length prefix and padding
-     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/master/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L1395-L1450">Firebird CSTRING encoding</a>
      */
     public int getBufferLength(final int index) {
         int length = byteBuf.getInt(index) + 4;

@@ -1,0 +1,161 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.proxy.frontend.firebird.command.statements.execute;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrIdException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.FirebirdSQLResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.rowdata.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.rowdata.FirebirdBlobBinaryProtocolValue;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.context.aware.ParameterAware;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.blobs.FirebirdBlobWriteCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.statements.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.statements.FirebirdStatementResourceCleaner;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.statements.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.statements.rowdata.FirebirdBinaryRowBuilder;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.transactions.FirebirdTransactionIdGenerator;
+
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Firebird execute statement command executor.
+ */
+@RequiredArgsConstructor
+public final class FirebirdExecuteStatementCommandExecutor implements CommandExecutor {
+    
+    private final FirebirdExecuteStatementPacket packet;
+    
+    private final ConnectionSession connectionSession;
+    
+    private ProxyBackendHandler proxyBackendHandler;
+    
+    @Getter
+    private ResponseType responseType;
+    
+    @Override
+    public Collection<DatabasePacket> execute() throws SQLException {
+        connectionSession.beginPreparedStatementCache(FirebirdStatementResourceCleaner.createPreparedStatementCacheKey(packet.getStatementId()));
+        try {
+            FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
+            ShardingSpherePreconditions.checkNotNull(preparedStatement, () -> new InvalidStatementHandleException(packet.getStatementId()));
+            validateTransactionHandle();
+            ResponseHeader responseHeader = executePreparedStatement(preparedStatement, packet.getParameterValues());
+            if (responseHeader instanceof QueryResponseHeader) {
+                responseType = ResponseType.QUERY;
+                FirebirdFetchStatementCache.getInstance().registerStatement(connectionSession.getConnectionId(), packet.getStatementId(), proxyBackendHandler);
+                connectionSession.getDatabaseConnectionManager().markResourceInUse(proxyBackendHandler);
+            } else {
+                responseType = ResponseType.UPDATE;
+                preparedStatement.setAffectedRows(((UpdateResponseHeader) responseHeader).getUpdateCount());
+            }
+            Collection<DatabasePacket> result = new LinkedList<>();
+            if (packet.isStoredProcedure() && proxyBackendHandler.next()) {
+                result.add(getSQLResponse());
+            }
+            result.add(new FirebirdGenericResponsePacket());
+            return result;
+        } finally {
+            connectionSession.finishPreparedStatementCache();
+        }
+    }
+    
+    private void validateTransactionHandle() {
+        ShardingSpherePreconditions.checkState(FirebirdTransactionIdGenerator.getInstance().isTransactionActive(connectionSession.getConnectionId(), packet.getTransactionId()),
+                () -> new InvalidTransactionHandleException(packet.getTransactionId()));
+    }
+    
+    private ResponseHeader executePreparedStatement(final FirebirdServerPreparedStatement preparedStatement, final List<Object> params) throws SQLException {
+        Collection<Long> blobIdsToRemove = bindBlobParameters(params);
+        try {
+            SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
+            if (sqlStatementContext instanceof ParameterAware) {
+                ((ParameterAware) sqlStatementContext).bindParameters(params);
+            }
+            QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(),
+                    ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(), true);
+            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "Firebird"), queryContext, connectionSession, true);
+            return proxyBackendHandler.execute();
+        } finally {
+            clearBlobUploads(blobIdsToRemove);
+        }
+    }
+    
+    private Collection<Long> bindBlobParameters(final List<Object> params) {
+        List<FirebirdBinaryColumnType> parameterTypes = packet.getParameterTypes();
+        Collection<Long> result = new LinkedList<>();
+        int paramCount = Math.min(parameterTypes.size(), params.size());
+        for (int i = 0; i < paramCount; i++) {
+            if (parameterTypes.get(i) != FirebirdBinaryColumnType.BLOB) {
+                continue;
+            }
+            Object paramValue = params.get(i);
+            if (!(paramValue instanceof Long)) {
+                params.set(i, null);
+                continue;
+            }
+            long blobId = (Long) paramValue;
+            if (0L == blobId) {
+                params.set(i, new byte[0]);
+                continue;
+            }
+            if (blobId < 0L) {
+                byte[] resultBlobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(connectionSession.getConnectionId(), blobId);
+                ShardingSpherePreconditions.checkNotNull(resultBlobContent, () -> new InvalidSegstrIdException(blobId));
+                params.set(i, resultBlobContent);
+                continue;
+            }
+            ShardingSpherePreconditions.checkState(FirebirdBlobWriteCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId), () -> new InvalidSegstrIdException(blobId));
+            params.set(i, FirebirdBlobWriteCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId).get());
+            result.add(blobId);
+        }
+        return result;
+    }
+    
+    private void clearBlobUploads(final Collection<Long> blobIds) {
+        for (Long each : blobIds) {
+            FirebirdBlobWriteCache.getInstance().removeWrite(connectionSession.getConnectionId(), each);
+        }
+    }
+    
+    private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
+        return new FirebirdSQLResponsePacket(FirebirdBinaryRowBuilder.build(proxyBackendHandler.getRowData()));
+    }
+}

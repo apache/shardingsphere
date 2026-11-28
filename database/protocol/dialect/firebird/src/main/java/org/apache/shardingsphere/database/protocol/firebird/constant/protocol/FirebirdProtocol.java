@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.constant.protocol;
 
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
-import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdArchType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.establishingconnection.FirebirdArchType;
 
 /**
  * Firebird protocol.

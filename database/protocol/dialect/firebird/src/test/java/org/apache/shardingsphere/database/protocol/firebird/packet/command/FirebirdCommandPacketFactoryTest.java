@@ -17,32 +17,26 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchReleaseCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSyncCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBatchBlobSegmentsCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare.FirebirdPrepareStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdCommitTransactionPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.create.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.execute.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.messages.FirebirdBatchMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.sync.FirebirdBatchSyncCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.open.FirebirdBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.seek.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.blobs.segments.FirebirdSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.ping.FirebirdPingCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.commonrequests.FirebirdInfoCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.execute.FirebirdExecuteStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.fetch.FirebirdFetchStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.free.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.prepare.FirebirdPrepareStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.transactions.start.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -51,11 +45,13 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,41 +70,72 @@ class FirebirdCommandPacketFactoryTest {
         assertThat(FirebirdCommandPacketFactory.newInstance(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), isA(expectedPacketType));
     }
     
+    @Test
+    void assertNewInstanceWithPing() {
+        ByteBuf buffer = Unpooled.buffer(Integer.BYTES).writeInt(FirebirdCommandPacketType.PING.getValue());
+        try {
+            FirebirdPacketPayload packetPayload = new FirebirdPacketPayload(buffer, StandardCharsets.UTF_8);
+            assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PING, packetPayload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), isA(FirebirdPingCommandPacket.class));
+            assertThat(buffer.readableBytes(), is(0));
+        } finally {
+            buffer.release();
+        }
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("expectedLengthArguments")
     void assertGetExpectedLength(final String name, final FirebirdCommandPacketType commandPacketType, final int expectedLength) {
         assertThat(FirebirdCommandPacketFactory.getExpectedLength(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1), is(expectedLength));
     }
     
+    @Test
+    void assertGetExpectedLengthWithUnsupportedCommandPacketLength() {
+        UnsupportedCommandException actual = assertThrows(UnsupportedCommandException.class,
+                () -> FirebirdCommandPacketFactory.getExpectedLength(FirebirdCommandPacketType.VOID, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13, 1));
+        assertThat(actual.getMessage(), is("Unsupported Firebird command packet length: 0"));
+    }
+    
     private static Stream<Arguments> newInstanceArguments() {
         return Stream.of(
-                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoPacket.class),
-                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoPacket.class),
+                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoCommandPacket.class),
+                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoCommandPacket.class),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, FirebirdStartTransactionPacket.class),
-                Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, FirebirdCreateBlobCommandPacket.class),
-                Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdCreateBlobCommandPacket.class),
-                Arguments.of("open_blob", FirebirdCommandPacketType.OPEN_BLOB, FirebirdOpenBlobCommandPacket.class),
-                Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, FirebirdOpenBlobCommandPacket.class),
-                Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, FirebirdGetBlobSegmentCommandPacket.class),
-                Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdPutBlobSegmentCommandPacket.class),
-                Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdBatchBlobSegmentsCommandPacket.class),
+                Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, FirebirdBlobCommandPacket.class),
+                Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdBlobCommandPacket.class),
+                Arguments.of("open_blob", FirebirdCommandPacketType.OPEN_BLOB, FirebirdBlobCommandPacket.class),
+                Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, FirebirdBlobCommandPacket.class),
+                Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, FirebirdSegmentCommandPacket.class),
+                Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdSegmentCommandPacket.class),
+                Arguments.of("batch_segments", FirebirdCommandPacketType.BATCH_SEGMENTS, FirebirdSegmentCommandPacket.class),
                 Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, FirebirdSeekBlobCommandPacket.class),
-                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelBlobCommandPacket.class),
-                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class),
-                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class),
+                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class),
                 Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class),
                 Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, FirebirdExecuteStatementPacket.class),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class),
-                Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoPacket.class),
-                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdCommitTransactionPacket.class),
-                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdRollbackTransactionPacket.class),
+                Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoCommandPacket.class),
+                Arguments.of("info_request", FirebirdCommandPacketType.INFO_REQUEST, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("info_transaction", FirebirdCommandPacketType.INFO_TRANSACTION, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("info_batch", FirebirdCommandPacketType.INFO_BATCH, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("info_cursor", FirebirdCommandPacketType.INFO_CURSOR, FirebirdUnsupportedCommandPacket.class),
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("prepare", FirebirdCommandPacketType.PREPARE, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("unwind", FirebirdCommandPacketType.UNWIND, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("release", FirebirdCommandPacketType.RELEASE, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("detach", FirebirdCommandPacketType.DETACH, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("drop_database", FirebirdCommandPacketType.DROP_DATABASE, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("service_detach", FirebirdCommandPacketType.SERVICE_DETACH, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("commit_retaining", FirebirdCommandPacketType.COMMIT_RETAINING, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("rollback_retaining", FirebirdCommandPacketType.ROLLBACK_RETAINING, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, FirebirdFreeStatementPacket.class),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, FirebirdBatchCreateCommandPacket.class),
                 Arguments.of("batch_msg", FirebirdCommandPacketType.BATCH_MSG, FirebirdBatchMessageCommandPacket.class),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, FirebirdBatchExecuteCommandPacket.class),
-                Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdBatchReleaseCommandPacket.class),
-                Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdBatchCancelCommandPacket.class),
+                Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, FirebirdSingleHandleCommandPacket.class),
+                Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, FirebirdSingleHandleCommandPacket.class),
                 Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, FirebirdBatchSyncCommandPacket.class),
                 Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, FirebirdUnsupportedCommandPacket.class));
     }
@@ -118,6 +145,20 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, 16),
                 Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, 16),
                 Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, 16),
+                Arguments.of("info_request", FirebirdCommandPacketType.INFO_REQUEST, 16),
+                Arguments.of("info_transaction", FirebirdCommandPacketType.INFO_TRANSACTION, 16),
+                Arguments.of("info_batch", FirebirdCommandPacketType.INFO_BATCH, 16),
+                Arguments.of("info_cursor", FirebirdCommandPacketType.INFO_CURSOR, 16),
+                Arguments.of("service_info", FirebirdCommandPacketType.SERVICE_INFO, 16),
+                Arguments.of("ping", FirebirdCommandPacketType.PING, 4),
+                Arguments.of("abort_aux_connection", FirebirdCommandPacketType.ABORT_AUX_CONNECTION, 4),
+                Arguments.of("cancel", FirebirdCommandPacketType.CANCEL, 8),
+                Arguments.of("cancel_events", FirebirdCommandPacketType.CANCEL_EVENTS, 12),
+                Arguments.of("connect_request", FirebirdCommandPacketType.CONNECT_REQUEST, 16),
+                Arguments.of("aux_connect", FirebirdCommandPacketType.AUX_CONNECT, 16),
+                Arguments.of("receive", FirebirdCommandPacketType.RECEIVE, 24),
+                Arguments.of("start", FirebirdCommandPacketType.START, 24),
+                Arguments.of("start_and_receive", FirebirdCommandPacketType.START_AND_RECEIVE, 24),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, 8),
                 Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, 16),
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, 16),
@@ -131,17 +172,22 @@ class FirebirdCommandPacketFactoryTest {
                 Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, 8),
                 Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8),
                 Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, 20),
-                Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, 0),
-                Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, 0),
                 Arguments.of("fetch", FirebirdCommandPacketType.FETCH, 16),
                 Arguments.of("commit", FirebirdCommandPacketType.COMMIT, 8),
+                Arguments.of("prepare", FirebirdCommandPacketType.PREPARE, 8),
                 Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, 8),
+                Arguments.of("unwind", FirebirdCommandPacketType.UNWIND, 8),
+                Arguments.of("release", FirebirdCommandPacketType.RELEASE, 8),
+                Arguments.of("detach", FirebirdCommandPacketType.DETACH, 8),
+                Arguments.of("drop_database", FirebirdCommandPacketType.DROP_DATABASE, 8),
+                Arguments.of("service_detach", FirebirdCommandPacketType.SERVICE_DETACH, 8),
+                Arguments.of("commit_retaining", FirebirdCommandPacketType.COMMIT_RETAINING, 8),
+                Arguments.of("rollback_retaining", FirebirdCommandPacketType.ROLLBACK_RETAINING, 8),
                 Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, 12),
                 Arguments.of("batch_create", FirebirdCommandPacketType.BATCH_CREATE, 12),
                 Arguments.of("batch_exec", FirebirdCommandPacketType.BATCH_EXEC, 12),
                 Arguments.of("batch_release", FirebirdCommandPacketType.BATCH_RLS, 8),
                 Arguments.of("batch_cancel", FirebirdCommandPacketType.BATCH_CANCEL, 8),
-                Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4),
-                Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, 0));
+                Arguments.of("batch_sync", FirebirdCommandPacketType.BATCH_SYNC, 4));
     }
 }

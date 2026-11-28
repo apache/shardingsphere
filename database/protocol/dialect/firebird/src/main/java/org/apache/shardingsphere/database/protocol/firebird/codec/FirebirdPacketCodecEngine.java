@@ -26,15 +26,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdConstant;
-import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdErrorPacketFactory;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.create.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.messages.FirebirdBatchColumnDescriptor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.messages.FirebirdBatchMessageCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.messages.FirebirdParseBatchBlr;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketFactory;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchColumnDescriptor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchMessageCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdParseBatchBlr;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFreeStatementPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.commonresponses.generic.FirebirdErrorPacketFactory;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.free.FirebirdFreeStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -70,10 +69,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         try {
             if (pendingMessages.isEmpty()) {
                 pendingPacketType = FirebirdCommandPacketType.valueOf(in.getInt(in.readerIndex()));
-                if (FirebirdCommandPacketType.ALLOCATE_STATEMENT == pendingPacketType) {
-                    handleMultiPacket(context, in, out, FirebirdAllocateStatementPacket.getLength());
-                    return;
-                }
                 if (FirebirdCommandPacketType.FREE_STATEMENT == pendingPacketType) {
                     handleMultiPacket(context, in, out, FirebirdFreeStatementPacket.getLength());
                     return;
@@ -135,6 +130,11 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;
             }
+            if (FirebirdCommandPacketType.DISCONNECT == commandType) {
+                buffer.skipBytes(MESSAGE_TYPE_LENGTH);
+                context.close();
+                continue;
+            }
             int packetLength = findPacketLength(context, buffer, commandType, charset);
             if (packetLength < 0) {
                 pendingPacketType = commandType;
@@ -155,6 +155,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     private int findPacketLength(final ChannelHandlerContext context, final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
         int readableBytes = buffer.readableBytes();
+        if (isAuthenticationMessage(commandType)) {
+            return readableBytes;
+        }
         ByteBuf slice = buffer.retainedSlice();
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
@@ -167,7 +170,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return -1;
             }
             if (0 == expectedLength) {
-                return readableBytes;
+                throw new IllegalStateException("Expected length of command packet must be positive: " + commandType);
             }
             return readableBytes >= expectedLength ? expectedLength : -1;
         } catch (final IndexOutOfBoundsException ex) {
@@ -175,6 +178,10 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } finally {
             slice.release();
         }
+    }
+    
+    private static boolean isAuthenticationMessage(final FirebirdCommandPacketType commandType) {
+        return FirebirdCommandPacketType.CONNECT == commandType || FirebirdCommandPacketType.ATTACH == commandType || FirebirdCommandPacketType.CONT_AUTH == commandType;
     }
     
     private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {

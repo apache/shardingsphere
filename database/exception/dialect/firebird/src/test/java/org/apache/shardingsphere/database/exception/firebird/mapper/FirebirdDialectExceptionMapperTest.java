@@ -43,6 +43,7 @@ import org.apache.shardingsphere.database.exception.firebird.exception.protocol.
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidSegstrTypeException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidStatementHandleException;
 import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidTransactionHandleException;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.apache.shardingsphere.database.exception.firebird.vendor.FirebirdVendorError;
 import org.apache.shardingsphere.infra.exception.external.sql.vendor.VendorError;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -117,6 +118,14 @@ class FirebirdDialectExceptionMapperTest {
                 Arguments.of("invalid_segstr_handle", new InvalidSegstrHandleException(42), FirebirdVendorError.INVALID_SEGSTR_HANDLE, new Object[0]),
                 Arguments.of("invalid_segstr_id", new InvalidSegstrIdException(99L), FirebirdVendorError.INVALID_SEGSTR_ID, new Object[0]),
                 Arguments.of("invalid_segstr_type", new InvalidSegstrTypeException(42), FirebirdVendorError.INVALID_SEGSTR_TYPE, new Object[0]),
-                Arguments.of("cannot_update_old_blob", new CannotUpdateOldBlobException(42), FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB, new Object[0]));
+                Arguments.of("cannot_update_old_blob", new CannotUpdateOldBlobException(42), FirebirdVendorError.CANNOT_UPDATE_OLD_BLOB, new Object[0]),
+                Arguments.of("unsupported_command_packet", UnsupportedCommandException.forCommandPacket("VOID"), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
+                        new Object[]{"Unsupported Firebird command packet: VOID"}),
+                Arguments.of("unsupported_command_packet_type", UnsupportedCommandException.forCommandPacketType(-1), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
+                        new Object[]{"Unsupported Firebird type of command packet: -1"}),
+                Arguments.of("unsupported_command_packet_length", UnsupportedCommandException.forCommandPacketLength(84), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
+                        new Object[]{"Unsupported Firebird command packet length: 84"}),
+                Arguments.of("unsupported_command_executor", UnsupportedCommandException.forCommandExecutor("PREPARE"), FirebirdVendorError.FEATURE_NOT_SUPPORTED,
+                        new Object[]{"Unsupported Firebird command executor: PREPARE"}));
     }
 }

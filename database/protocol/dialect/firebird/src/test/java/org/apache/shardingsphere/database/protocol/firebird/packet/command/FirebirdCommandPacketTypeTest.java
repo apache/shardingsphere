@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.UnsupportedCommandException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,6 +33,7 @@ class FirebirdCommandPacketTypeTest {
     
     @Test
     void assertValueOfWithIllegalArgument() {
-        assertThrows(NullPointerException.class, () -> FirebirdCommandPacketType.valueOf(-1));
+        UnsupportedCommandException actual = assertThrows(UnsupportedCommandException.class, () -> FirebirdCommandPacketType.valueOf(-1));
+        assertThat(actual.getMessage(), is("Unsupported Firebird type of command packet: -1"));
     }
 }

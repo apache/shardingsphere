@@ -1,0 +1,163 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.database.protocol.firebird.packet.batches.messages;
+
+import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import org.apache.shardingsphere.database.exception.firebird.exception.protocol.InvalidBatchHandleException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.batches.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.rowdata.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.statements.rowdata.FirebirdBinaryProtocolValueFactory;
+import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Firebird batch message command packet.
+ */
+@Getter
+public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPacket {
+    
+    private static final int FIXED_BATCH_MSG_HEADER_LENGTH = 12;
+    
+    private final int statementHandle;
+    
+    private final long messageCount;
+    
+    private final ByteBuf data;
+    
+    private final int dataLength;
+    
+    private final Charset charset;
+    
+    public FirebirdBatchMessageCommandPacket(final FirebirdPacketPayload payload) {
+        payload.skipReserved(4);
+        statementHandle = payload.readInt4();
+        messageCount = payload.readInt4Unsigned();
+        charset = payload.getCharset();
+        data = payload.getByteBuf().readSlice(payload.getByteBuf().readableBytes());
+        dataLength = data.readableBytes();
+    }
+    
+    /**
+     * Get length of batch message packet by parsing every message.
+     *
+     * @param payload Firebird packet payload
+     * @param connectionId connection ID
+     * @return length of packet
+     */
+    public static int getLength(final FirebirdPacketPayload payload, final int connectionId) {
+        if (payload.getByteBuf().readableBytes() < FIXED_BATCH_MSG_HEADER_LENGTH) {
+            return -1;
+        }
+        int startReaderIndex = payload.getByteBuf().readerIndex();
+        payload.skipReserved(4);
+        int statementHandle = payload.readInt4();
+        List<FirebirdBatchColumnDescriptor> messageFormat = FirebirdBatchRegistry.getInstance().getMessageFormat(connectionId, statementHandle);
+        ShardingSpherePreconditions.checkNotNull(messageFormat, () -> new InvalidBatchHandleException(statementHandle));
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), messageFormat);
+    }
+    
+    /**
+     * Get length of batch message packet by parsing every message with the supplied BLR column descriptors.
+     *
+     * @param payload Firebird packet payload
+     * @param columnDescriptors BLR column descriptors
+     * @return length of packet, or {@code -1} when the packet is incomplete
+     */
+    public static int getLength(final FirebirdPacketPayload payload, final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        if (payload.getByteBuf().readableBytes() < FIXED_BATCH_MSG_HEADER_LENGTH) {
+            return -1;
+        }
+        int startReaderIndex = payload.getByteBuf().readerIndex();
+        payload.skipReserved(8);
+        return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), columnDescriptors);
+    }
+    
+    private static int parseBatchMessages(final FirebirdPacketPayload payload, final int startReaderIndex, final long messageCount, final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        for (long each = 0; each < messageCount; each++) {
+            int messageStartIndex = payload.getByteBuf().readerIndex();
+            try {
+                parseSingleMessage(payload, columnDescriptors);
+                // CHECKSTYLE:OFF
+            } catch (final IndexOutOfBoundsException ex) {
+                // CHECKSTYLE:ON
+                payload.getByteBuf().readerIndex(messageStartIndex);
+                return -1;
+            }
+        }
+        return payload.getByteBuf().readerIndex() - startReaderIndex;
+    }
+    
+    /**
+     * Read batch parameter values from packet data.
+     *
+     * @param columnDescriptors column descriptors
+     * @return batch parameter values
+     */
+    public List<List<Object>> readParameterValues(final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        FirebirdPacketPayload payload = new FirebirdPacketPayload(data.duplicate(), charset);
+        List<List<Object>> result = new ArrayList<>((int) Math.min(messageCount, Integer.MAX_VALUE));
+        for (long each = 0; each < messageCount; each++) {
+            result.add(parseSingleMessage(payload, columnDescriptors));
+        }
+        return result;
+    }
+    
+    private static List<Object> parseSingleMessage(final FirebirdPacketPayload payload, final List<FirebirdBatchColumnDescriptor> columnDescriptors) {
+        int messageStartIndex = payload.getByteBuf().readerIndex();
+        List<Integer> nullBits = readNullBits(payload, columnDescriptors.size());
+        List<Object> result = new ArrayList<>(columnDescriptors.size());
+        for (int i = 0; i < columnDescriptors.size(); i++) {
+            if (0 != ((nullBits.get(i / 8) >> i % 8) & 1)) {
+                result.add(null);
+                continue;
+            }
+            result.add(readValue(payload, columnDescriptors.get(i)));
+        }
+        payload.skipPadding(payload.getByteBuf().readerIndex() - messageStartIndex);
+        return result;
+    }
+    
+    private static List<Integer> readNullBits(final FirebirdPacketPayload payload, final int columnCount) {
+        int nullBitsLength = (columnCount + 7) / 8;
+        List<Integer> result = new ArrayList<>(nullBitsLength);
+        for (int i = 0; i < nullBitsLength; i++) {
+            result.add(payload.readInt1Unsigned());
+        }
+        payload.skipPadding(nullBitsLength);
+        return result;
+    }
+    
+    private static Object readValue(final FirebirdPacketPayload payload, final FirebirdBatchColumnDescriptor descriptor) {
+        if (FirebirdBinaryColumnType.TEXT == descriptor.getType() || FirebirdBinaryColumnType.LEGACY_TEXT == descriptor.getType()) {
+            String result = payload.readBytes(descriptor.getLength()).toString(payload.getCharset());
+            payload.skipPadding(descriptor.getLength());
+            return result;
+        }
+        return FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(descriptor.getType()).read(payload);
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
+    }
+}
