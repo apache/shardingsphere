@@ -19,7 +19,9 @@ package org.apache.shardingsphere.globalclock.type.tso.provider.local;
 
 import org.apache.shardingsphere.globalclock.type.tso.provider.TSOProvider;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Local TSO provider.
@@ -27,6 +29,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class LocalTSOProvider implements TSOProvider {
     
     private final AtomicLong localClock = new AtomicLong();
+    
+    private final ReentrantLock lock = new ReentrantLock();
     
     @Override
     public long getCurrentTimestamp() {
@@ -36,6 +40,21 @@ public final class LocalTSOProvider implements TSOProvider {
     @Override
     public long getNextTimestamp() {
         return localClock.incrementAndGet();
+    }
+    
+    @Override
+    public boolean tryLock(final long timeoutMillis) {
+        try {
+            return lock.tryLock(timeoutMillis, TimeUnit.MILLISECONDS);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+    
+    @Override
+    public void unlock() {
+        lock.unlock();
     }
     
     @Override

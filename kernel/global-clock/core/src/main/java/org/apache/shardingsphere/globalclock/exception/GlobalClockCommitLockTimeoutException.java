@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
+package org.apache.shardingsphere.globalclock.exception;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.TransactionSQLException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-class TransactionCommitOperationTest {
+/**
+ * Global clock commit lock timeout exception.
+ */
+public final class GlobalClockCommitLockTimeoutException extends TransactionSQLException {
     
-    @Test
-    void assertGetName() {
-        assertThat(new TransactionCommitOperation().getName(), is("transaction_commit"));
+    private static final long serialVersionUID = 4380465632516843946L;
+    
+    public GlobalClockCommitLockTimeoutException(final long timeoutMillis) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 5, "Acquire global clock commit lock timeout of '%d' milliseconds.", timeoutMillis);
     }
 }

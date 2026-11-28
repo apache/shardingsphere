@@ -20,9 +20,11 @@ package org.apache.shardingsphere.globalclock.executor;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.globalclock.exception.GlobalClockCommitLockTimeoutException;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
@@ -36,6 +38,8 @@ import java.util.Optional;
  * Global clock transaction hook.
  */
 public final class GlobalClockTransactionHook implements TransactionHook<GlobalClockRule> {
+    
+    private static final long COMMIT_LOCK_TIMEOUT_MILLIS = 200L;
     
     @Override
     public void beforeBegin(final GlobalClockRule rule, final DatabaseType databaseType, final TransactionConnectionContext transactionContext) {
@@ -83,7 +87,16 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         Preconditions.checkArgument(globalClockTransactionExecutor.isPresent());
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
         Preconditions.checkState(globalClockProvider.isPresent());
-        globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
+        ShardingSpherePreconditions.checkState(globalClockProvider.get().tryLock(COMMIT_LOCK_TIMEOUT_MILLIS), () -> new GlobalClockCommitLockTimeoutException(COMMIT_LOCK_TIMEOUT_MILLIS));
+        boolean isCommitTimestampSent = false;
+        try {
+            globalClockTransactionExecutor.get().sendCommitTimestamp(connections, globalClockProvider.get().getCurrentTimestamp());
+            isCommitTimestampSent = true;
+        } finally {
+            if (!isCommitTimestampSent) {
+                globalClockProvider.get().unlock();
+            }
+        }
     }
     
     @Override
@@ -93,12 +106,11 @@ public final class GlobalClockTransactionHook implements TransactionHook<GlobalC
         }
         Optional<GlobalClockProvider> globalClockProvider = rule.getGlobalClockProvider();
         Preconditions.checkState(globalClockProvider.isPresent());
-        globalClockProvider.get().getNextTimestamp();
-    }
-    
-    @Override
-    public boolean isNeedLockWhenCommit(final GlobalClockRule rule) {
-        return rule.getConfiguration().isEnabled();
+        try {
+            globalClockProvider.get().getNextTimestamp();
+        } finally {
+            globalClockProvider.get().unlock();
+        }
     }
     
     @Override

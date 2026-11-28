@@ -22,9 +22,14 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LocalTSOProviderTest {
     
@@ -40,6 +45,31 @@ class LocalTSOProviderTest {
         assertThat(tsoProvider.getCurrentTimestamp(), is(0L));
         assertThat(tsoProvider.getNextTimestamp(), is(1L));
         assertThat(tsoProvider.getCurrentTimestamp(), is(1L));
+    }
+    
+    @Test
+    void assertTryLock() {
+        assertTrue(tsoProvider.tryLock(0L));
+    }
+    
+    @Test
+    void assertTryLockWhenLockedByAnotherThread() throws ExecutionException, InterruptedException {
+        assertTrue(CompletableFuture.supplyAsync(() -> tsoProvider.tryLock(0L)).get());
+        assertFalse(tsoProvider.tryLock(0L));
+    }
+    
+    @Test
+    void assertTryLockWhenInterrupted() {
+        Thread.currentThread().interrupt();
+        assertFalse(tsoProvider.tryLock(0L));
+        assertTrue(Thread.interrupted());
+    }
+    
+    @Test
+    void assertUnlock() throws ExecutionException, InterruptedException {
+        tsoProvider.tryLock(0L);
+        tsoProvider.unlock();
+        assertTrue(CompletableFuture.supplyAsync(() -> tsoProvider.tryLock(0L)).get());
     }
     
     @Test

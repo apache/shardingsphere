@@ -19,6 +19,7 @@ package org.apache.shardingsphere.globalclock.executor;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.globalclock.exception.GlobalClockCommitLockTimeoutException;
 import org.apache.shardingsphere.globalclock.provider.GlobalClockProvider;
 import org.apache.shardingsphere.globalclock.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 
 import java.sql.SQLException;
@@ -38,8 +40,11 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -147,10 +152,48 @@ class GlobalClockTransactionHookTest {
     void assertBeforeCommit() throws SQLException {
         when(rule.getConfiguration().isEnabled()).thenReturn(true);
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        when(globalClockProvider.tryLock(anyLong())).thenReturn(true);
         when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
         when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
         transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext);
-        verify(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
+        InOrder inOrder = inOrder(globalClockProvider, globalClockTransactionExecutor);
+        inOrder.verify(globalClockProvider).tryLock(anyLong());
+        inOrder.verify(globalClockProvider).getCurrentTimestamp();
+        inOrder.verify(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
+        verify(globalClockProvider, never()).unlock();
+    }
+    
+    @Test
+    void assertBeforeCommitWhenLockTimeout() throws SQLException {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
+        assertThrows(GlobalClockCommitLockTimeoutException.class, () -> transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext));
+        verify(globalClockProvider, never()).getCurrentTimestamp();
+        verify(globalClockTransactionExecutor, never()).sendCommitTimestamp(any(), anyLong());
+    }
+    
+    @Test
+    void assertBeforeCommitWhenGetCurrentTimestampFailed() {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        when(globalClockProvider.tryLock(anyLong())).thenReturn(true);
+        when(globalClockProvider.getCurrentTimestamp()).thenThrow(IllegalStateException.class);
+        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
+        assertThrows(IllegalStateException.class, () -> transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext));
+        verify(globalClockProvider).unlock();
+    }
+    
+    @Test
+    void assertBeforeCommitWhenSendCommitTimestampFailed() throws SQLException {
+        when(rule.getConfiguration().isEnabled()).thenReturn(true);
+        when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
+        when(globalClockProvider.tryLock(anyLong())).thenReturn(true);
+        when(globalClockProvider.getCurrentTimestamp()).thenReturn(10L);
+        when(DatabaseTypedSPILoader.findService(GlobalClockTransactionExecutor.class, databaseType)).thenReturn(Optional.of(globalClockTransactionExecutor));
+        doThrow(SQLException.class).when(globalClockTransactionExecutor).sendCommitTimestamp(Collections.emptyList(), 10L);
+        assertThrows(SQLException.class, () -> transactionHook.beforeCommit(rule, databaseType, Collections.emptyList(), transactionContext));
+        verify(globalClockProvider).unlock();
     }
     
     @Test
@@ -165,6 +208,7 @@ class GlobalClockTransactionHookTest {
         when(rule.getGlobalClockProvider()).thenReturn(Optional.of(globalClockProvider));
         transactionHook.afterCommit(rule, databaseType, Collections.emptyList(), transactionContext);
         verify(globalClockProvider).getNextTimestamp();
+        verify(globalClockProvider).unlock();
     }
     
     @Test
