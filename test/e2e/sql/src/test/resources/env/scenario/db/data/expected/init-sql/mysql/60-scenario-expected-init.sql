@@ -29,5 +29,6 @@ CREATE TABLE expected_dataset.t_product (product_id INT PRIMARY KEY, product_nam
 CREATE TABLE expected_dataset.t_product_detail (detail_id INT PRIMARY KEY, product_id INT NOT NULL, description VARCHAR(50) NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE expected_dataset.t_product_category (category_id INT PRIMARY KEY, category_name VARCHAR(50) NOT NULL, parent_id INT NOT NULL, level TINYINT NOT NULL, creation_date DATE NOT NULL);
 CREATE TABLE expected_dataset.t_country (country_id SMALLINT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);
+CREATE TABLE expected_dataset.t_octets (id INT PRIMARY KEY, vo VARBINARY(10), co BINARY(4));
 
 CREATE INDEX order_index ON expected_dataset.t_order (order_id);

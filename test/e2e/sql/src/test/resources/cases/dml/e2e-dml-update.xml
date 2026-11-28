@@ -51,6 +51,11 @@
     <test-case sql="UPDATE t_order SET status = status where user_id = user_id AND order_id = 1000" db-types="MySQL,PostgreSQL,openGauss,Firebird" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="update_with_column_equal_column.xml" />
     </test-case>
+
+    <test-case sql="UPDATE t_octets SET co = ? WHERE vo = ?" db-types="Firebird" scenario-types="db">
+        <assertion parameters="zz99:binary, octets01:varbinary" expected-data-file="update_octets_1.xml" />
+        <assertion parameters="null:binary, xy:varbinary" expected-data-file="update_octets_2.xml" />
+    </test-case>
     
     <!-- TODO FIXED ME PostgreSQL return 0 and replace with standard table structure -->
     <!--<test-case sql="UPDATE t_broadcast_table b SET b.status = 'finished'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting">

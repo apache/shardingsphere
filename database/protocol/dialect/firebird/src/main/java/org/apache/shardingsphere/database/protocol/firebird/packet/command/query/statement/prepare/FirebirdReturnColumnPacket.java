@@ -25,7 +25,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.firebirdsql.gds.ISCConstants;
 
+import java.sql.Types;
 import java.util.Collection;
 
 /**
@@ -66,8 +68,7 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.TYPE, columnType.getValue() + 1, payload);
                     break;
                 case SUB_TYPE:
-                    int subType = FirebirdBinaryColumnType.BLOB == columnType && null != blobSubType ? blobSubType : columnType.getSubtype();
-                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, subType, payload);
+                    FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SUB_TYPE, getSubType(columnType), payload);
                     break;
                 case SCALE:
                     FirebirdPrepareStatementReturnPacket.writeInt(FirebirdSQLInfoPacketType.SCALE, 0, payload);
@@ -102,5 +103,16 @@ public final class FirebirdReturnColumnPacket extends FirebirdPacket {
                     throw new DatabaseProtocolException("Unknown statement info request type %d", requestedItem);
             }
         }
+    }
+    
+    private int getSubType(final FirebirdBinaryColumnType columnType) {
+        if (FirebirdBinaryColumnType.BLOB == columnType) {
+            return null == blobSubType ? columnType.getSubtype() : blobSubType;
+        }
+        return isOctetsColumn() ? ISCConstants.CS_BINARY : columnType.getSubtype();
+    }
+    
+    private boolean isOctetsColumn() {
+        return Types.BINARY == column.getDataType() || Types.VARBINARY == column.getDataType();
     }
 }
