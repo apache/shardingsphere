@@ -556,8 +556,55 @@ class FirebirdPrepareStatementCommandExecutorTest {
         mockDescribeTypeAndAliasRequest();
         FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
         assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
-        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.VARYING, "a");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.VARYING, "A");
         assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.VARYING, "A");
+    }
+    
+    @Test
+    void assertDescribeUnquotedColumnMatchingLaterJoinedCommonTableExpressionSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (\"a\") AS (SELECT 1 FROM foo_tbl), bar_cte (\"A\") AS (SELECT 'foo' FROM foo_tbl) SELECT a FROM foo_cte JOIN bar_cte ON 1 = 1");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.VARYING, "A");
+    }
+    
+    @Test
+    void assertDescribeCaseOnlyDifferentNaturalJoinColumnsShorthandSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (\"A\", \"a\") AS (SELECT 'foo', 1 FROM foo_tbl) SELECT * FROM foo_cte NATURAL JOIN (SELECT 'bar' AS \"A\" FROM foo_tbl) derived_tbl");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.VARYING, "A");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.LONG, "a");
+    }
+    
+    @Test
+    void assertDescribeUsingJoinColumnWithDifferentTypesShorthandSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (n) AS (SELECT 1 FROM foo_tbl), bar_cte (n) AS (SELECT 2147483648 FROM foo_tbl) SELECT * FROM foo_cte JOIN bar_cte USING (n)");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.INT64, "n");
+    }
+    
+    @Test
+    void assertDescribeUsingJoinColumnWithDifferentTypesSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("WITH foo_cte (n) AS (SELECT 1 FROM foo_tbl), bar_cte (n) AS (SELECT 2147483648 FROM foo_tbl) SELECT n, foo_cte.n FROM foo_cte JOIN bar_cte USING (n)");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(2));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.INT64, "n");
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(1), FirebirdBinaryColumnType.LONG, "n");
+    }
+    
+    @Test
+    void assertDescribeUnquotedReferenceToQuotedDerivedTableColumnSelect() throws Exception {
+        when(packet.getSQL()).thenReturn("SELECT derived_tbl.n FROM (SELECT id AS \"N\" FROM bar_tbl) derived_tbl");
+        mockDescribeTypeAndAliasRequest();
+        FirebirdPrepareStatementReturnPacket actualReturnPacket = executeAndGetReturnPacket();
+        assertThat(actualReturnPacket.getDescribeSelect().size(), is(1));
+        assertColumnTypeAndAlias(actualReturnPacket.getDescribeSelect().get(0), FirebirdBinaryColumnType.LONG, "N");
     }
     
     private void mockDescribeTypeAndAliasRequest() {
