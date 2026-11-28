@@ -35,7 +35,7 @@ inputs:
     required: false
     default: 'true'
   restore-distribution:
-    description: 'Whether to restore the MCP distribution home'
+    description: 'Whether to restore the MCP binary distribution archive'
     required: false
     default: 'false'
 
@@ -79,7 +79,7 @@ runs:
           required_files+=(maven-repo-output.tar.gz)
         fi
         if [[ "$RESTORE_DISTRIBUTION" == 'true' ]]; then
-          required_files+=(mcp-distribution-home.tar.gz)
+          required_files+=(mcp-distribution.tar.gz)
         fi
         if [[ "$LOAD_DOCKER_IMAGE" == 'true' ]]; then
           required_files+=(image.tar image.tar.json)
@@ -114,7 +114,7 @@ runs:
       run: |
         set -euo pipefail
         mkdir -p distribution/mcp/target
-        tar -xzf "$ARTIFACT_DIR/mcp-distribution-home.tar.gz" -C distribution/mcp/target
+        tar -xzf "$ARTIFACT_DIR/mcp-distribution.tar.gz" -C distribution/mcp/target
     - name: Load E2E Image
       id: load-image
       if: inputs.load-docker-image == 'true'

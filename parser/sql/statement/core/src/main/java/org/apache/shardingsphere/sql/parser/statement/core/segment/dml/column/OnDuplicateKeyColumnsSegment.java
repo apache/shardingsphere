@@ -19,10 +19,14 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * On duplicate key columns segment.
@@ -36,4 +40,18 @@ public final class OnDuplicateKeyColumnsSegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<ColumnAssignmentSegment> columns;
+    
+    private final Collection<ColumnSegment> conflictColumns = new LinkedList<>();
+    
+    @Setter
+    private WhereSegment conflictTargetWhere;
+    
+    /**
+     * Get conflict target predicate.
+     *
+     * @return conflict target predicate
+     */
+    public Optional<WhereSegment> getConflictTargetWhere() {
+        return Optional.ofNullable(conflictTargetWhere);
+    }
 }

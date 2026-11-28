@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.core.extractor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.DatetimeExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
@@ -52,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
@@ -79,7 +82,11 @@ public final class SubqueryExtractor {
     }
     
     private static void extractSubquerySegments(final List<SubquerySegment> result, final SelectStatement selectStatement, final boolean needRecursive, final SubqueryType parentSubqueryType) {
-        extractSubquerySegmentsFromProjections(result, selectStatement.getProjections(), needRecursive);
+        if (selectStatement.getValues().isEmpty()) {
+            extractSubquerySegmentsFromProjections(result, selectStatement.getProjections(), needRecursive);
+        } else {
+            extractSubquerySegmentsFromValuesSegment(result, selectStatement.getValues(), SubqueryType.VALUES, needRecursive);
+        }
         selectStatement.getFrom().ifPresent(optional -> extractSubquerySegmentsFromTableSegment(result, optional, needRecursive));
         if (selectStatement.getWhere().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getWhere().get().getExpr(), needRecursive);
@@ -98,6 +105,36 @@ public final class SubqueryExtractor {
         }
         if (selectStatement.getHaving().isPresent()) {
             extractSubquerySegmentsFromWhere(result, selectStatement.getHaving().get().getExpr(), needRecursive);
+        }
+    }
+    
+    /**
+     * Extract subquery segments from an insert statement, excluding its INSERT SELECT source.
+     *
+     * @param insertStatement insert statement
+     * @param needRecursive whether to include nested subqueries
+     * @return subquery segments
+     */
+    public static Collection<SubquerySegment> extractSubquerySegments(final InsertStatement insertStatement, final boolean needRecursive) {
+        List<SubquerySegment> result = new LinkedList<>();
+        insertStatement.getWith().ifPresent(with -> extractSubquerySegmentsFromCTEs(result, with.getCommonTableExpressions(), needRecursive));
+        extractSubquerySegmentsFromValuesSegment(result, insertStatement.getValues(), SubqueryType.INSERT_VALUES, needRecursive);
+        insertStatement.getSetAssignment().ifPresent(optional -> extractSubquerySegmentsFromSetAssignment(result, optional.getAssignments(), needRecursive));
+        insertStatement.getOnDuplicateKeyColumns().ifPresent(optional -> extractSubquerySegmentsFromSetAssignment(result, optional.getColumns(), needRecursive));
+        insertStatement.getReturning().ifPresent(returning -> extractSubquerySegmentsFromProjections(result, returning.getProjections(), needRecursive));
+        return result;
+    }
+    
+    private static void extractSubquerySegmentsFromValuesSegment(final List<SubquerySegment> result, final Collection<InsertValuesSegment> values,
+                                                                 final SubqueryType subqueryType, final boolean needRecursive) {
+        for (InsertValuesSegment each : values) {
+            each.getValues().forEach(expression -> extractSubquerySegmentsFromExpression(result, expression, subqueryType, needRecursive));
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromSetAssignment(final List<SubquerySegment> result, final Collection<ColumnAssignmentSegment> assignments, final boolean needRecursive) {
+        for (ColumnAssignmentSegment each : assignments) {
+            extractSubquerySegmentsFromExpression(result, each.getValue(), null, needRecursive);
         }
     }
     
@@ -236,6 +273,7 @@ public final class SubqueryExtractor {
         }
         if (expressionSegment instanceof FunctionSegment) {
             ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, SubqueryType.FUNCTION, needRecursive));
+            ((FunctionSegment) expressionSegment).getFilter().ifPresent(filter -> extractSubquerySegmentsFromExpression(result, filter, SubqueryType.FUNCTION, needRecursive));
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
             extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType, needRecursive);

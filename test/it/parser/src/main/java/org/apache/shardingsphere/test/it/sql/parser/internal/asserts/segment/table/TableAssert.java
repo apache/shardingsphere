@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.ValueASTNode;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.bound.TableBoundAssert;
@@ -137,10 +138,10 @@ public final class TableAssert {
         assertTableNameSegment(assertContext, actual, expected);
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (null != expected.getDbLink()) {
-            assertThat(assertContext.getText("Database link assertion error: "), actual.getDbLink().map(each -> each.getValue()).orElse(null), is(expected.getDbLink()));
+            assertThat(assertContext.getText("Database link assertion error: "), actual.getDbLink().map(ValueASTNode::getValue).orElse(null), is(expected.getDbLink()));
         }
         if (null != expected.getAt()) {
-            assertThat(assertContext.getText("Database link separator assertion error: "), actual.getAt().map(each -> each.getValue()).orElse(null), is(expected.getAt()));
+            assertThat(assertContext.getText("Database link separator assertion error: "), actual.getAt().map(ValueASTNode::getValue).orElse(null), is(expected.getAt()));
         }
         if (null != expected.getTableNameStartIndex()) {
             assertThat(assertContext.getText("Table name start index assertion error: "), actual.getTableName().getStartIndex(), is(expected.getTableNameStartIndex()));

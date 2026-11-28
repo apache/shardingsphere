@@ -32,7 +32,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.On
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,12 +67,48 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
     
     public InsertStatementBindingContext(final InsertStatementBaseContext baseContext, final List<Object> params, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         this.baseContext = baseContext;
-        AtomicInteger parametersOffset = new AtomicInteger(0);
+        AtomicInteger parametersOffset = new AtomicInteger(getInsertValuesParametersOffset(params));
         insertValueContexts = getInsertValueContexts(params, parametersOffset, baseContext.getValueExpressions());
         insertSelectContext = getInsertSelectContext(params, parametersOffset, metaData, currentDatabaseName).orElse(null);
+        parametersOffset.addAndGet(getOnConflictTargetParameterCount());
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(params, parametersOffset).orElse(null);
         generatedKeyContext = new GeneratedKeyContextEngine(baseContext.getSqlStatement(), baseContext.getSchema())
                 .createGenerateKeyContext(baseContext.getInsertColumnNamesAndIndexes(), insertValueContexts, params).orElse(null);
+    }
+    
+    private int getInsertValuesParametersOffset(final List<Object> params) {
+        if (params.size() < baseContext.getSqlStatement().getParameterCount()) {
+            return 0;
+        }
+        ExpressionSegment firstValue = null;
+        for (List<ExpressionSegment> each : baseContext.getValueExpressions()) {
+            if (!each.isEmpty()) {
+                firstValue = each.get(0);
+                break;
+            }
+        }
+        int parameterFrameStartIndex;
+        if (null != firstValue) {
+            parameterFrameStartIndex = firstValue.getStartIndex();
+        } else if (baseContext.getSqlStatement().getInsertSelect().isPresent()) {
+            return 0;
+        } else if (baseContext.getSqlStatement().getOnDuplicateKeyColumns().isPresent()) {
+            parameterFrameStartIndex = baseContext.getSqlStatement().getOnDuplicateKeyColumns().get().getStartIndex();
+        } else if (baseContext.getSqlStatement().getReturning().isPresent()) {
+            parameterFrameStartIndex = baseContext.getSqlStatement().getReturning().get().getStartIndex();
+        } else {
+            return 0;
+        }
+        int result = 0;
+        int firstParameterIndex = Integer.MAX_VALUE;
+        for (ParameterMarkerSegment each : baseContext.getSqlStatement().getParameterMarkers()) {
+            if (each.getStopIndex() < parameterFrameStartIndex) {
+                result = Math.max(result, each.getParameterIndex() + 1);
+            } else {
+                firstParameterIndex = Math.min(firstParameterIndex, each.getParameterIndex());
+            }
+        }
+        return Integer.MAX_VALUE == firstParameterIndex ? result : firstParameterIndex;
     }
     
     private List<InsertValueContext> getInsertValueContexts(final List<Object> params, final AtomicInteger paramsOffset, final List<List<ExpressionSegment>> valueExpressions) {
@@ -87,7 +127,7 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
             return Optional.empty();
         }
         SubquerySegment insertSelectSegment = baseContext.getSqlStatement().getInsertSelect().get();
-        SelectStatementContext selectStatementContext = new SelectStatementContext(insertSelectSegment.getSelect(), metaData, currentDatabaseName, Collections.emptyList());
+        SelectStatementContext selectStatementContext = new SelectStatementContext(createInsertSelectStatement(insertSelectSegment), metaData, currentDatabaseName, Collections.emptyList());
         selectStatementContext.bindParameters(params);
         selectStatementContext.setSubqueryType(SubqueryType.INSERT_SELECT);
         setCombineSelectSubqueryType(selectStatementContext);
@@ -95,6 +135,37 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
         InsertSelectContext insertSelectContext = new InsertSelectContext(selectStatementContext, params, paramsOffset.get());
         paramsOffset.addAndGet(insertSelectContext.getSelectStatementContext().getSqlStatement().getParameterCount());
         return Optional.of(insertSelectContext);
+    }
+    
+    private SelectStatement createInsertSelectStatement(final SubquerySegment insertSelectSegment) {
+        SelectStatement selectStatement = insertSelectSegment.getSelect();
+        Optional<WithSegment> withSegment = baseContext.getSqlStatement().getWith();
+        if (!withSegment.isPresent()) {
+            return selectStatement;
+        }
+        SelectStatement result = SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null)).hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null))
+                .groupBy(selectStatement.getGroupBy().orElse(null)).having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(withSegment.get())).subqueryType(selectStatement.getSubqueryType().orElse(null))
+                .limit(selectStatement.getLimit().orElse(null)).lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null)).outfile(selectStatement.getOutfile().orElse(null))
+                .intoVariables(selectStatement.isIntoVariables()).withTableHint(selectStatement.getWithTableHint().orElse(null)).values(selectStatement.getValues()).build();
+        result.getTransformSegments().addAll(selectStatement.getTransformSegments());
+        result.addParameterMarkers(getInsertSelectParameterMarkers(insertSelectSegment, withSegment.get()));
+        result.getVariableNames().addAll(selectStatement.getVariableNames());
+        result.getComments().addAll(selectStatement.getComments());
+        return result;
+    }
+    
+    private Collection<ParameterMarkerSegment> getInsertSelectParameterMarkers(final SubquerySegment insertSelectSegment, final WithSegment withSegment) {
+        Collection<ParameterMarkerSegment> result = new LinkedList<>();
+        for (ParameterMarkerSegment each : baseContext.getSqlStatement().getParameterMarkers()) {
+            if (withSegment.getStartIndex() <= each.getStartIndex() && each.getStopIndex() <= withSegment.getStopIndex()
+                    || insertSelectSegment.getStartIndex() <= each.getStartIndex() && each.getStopIndex() <= insertSelectSegment.getStopIndex()) {
+                result.add(each);
+            }
+        }
+        return result;
     }
     
     private void setCombineSelectSubqueryType(final SelectStatementContext selectStatementContext) {
@@ -125,6 +196,24 @@ public final class InsertStatementBindingContext implements SQLStatementContext 
                 baseContext.getSqlStatement().getParameterMarkers());
         parametersOffset.addAndGet(onDuplicateUpdateContext.getParameterCount());
         return Optional.of(onDuplicateUpdateContext);
+    }
+    
+    private int getOnConflictTargetParameterCount() {
+        Optional<OnDuplicateKeyColumnsSegment> conflict = baseContext.getSqlStatement().getOnDuplicateKeyColumns();
+        if (!conflict.isPresent()) {
+            return 0;
+        }
+        int actionStartIndex = baseContext.getSqlStatement().getWhere().map(WhereSegment::getStartIndex).orElse(Integer.MAX_VALUE);
+        for (ColumnAssignmentSegment each : conflict.get().getColumns()) {
+            actionStartIndex = Math.min(actionStartIndex, each.getStartIndex());
+        }
+        int result = 0;
+        for (ParameterMarkerSegment each : baseContext.getSqlStatement().getParameterMarkers()) {
+            if (each.getStartIndex() >= conflict.get().getStartIndex() && each.getStopIndex() <= conflict.get().getStopIndex() && each.getStartIndex() < actionStartIndex) {
+                result++;
+            }
+        }
+        return result;
     }
     
     /**

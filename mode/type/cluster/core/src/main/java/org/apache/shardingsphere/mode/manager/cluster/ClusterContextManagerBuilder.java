@@ -62,7 +62,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ExclusiveOperatorEngine exclusiveOperatorEngine = new ExclusiveOperatorEngine(new ClusterExclusiveOperatorContext(repository));
         MetaDataContexts metaDataContexts = new MetaDataContextsFactory(new MetaDataPersistFacade(repository), computeNodeInstanceContext).create(param);
         ContextManager result = new ContextManager(metaDataContexts, computeNodeInstanceContext, exclusiveOperatorEngine, repository);
-        registerOnline(computeNodeInstanceContext, param, result);
+        registerOnline(param, result);
         new DeliverEventSubscriberRegistry(result.getComputeNodeInstanceContext().getEventBusContext()).register(createDeliverEventSubscribers(repository));
         return result;
     }
@@ -74,9 +74,9 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return result;
     }
     
-    private void registerOnline(final ComputeNodeInstanceContext computeNodeInstanceContext, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         ClusterPersistServiceFacade clusterPersistServiceFacade = (ClusterPersistServiceFacade) contextManager.getPersistServiceFacade().getModeFacade();
-        clusterPersistServiceFacade.getComputeNodeService().registerOnline(computeNodeInstanceContext.getInstance());
+        clusterPersistServiceFacade.registerOnline();
         contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().getAllClusterInstances()
                 .addAll(clusterPersistServiceFacade.getComputeNodeService().loadAllInstances());
         new DataChangedEventListenerRegistry(contextManager, getDatabaseNames(param, contextManager.getPersistServiceFacade().getMetaDataFacade())).register();

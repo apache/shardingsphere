@@ -90,9 +90,7 @@ public final class SingleRule implements DatabaseRule {
         singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, protocolType, aggregatedDataSources, builtRules, configuration.getTables());
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
         mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(this, configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
-        attributes = new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
-                new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources),
-                new SingleUnregisterStorageUnitRuleAttribute());
+        attributes = createAttributes(tableMapperRuleAttribute, new AggregatedDataSourceRuleAttribute(aggregatedDataSources));
     }
     
     private SingleRule(final SingleRule original) {
@@ -106,9 +104,12 @@ public final class SingleRule implements DatabaseRule {
         protocolType = original.protocolType;
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
         mutableDataNodeRuleAttribute = new SingleMutableDataNodeRuleAttribute(this, configuration, dataSourceNames, singleTableDataNodes, protocolType, tableMapperRuleAttribute);
-        attributes = new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
-                new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute,
-                original.attributes.getAttribute(AggregatedDataSourceRuleAttribute.class), new SingleUnregisterStorageUnitRuleAttribute());
+        attributes = createAttributes(tableMapperRuleAttribute, original.attributes.getAttribute(AggregatedDataSourceRuleAttribute.class));
+    }
+    
+    private RuleAttributes createAttributes(final SingleTableMapperRuleAttribute tableMapperRuleAttribute, final AggregatedDataSourceRuleAttribute aggregatedDataSourceRuleAttribute) {
+        return new RuleAttributes(new SingleDataNodeRuleAttribute(singleTableDataNodes), tableMapperRuleAttribute,
+                new SingleExportableRuleAttribute(tableMapperRuleAttribute), mutableDataNodeRuleAttribute, aggregatedDataSourceRuleAttribute, new SingleUnregisterStorageUnitRuleAttribute());
     }
     
     /**

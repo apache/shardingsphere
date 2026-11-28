@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationDistinctProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationProjectionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.RowExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.ColumnProjectionSegmentBinder;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundE
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -48,12 +51,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Shor
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlElementFunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlSerializeFunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Projections segment binder.
@@ -76,12 +81,16 @@ public final class ProjectionsSegmentBinder {
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         ProjectionsSegment result = new ProjectionsSegment(segment.getStartIndex(), segment.getStopIndex());
         result.setDistinctRow(segment.isDistinctRow());
+        result.setTableShorthand(segment.isTableShorthand());
         for (ProjectionSegment each : segment.getProjections()) {
             result.getProjections().add(bind(binderContext, boundTableSegment, result.getProjections(), tableBinderContexts, outerTableBinderContexts, each));
         }
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, result.getProjections());
         for (ExpressionSegment each : segment.getDistinctOnItems()) {
             result.getDistinctOnItems().add(bindDistinctOnItem(each, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts));
+        }
+        for (RowExpression each : segment.getValuesRows()) {
+            result.getValuesRows().add(RowExpressionBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
         return result;
     }
@@ -92,6 +101,10 @@ public final class ProjectionsSegmentBinder {
         try {
             return bind(projectionSegment, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts);
         } catch (final ColumnNotFoundException ignored) {
+            Optional<ShorthandProjectionSegment> rowExpansion = bindRowExpansionProjection(projectionSegment, binderContext, boundTableSegment, tableBinderContexts, outerTableBinderContexts);
+            if (rowExpansion.isPresent()) {
+                return rowExpansion.get();
+            }
             if (isWholeRowProjection(projectionSegment, binderContext, boundTableSegment, tableBinderContexts)) {
                 return createWholeRowProjection((ColumnProjectionSegment) projectionSegment);
             }
@@ -106,7 +119,12 @@ public final class ProjectionsSegmentBinder {
             return ColumnProjectionSegmentBinder.bind((ColumnProjectionSegment) projectionSegment, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         if (projectionSegment instanceof ShorthandProjectionSegment) {
-            return ShorthandProjectionSegmentBinder.bind((ShorthandProjectionSegment) projectionSegment, boundTableSegment, tableBinderContexts);
+            ShorthandProjectionSegment shorthand = (ShorthandProjectionSegment) projectionSegment;
+            Multimap<CaseInsensitiveString, TableSegmentBinderContext> contexts =
+                    shorthand.getOwner().isPresent() && !tableBinderContexts.containsKey(CaseInsensitiveString.of(shorthand.getOwner().get().getIdentifier().getValue()))
+                            ? outerTableBinderContexts
+                            : tableBinderContexts;
+            return ShorthandProjectionSegmentBinder.bind(shorthand, boundTableSegment, contexts);
         }
         if (projectionSegment instanceof SubqueryProjectionSegment) {
             Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
@@ -120,6 +138,7 @@ public final class ProjectionsSegmentBinder {
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(
                     projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), ((ExpressionProjectionSegment) projectionSegment).getText(), boundExpressionSegment);
             ((ExpressionProjectionSegment) projectionSegment).getAliasSegment().ifPresent(result::setAlias);
+            result.setDefaultColumnLabel(((ExpressionProjectionSegment) projectionSegment).getDefaultColumnLabel());
             return result;
         }
         if (projectionSegment instanceof XmlElementFunctionSegment || projectionSegment instanceof XmlSerializeFunctionSegment) {
@@ -133,6 +152,33 @@ public final class ProjectionsSegmentBinder {
         }
         // TODO support more ProjectionSegment bound
         return projectionSegment;
+    }
+    
+    private static Optional<ShorthandProjectionSegment> bindRowExpansionProjection(final ProjectionSegment projectionSegment, final SQLStatementBinderContext binderContext,
+                                                                                   final TableSegment boundTableSegment,
+                                                                                   final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                                                   final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (!(projectionSegment instanceof ExpressionProjectionSegment)) {
+            return Optional.empty();
+        }
+        ExpressionSegment expression = ((ExpressionProjectionSegment) projectionSegment).getExpr();
+        if (!(expression instanceof CommonExpressionSegment) || !((CommonExpressionSegment) expression).isRowExpansion() || !isSupportWholeRowProjection(binderContext)) {
+            return Optional.empty();
+        }
+        ExpressionSegment child = ((CommonExpressionSegment) expression).getChildren().iterator().next();
+        if (!(child instanceof ColumnSegment) || ((ColumnSegment) child).getOwner().isPresent()) {
+            return Optional.empty();
+        }
+        ColumnSegment column = (ColumnSegment) child;
+        CaseInsensitiveString owner = CaseInsensitiveString.of(column.getIdentifier().getValue());
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> contexts = tableBinderContexts.containsKey(owner) ? tableBinderContexts : outerTableBinderContexts;
+        if (!contexts.containsKey(owner)) {
+            return Optional.empty();
+        }
+        ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(projectionSegment.getStartIndex(), projectionSegment.getStopIndex());
+        shorthand.setOwner(new OwnerSegment(column.getStartIndex(), column.getStopIndex(), column.getIdentifier()));
+        ((ExpressionProjectionSegment) projectionSegment).getAliasSegment().ifPresent(shorthand::setAlias);
+        return Optional.of(ShorthandProjectionSegmentBinder.bind(shorthand, boundTableSegment, contexts));
     }
     
     private static ExpressionSegment bindDistinctOnItem(final ExpressionSegment segment, final SQLStatementBinderContext binderContext,
@@ -172,10 +218,10 @@ public final class ProjectionsSegmentBinder {
             return false;
         }
         ColumnSegment columnSegment = ((ColumnProjectionSegment) projectionSegment).getColumn();
-        String columnName = columnSegment.getIdentifier().getValue();
         if (columnSegment.getOwner().isPresent() || null != columnSegment.getNestedObjectAttributes() && !columnSegment.getNestedObjectAttributes().isEmpty()) {
             return false;
         }
+        String columnName = columnSegment.getIdentifier().getValue();
         return isTableAliasOrName(boundTableSegment, columnName) || tableBinderContexts.containsKey(CaseInsensitiveString.of(columnName));
     }
     

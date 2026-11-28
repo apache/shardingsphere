@@ -150,6 +150,12 @@ class ResponsePacketBuilderTest {
                         SESSION_CHARACTER_SET,
                         MySQLBinaryColumnType.BLOB,
                         MySQLColumnDefinitionFlag.BLOB.getValue(),
-                        0));
+                        0),
+                Arguments.of("time-whole-second", new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 10, 0, true, false, false, false),
+                        SESSION_CHARACTER_SET, 0, MySQLCharacterSets.BINARY.getId(), MySQLBinaryColumnType.TIME, 0, 0),
+                Arguments.of("time-milliseconds", new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 14, 3, true, false, false, false),
+                        SESSION_CHARACTER_SET, 0, MySQLCharacterSets.BINARY.getId(), MySQLBinaryColumnType.TIME, 0, 3),
+                Arguments.of("time-microseconds", new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 17, 6, true, false, false, false),
+                        SESSION_CHARACTER_SET, 0, MySQLCharacterSets.BINARY.getId(), MySQLBinaryColumnType.TIME, 0, 6));
     }
 }

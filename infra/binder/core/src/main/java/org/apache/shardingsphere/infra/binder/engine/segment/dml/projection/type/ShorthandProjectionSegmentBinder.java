@@ -55,7 +55,8 @@ public final class ShorthandProjectionSegmentBinder {
                                                   final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         ShorthandProjectionSegment result = copy(segment);
         if (segment.getOwner().isPresent()) {
-            if (isOwnerOfTable(segment.getOwner().get().getIdentifier().getValue(), boundTableSegment) && expandPivotColumns(boundTableSegment, tableBinderContexts, result)) {
+            if (null != boundTableSegment && isOwnerOfTable(segment.getOwner().get().getIdentifier().getValue(), boundTableSegment)
+                    && expandPivotColumns(boundTableSegment, tableBinderContexts, result)) {
                 return result;
             }
             expandVisibleColumns(getProjectionSegmentsByTableAliasOrName(tableBinderContexts, segment.getOwner().get().getIdentifier().getValue()), result);

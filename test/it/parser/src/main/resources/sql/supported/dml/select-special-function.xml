@@ -42,9 +42,12 @@
     <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL,Presto,Doris,Hive" />
     <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL,Doris,Hive" />
-    <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="openGauss" />
+    <sql-case id="select_extract_function_postgresql" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL" />
+    <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="openGauss" />
+    <sql-case id="select_extract_function_week_postgresql" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL" />
+    <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="openGauss" />
+    <sql-case id="select_extract_function_quarter_postgresql" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL" />
     <sql-case id="select_extract_function_for_oracle" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40') FROM DUAL" db-types="Oracle" />
     <sql-case id="select_extract_function_doris" value="SELECT EXTRACT(YEAR FROM '2020-01-01')" db-types="Doris" />
     <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />

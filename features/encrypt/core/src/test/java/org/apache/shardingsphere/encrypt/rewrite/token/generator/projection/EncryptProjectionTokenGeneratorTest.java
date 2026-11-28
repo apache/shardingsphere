@@ -33,6 +33,7 @@ import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithmMetaData;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -166,6 +168,24 @@ class EncryptProjectionTokenGeneratorTest {
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singleton(new ColumnProjection("doctor", "mobile", null, databaseType)));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenForParenthesizedRowExpansion() {
+        IdentifierValue owner = new IdentifierValue("p");
+        ShorthandProjectionSegment shorthand = new ShorthandProjectionSegment(7, 11);
+        shorthand.setOwner(new OwnerSegment(8, 8, owner));
+        ProjectionsSegment projections = new ProjectionsSegment(7, 11);
+        projections.getProjections().add(shorthand);
+        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getSqlStatement().getProjections()).thenReturn(projections);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSubqueryContexts()).thenReturn(Collections.emptyMap());
+        when(statementContext.getProjectionsContext().getProjections())
+                .thenReturn(Collections.singleton(new ShorthandProjection(owner, Collections.singleton(new ColumnProjection("p", "foo_column", null, databaseType)))));
+        SQLToken actual = generator.generateSQLTokens(statementContext).iterator().next();
+        assertThat(actual.getStartIndex(), is(7));
+        assertThat(actual.getStopIndex(), is(11));
     }
     
     @Test

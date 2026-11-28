@@ -53,6 +53,7 @@ public final class AlterViewStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
         assertView(assertContext, actual, expected);
+        assertRenameView(assertContext, actual, expected);
         assertViewDefinition(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
         assertConstraintDefinition(assertContext, actual, expected);
@@ -61,6 +62,15 @@ public final class AlterViewStatementAssert {
     
     private static void assertView(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getView(), expected.getView());
+    }
+    
+    private static void assertRenameView(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {
+        if (null == expected.getRenameView()) {
+            assertFalse(actual.getRenameView().isPresent(), "actual rename view should not exist");
+        } else {
+            assertTrue(actual.getRenameView().isPresent(), "actual rename view should exist");
+            TableAssert.assertIs(assertContext, actual.getRenameView().get(), expected.getRenameView());
+        }
     }
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final AlterViewStatement actual, final AlterViewStatementTestCase expected) {

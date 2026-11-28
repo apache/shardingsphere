@@ -13,6 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+FROM eclipse-temurin:21-jre AS prepare
+
+ADD apache-shardingsphere-*-shardingsphere-mcp-bin.tar.gz /opt/
+RUN mv /opt/apache-shardingsphere-mcp-* /opt/shardingsphere-mcp
+
 FROM eclipse-temurin:21-jre
 
 ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp
@@ -31,7 +36,7 @@ LABEL org.opencontainers.image.authors="ShardingSphere dev@shardingsphere.apache
 
 WORKDIR /opt/shardingsphere-mcp
 
-COPY apache-shardingsphere-mcp-*/ /opt/shardingsphere-mcp/
+COPY --from=prepare /opt/shardingsphere-mcp/ /opt/shardingsphere-mcp/
 
 RUN chmod +x /opt/shardingsphere-mcp/bin/start.sh /opt/shardingsphere-mcp/bin/docker-entrypoint.sh \
     && mkdir -p /opt/shardingsphere-mcp/logs

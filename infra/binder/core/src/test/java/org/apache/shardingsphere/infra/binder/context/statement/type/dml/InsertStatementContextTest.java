@@ -31,12 +31,19 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
@@ -44,6 +51,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +76,75 @@ import static org.mockito.Mockito.when;
 class InsertStatementContextTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    @Test
+    void assertExposeInsertConflictCondition() {
+        TableNameSegment table = new TableNameSegment(0, 2, new IdentifierValue("tbl"));
+        table.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        ColumnSegment column = new ColumnSegment(80, 81, new IdentifierValue("id"));
+        WhereSegment where = new WhereSegment(74, 85, new BinaryOperationExpression(80, 85, column, new LiteralExpressionSegment(85, 85, 1), "=", "id = 1"));
+        InsertStatement statement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(table))
+                .insertColumns(new InsertColumnsSegment(4, 10, Collections.singletonList(new ColumnSegment(5, 6, new IdentifierValue("id")))))
+                .values(Collections.singletonList(new InsertValuesSegment(20, 22, Collections.singletonList(new LiteralExpressionSegment(21, 21, 1)))))
+                .where(where).build();
+        InsertStatementContext actual = createInsertStatementContext(statement);
+        assertThat(actual.getWhereSegments(), is(Collections.singletonList(where)));
+        assertThat(actual.getColumnSegments(), is(Collections.singletonList(column)));
+    }
+    
+    @ParameterizedTest(name = "parameterizedSource={0}, literalFirstRow={1}, attachWith={2}")
+    @CsvSource({"false,false,true", "true,false,true", "false,true,true", "true,true,true", "false,false,false", "true,false,false", "false,true,false", "true,true,false"})
+    void assertKeepWithParametersOutsideValueRows(final boolean parameterizedSource, final boolean literalFirstRow, final boolean attachWith) {
+        int offset = parameterizedSource ? 1 : 0;
+        ParameterMarkerExpressionSegment sourceMarker = new ParameterMarkerExpressionSegment(15, 15, 0);
+        ExpressionSegment sourceValue = parameterizedSource ? sourceMarker : new LiteralExpressionSegment(15, 15, 9);
+        ProjectionsSegment sourceProjections = new ProjectionsSegment(15, 15);
+        sourceProjections.getProjections().add(new ExpressionProjectionSegment(15, 15, parameterizedSource ? "?" : "9", sourceValue));
+        SelectStatement source = SelectStatement.builder().databaseType(databaseType).projections(sourceProjections).build();
+        CommonTableExpressionSegment common = new CommonTableExpressionSegment(5, 20, new AliasSegment(5, 10, new IdentifierValue("source")), new SubquerySegment(12, 20, source, ""), null);
+        TableNameSegment table = new TableNameSegment(35, 37, new IdentifierValue("tbl"));
+        table.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
+        List<ParameterMarkerSegment> markers = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+        if (parameterizedSource) {
+            markers.add(sourceMarker);
+            source.addParameterMarkers(Collections.singleton(sourceMarker));
+            params.add(9);
+        }
+        List<ExpressionSegment> first = new ArrayList<>();
+        if (literalFirstRow) {
+            first.add(new LiteralExpressionSegment(40, 40, 1));
+            first.add(new LiteralExpressionSegment(42, 46, "Tom"));
+        } else {
+            ParameterMarkerExpressionSegment id = new ParameterMarkerExpressionSegment(40, 40, offset);
+            ParameterMarkerExpressionSegment name = new ParameterMarkerExpressionSegment(42, 42, offset + 1);
+            first.addAll(Arrays.asList(id, name));
+            markers.addAll(Arrays.asList(id, name));
+            params.addAll(Arrays.asList(1, "Tom"));
+        }
+        first.add(new LiteralExpressionSegment(48, 53, "init"));
+        int nextIndex = params.size();
+        ParameterMarkerExpressionSegment secondId = new ParameterMarkerExpressionSegment(60, 60, nextIndex);
+        ParameterMarkerExpressionSegment secondName = new ParameterMarkerExpressionSegment(62, 62, nextIndex + 1);
+        markers.addAll(Arrays.asList(secondId, secondName));
+        params.addAll(Arrays.asList(2, "Jerry"));
+        InsertStatement statement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(table))
+                .with(attachWith ? new WithSegment(0, 20, Collections.singleton(common), false) : null).values(Arrays.asList(new InsertValuesSegment(39, 54, first),
+                        new InsertValuesSegment(59, 70, Arrays.asList(secondId, secondName, new LiteralExpressionSegment(64, 69, "init")))))
+                .build();
+        statement.addParameterMarkers(markers);
+        InsertStatementContext actual = createInsertStatementContext(statement);
+        actual.bindParameters(params);
+        if (attachWith) {
+            assertThat(actual.getBaseContext().getSubqueryContexts().size(), is(1));
+            assertThat(actual.getBaseContext().getSubqueryContexts().get(12).getSubqueryType(), is(org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType.WITH));
+        } else {
+            assertTrue(actual.getBaseContext().getSubqueryContexts().isEmpty());
+        }
+        assertThat(actual.getGroupedParameters(), is(Arrays.asList(literalFirstRow ? Collections.emptyList() : Arrays.<Object>asList(1, "Tom"), Arrays.<Object>asList(2, "Jerry"))));
+        assertThat(actual.getInsertValueContexts().get(0).getParametersOffset(), is(offset));
+        assertThat(actual.getInsertValueContexts().get(1).getParametersOffset(), is(offset + (literalFirstRow ? 0 : 2)));
+    }
     
     @Test
     void assertInsertStatementContextWithColumnNames() {

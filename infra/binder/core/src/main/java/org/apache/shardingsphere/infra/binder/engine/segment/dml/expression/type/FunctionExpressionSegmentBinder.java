@@ -22,6 +22,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -53,6 +54,7 @@ public final class FunctionExpressionSegmentBinder {
      * @param outerTableBinderContexts outer table binder contexts
      * @return bound function segment
      */
+    @HighFrequencyInvocation
     public static FunctionSegment bind(final FunctionSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
@@ -68,6 +70,8 @@ public final class FunctionExpressionSegmentBinder {
             result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
         segment.getWindow().ifPresent(optional -> result.setWindow(WindowItemSegmentBinder.bind(optional, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getFilter().ifPresent(filter -> result.setFilter(ExpressionSegmentBinder.bind(filter, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        result.setIgnoreNulls(segment.isIgnoreNulls());
         return result;
     }
 }

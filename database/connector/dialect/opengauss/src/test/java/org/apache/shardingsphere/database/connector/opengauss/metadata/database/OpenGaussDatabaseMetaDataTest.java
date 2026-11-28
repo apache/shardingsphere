@@ -30,9 +30,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDataTypeOption;
+import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSQLOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
-import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSQLOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -116,8 +116,9 @@ class OpenGaussDatabaseMetaDataTest {
     
     @Test
     void assertGetSQLOption() {
-        assertThat(dialectDatabaseMetaData.getSQLOption(), isA(PostgreSQLSQLOption.class));
+        assertThat(dialectDatabaseMetaData.getSQLOption(), isA(OpenGaussSQLOption.class));
         assertTrue(dialectDatabaseMetaData.getSQLOption().isSupportWholeRowProjection());
+        assertThat(dialectDatabaseMetaData.getSQLOption().getInsertConflictProposedRowAlias(), is(Optional.empty()));
     }
     
     @Test

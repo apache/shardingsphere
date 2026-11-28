@@ -22,7 +22,11 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,11 +40,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -80,6 +87,86 @@ class ResultSetUtilsTest {
         assertThat(ResultSetUtils.convertValue(localDateTime, Object.class), is(localDateTime));
         assertThat(ResultSetUtils.convertValue(localDateTime, Timestamp.class), is(Timestamp.valueOf(localDateTime)));
         assertThat(ResultSetUtils.convertValue(localDateTime, String.class), is("2021-12-23T19:30"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("localTimeArguments")
+    void assertConvertTimeValue(final String name, final LocalTime value, final Class<?> type, final Object expected) throws SQLException {
+        Object actual = ResultSetUtils.convertTimeValue(value, type);
+        assertThat(actual, isA(expected.getClass()));
+        assertThat(actual, is(expected));
+    }
+    
+    private static Stream<Arguments> localTimeArguments() {
+        LocalTime value = LocalTime.of(12, 34, 56, 123456000);
+        return Stream.of(
+                Arguments.of("local-time", value, LocalTime.class, value),
+                Arguments.of("time", value, Time.class, new Time(Time.valueOf("12:34:56").getTime() + 123)),
+                Arguments.of("timestamp", value, Timestamp.class, Timestamp.valueOf("1970-01-01 12:34:56.123456")),
+                Arguments.of("sql-date", value, java.sql.Date.class, new java.sql.Date(Time.valueOf("12:34:56").getTime() + 123)),
+                Arguments.of("local-date", value, LocalDate.class, LocalDate.of(1970, 1, 1)),
+                Arguments.of("string", value, String.class, "12:34:56.123456"),
+                Arguments.of("string-minutes", LocalTime.of(12, 34), String.class, "12:34:00"),
+                Arguments.of("string-midnight", LocalTime.MIDNIGHT, String.class, "00:00:00"),
+                Arguments.of("string-trailing-zero", LocalTime.of(12, 34, 56, 123450000), String.class, "12:34:56.12345"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedLocalTimeArguments")
+    void assertConvertLocalTimeWithUnsupportedType(final String name, final Class<?> type) {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> ResultSetUtils.convertValue(LocalTime.NOON, type));
+    }
+    
+    private static Stream<Arguments> unsupportedLocalTimeArguments() {
+        return Stream.of(Arguments.of("integer", Integer.class), Arguments.of("boolean-wrapper", Boolean.class), Arguments.of("bytes", byte[].class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assignableLocalTimeArguments")
+    void assertConvertLocalTimeWithAssignableType(final String name, final Class<?> type) throws SQLException {
+        LocalTime expected = LocalTime.of(12, 34);
+        assertThat(ResultSetUtils.convertValue(expected, type), sameInstance(expected));
+    }
+    
+    private static Stream<Arguments> assignableLocalTimeArguments() {
+        return Stream.of(Arguments.of("serializable", Serializable.class), Arguments.of("temporal-accessor", TemporalAccessor.class), Arguments.of("comparable", Comparable.class));
+    }
+    
+    @Test
+    void assertConvertLocalTimeToBooleanAtNoon() throws SQLException {
+        assertTrue((Boolean) ResultSetUtils.convertValue(LocalTime.NOON, boolean.class));
+    }
+    
+    @Test
+    void assertConvertLocalTimeToBooleanAtMidnight() throws SQLException {
+        assertFalse((Boolean) ResultSetUtils.convertValue(LocalTime.MIDNIGHT, boolean.class));
+    }
+    
+    @Test
+    void assertConvertValueWithLegacyTimeToLocalTime() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue(Time.valueOf("12:34:56"), LocalTime.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedSqlTimeArguments")
+    void assertConvertTimeValueWithUnsupportedType(final String name, final Class<?> type) {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertTimeValue(LocalTime.NOON, type));
+    }
+    
+    private static Stream<Arguments> unsupportedSqlTimeArguments() {
+        return Stream.of(
+                Arguments.of("object", Object.class),
+                Arguments.of("integer", Integer.class),
+                Arguments.of("primitive-boolean", boolean.class),
+                Arguments.of("temporal-accessor", TemporalAccessor.class));
+    }
+    
+    @Test
+    void assertConvertTimeToTimestamp() throws SQLException {
+        Time value = new Time(Time.valueOf("12:34:56").getTime() + 123);
+        Object actual = ResultSetUtils.convertValue(value, Timestamp.class);
+        assertThat(actual, isA(Timestamp.class));
+        assertThat(actual, is(Timestamp.valueOf("1970-01-01 12:34:56.123")));
     }
     
     @Test

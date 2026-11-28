@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.RALStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rul.RULStatement;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -35,8 +35,10 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 /**
  * DistSQL proxy backend handler factory.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class DistSQLProxyBackendHandlerFactory {
+    
+    private final ContextManager contextManager;
     
     /**
      * Create new instance of DistSQL proxy backend handler.
@@ -47,11 +49,17 @@ public final class DistSQLProxyBackendHandlerFactory {
      * @return proxy backend handler
      * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
+    @HighFrequencyInvocation
     public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession) {
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+        DistSQLProxyBackendHandlerFactory factory = ProxyContext.getInstance().getDistSQLBackendHandlerFactory();
+        ContextManager contextManager = factory.contextManager;
         if (sqlStatement instanceof RQLStatement || sqlStatement instanceof RULStatement) {
             return new DistSQLQueryProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager);
         }
+        return factory.createBackendHandler(sqlStatement, queryContext, connectionSession);
+    }
+    
+    private ProxyBackendHandler createBackendHandler(final DistSQLStatement sqlStatement, final QueryContext queryContext, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof RDLStatement) {
             return new DistSQLUpdateProxyBackendHandler(sqlStatement, queryContext, connectionSession, contextManager);
         }

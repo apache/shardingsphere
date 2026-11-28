@@ -4787,6 +4787,34 @@
         </returning>
     </insert>
 
+    <insert sql-case-id="insert_alternative_quoted_literal_with_apostrophe_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="27">
+            <column name="status" start-index="21" stop-index="26" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="it''s" start-index="37" stop-index="45" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
+    <insert sql-case-id="insert_alternative_quoted_literal_with_consecutive_apostrophes_firebird">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="20" stop-index="27">
+            <column name="status" start-index="21" stop-index="26" />
+        </columns>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="it''''s" start-index="37" stop-index="46" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_geom_collection_function">
         <table name="t1" start-index="12" stop-index="13" />
         <columns start-index="14" stop-index="14" />
@@ -6402,5 +6430,108 @@
                 </assignment-value>
             </value>
         </values>
+    </insert>
+    <insert sql-case-id="insert_postgresql_asensitive_identifier" parameters="1">
+        <table name="asensitive" start-index="12" stop-index="21" />
+        <columns start-index="23" stop-index="34">
+            <column name="asensitive" start-index="24" stop-index="33" />
+        </columns>
+        <values>
+            <value start-index="43" stop-index="45">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="44" stop-index="44" />
+                    <literal-expression value="1" start-index="44" stop-index="44" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    <insert sql-case-id="insert_postgresql_compression_identifier" parameters="1">
+        <table name="compression" start-index="12" stop-index="22" />
+        <columns start-index="24" stop-index="36">
+            <column name="compression" start-index="25" stop-index="35" />
+        </columns>
+        <values>
+            <value start-index="45" stop-index="47">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="46" stop-index="46" />
+                    <literal-expression value="1" start-index="46" stop-index="46" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    <insert sql-case-id="insert_postgresql_finalize_identifier" parameters="1">
+        <table name="finalize" start-index="12" stop-index="19" />
+        <columns start-index="21" stop-index="30">
+            <column name="finalize" start-index="22" stop-index="29" />
+        </columns>
+        <values>
+            <value start-index="39" stop-index="41">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="40" stop-index="40" />
+                    <literal-expression value="1" start-index="40" stop-index="40" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    <insert sql-case-id="insert_postgresql_normalize_identifier" parameters="1">
+        <table name="normalize" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="32">
+            <column name="normalize" start-index="23" stop-index="31" />
+        </columns>
+        <values>
+            <value start-index="41" stop-index="43">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="42" stop-index="42" />
+                    <literal-expression value="1" start-index="42" stop-index="42" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+    <insert sql-case-id="insert_postgresql_date_on_conflict" parameters="'2024-01-01', 'ready', 1, 2">
+        <table name="foo_state" start-index="12" stop-index="20" />
+        <columns start-index="22" stop-index="62">
+            <column name="date" start-index="23" stop-index="26" />
+            <column name="state" start-index="29" stop-index="33" />
+            <column name="generation" start-index="36" stop-index="45" />
+            <column name="sub_generation" start-index="48" stop-index="61" />
+        </columns>
+        <values>
+            <value start-index="71" stop-index="82" literal-stop-index="99">
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="0" start-index="72" stop-index="72" />
+                    <literal-expression value="2024-01-01" start-index="72" stop-index="83" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+                    <literal-expression value="ready" start-index="86" stop-index="92" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="2" start-index="78" stop-index="78" />
+                    <literal-expression value="1" start-index="95" stop-index="95" />
+                </assignment-value>
+                <assignment-value>
+                    <parameter-marker-expression parameter-index="3" start-index="81" stop-index="81" />
+                    <literal-expression value="2" start-index="98" stop-index="98" />
+                </assignment-value>
+            </value>
+        </values>
+        <on-duplicate-key-columns start-index="84" stop-index="188" literal-start-index="101" literal-stop-index="205">
+            <assignment start-index="133" stop-index="154" literal-start-index="150" literal-stop-index="171">
+                <column name="state" start-index="133" stop-index="137" literal-start-index="150" literal-stop-index="154" />
+                <assignment-value>
+                    <column name="state" start-index="141" stop-index="154" literal-start-index="158" literal-stop-index="171">
+                        <owner name="EXCLUDED" start-index="141" stop-index="148" literal-start-index="158" literal-stop-index="165" />
+                    </column>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="157" stop-index="188" literal-start-index="174" literal-stop-index="205">
+                <column name="generation" start-index="157" stop-index="166" literal-start-index="174" literal-stop-index="183" />
+                <assignment-value>
+                    <column name="generation" start-index="170" stop-index="188" literal-start-index="187" literal-stop-index="205">
+                        <owner name="EXCLUDED" start-index="170" stop-index="177" literal-start-index="187" literal-stop-index="194" />
+                    </column>
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
     </insert>
 </sql-parser-test-cases>

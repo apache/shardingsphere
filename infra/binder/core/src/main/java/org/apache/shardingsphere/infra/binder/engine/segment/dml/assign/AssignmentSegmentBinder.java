@@ -18,20 +18,26 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.assign;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate.WhereSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +60,7 @@ public final class AssignmentSegmentBinder {
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                             final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         return new SetAssignmentSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getAssignments().stream()
-                .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+                .map(each -> bindColumnAssignmentSegment(each, SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
     }
     
     /**
@@ -69,16 +75,59 @@ public final class AssignmentSegmentBinder {
     public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                     final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        return new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
-                .map(each -> bindColumnAssignmentSegment(each, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        boolean hasProposedRowAlias =
+                new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getSQLOption().getInsertConflictProposedRowAlias().isPresent();
+        return bind(segment, binderContext, tableBinderContexts, outerTableBinderContexts, hasProposedRowAlias);
     }
     
-    private static ColumnAssignmentSegment bindColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SQLStatementBinderContext binderContext,
+    /**
+     * Bind on duplicate key columns with the resolved proposed-row alias capability.
+     *
+     * @param segment on duplicate key columns segment
+     * @param binderContext SQL statement binder context
+     * @param tableBinderContexts table binder contexts
+     * @param outerTableBinderContexts outer table binder contexts
+     * @param hasProposedRowAlias whether the dialect exposes a proposed-row alias
+     * @return bound on duplicate key columns segment
+     */
+    public static OnDuplicateKeyColumnsSegment bind(final OnDuplicateKeyColumnsSegment segment, final SQLStatementBinderContext binderContext,
+                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final boolean hasProposedRowAlias) {
+        SegmentType expressionType = hasProposedRowAlias ? SegmentType.PROJECTION : SegmentType.SET_ASSIGNMENT;
+        OnDuplicateKeyColumnsSegment result = new OnDuplicateKeyColumnsSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getColumns().stream()
+                .map(each -> bindColumnAssignmentSegment(each, expressionType, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList()));
+        segment.getConflictColumns().forEach(each -> result.getConflictColumns().add(
+                ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        segment.getConflictTargetWhere().ifPresent(optional -> result.setConflictTargetWhere(WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        return result;
+    }
+    
+    private static ColumnAssignmentSegment bindColumnAssignmentSegment(final ColumnAssignmentSegment columnAssignmentSegment, final SegmentType expressionType,
+                                                                       final SQLStatementBinderContext binderContext,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                        final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        List<ColumnSegment> boundColumns = columnAssignmentSegment.getColumns().stream()
-                .map(each -> ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, tableBinderContexts, outerTableBinderContexts)).collect(Collectors.toList());
-        ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), SegmentType.SET_ASSIGNMENT, binderContext, tableBinderContexts, outerTableBinderContexts);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> assignmentTableContexts = getAssignmentTableContexts(binderContext, tableBinderContexts);
+        List<ColumnSegment> boundColumns = new ArrayList<>(columnAssignmentSegment.getColumns().size());
+        for (ColumnSegment each : columnAssignmentSegment.getColumns()) {
+            boundColumns.add(ColumnSegmentBinder.bind(each, SegmentType.SET_ASSIGNMENT_COLUMNS, binderContext, assignmentTableContexts, outerTableBinderContexts));
+        }
+        ExpressionSegment boundValue = ExpressionSegmentBinder.bind(columnAssignmentSegment.getValue(), expressionType, binderContext, tableBinderContexts, outerTableBinderContexts);
         return new ColumnAssignmentSegment(columnAssignmentSegment.getStartIndex(), columnAssignmentSegment.getStopIndex(), boundColumns, boundValue);
+    }
+    
+    private static Multimap<CaseInsensitiveString, TableSegmentBinderContext> getAssignmentTableContexts(final SQLStatementBinderContext binderContext,
+                                                                                                         final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
+        if (!(binderContext.getSqlStatement() instanceof UpdateStatement)) {
+            return tableBinderContexts;
+        }
+        UpdateStatement statement = (UpdateStatement) binderContext.getSqlStatement();
+        if (statement.isTargetTableIsFromAlias() || !statement.getFrom().isPresent() || !(statement.getTable() instanceof SimpleTableSegment)) {
+            return tableBinderContexts;
+        }
+        SimpleTableSegment target = (SimpleTableSegment) statement.getTable();
+        CaseInsensitiveString identifier = CaseInsensitiveString.of(target.getAliasName().orElseGet(() -> target.getTableName().getIdentifier().getValue()));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        result.putAll(identifier, tableBinderContexts.get(identifier));
+        return result;
     }
 }

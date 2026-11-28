@@ -108,17 +108,23 @@ public final class ColumnSegmentBinder {
         if (!inputColumnSegment.isPresent() && isUnparenthesizedFunction(segment, parentSegmentType, binderContext)) {
             return segment;
         }
-        ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent() || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values()),
+        ShardingSpherePreconditions.checkState(inputColumnSegment.isPresent()
+                || isSkipColumnBind(tableSegmentBinderContexts, outerTableBinderContexts.values(), tableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         ColumnSegment result = copy(columnSegment);
         inputColumnSegment.ifPresent(optional -> result.setVariable(optional.isVariable()));
         columnSegment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(columnSegment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
+        if (!inputColumnSegment.isPresent() && 1 == tableSegmentBinderContexts.size()) {
+            TableSegmentBinderContext tableContext = tableSegmentBinderContexts.iterator().next();
+            if (tableContext instanceof FunctionTableSegmentBinderContext) {
+                tableContext.getOriginalOwner().ifPresent(result.getColumnBoundInfo()::setOwner);
+            }
+        }
         return result;
     }
     
-    private static Optional<ColumnSegment> createNestedObjectColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType,
-                                                                           final SQLStatementBinderContext binderContext,
+    private static Optional<ColumnSegment> createNestedObjectColumnSegment(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                            final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
         if (!segment.getOwner().isPresent()) {
@@ -392,14 +398,15 @@ public final class ColumnSegmentBinder {
         return result;
     }
     
-    private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts) {
+    private static boolean isSkipColumnBind(final Collection<TableSegmentBinderContext> tableBinderContexts, final Collection<TableSegmentBinderContext> outerBinderContexts,
+                                            final Collection<TableSegmentBinderContext> localBinderContexts) {
         for (TableSegmentBinderContext each : tableBinderContexts) {
             if (each instanceof FunctionTableSegmentBinderContext) {
                 return true;
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
                 SimpleTableSegmentBinderContext binderContext = (SimpleTableSegmentBinderContext) each;
-                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind();
+                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind() && (!binderContext.getOriginalTableName().isPresent() || localBinderContexts.contains(each));
             }
         }
         for (TableSegmentBinderContext each : outerBinderContexts) {
@@ -408,7 +415,7 @@ public final class ColumnSegmentBinder {
             }
             if (each instanceof SimpleTableSegmentBinderContext) {
                 SimpleTableSegmentBinderContext binderContext = (SimpleTableSegmentBinderContext) each;
-                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind();
+                return binderContext.isContainsDBLink() || binderContext.isSkipColumnBind() && !binderContext.getOriginalTableName().isPresent();
             }
         }
         return false;

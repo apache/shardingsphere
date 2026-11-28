@@ -58,12 +58,11 @@ public final class Bootstrap {
     public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         ProxyConfigurationLoadResult loadResult = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
-        int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(loadResult.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
+        int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(loadResult.getProperties()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
         List<String> addresses = bootstrapArgs.getAddresses();
         checkPort(addresses, port);
         new BootstrapInitializer().init(loadResult, port);
-        Optional.ofNullable((Integer) loadResult.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
-                .ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
+        Optional.ofNullable((Integer) loadResult.getProperties().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey())).ifPresent(optional -> new Thread(new CDCServer(addresses, optional)).start());
         ProxySSLContext.init();
         ShardingSphereProxy proxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(proxy::start);

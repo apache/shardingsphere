@@ -397,6 +397,9 @@
         <add-column>
             <column-definition type="decimal" start-index="24" stop-index="44">
                 <column name="column4" />
+                <dataType value="decimal" start-index="32" stop-index="44" length-present="true" scale="2">
+                    <dataLength><precision>10</precision></dataLength>
+                </dataType>
             </column-definition>
         </add-column>
         <add-column>
@@ -1211,6 +1214,9 @@
         <modify-column>
             <column-definition type="VARCHAR" start-index="20" stop-index="49">
                 <column name="column4" />
+                <dataType value="VARCHAR" start-index="39" stop-index="49" length-present="true" scale="0">
+                    <dataLength><precision>20</precision></dataLength>
+                </dataType>
             </column-definition>
         </modify-column>
     </alter-table>

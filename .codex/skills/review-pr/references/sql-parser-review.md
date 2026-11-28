@@ -22,9 +22,11 @@ Read this reference before reviewing PRs that touch SQL grammar, SQL visitor cla
 ## Official Evidence
 
 - Prefer the target database's official SQL reference/manual as first-class evidence.
-- When the PR or review comment mentions a concrete SQL syntax form, cite the exact official documentation page that supports that form.
-- If official docs do not clearly support the syntax, do not infer support from another dialect, secondary article, parser implementation, or AI-reposted content alone.
-- Reject syntax support that cannot be proven from official documentation unless the PR explicitly scopes it as ShardingSphere-specific behavior and maintainers accept that scope.
+- When the PR or review comment mentions a concrete SQL syntax form, cite the exact official documentation or version-matched native database source that supports that form.
+- If official evidence does not clearly support the syntax, do not infer support from another dialect, secondary article, ShardingSphere parser implementation, or AI-reposted content alone.
+- Reject native SQL support that cannot be proven from such official evidence unless the PR explicitly scopes it as ShardingSphere-specific behavior and maintainers accept that scope.
+- Independently apply the [SQL test-input rules](../../code-implementation/references/rules/testing.md#sql-test-inputs) to every added or changed SQL fixture, including fixtures introduced by refactors.
+- Verify native SQL validity and expected parser or AST results as separate claims; author assertions, matching parser output, and passing tests do not replace either required evidence check.
 
 ## Dialect Family
 

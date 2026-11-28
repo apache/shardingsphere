@@ -17,15 +17,31 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Drop materialized view statement.
  */
+@Getter
 public final class DropMaterializedViewStatement extends DDLStatement {
     
+    private final Collection<SimpleTableSegment> views;
+    
+    private final boolean ifExists;
+    
     public DropMaterializedViewStatement(final DatabaseType databaseType) {
+        this(databaseType, Collections.emptyList(), false);
+    }
+    
+    public DropMaterializedViewStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> views, final boolean ifExists) {
         super(databaseType);
+        this.views = views;
+        this.ifExists = ifExists;
     }
 }

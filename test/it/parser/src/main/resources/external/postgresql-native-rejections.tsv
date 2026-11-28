@@ -1,0 +1,85 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Verified against PostgreSQL regression output at 8becd1123c98cd9338678c6c2d4ae6b4d56a6fb9.
+# SHA-256 covers the exact SQL, a line feed, and the native ERROR headline. Mixed psql output alone cannot establish error provenance.
+# NATIVE_NEGATIVE_ACCEPTED preserves accepted SQL when this parser does not enforce the native semantic restriction or intentionally accepts older syntax.
+# script<TAB>digest<TAB>expected parser outcome<TAB>source excerpt
+aggregates	a9eeacfb937fc0ad2e30bd9852c711fa04cd122c6ddc6ea4e519bb82d0e09dc4	NATIVE_NEGATIVE_ACCEPTED	select (select max(min(unique1)) from int8_tbl) from tenk1;
+aggregates	115dcc5d72453e4bf42faee570f012f94289de7fc8d4f9122b98163ea23d9904	NATIVE_NEGATIVE_ACCEPTED	select (select max(unique1) filter (where bool_or(ten > 0)) from int8_tbl) from tenk1;
+aggregates	866a1dbc32642beddd530eece9fd81008503159d52574a1e6d4806d517e6fbce	NATIVE_NEGATIVE_ACCEPTED	select (select max(unique1) filter (where sum(ten) > 0) from int8_tbl) from tenk1;
+aggregates	fd20e268316deddc738fc9485587a33392cbf09915c7d354ea988cd12dcfc906	NATIVE_NEGATIVE_ACCEPTED	select avg((select avg(a1.col1 order by (select avg(a2.col2) from tenk1 a3)) from tenk1 
+aggregates	e07b61d2d78bf59d73329c2e7e4908abb9788655705034bdd26dba163087631a	NATIVE_NEGATIVE_ACCEPTED	select max(min(unique1)) from tenk1;
+aggregates	6ed85d7592f863532b49e3489256252abc2c8d5450e1ae19c6d759e55bb74945	NATIVE_NEGATIVE_ACCEPTED	select max(unique1) filter (where bool_or(ten > 0)) from tenk1;
+aggregates	c9c58c6ddf40b30850688332a2da63308cba79196b7202684130ab7a2869c31f	NATIVE_NEGATIVE_ACCEPTED	select max(unique1) filter (where sum(ten) > 0) from tenk1;
+aggregates	deb9993b6e3015f19e9ad56b3384a64c0562fe6409f4a0f50521d3bcc4db1aa9	NATIVE_REJECTION	select p, percentile_cont(p order by p) within group (order by x)  -- error
+aggregates	7f3e4fd65243e216b2ad8ac40ee68e3c05183458e674d7dc9c6707d32a9da3f3	NATIVE_NEGATIVE_ACCEPTED	select rank(sum(x)) within group (order by x) from generate_series(1,5) x;
+alter_table	ea6b488030f9c315eec7bf90a5db9ad15f3d755af39380c934583735c10aa487	NATIVE_NEGATIVE_ACCEPTED	alter table atacc1 SET WITH OIDS;
+collate	021e72a6ce35ff33b99608290f9a3a619d5d29a4f3504d0c88fb8e0f780b90e6	NATIVE_REJECTION	SELECT CAST('42' AS text COLLATE "C");
+collate.icu.utf8	021e72a6ce35ff33b99608290f9a3a619d5d29a4f3504d0c88fb8e0f780b90e6	NATIVE_REJECTION	SELECT CAST('42' AS text COLLATE "C");
+collate.linux.utf8	021e72a6ce35ff33b99608290f9a3a619d5d29a4f3504d0c88fb8e0f780b90e6	NATIVE_REJECTION	SELECT CAST('42' AS text COLLATE "C");
+collate.windows.win1252	021e72a6ce35ff33b99608290f9a3a619d5d29a4f3504d0c88fb8e0f780b90e6	NATIVE_REJECTION	SELECT CAST('42' AS text COLLATE "C");
+constraints	736f78d6ef4e54e1a9bb458dad84c1d2e3641010bb6c5bd79164153548d7350c	NATIVE_REJECTION	CREATE TABLE error_tbl (b1 bool DEFAULT 1 IN (1, 2));
+constraints	c3b24e0dd2f91ac6f56b0fdd7679cf98bfbebdf6f1b62fd2d7d1ec723ed8a93e	NATIVE_REJECTION	CREATE TABLE error_tbl (i int DEFAULT (100, ));
+copy	a6bcd220ad8a341ecbd33c8936093b4e9606c5c4f77d05a88b5092063ca5e4fd	NATIVE_REJECTION	copy header_copytest from stdin with (header wrong_choice);
+copyselect	3e23d98b010ffdaaa5a5f49dd9df6b17ff648ba0a89a9797531f48538901dd09	NATIVE_REJECTION	copy (select * from test1) (t,id) to stdout;
+create_index	c318bee5c81f6b5d8028f2d847d3997a3f1bd61c66efb30278c69bd7fff6a790	NATIVE_REJECTION	CREATE INDEX IF NOT EXISTS ON onek USING btree(unique1 int4_ops);
+create_table	69cb974f0d2b6c9d6bec6d5972e347eb5c28b28e09aa8e17da218f0503fc82da	NATIVE_REJECTION	CREATE TABLE fail_part PARTITION OF list_parted FOR VALUES IN ();
+domain	febd096d5b20b3911a216d6f59c06c03b1bd4dfe3ac10204adebcfb214418206	NATIVE_REJECTION	CREATE DOMAIN constraint_enforced_dom AS int CONSTRAINT the_constraint CHECK (value > 0)
+domain	68b1d7d3bda8b610687bd1239d9244b6b762ee15046a27129881df7b921247ad	NATIVE_REJECTION	CREATE DOMAIN constraint_not_enforced_dom AS int CONSTRAINT the_constraint CHECK (value 
+domain	33baa8261159c2ba4ffc8846cca6e48b98df979c3451a4bcfced70f0bb74973c	NATIVE_REJECTION	update dposintatable set (f1[2])[1] = array[98];
+errors	d4251dcfb9ce172471aa47170e9f7838fb31e14c8ea470aa385ae5b25d5a9ff5	NATIVE_REJECTION	drop operator = (int4, );
+errors	01adee715f748eb20720797d46584dad89274541f1884b1a4f0fa360afe4f5dc	NATIVE_REJECTION	drop rewrite rule nonesuch;
+foreign_data	97060ad9b98ee7a147307ec0f6e7bff2ffe68e810d039852561ed4f5849a7084	NATIVE_REJECTION	ALTER FOREIGN DATA WRAPPER foo;
+foreign_data	a96218b02acbe628df0d3fd154f678c59c4a647cbda5ecb62fb749a80058459b	NATIVE_NEGATIVE_ACCEPTED	ALTER FOREIGN TABLE ft1 ADD PRIMARY KEY (c7);
+foreign_data	7d4bdef82764f9485f352a69e0e548bf50edbe33debd7e70ba8a1308cde00ce8	NATIVE_REJECTION	ALTER SERVER s0;
+foreign_data	f6af41088e4e7f9d8216314aeb8bc13a0cbae4757fa6d36bf787e980fe271735	NATIVE_REJECTION	CREATE FOREIGN TABLE ft1 ( c1 integer OPTIONS ("param 1" 'val1') PRIMARY KEY, c2 text OP
+foreign_data	b5948ffaf1252cca439ea07f9d8d40d54f13c20c6f906c2f223dac188819f45c	NATIVE_REJECTION	CREATE FOREIGN TABLE ft1 ();
+generated_stored	1087468c82258a401d1a1ddf981145c605ab019922101a5193cd4f14a1fd86d6	NATIVE_REJECTION	CREATE TABLE gtest_err_8 (a int PRIMARY KEY, b int GENERATED BY DEFAULT AS (a * 2) STORE
+generated_virtual	55edd97fdc83da3d0efe831a6b716f49f40b99df44b9b653695fc3be0c873ba4	NATIVE_REJECTION	CREATE TABLE gtest_err_8 (a int PRIMARY KEY, b int GENERATED BY DEFAULT AS (a * 2) VIRTU
+guc	580b5471d3418c292c8336f4ced3022c787502c0ef1a405425736c00cb8241c4	NATIVE_REJECTION	SET search_path = null, null;
+psql	53586bb16811175d160bac26031ec7d43a70ab8119b2c2dde7e7524b422f5991	NATIVE_REJECTION	SELECT 1 UNION;
+psql	9c4453406ae9a8e33f72a73dda233ba8b4286cbf85e049184493b2b9457d7df8	NATIVE_REJECTION	SELECT 1 UNION;
+psql	93b7ffb07799c921739b46e7d10bfea9e22de7e639f961c3c306530b8292523f	NATIVE_REJECTION	bogus;
+publication	76cdbc458feb21f3690b7adc2296b4f2ea06be37c77db39022aaefbacdad840c	NATIVE_REJECTION	ALTER PUBLICATION testpub1_forschema ADD TABLES IN SCHEMA foo (a, b);
+publication	9daeb4d7912f37b08447f5bd55cfb0bfa39ebee315f481eac1f76a38646b417a	NATIVE_REJECTION	ALTER PUBLICATION testpub1_forschema ADD TABLES IN SCHEMA foo, bar (a, b);
+publication	2b6e5d88b844ecad6697c79464fc937cf8239daefb0b7b5ad248cf6049193c43	NATIVE_NEGATIVE_ACCEPTED	CREATE PUBLICATION regress_pub_for_allsequences_alltables FOR ALL SEQUENCES, ALL TABLES,
+publication	40ab6d936663905065591bb48630cdfd004a7f8bab2550b509bb1332a3e1d3de	NATIVE_NEGATIVE_ACCEPTED	CREATE PUBLICATION regress_pub_for_allsequences_alltables FOR ALL SEQUENCES, ALL TABLES,
+publication	b6dab9f8d7e59384cb2e4b5112bd244f9d577347181e605b59c7c4e43c36bb5a	NATIVE_REJECTION	CREATE PUBLICATION testpub_error FOR pub_test2.tbl1;
+publication	50c14434bcc0b3319aa9d9c3073a472af1658ebd2d034e8c9e5cb8cbcf8a3513	NATIVE_REJECTION	CREATE PUBLICATION testpub_foralltables_excepttable2 FOR ALL TABLES EXCEPT (testpub_tbl1
+publication	b2da3ace15672debf4f48981446e069638823fa438ec81dfbdd3e9aba1613963	NATIVE_REJECTION	CREATE PUBLICATION testpub_forschema1 FOR CURRENT_SCHEMA;
+publication	8a65459e5a2c778171f94077af3bd9e659d62a334f250cdef009443ec73455d7	NATIVE_REJECTION	CREATE PUBLICATION testpub_forschema1 FOR TABLE CURRENT_SCHEMA;
+publication	13c648fb64b4dc710b8f80a93b58933a3acd2d36dc670b7c89fc7e89b69a1c8e	NATIVE_REJECTION	CREATE PUBLICATION testpub_parsertst FOR TABLE pub_test.testpub_nopk, CURRENT_SCHEMA;
+publication	d774b9ec1129faf7ad59954d6bf0a95a0db2141bca0c742649d908df9f61e4f2	NATIVE_REJECTION	CREATE PUBLICATION testpub_parsertst FOR TABLES IN SCHEMA foo, test.foo;
+publication	a6542db181b788ab829bbb3328e5d2e48ad94cad81285b1536e4535ffa379e24	NATIVE_REJECTION	CREATE PUBLICATION testpub_syntax3 FOR TABLES IN SCHEMA testpub_rf_schema1 WHERE (a = 12
+publication	3691b321c34914e48aaa2348461f4bc01b1f12a58a04312b0e640f9cb6f4e407	NATIVE_REJECTION	CREATE PUBLICATION testpub_syntax3 FOR TABLES IN SCHEMA testpub_rf_schema1, testpub_rf_s
+sqljson_jsontable	372dab78982607ec8ae0e6620a745f2041ad0d498ab564ba38e71c1a2afb4ff2	NATIVE_REJECTION	SELECT * FROM JSON_TABLE(jsonb '1', '$' COLUMNS (a int exists empty object on empty));
+sqljson_jsontable	8b0300c79101ea94f2eaba60d4572b0046417b6a923ba621fbff3eb6603fe78d	NATIVE_REJECTION	SELECT * FROM JSON_TABLE(jsonb '1', '$' COLUMNS (a int exists empty object on error));
+sqljson_jsontable	598e25d57491516272d846ed88cf9180b1e927146a673658e37343543ebaae4e	NATIVE_REJECTION	SELECT * FROM JSON_TABLE(jsonb '1', '$' COLUMNS (a int omit quotes true on error));
+sqljson_jsontable	d970999535d57b34b9f6d4da977c749b35f61701c4eda1c8256562912820214c	NATIVE_REJECTION	SELECT * FROM JSON_TABLE(jsonb '1', '$' COLUMNS (a int true on empty));
+sqljson_jsontable	4beaaaef8f632b04713d646db241ad5e8dbc6d9d6696461124ebcdd96615e214	NATIVE_REJECTION	SELECT * FROM JSON_TABLE(jsonb '1', '$' COLUMNS (a int) NULL ON ERROR);
+sqljson_queryfuncs	016f04f149709c688798a5fbce6c27983c2eef525877a476fef4bb04e042e2ea	NATIVE_REJECTION	SELECT JSON_EXISTS(jsonb '1', '$' DEFAULT 1 ON ERROR);
+sqljson_queryfuncs	5a79e8bd87c7fae6680c857c17ab136b14b4b665fd37f350e3123ad2a6a3b182	NATIVE_REJECTION	SELECT JSON_QUERY(jsonb '1', '$' TRUE ON ERROR);
+sqljson_queryfuncs	f549a6d05ed1f74c12cbbb94a78b13785f5a8fe46f629bc4fa612ed38565db04	NATIVE_REJECTION	SELECT JSON_VALUE(jsonb '1', '$' EMPTY ON ERROR);
+sqljson_queryfuncs	f0ff847524a2cdc34ba2a1e0c4820224ba08638c7669b16283ed74985dde31d5	NATIVE_REJECTION	SELECT JSON_VALUE(jsonb '["1"]', '$[*]' RETURNING int FORMAT JSON);
+stats_ext	2d678e376745ab4d47afadc2ad91d996dcda8a2133b5ad4f69bb704d98126e04	NATIVE_REJECTION	CREATE STATISTICS tst ON (x, y) FROM ext_stats_test;
+stats_ext	2bec124da8c5d2e72cbc72bac94f3205dbed276e04f1a599bb860dbb91d45761	NATIVE_REJECTION	CREATE STATISTICS tst ON y + z FROM ext_stats_test;
+subscription	bcb43594dcc67c88e54d5c9e1270bcdb52cdff0c958c2468337c97c79d5441ac	NATIVE_REJECTION	CREATE SUBSCRIPTION regress_testsub CONNECTION 'foo';
+subscription	6a542cc9b28480482f5c59484ab67cb1047076bd53beeea1eb9919148b3a9cf1	NATIVE_REJECTION	CREATE SUBSCRIPTION regress_testsub PUBLICATION foo;
+tablesample	d7c2da1dc3f7b6987296176d98fd3126169564966b6b07bfd49263c58df692c1	NATIVE_REJECTION	SELECT q.* FROM (SELECT * FROM test_tablesample) as q TABLESAMPLE BERNOULLI (5);
+triggers	9ba1202429156329fa497e46816c8e4b215bb5ce02ee9bebdbc075b0e6cf8275	NATIVE_REJECTION	CREATE TRIGGER error_ins_a BEFORE INSERT OF a ON main_table FOR EACH ROW EXECUTE PROCEDU
+triggers	16cacbcb84d6aa2fc5210f57d2982b54ded0ed3cbe30f70075cae9481cd2ac16	NATIVE_REJECTION	alter trigger a on only grandparent rename to b;
+with	faeca81cd38699777fe48637916110857264fbf6e0e4effcb401dc86e35de76e	NATIVE_REJECTION	create table foo (with baz);
+with	8fd68ba560d74995e8453f21e9b9f13e91e9d6c2c5d1752de690ea1b05b86eb9	NATIVE_REJECTION	create table foo (with ordinality);

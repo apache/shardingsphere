@@ -20,19 +20,24 @@ package org.apache.shardingsphere.infra.binder.context.extractor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.binder.context.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.context.available.WhereContextAvailable;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CreateViewStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
 
@@ -49,6 +54,49 @@ import java.util.Map;
 @HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLStatementContextExtractor {
+    
+    /**
+     * Create base contexts for data-modifying common table expressions before caching the parent context.
+     *
+     * @param segments common table expressions
+     * @param metaData metadata
+     * @param currentDatabaseName current database name
+     * @return data-modifying statement base contexts
+     */
+    public static Collection<SQLStatementContext> createDataModificationBaseContexts(final Collection<CommonTableExpressionSegment> segments,
+                                                                                     final ShardingSphereMetaData metaData, final String currentDatabaseName) {
+        Collection<SQLStatementContext> result = Collections.emptyList();
+        for (CommonTableExpressionSegment each : segments) {
+            if (null != each.getDataModification()) {
+                if (result.isEmpty()) {
+                    result = new LinkedList<>();
+                }
+                result.add(SQLStatementContextFactory.newInstance(metaData, each.getDataModification(), currentDatabaseName));
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get data-modifying common table expression base contexts.
+     *
+     * @param sqlStatementContext parent statement context
+     * @return data-modifying statement base contexts
+     */
+    public static Collection<SQLStatementContext> getDataModificationBaseContexts(final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return ((SelectStatementContext) sqlStatementContext).getBaseContext().getDataModificationBaseContexts();
+        }
+        if (sqlStatementContext instanceof InsertStatementContext) {
+            return ((InsertStatementContext) sqlStatementContext).getBaseContext().getDataModificationBaseContexts();
+        }
+        if (sqlStatementContext instanceof UpdateStatementContext) {
+            return ((UpdateStatementContext) sqlStatementContext).getBaseContext().getDataModificationBaseContexts();
+        }
+        return sqlStatementContext instanceof DeleteStatementContext
+                ? ((DeleteStatementContext) sqlStatementContext).getBaseContext().getDataModificationBaseContexts()
+                : Collections.emptyList();
+    }
     
     /**
      * Get table names.
@@ -87,11 +135,16 @@ public final class SQLStatementContextExtractor {
             ((SelectStatementContext) sqlStatementContext).getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
             return result;
         }
-        if (sqlStatementContext instanceof InsertStatementContext && null != ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()) {
+        if (sqlStatementContext instanceof InsertStatementContext) {
             InsertSelectContext insertSelectContext = ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
-            result.add(insertSelectContext.getSelectStatementContext());
-            result.addAll(insertSelectContext.getSelectStatementContext().getSubqueryContexts().values());
-            insertSelectContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            if (null != insertSelectContext) {
+                result.add(insertSelectContext.getSelectStatementContext());
+                result.addAll(insertSelectContext.getSelectStatementContext().getSubqueryContexts().values());
+                insertSelectContext.getSelectStatementContext().getSubqueryContexts().values().forEach(each -> result.addAll(getAllSubqueryContexts(each)));
+            }
+            Collection<SelectStatementContext> baseSubqueries = ((InsertStatementContext) sqlStatementContext).getBaseContext().getSubqueryContexts().values();
+            result.addAll(baseSubqueries);
+            baseSubqueries.forEach(each -> result.addAll(getAllSubqueryContexts(each)));
             return result;
         }
         if (sqlStatementContext instanceof CreateViewStatementContext) {

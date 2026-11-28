@@ -167,6 +167,8 @@
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
     <sql-case id="insert_default_firebird" value="INSERT INTO t_order (id) VALUES (DEFAULT)" db-types="Firebird"/>
     <sql-case id="insert_select_with_returning_firebird" value="INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM t_order WHERE order_id = 1 ORDER BY order_id RETURNING order_id, user_id" db-types="Firebird"/>
+    <sql-case id="insert_alternative_quoted_literal_with_apostrophe_firebird" value="INSERT INTO t_order (status) VALUES (q'{it's}')" db-types="Firebird"/>
+    <sql-case id="insert_alternative_quoted_literal_with_consecutive_apostrophes_firebird" value="INSERT INTO t_order (status) VALUES (q'{it''s}')" db-types="Firebird"/>
     <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
     <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
     <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>
@@ -238,4 +240,9 @@
     <sql-case id="insert_array_jdbc_parameters_pg" value="INSERT INTO t_order (status[?][?], user_id) VALUES (?, ?)" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="insert_array_slice_parameters_pg" value="INSERT INTO t_order (status[$1:$2][$3]) VALUES ($4)" db-types="PostgreSQL" case-types="Placeholder" />
     <sql-case id="insert_array_slice_jdbc_parameters_pg" value="INSERT INTO t_order (status[?:?][?]) VALUES (?)" db-types="PostgreSQL" case-types="Placeholder" />
+    <sql-case id="insert_postgresql_asensitive_identifier" value="INSERT INTO asensitive (asensitive) VALUES (?)" db-types="PostgreSQL" />
+    <sql-case id="insert_postgresql_compression_identifier" value="INSERT INTO compression (compression) VALUES (?)" db-types="PostgreSQL" />
+    <sql-case id="insert_postgresql_finalize_identifier" value="INSERT INTO finalize (finalize) VALUES (?)" db-types="PostgreSQL" />
+    <sql-case id="insert_postgresql_normalize_identifier" value="INSERT INTO normalize (normalize) VALUES (?)" db-types="PostgreSQL" />
+    <sql-case id="insert_postgresql_date_on_conflict" value="INSERT INTO foo_state (date, state, generation, sub_generation) VALUES (?, ?, ?, ?) ON CONFLICT (date, sub_generation) DO UPDATE SET state = EXCLUDED.state, generation = EXCLUDED.generation;" db-types="PostgreSQL" />
 </sql-cases>

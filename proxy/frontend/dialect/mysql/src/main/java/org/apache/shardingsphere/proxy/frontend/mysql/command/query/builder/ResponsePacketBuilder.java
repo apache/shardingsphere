@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.My
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -59,12 +60,13 @@ public final class ResponsePacketBuilder {
      * @param statusFlags server status flags
      * @return query response packets
      */
+    @HighFrequencyInvocation
     public static Collection<DatabasePacket> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int sessionCharacterSet, final int statusFlags) {
         Collection<DatabasePacket> result = new LinkedList<>();
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
-            int characterSet = BINARY_TYPES.contains(each.getColumnType()) ? MySQLCharacterSets.BINARY.getId() : sessionCharacterSet;
+            int characterSet = BINARY_TYPES.contains(each.getColumnType()) || Types.TIME == each.getColumnType() ? MySQLCharacterSets.BINARY.getId() : sessionCharacterSet;
             result.add(new MySQLColumnDefinition41Packet(characterSet, getColumnDefinitionFlag(each), each.getSchema(), each.getTable(), each.getTable(),
                     each.getColumnLabel(), each.getColumnName(), each.getColumnLength(), MySQLBinaryColumnType.valueOfJDBCType(each.getColumnType()), each.getDecimals(), false));
         }

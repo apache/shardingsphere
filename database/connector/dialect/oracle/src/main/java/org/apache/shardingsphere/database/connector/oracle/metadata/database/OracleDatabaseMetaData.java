@@ -29,10 +29,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.sql.DialectSQLOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DDLCommitPolicy;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleFunctionOption;
+import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSQLOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
 
 import java.util.Collections;
@@ -99,6 +101,11 @@ public final class OracleDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectFunctionOption getFunctionOption() {
         return new OracleFunctionOption();
+    }
+    
+    @Override
+    public DialectSQLOption getSQLOption() {
+        return new OracleSQLOption();
     }
     
     @Override

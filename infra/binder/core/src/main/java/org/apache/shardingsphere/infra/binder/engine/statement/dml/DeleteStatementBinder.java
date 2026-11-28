@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dml;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.ReturningSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.OrderBySegmentBinder;
@@ -28,9 +29,11 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.with.WithSegmen
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 
@@ -48,13 +51,17 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
                 .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
-        return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy);
+        TableSegment returningTable = boundTable instanceof DeleteMultiTableSegment ? ((DeleteMultiTableSegment) boundTable).getRelationTable() : boundTable;
+        ReturningSegment boundReturning = sqlStatement.getReturning()
+                .map(optional -> ReturningSegmentBinder.bind(optional, binderContext, returningTable, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy, boundReturning);
     }
     
-    private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
+    private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere,
+                                 final OrderBySegment boundOrderBy, final ReturningSegment boundReturning) {
         DeleteStatement result = DeleteStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
                 .where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).errorLogging(sqlStatement.getErrorLogging().orElse(null))
-                .output(sqlStatement.getOutput().orElse(null)).returning(sqlStatement.getReturning().orElse(null)).build();
+                .output(sqlStatement.getOutput().orElse(null)).returning(boundReturning).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

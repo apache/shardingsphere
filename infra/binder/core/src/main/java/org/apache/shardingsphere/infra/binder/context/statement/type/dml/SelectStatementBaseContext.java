@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.context.segment.select.groupby.engine.GroupByContextEngine;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByContext;
@@ -90,6 +91,8 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     
     private final SelectStatement sqlStatement;
     
+    private final Collection<SQLStatementContext> dataModificationBaseContexts;
+    
     private final TablesContext tablesContext;
     
     private final ProjectionsContext projectionsContext;
@@ -114,6 +117,9 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     
     public SelectStatementBaseContext(final SelectStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName, final Collection<TableSegment> inheritedTables) {
         this.sqlStatement = sqlStatement;
+        dataModificationBaseContexts = sqlStatement.getWith().isPresent()
+                ? SQLStatementContextExtractor.createDataModificationBaseContexts(sqlStatement.getWith().get().getCommonTableExpressions(), metaData, currentDatabaseName)
+                : Collections.emptyList();
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);
         Collection<TableSegment> tableSegments = getAllTableSegments(inheritedTables);
@@ -406,12 +412,12 @@ public final class SelectStatementBaseContext implements SQLStatementContext {
     private boolean isSameColumn(final ColumnSegment groupByColumn, final ColumnSegment orderByColumn) {
         ColumnSegmentBoundInfo groupByBoundInfo = groupByColumn.getColumnBoundInfo();
         ColumnSegmentBoundInfo orderByBoundInfo = orderByColumn.getColumnBoundInfo();
-        ColumnSegmentBoundInfo groupByOtherUsingBoundInfo = groupByColumn.getOtherUsingColumnBoundInfo();
-        ColumnSegmentBoundInfo orderByOtherUsingBoundInfo = orderByColumn.getOtherUsingColumnBoundInfo();
         if (!groupByColumn.getQualifiedName().equals(orderByColumn.getQualifiedName()) || null == groupByBoundInfo || null == orderByBoundInfo
                 || !isSameColumnBoundInfo(groupByBoundInfo, orderByBoundInfo)) {
             return false;
         }
+        ColumnSegmentBoundInfo groupByOtherUsingBoundInfo = groupByColumn.getOtherUsingColumnBoundInfo();
+        ColumnSegmentBoundInfo orderByOtherUsingBoundInfo = orderByColumn.getOtherUsingColumnBoundInfo();
         if (null == groupByOtherUsingBoundInfo && null != orderByOtherUsingBoundInfo) {
             return false;
         }

@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.JDBCBackendDataSource;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLProxyBackendHandlerFactory;
 
 /**
  * Proxy context.
@@ -36,6 +38,10 @@ public final class ProxyContext {
     
     private ContextManager contextManager;
     
+    private ProxyBackendHandlerFactory backendHandlerFactory;
+    
+    private DistSQLProxyBackendHandlerFactory distSQLBackendHandlerFactory;
+    
     /**
      * Initialize proxy context.
      *
@@ -43,6 +49,8 @@ public final class ProxyContext {
      */
     public static void init(final ContextManager contextManager) {
         INSTANCE.contextManager = contextManager;
+        INSTANCE.backendHandlerFactory = new ProxyBackendHandlerFactory(contextManager);
+        INSTANCE.distSQLBackendHandlerFactory = new DistSQLProxyBackendHandlerFactory(contextManager);
     }
     
     /**

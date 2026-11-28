@@ -44,15 +44,19 @@
     </drop-index>
 
     <drop-index sql-case-id="drop_index">
+        <index name="t_log_index" start-index="11" stop-index="21" />
         <table name="t_log" start-index="26" stop-index="30" />
     </drop-index>
     
     <drop-index sql-case-id="drop_index_without_on">
         <index name="order_index" start-index="11" stop-index="21" />
     </drop-index>
-    <drop-index sql-case-id="drop_index_if_exists" />
+    <drop-index sql-case-id="drop_index_if_exists" if-exists="true">
+        <index name="order_index" start-index="21" stop-index="31" />
+    </drop-index>
     
     <drop-index sql-case-id="drop_index_with_space">
+        <index name="order_index" start-index="23" stop-index="33" />
         <table name="t_order" start-index="50" stop-index="56" />
     </drop-index>
     
@@ -61,6 +65,7 @@
     </drop-index>
     
     <drop-index sql-case-id="drop_index_with_back_quota">
+        <index name="order_index" start-delimiter="`" end-delimiter="`" start-index="11" stop-index="23" />
         <table name="t_order" start-delimiter="`" end-delimiter="`" start-index="28" stop-index="36" />
     </drop-index>
     
@@ -68,15 +73,25 @@
         <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="23" />
     </drop-index>
     
-    <drop-index sql-case-id="drop_index_with_double_quota" />
-    <drop-index sql-case-id="drop_index_concurrently" />
-    <drop-index sql-case-id="drop_index_with_schema" />
+    <drop-index sql-case-id="drop_index_with_double_quota">
+        <index name="order_index" start-delimiter="&quot;" end-delimiter="&quot;" start-index="11" stop-index="23" />
+    </drop-index>
+    <drop-index sql-case-id="drop_index_concurrently">
+        <index name="order_index" start-index="24" stop-index="34" />
+    </drop-index>
+    <drop-index sql-case-id="drop_index_with_schema">
+        <index name="order_index" start-index="11" stop-index="28">
+            <owner name="public" start-index="11" stop-index="16" />
+        </index>
+    </drop-index>
     
     <drop-index sql-case-id="drop_index_with_bracket">
+        <index name="order_index" start-delimiter="[" end-delimiter="]" start-index="11" stop-index="23" />
         <table name="t_order" start-delimiter="[" end-delimiter="]" start-index="28" stop-index="36" />
     </drop-index>
     
-    <drop-index sql-case-id="drop_index_if_exists_on_table">
+    <drop-index sql-case-id="drop_index_if_exists_on_table" if-exists="true">
+        <index name="order_index" start-index="21" stop-index="31" />
         <table name="t_order" start-index="36" stop-index="42" />
     </drop-index>
     

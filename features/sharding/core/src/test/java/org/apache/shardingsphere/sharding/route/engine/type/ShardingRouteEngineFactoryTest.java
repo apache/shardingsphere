@@ -54,6 +54,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -127,9 +129,32 @@ class ShardingRouteEngineFactoryTest {
         when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(shardingConditions.getSqlStatementContext()).thenReturn(sqlStatementContext);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
         assertThat(actual, isA(ShardingUnicastRouteEngine.class));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getExplainArguments")
+    void assertNewInstanceForExplain(final String name, final boolean useSelectContext, final boolean alwaysFalse, final Class<? extends ShardingRouteEngine> expectedType) {
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class, RETURNS_DEEP_STUBS));
+        tableNames.add("t_order");
+        when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        when(shardingConditions.getSqlStatementContext()).thenReturn(useSelectContext ? selectStatementContext : sqlStatementContext);
+        when(shardingConditions.isAlwaysFalse()).thenReturn(alwaysFalse);
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, tableNames, props);
+        assertThat(actual, isA(expectedType));
+    }
+    
+    private static Object[][] getExplainArguments() {
+        return new Object[][]{
+                {"hint", true, false, ShardingStandardRouteEngine.class},
+                {"alwaysFalse", true, true, ShardingUnicastRouteEngine.class},
+                {"withoutHint", false, false, ShardingUnicastRouteEngine.class}};
     }
     
     @Test
@@ -207,6 +232,7 @@ class ShardingRouteEngineFactoryTest {
         SQLStatement sqlStatement = mock(DALStatement.class);
         when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(shardingConditions.getSqlStatementContext()).thenReturn(sqlStatementContext);
         tableNames.add("table_1");
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));

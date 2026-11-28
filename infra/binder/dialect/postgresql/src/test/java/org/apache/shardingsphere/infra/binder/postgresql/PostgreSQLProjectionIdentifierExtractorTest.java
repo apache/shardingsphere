@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
@@ -78,6 +79,37 @@ class PostgreSQLProjectionIdentifierExtractorTest {
     @Test
     void assertGetColumnNameFromFunctionExpression() {
         assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 0, "SUM(ID)", new FunctionSegment(0, 0, "SUM", "SUM(ID)"))), is("sum"));
+    }
+    
+    @Test
+    void assertGetNativeDefaultColumnLabel() {
+        ExpressionProjectionSegment projection = new ExpressionProjectionSegment(7, 8, "42");
+        projection.setDefaultColumnLabel(new IdentifierValue("column1"));
+        assertThat(extractor.getColumnNameFromExpression(projection), is("column1"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromCastedFunctionExpression() {
+        String expression = "ARRAY_AGG(ID)::text";
+        TypeCastExpression cast = new TypeCastExpression(0, 18, expression, new FunctionSegment(0, 12, "ARRAY_AGG", "ARRAY_AGG(ID)"), "text");
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 18, expression, cast)), is("array_agg"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromNestedCastedAggregation() {
+        String expression = "MAX(ID)::text::varchar";
+        AggregationProjectionSegment aggregation = new AggregationProjectionSegment(0, 6, AggregationType.MAX, "MAX(ID)");
+        TypeCastExpression innerCast = new TypeCastExpression(0, 12, "MAX(ID)::text", aggregation, "text");
+        TypeCastExpression outerCast = new TypeCastExpression(0, 21, expression, innerCast, "varchar");
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 21, expression, outerCast)), is("max"));
+    }
+    
+    @Test
+    void assertGetColumnNameFromCastedQuotedFunctionExpression() {
+        String expression = "\"MyFunc\"(ID)::text";
+        FunctionSegment function = new FunctionSegment(0, 11, "\"MyFunc\"", "\"MyFunc\"(ID)");
+        TypeCastExpression cast = new TypeCastExpression(0, 17, expression, function, "text");
+        assertThat(extractor.getColumnNameFromExpression(new ExpressionProjectionSegment(0, 17, expression, cast)), is("MyFunc"));
     }
     
     @Test
