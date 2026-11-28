@@ -50,6 +50,13 @@ public final class ClusterPersistServiceFacade implements ModePersistServiceFaca
         computeNodeInstance = metaDataContextManager.getComputeNodeInstanceContext().getInstance();
     }
     
+    /**
+     * Register compute node online.
+     */
+    public void registerOnline() {
+        computeNodeService.registerOnline(computeNodeInstance);
+    }
+    
     @Override
     public void close() {
         computeNodeService.offline(computeNodeInstance);

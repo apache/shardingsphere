@@ -27,16 +27,24 @@ import java.lang.reflect.Field;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.mockito.Mockito.mock;
 
 class ProxyContextTest {
     
     private ContextManager originalContextManager;
     
+    private Object originalBackendHandlerFactory;
+    
+    private Object originalDistSQLBackendHandlerFactory;
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         Field contextManagerField = ProxyContext.class.getDeclaredField("contextManager");
         originalContextManager = (ContextManager) Plugins.getMemberAccessor().get(contextManagerField, ProxyContext.getInstance());
+        originalBackendHandlerFactory = Plugins.getMemberAccessor().get(ProxyContext.class.getDeclaredField("backendHandlerFactory"), ProxyContext.getInstance());
+        originalDistSQLBackendHandlerFactory = Plugins.getMemberAccessor().get(ProxyContext.class.getDeclaredField("distSQLBackendHandlerFactory"), ProxyContext.getInstance());
         Plugins.getMemberAccessor().set(contextManagerField, ProxyContext.getInstance(), null);
     }
     
@@ -44,6 +52,8 @@ class ProxyContextTest {
     void cleanUp() throws ReflectiveOperationException {
         Field contextManagerField = ProxyContext.class.getDeclaredField("contextManager");
         Plugins.getMemberAccessor().set(contextManagerField, ProxyContext.getInstance(), originalContextManager);
+        Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("backendHandlerFactory"), ProxyContext.getInstance(), originalBackendHandlerFactory);
+        Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("distSQLBackendHandlerFactory"), ProxyContext.getInstance(), originalDistSQLBackendHandlerFactory);
     }
     
     @Test
@@ -52,5 +62,15 @@ class ProxyContextTest {
         ContextManager expectedContextManager = mock(ContextManager.class);
         ProxyContext.init(expectedContextManager);
         assertThat(actualProxyContext.getContextManager(), is(expectedContextManager));
+    }
+    
+    @Test
+    void assertInitWithReplacementContext() {
+        ProxyContext.init(mock(ContextManager.class));
+        Object actualFirstBackendHandlerFactory = ProxyContext.getInstance().getBackendHandlerFactory();
+        Object actualFirstDistSQLBackendHandlerFactory = ProxyContext.getInstance().getDistSQLBackendHandlerFactory();
+        ProxyContext.init(mock(ContextManager.class));
+        assertThat(ProxyContext.getInstance().getBackendHandlerFactory(), not(sameInstance(actualFirstBackendHandlerFactory)));
+        assertThat(ProxyContext.getInstance().getDistSQLBackendHandlerFactory(), not(sameInstance(actualFirstDistSQLBackendHandlerFactory)));
     }
 }

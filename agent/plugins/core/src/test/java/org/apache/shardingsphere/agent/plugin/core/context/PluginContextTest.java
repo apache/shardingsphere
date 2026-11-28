@@ -40,6 +40,10 @@ class PluginContextTest {
     
     private ContextManager originalProxyContextManager;
     
+    private Object originalBackendHandlerFactory;
+    
+    private Object originalDistSQLBackendHandlerFactory;
+    
     @BeforeEach
     void setUp() throws ReflectiveOperationException {
         ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
@@ -48,6 +52,8 @@ class PluginContextTest {
         pluginContext.setEnhancedForProxy(false);
         Field contextManagerField = ProxyContext.class.getDeclaredField("contextManager");
         originalProxyContextManager = (ContextManager) Plugins.getMemberAccessor().get(contextManagerField, ProxyContext.getInstance());
+        originalBackendHandlerFactory = Plugins.getMemberAccessor().get(ProxyContext.class.getDeclaredField("backendHandlerFactory"), ProxyContext.getInstance());
+        originalDistSQLBackendHandlerFactory = Plugins.getMemberAccessor().get(ProxyContext.class.getDeclaredField("distSQLBackendHandlerFactory"), ProxyContext.getInstance());
         Plugins.getMemberAccessor().set(contextManagerField, ProxyContext.getInstance(), null);
     }
     
@@ -56,6 +62,8 @@ class PluginContextTest {
         ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().clear();
         PluginContext.getInstance().setEnhancedForProxy(originalIsEnhancedForProxy);
         Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("contextManager"), ProxyContext.getInstance(), originalProxyContextManager);
+        Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("backendHandlerFactory"), ProxyContext.getInstance(), originalBackendHandlerFactory);
+        Plugins.getMemberAccessor().set(ProxyContext.class.getDeclaredField("distSQLBackendHandlerFactory"), ProxyContext.getInstance(), originalDistSQLBackendHandlerFactory);
     }
     
     @Test
