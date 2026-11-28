@@ -240,9 +240,15 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
                                         final ShardingStrategy databaseShardingStrategy, final List<ShardingConditionValue> databaseShardingValues,
                                         final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
         Collection<String> routedDataSources = routeDataSources(shardingTable, databaseShardingStrategy, databaseShardingValues);
+        Collection<String> routedTables = routeTables(shardingTable, tableShardingStrategy, tableShardingValues);
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
-            routeTables(shardingTable, each, tableShardingStrategy, tableShardingValues, result);
+            Collection<String> actualTableNames = shardingTable.getActualTableNames(each);
+            for (String routedTable : routedTables) {
+                if (actualTableNames.contains(routedTable)) {
+                    result.add(new DataNode(each, (String) null, routedTable));
+                }
+            }
         }
         return result;
     }
@@ -258,15 +264,10 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         return result;
     }
     
-    private void routeTables(final ShardingTable shardingTable, final String routedDataSource,
-                             final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues, final Collection<DataNode> result) {
-        Collection<String> availableTargetTables = shardingTable.getActualTableNames(routedDataSource);
-        Collection<String> routedTables = tableShardingValues.isEmpty()
-                ? availableTargetTables
-                : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, shardingTable.getTableDataNode(), props);
-        for (String each : routedTables) {
-            result.add(new DataNode(routedDataSource, (String) null, each));
-        }
+    private Collection<String> routeTables(final ShardingTable shardingTable, final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
+        return tableShardingValues.isEmpty()
+                ? shardingTable.getActualTableNames()
+                : tableShardingStrategy.doSharding(shardingTable.getActualTableNames(), tableShardingValues, shardingTable.getTableDataNode(), props);
     }
     
     private ShardingStrategy createShardingStrategy(final ShardingStrategyConfiguration shardingStrategyConfig, final Map<String, ShardingAlgorithm> shardingAlgorithms,

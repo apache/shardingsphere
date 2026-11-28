@@ -72,6 +72,19 @@ class ShardingTableTest {
         assertThat(actual.findActualTableIndex("foo_ds", "foo_order_0"), is(0));
     }
     
+    @Test
+    void assertGetActualTableNamesWithAsymmetricDataNodes() {
+        ShardingTableRuleConfiguration config = new ShardingTableRuleConfiguration("sbtest1", "ds0.sbtest1_${0..1},ds1.sbtest1_${2..3}");
+        ShardingTable actual = new ShardingTable(config, Arrays.asList("ds0", "ds1"), null);
+        assertThat(actual.getActualTableNames().size(), is(4));
+        assertThat(actual.getActualTableNames("ds0").size(), is(2));
+        assertTrue(actual.getActualTableNames("ds0").contains("sbtest1_0"));
+        assertTrue(actual.getActualTableNames("ds0").contains("sbtest1_1"));
+        assertThat(actual.getActualTableNames("ds1").size(), is(2));
+        assertTrue(actual.getActualTableNames("ds1").contains("sbtest1_2"));
+        assertTrue(actual.getActualTableNames("ds1").contains("sbtest1_3"));
+    }
+
     private ShardingTable createShardingTable() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
