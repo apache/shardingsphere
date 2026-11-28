@@ -134,8 +134,7 @@ class ShardingSpherePipelineDataSourceCreatorTest {
         Map<String, DataSource> dataSources = Collections.singletonMap("ds_0", new MockedDataSource());
         when(DataSourcePoolCreator.create(config.getDataSourcePoolPropertiesMap(), false)).thenReturn(dataSources);
         SQLException expected = new SQLException("fixture_failure");
-        when(ShardingSphereDataSourceFactory.createDataSource(eq("foo_db"), any(ModeConfiguration.class), eq(dataSources), anyCollection(), any(Properties.class)))
-                .thenThrow(expected);
+        when(ShardingSphereDataSourceFactory.createDataSource(eq("foo_db"), any(ModeConfiguration.class), eq(dataSources), anyCollection(), any(Properties.class))).thenThrow(expected);
         try (MockedConstruction<DataSourcePoolDestroyer> destroyers = mockConstruction(DataSourcePoolDestroyer.class)) {
             assertThat(assertThrows(SQLException.class, () -> creator.create(config)), sameInstance(expected));
             assertThat(destroyers.constructed().size(), is(1));
