@@ -80,8 +80,7 @@ class SetDistVariableExecutorTest {
                         (Consumer<ContextManager>) contextManager -> assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps()
                                 .getProperty("proxy-meta-data-collector-cron"), is("0 0/5 * * * ?"))),
                 Arguments.of("boolean property with numeric enabled value", new SetDistVariableStatement("sql_show", "1"),
-                        (Consumer<ContextManager>) contextManager -> assertTrue(
-                                (Boolean) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW))),
+                        (Consumer<ContextManager>) contextManager -> assertTrue((Boolean) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW))),
                 Arguments.of("boolean property with numeric disabled value", new SetDistVariableStatement("agent_plugins_enabled", "0"),
                         (Consumer<ContextManager>) contextManager -> assertFalse(
                                 (Boolean) contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED))));
