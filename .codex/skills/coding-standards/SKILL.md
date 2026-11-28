@@ -29,6 +29,10 @@ description: >-
 Use this Skill in exactly one of the following modes. Both modes derive compliance only from written standards that actually apply to the target files.
 For routing purposes, covered declaration annotations are `HighFrequencyInvocation`, `AllArgsConstructor`, `RequiredArgsConstructor`, `NoArgsConstructor`, `Builder`, `Getter`, `Setter`, `EqualsAndHashCode`, `ToString`, and `Slf4j`.
 
+In both modes of this Skill, exclude SQL parsing code (lexing, parsing, visitors, AST construction and parsing-specific helpers) from high-frequency classification before applying the general workload definition in `CODE_OF_CONDUCT.md`, even when parsing bypasses caches or runs for every request.
+Do not require `HighFrequencyInvocation` or apply coding restrictions that depend on high-frequency classification to this excluded code.
+Routing, SQL rewriting and execution callers do not inherit the exclusion, and other coding standards, correctness and performance non-regression checks still apply.
+
 ## Implementation Guidance Mode
 
 Use this mode when implementing, fixing, refactoring, or reviewing code, or when modifying or reviewing a Maven POM, unless the user explicitly requests a standalone coding-standards compliance audit.
