@@ -172,7 +172,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     @HighFrequencyInvocation
     private Set<Integer> loadDatetimeColumnIndexes(final Collection<Projection> projections, final ShardingSphereSchema schema, final MySQLServerPreparedStatement serverPreparedStatement) {
-        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).isSqlFederationEnabled()) {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).isSqlFederationEnabled()
+                || 0 != serverPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()) {
             return Collections.emptySet();
         }
         for (Projection each : projections) {

@@ -177,6 +177,7 @@ class MySQLComStmtPrepareExecutorTest {
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereTable table = new ShardingSphereTable("user", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
+                new ShardingSphereColumn("secret", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false),
                 new ShardingSphereColumn("content", Types.CLOB, false, false, false, false, false, true),
                 new ShardingSphereColumn("national_content", Types.NCLOB, false, false, false, false, false, true),
@@ -190,7 +191,7 @@ class MySQLComStmtPrepareExecutorTest {
     
     @Test
     void assertPrepareLocalTemporalProjection() throws Exception {
-        when(packet.getSQL()).thenReturn("SELECT mysql_datetime, mysql_timestamp FROM foo_db.user WHERE mysql_datetime = ? AND mysql_timestamp = ?");
+        when(packet.getSQL()).thenReturn("SELECT mysql_datetime, mysql_timestamp FROM foo_db.user");
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         int connectionId = 17;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
@@ -203,15 +204,10 @@ class MySQLComStmtPrepareExecutorTest {
         try {
             Iterator<DatabasePacket> actual = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
             assertThat(actual.next(), isA(MySQLComStmtPrepareOKPacket.class));
-            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(MySQLBinaryColumnType.TIMESTAMP.getValue()));
-            assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(MySQLBinaryColumnType.TIMESTAMP.getValue()));
-            assertThat(actual.next(), isA(MySQLEofPacket.class));
             assertLocalProjectionPacket((MySQLColumnDefinition41Packet) actual.next(), MySQLBinaryColumnType.DATETIME);
             assertLocalProjectionPacket((MySQLColumnDefinition41Packet) actual.next(), MySQLBinaryColumnType.TIMESTAMP);
             assertThat(actual.next(), isA(MySQLEofPacket.class));
             assertFalse(actual.hasNext());
-            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
-            assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.TIMESTAMP, MySQLBinaryColumnType.TIMESTAMP)));
         } finally {
             MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
         }
@@ -256,6 +252,51 @@ class MySQLComStmtPrepareExecutorTest {
         ContextManager result = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(result);
         return result;
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("temporalProjectionWithParametersArguments")
+    void assertPrepareLocalTemporalProjectionWithParameters(final String predicate, final int paramCount, final MySQLBinaryColumnType expectedParamType) throws SQLException {
+        mockLocalTemporalContext();
+        String sql = "SELECT mysql_datetime, mysql_timestamp FROM foo_db.user WHERE " + predicate;
+        when(packet.getSQL()).thenReturn(sql);
+        when(MySQLProjectionMetadataResolver.resolveDatetimeColumnIndexes(eq(connectionSession), any(MySQLServerPreparedStatement.class)))
+                .thenAnswer(invocation -> fail("Parameterized local PREPARE must not add a DATETIME metadata probe"));
+        MySQLStatementIdGenerator.getInstance().registerConnection(17);
+        try {
+            Iterator<DatabasePacket> actual = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+            MySQLComStmtPrepareOKPacket actualPreparePacket = (MySQLComStmtPrepareOKPacket) actual.next();
+            ByteBuf actualPrepareBytes = Unpooled.buffer();
+            try {
+                actualPreparePacket.write(new MySQLPacketPayload(actualPrepareBytes, StandardCharsets.UTF_8));
+                actualPrepareBytes.skipBytes(1 + 4);
+                assertThat(actualPrepareBytes.readUnsignedShortLE(), is(2));
+                assertThat(actualPrepareBytes.readUnsignedShortLE(), is(paramCount));
+            } finally {
+                actualPrepareBytes.release();
+            }
+            for (int index = 0; index < paramCount; index++) {
+                assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actual.next()), is(expectedParamType.getValue()));
+            }
+            assertThat(actual.next(), isA(MySQLEofPacket.class));
+            assertLocalProjectionPacket((MySQLColumnDefinition41Packet) actual.next(), MySQLBinaryColumnType.TIMESTAMP);
+            assertLocalProjectionPacket((MySQLColumnDefinition41Packet) actual.next(), MySQLBinaryColumnType.TIMESTAMP);
+            assertThat(actual.next(), isA(MySQLEofPacket.class));
+            assertFalse(actual.hasNext());
+            MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+            assertThat(actualPreparedStatement.getSql(), is(sql));
+            assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(), is(paramCount));
+            assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Collections.nCopies(paramCount, expectedParamType)));
+        } finally {
+            MySQLStatementIdGenerator.getInstance().unregisterConnection(17);
+        }
+    }
+    
+    private static Stream<Arguments> temporalProjectionWithParametersArguments() {
+        return Stream.of(
+                Arguments.of("secret = ?", 1, MySQLBinaryColumnType.VAR_STRING),
+                Arguments.of("secret IN (?, ?)", 2, MySQLBinaryColumnType.VAR_STRING),
+                Arguments.of("mysql_datetime = ? AND mysql_timestamp = ?", 2, MySQLBinaryColumnType.TIMESTAMP));
     }
     
     @Test
