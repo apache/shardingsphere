@@ -23,6 +23,10 @@ UNDERSCORE_CHARSET
     : '_' [A-Za-z0-9_]+
     ;
 
+NUMBER_
+    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
+    ;
+
 IDENTIFIER_
     : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
     |  DQ_ ~'"'+ DQ_
@@ -30,10 +34,6 @@ IDENTIFIER_
 
 STRING_
     : (SQ_ ('\'\'' | ~'\'')* SQ_)
-    ;
-
-NUMBER_
-    : INT_? DOT_? INT_ (E (PLUS_ | MINUS_)? INT_)?
     ;
 
 HEX_DIGIT_
