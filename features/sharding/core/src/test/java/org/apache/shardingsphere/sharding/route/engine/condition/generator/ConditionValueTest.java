@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator;
 
+import org.apache.shardingsphere.infra.route.parameter.RouteValueParameter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -31,6 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 class ConditionValueTest {
     
@@ -60,6 +63,16 @@ class ConditionValueTest {
         assertThat(conditionValue.getValue().get(), is(1));
         assertTrue(conditionValue.getParameterMarkerIndex().isPresent());
         assertThat(conditionValue.getParameterMarkerIndex().get(), is(0));
+    }
+    
+    @Test
+    void assertGetRouteValueFromParameterMarkerSegment() {
+        RouteValueParameter param = mock(RouteValueParameter.class);
+        doReturn(1).when(param).getRouteValue();
+        ConditionValue conditionValue = new ConditionValue(new ParameterMarkerExpressionSegment(0, 0, 0), Collections.singletonList(param));
+        assertTrue(conditionValue.getValue().isPresent());
+        assertThat(conditionValue.getValue().get(), is(1));
+        assertFalse(conditionValue.isNull());
     }
     
     @Test

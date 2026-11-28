@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.route.parameter.RouteValueParameter;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -180,9 +181,11 @@ public final class InsertClauseShardingConditionEngine {
     }
     
     private Object getShardingValue(final SimpleExpressionSegment expressionSegment, final List<Object> params) {
-        return expressionSegment instanceof ParameterMarkerExpressionSegment
-                ? params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex())
-                : ((LiteralExpressionSegment) expressionSegment).getLiterals();
+        if (!(expressionSegment instanceof ParameterMarkerExpressionSegment)) {
+            return ((LiteralExpressionSegment) expressionSegment).getLiterals();
+        }
+        Object result = params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+        return result instanceof RouteValueParameter ? ((RouteValueParameter) result).getRouteValue() : result;
     }
     
     private List<ShardingCondition> createShardingConditionsWithInsertSelect(final InsertStatementContext sqlStatementContext, final List<Object> params) {
