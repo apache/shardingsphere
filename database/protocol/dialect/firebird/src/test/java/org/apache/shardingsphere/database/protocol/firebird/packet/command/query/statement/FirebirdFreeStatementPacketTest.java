@@ -39,7 +39,8 @@ class FirebirdFreeStatementPacketTest {
     
     @Test
     void assertFreeStatementPacket() {
-        when(payload.readInt4()).thenReturn(5, FirebirdFreeStatementPacket.DROP);
+        when(payload.readObjectHandle()).thenReturn(5);
+        when(payload.readInt4()).thenReturn(FirebirdFreeStatementPacket.DROP);
         FirebirdFreeStatementPacket packet = new FirebirdFreeStatementPacket(payload);
         verify(payload).skipReserved(4);
         assertThat(packet.getStatementId(), is(5));

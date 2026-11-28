@@ -39,7 +39,7 @@ public final class FirebirdFreeStatementPacket extends FirebirdCommandPacket {
     
     public FirebirdFreeStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementId = payload.readInt4();
+        statementId = payload.readObjectHandle();
         option = payload.readInt4();
     }
     

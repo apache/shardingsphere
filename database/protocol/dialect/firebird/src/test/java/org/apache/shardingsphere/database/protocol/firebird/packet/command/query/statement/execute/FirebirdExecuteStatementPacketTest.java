@@ -63,7 +63,8 @@ class FirebirdExecuteStatementPacketTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteStatementPacketArguments")
     void assertExecuteStatementPacket(final String name, final short blrType, final FirebirdBinaryColumnType expectedParameterType, final Object expectedParameterValue) {
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 2, 0, 1, 123);
+        when(payload.readObjectHandle()).thenReturn(1);
         when(payload.readInt1()).thenReturn(0);
         if (FirebirdBinaryColumnType.BLOB == expectedParameterType) {
             when(payload.readInt8()).thenReturn(123L);
@@ -82,7 +83,7 @@ class FirebirdExecuteStatementPacketTest {
     
     @Test
     void assertExecuteStatementPacketWithTimestampWithTimeZoneParameter() {
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 60310, 801301234, 1559);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 2, 0, 1, 60310, 801301234, 1559);
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_timestamp_tz, (short) BlrConstants.blr_end);
@@ -95,7 +96,7 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertExecuteStatementPacketWithNullParameterValue() {
         when(payload.readInt1()).thenReturn(1);
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 2, 0, 1);
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
@@ -107,7 +108,7 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertExecuteStatementPacketWhenBLRIsNotReadable() {
         when(payload.readBuffer()).thenReturn(byteBuf);
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 0);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 2, 0, 0);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getParameterTypes(), is(Collections.emptyList()));
         assertThat(packet.getParameterValues(), is(Collections.emptyList()));
@@ -116,7 +117,7 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertExecuteStatementPacketForStoredProcedure() {
         when(payload.readInt1()).thenReturn(0);
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE2.getValue(), 1, 2, 0, 1, 123, 9);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE2.getValue(), 2, 0, 1, 123, 9);
         ByteBuf returnBlr = mock(ByteBuf.class);
         when(payload.readBuffer()).thenReturn(byteBuf, returnBlr);
         when(byteBuf.isReadable()).thenReturn(true);
@@ -137,7 +138,7 @@ class FirebirdExecuteStatementPacketTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertIsStoredProcedureArguments")
     void assertIsStoredProcedure(final String name, final FirebirdCommandPacketType commandPacketType, final boolean expectedStoredProcedure) {
-        when(payload.readInt4()).thenReturn(commandPacketType.getValue(), 1, 2, 0, 0);
+        when(payload.readInt4()).thenReturn(commandPacketType.getValue(), 2, 0, 0);
         when(payload.readBuffer()).thenReturn(byteBuf);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.isStoredProcedure(), is(expectedStoredProcedure));
@@ -146,7 +147,7 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertWrite() {
         when(payload.readBuffer()).thenReturn(byteBuf);
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 0);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 2, 0, 0);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);
@@ -156,7 +157,7 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertGetLength() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 2, 0, 1, 123);
         when(payload.readInt1()).thenReturn(0);
         when(payload.readBuffer()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);

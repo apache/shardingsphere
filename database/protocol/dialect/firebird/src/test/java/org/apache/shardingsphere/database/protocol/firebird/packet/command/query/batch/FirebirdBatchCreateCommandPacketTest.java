@@ -36,7 +36,7 @@ class FirebirdBatchCreateCommandPacketTest {
         FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         ByteBuf blrBuffer = mock(ByteBuf.class);
         ByteBuf batchParametersBuffer = mock(ByteBuf.class);
-        when(payload.readInt4()).thenReturn(7);
+        when(payload.readObjectHandle()).thenReturn(7);
         when(payload.readBuffer()).thenReturn(blrBuffer, batchParametersBuffer);
         when(payload.readInt4Unsigned()).thenReturn(12L);
         when(blrBuffer.isReadable()).thenReturn(true);

@@ -50,7 +50,7 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
     
     public FirebirdBatchMessageCommandPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
-        statementHandle = payload.readInt4();
+        statementHandle = payload.readObjectHandle();
         messageCount = payload.readInt4Unsigned();
         charset = payload.getCharset();
         data = payload.getByteBuf().readSlice(payload.getByteBuf().readableBytes());
@@ -70,7 +70,7 @@ public final class FirebirdBatchMessageCommandPacket extends FirebirdCommandPack
         }
         int startReaderIndex = payload.getByteBuf().readerIndex();
         payload.skipReserved(4);
-        int statementHandle = payload.readInt4();
+        int statementHandle = payload.readObjectHandle();
         List<FirebirdBatchColumnDescriptor> messageFormat = FirebirdBatchRegistry.getInstance().getMessageFormat(connectionId, statementHandle);
         ShardingSpherePreconditions.checkNotNull(messageFormat, () -> new InvalidBatchHandleException(statementHandle));
         return parseBatchMessages(payload, startReaderIndex, payload.readInt4Unsigned(), messageFormat);

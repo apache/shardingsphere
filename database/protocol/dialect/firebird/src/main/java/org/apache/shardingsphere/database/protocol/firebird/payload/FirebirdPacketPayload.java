@@ -193,6 +193,18 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
+     * Read an object handle from the buffer, reading a sign-extended negative handle as its unsigned 16-bit value.
+     *
+     * @return object handle
+     * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L512-L516">Firebird remote protocol handle decoding</a>
+     */
+    @HighFrequencyInvocation
+    public int readObjectHandle() {
+        int result = byteBuf.readInt();
+        return result < 0 ? result & 0xFFFF : result;
+    }
+    
+    /**
      * Read a 4-byte unsigned integer from the buffer.
      *
      * <p>Reads the 32-bit representation of Firebird {@code ULONG} in big-endian order and returns a Java {@code long} value.</p>

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +62,7 @@ class FirebirdStartTransactionCommandExecutorTest {
     @AfterEach
     void tearDown() {
         FirebirdTransactionIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -76,6 +78,14 @@ class FirebirdStartTransactionCommandExecutorTest {
         verify(connectionSession).setAutoCommit(true);
         verify(connectionSession).setReadOnly(true);
         verify(connectionSession).setIsolationLevel(TransactionIsolationLevel.SERIALIZABLE);
+    }
+    
+    @Test
+    void assertExecuteAfterAllocatedStatement() {
+        FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(CONNECTION_ID);
+        FirebirdLastObjectRegistry.getInstance().setLastStatement(CONNECTION_ID, 1);
+        new FirebirdStartTransactionCommandExecutor(packet, connectionSession).execute();
+        assertThat(FirebirdLastObjectRegistry.getInstance().resolveStatementHandle(CONNECTION_ID, 0xFFFF), is(0xFFFF));
     }
     
     @Test

@@ -108,7 +108,8 @@ class FirebirdPrepareStatementPacketTest {
     }
     
     private FirebirdPrepareStatementPacket createPacket(final int statementId, final List<FirebirdSQLInfoPacketType> infoItems) {
-        when(payload.readInt4()).thenReturn(1, statementId, 3, 10);
+        when(payload.readInt4()).thenReturn(1, 3, 10);
+        when(payload.readObjectHandle()).thenReturn(statementId);
         when(payload.readString()).thenReturn("SELECT 1");
         when(payload.readBuffer()).thenReturn(byteBuf);
         int[] idx = new int[1];

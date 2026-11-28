@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.v
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdLastObjectRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.resource.FirebirdConnectionResourceManager;
 
 import java.nio.charset.Charset;
@@ -98,6 +99,9 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(FirebirdCharacterSets.findCharacterSet("NONE"));
         FirebirdConnectionProtocolVersion.getInstance().setProtocolVersion(connectionId, acceptPacket.getProtocol().getVersion());
         context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).set(acceptPacket.getProtocol().getVersion());
+        if (acceptPacket.isLazySend()) {
+            FirebirdLastObjectRegistry.getInstance().registerLazySendConnection(connectionId);
+        }
         String username = connectPacket.getLogin();
         ShardingSphereUser user = rule.findUser(new Grantee(username, "")).orElseThrow(() -> new AccessDeniedException(username, connectPacket.getHost(), true));
         FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user));

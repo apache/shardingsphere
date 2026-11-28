@@ -54,7 +54,7 @@ public final class FirebirdPrepareStatementPacket extends FirebirdCommandPacket 
     public FirebirdPrepareStatementPacket(final FirebirdPacketPayload payload) {
         payload.skipReserved(4);
         transactionId = payload.readInt4();
-        statementId = payload.readInt4();
+        statementId = payload.readObjectHandle();
         sqlDialect = payload.readInt4();
         String originSQL = payload.readString();
         hintValueContext = SQLHintUtils.extractHint(originSQL);
