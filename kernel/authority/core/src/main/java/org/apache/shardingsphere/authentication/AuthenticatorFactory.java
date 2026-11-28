@@ -23,6 +23,7 @@ import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Authenticator factory.
@@ -50,7 +51,7 @@ public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {
     
     private E getAuthenticatorType(final String authenticationMethodName) {
         try {
-            return Enum.valueOf(authenticatorTypeClass, authenticationMethodName.toUpperCase());
+            return Enum.valueOf(authenticatorTypeClass, authenticationMethodName.toUpperCase(Locale.ROOT));
         } catch (final IllegalArgumentException ignored) {
             return Arrays.stream(authenticatorTypeClass.getEnumConstants()).filter(AuthenticatorType::isDefault).findAny().orElseThrow(IllegalArgumentException::new);
         }
