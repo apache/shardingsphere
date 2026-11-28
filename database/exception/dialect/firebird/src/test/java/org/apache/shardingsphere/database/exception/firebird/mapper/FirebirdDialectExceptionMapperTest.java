@@ -55,6 +55,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +74,7 @@ class FirebirdDialectExceptionMapperTest {
         SQLException actual = mapper.convert(sqlDialectException);
         assertThat(actual.getSQLState(), is(vendorError.getSqlState().getValue()));
         assertThat(actual.getErrorCode(), is(vendorError.getVendorCode()));
-        assertThat(actual.getMessage(), is(String.format(vendorError.getReason(), messageArgs)));
+        assertThat(actual.getMessage(), is(String.format(Locale.ROOT, vendorError.getReason(), messageArgs)));
         assertThat(((FirebirdSQLException) actual).getMessageArguments(), is(Arrays.asList(messageArgs)));
     }
     
