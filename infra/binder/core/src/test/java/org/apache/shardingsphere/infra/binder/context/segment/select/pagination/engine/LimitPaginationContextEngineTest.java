@@ -84,4 +84,16 @@ class LimitPaginationContextEngineTest {
         assertThat(actual.getOffsetSegment().orElseThrow(AssertionError::new), sameInstance(offset));
         assertFalse(actual.getRowCountSegment().isPresent());
     }
+    
+    @Test
+    void assertCreatePaginationContextWithOneBasedRowRange() {
+        NumberLiteralLimitValueSegment offset = new NumberLiteralLimitValueSegment(0, 10, 2L);
+        NumberLiteralLimitValueSegment rowCount = new NumberLiteralLimitValueSegment(10, 20, 3L);
+        LimitSegment limitSegment = new LimitSegment(0, 20, offset, rowCount);
+        limitSegment.setOneBasedRowRange(true);
+        PaginationContext actual = paginationContextEngine.createPaginationContext(limitSegment, Collections.emptyList());
+        assertThat(actual.getActualOffset(), is(2L));
+        assertThat(actual.getActualRowCount().orElseThrow(AssertionError::new), is(3L));
+        assertThat(actual.getRevisedOffset(), is(1L));
+    }
 }
