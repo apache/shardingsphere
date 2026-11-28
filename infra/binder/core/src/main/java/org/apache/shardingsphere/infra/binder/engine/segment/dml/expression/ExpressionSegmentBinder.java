@@ -182,6 +182,8 @@ public final class ExpressionSegmentBinder {
         for (ExpressionSegment each : segment.getChildren()) {
             children.add(bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
-        return new CommonExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), children);
+        CommonExpressionSegment result = new CommonExpressionSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getText(), children);
+        result.setRowExpansion(segment.isRowExpansion());
+        return result;
     }
 }

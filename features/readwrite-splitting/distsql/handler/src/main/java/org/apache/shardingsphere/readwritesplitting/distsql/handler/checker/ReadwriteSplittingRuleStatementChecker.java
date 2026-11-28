@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -214,7 +215,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         Collection<String> validStrategyNames = Arrays.stream(TransactionalReadQueryStrategy.values()).map(Enum::name).collect(Collectors.toSet());
         for (ReadwriteSplittingRuleSegment each : segments) {
             if (null != each.getTransactionalReadQueryStrategy()) {
-                ShardingSpherePreconditions.checkContains(validStrategyNames, each.getTransactionalReadQueryStrategy().toUpperCase(),
+                ShardingSpherePreconditions.checkContains(validStrategyNames, each.getTransactionalReadQueryStrategy().toUpperCase(Locale.ROOT),
                         () -> new MissingRequiredStrategyException("Transactional read query", Collections.singleton(each.getTransactionalReadQueryStrategy())));
             }
         }

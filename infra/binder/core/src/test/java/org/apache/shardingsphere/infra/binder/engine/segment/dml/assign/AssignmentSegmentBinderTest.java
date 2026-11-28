@@ -33,8 +33,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -53,6 +55,7 @@ import java.util.LinkedList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -127,11 +130,35 @@ class AssignmentSegmentBinderTest {
     }
     
     @Test
+    void assertBindConflictProposedRowColumn() {
+        ColumnSegment proposedColumn = new ColumnSegment(15, 31, new IdentifierValue("order_id"));
+        proposedColumn.setOwner(new OwnerSegment(15, 22, new IdentifierValue("EXCLUDED")));
+        ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 31, Collections.singletonList(new ColumnSegment(0, 7, new IdentifierValue("order_id"))), proposedColumn);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tables = createTableBinderContexts();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTables = LinkedHashMultimap.create();
+        outerTables.putAll(CaseInsensitiveString.of("excluded"), tables.get(CaseInsensitiveString.of("t_order")));
+        SQLStatementBinderContext context = new SQLStatementBinderContext(createBinderContext().getMetaData(), "foo_db", new HintValueContext(),
+                SelectStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).build());
+        OnDuplicateKeyColumnsSegment actual = AssignmentSegmentBinder.bind(new OnDuplicateKeyColumnsSegment(0, 31, Collections.singletonList(assignment)), context, tables, outerTables);
+        ColumnSegment actualValue = (ColumnSegment) actual.getColumns().iterator().next().getValue();
+        assertThat(actualValue.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualValue.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+        assertThat(actualValue.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
+        assertThat(actualValue.getStartIndex(), is(15));
+        assertThat(actualValue.getStopIndex(), is(31));
+        assertThat(actualValue, not(sameInstance(proposedColumn)));
+        assertThat(proposedColumn.getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+    }
+    
+    @Test
     void assertBindOnDuplicateKeyColumnsSegmentWithConflictTarget() {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new LiteralExpressionSegment(0, 0, 1));
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(assignment));
         onDuplicateKeyColumnsSegment.getConflictColumns().add(new ColumnSegment(2, 9, new IdentifierValue("order_id")));
+        ColumnSegment conditionColumn = new ColumnSegment(15, 22, new IdentifierValue("order_id"));
+        WhereSegment conflictWhere = new WhereSegment(9, 26, new BinaryOperationExpression(15, 26, conditionColumn, new LiteralExpressionSegment(26, 26, 0), ">", "order_id > 0"));
+        onDuplicateKeyColumnsSegment.setConflictTargetWhere(conflictWhere);
         OnDuplicateKeyColumnsSegment actual = AssignmentSegmentBinder.bind(onDuplicateKeyColumnsSegment, createBinderContext(), createTableBinderContexts(), LinkedHashMultimap.create());
         assertThat(actual, not(onDuplicateKeyColumnsSegment));
         assertThat(actual.getColumns().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
@@ -139,6 +166,13 @@ class AssignmentSegmentBinderTest {
         assertThat(actual.getConflictColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actual.getConflictColumns().iterator().next().getStartIndex(), is(2));
         assertThat(actual.getConflictColumns().iterator().next().getStopIndex(), is(9));
+        assertThat(actual.getConflictTargetWhere().get(), not(sameInstance(conflictWhere)));
+        ColumnSegment actualConditionColumn = (ColumnSegment) ((BinaryOperationExpression) actual.getConflictTargetWhere().get().getExpr()).getLeft();
+        assertThat(actualConditionColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualConditionColumn.getStartIndex(), is(15));
+        assertThat(actualConditionColumn.getStopIndex(), is(22));
+        assertThat(conditionColumn.getColumnBoundInfo().getOriginalTable().getValue(), is(""));
+        assertThat(onDuplicateKeyColumnsSegment.getConflictTargetWhere().get(), sameInstance(conflictWhere));
     }
     
     @Test

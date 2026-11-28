@@ -32,9 +32,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSQLOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
 import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
-import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLSQLOption;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -94,7 +94,7 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     
     @Override
     public DialectSQLOption getSQLOption() {
-        return new PostgreSQLSQLOption();
+        return new OpenGaussSQLOption();
     }
     
     @Override

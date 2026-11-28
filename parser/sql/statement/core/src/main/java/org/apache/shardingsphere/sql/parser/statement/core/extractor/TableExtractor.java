@@ -125,7 +125,11 @@ public final class TableExtractor {
         if (selectStatement.getWhere().isPresent()) {
             extractTablesFromExpression(selectStatement.getWhere().get().getExpr(), tableScope);
         }
-        if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
+        if (!selectStatement.getValues().isEmpty() && !selectStatement.getCombine().isPresent()) {
+            for (InsertValuesSegment each : selectStatement.getValues()) {
+                extractTablesFromExpressions(each.getValues(), tableScope);
+            }
+        } else if (null != selectStatement.getProjections() && !selectStatement.getCombine().isPresent()) {
             extractTablesFromProjections(selectStatement.getProjections(), tableScope);
         }
         if (selectStatement.getGroupBy().isPresent()) {
@@ -429,6 +433,7 @@ public final class TableExtractor {
         if (deleteStatement.getWhere().isPresent()) {
             extractTablesFromExpression(deleteStatement.getWhere().get().getExpr(), tableScope);
         }
+        deleteStatement.getWith().ifPresent(with -> extractTablesFromCTEs(with.getCommonTableExpressions(), tableScope));
     }
     
     /**
@@ -456,6 +461,7 @@ public final class TableExtractor {
             SelectStatement selectStatement = insertStatement.getInsertSelect().get().getSelect();
             extractTablesFromSelect(selectStatement, selectStatement.getFrom().orElse(null), tableScope);
         }
+        insertStatement.getWith().ifPresent(with -> extractTablesFromCTEs(with.getCommonTableExpressions(), tableScope));
     }
     
     private void extractTablesFromAssignmentItems(final Collection<ColumnAssignmentSegment> assignmentItems, final TableScope tableScope) {
@@ -497,6 +503,7 @@ public final class TableExtractor {
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr(), tableScope);
         }
+        updateStatement.getWith().ifPresent(with -> extractTablesFromCTEs(with.getCommonTableExpressions(), tableScope));
     }
     
     /**

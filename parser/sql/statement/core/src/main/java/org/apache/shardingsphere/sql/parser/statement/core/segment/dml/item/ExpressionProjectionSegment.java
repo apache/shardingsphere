@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Alias
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -45,6 +46,10 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     @Setter
     private AliasSegment alias;
     
+    @Setter
+    @Nullable
+    private IdentifierValue defaultColumnLabel;
+    
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
@@ -61,7 +66,7 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     @Override
     public String getColumnLabel() {
-        return getAliasName().orElse(text);
+        return getAliasName().orElse(null == defaultColumnLabel ? text : defaultColumnLabel.getValue());
     }
     
     @Override

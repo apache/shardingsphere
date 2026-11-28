@@ -35,6 +35,8 @@ variableValue ::=
 
 - `agent_plugins_enabled` is used to set the `agent` plugin status. Its default value is `TRUE`.
 
+- Boolean properties accept `TRUE`, `FALSE`, `1` and `0` in any case; any other value is rejected.
+
 ### Example
 
 - Set a ShardingSphere property

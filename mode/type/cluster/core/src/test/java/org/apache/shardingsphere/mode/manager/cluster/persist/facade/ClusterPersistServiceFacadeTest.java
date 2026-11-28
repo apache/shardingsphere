@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.persist.facade;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterComputeNodePersistService;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterMetaDataManagerPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.persist.service.ClusterProcessPersistService;
@@ -28,13 +27,15 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,12 +56,14 @@ class ClusterPersistServiceFacadeTest {
     }
     
     @Test
-    void assertCloseOfflineInstance() {
-        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getId()).thenReturn("foo_instance");
-        when(instanceMetaData.getType()).thenReturn(InstanceType.PROXY);
-        when(metaDataContextManager.getComputeNodeInstanceContext().getInstance()).thenReturn(new ComputeNodeInstance(instanceMetaData));
-        new ClusterPersistServiceFacade(metaDataContextManager, repository).close();
-        verify(repository).delete("/nodes/compute_nodes/online/proxy/foo_instance");
+    void assertRegisterOnlineAndClose() {
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo_instance", 3307));
+        when(metaDataContextManager.getComputeNodeInstanceContext().getInstance()).thenReturn(computeNodeInstance);
+        ClusterPersistServiceFacade actual = new ClusterPersistServiceFacade(metaDataContextManager, repository);
+        actual.registerOnline();
+        actual.close();
+        InOrder inOrder = inOrder(repository);
+        inOrder.verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/foo_instance"), anyString());
+        inOrder.verify(repository).delete("/nodes/compute_nodes/online/proxy/foo_instance");
     }
 }

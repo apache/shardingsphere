@@ -110,6 +110,18 @@ class FirebirdConnectPacketTest {
         assertDoesNotThrow(() -> createPacketWithoutSpecificData().write(payload));
     }
     
+    @Test
+    void assertGetLength() {
+        ByteBuf packet = Unpooled.buffer();
+        packet.writeInt(FirebirdCommandPacketType.CONNECT.getValue()).writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(3).writeInt(FirebirdArchType.ARCH_GENERIC.getCode());
+        packet.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        packet.writeInt(2);
+        packet.writeInt(10).writeByte(FirebirdUserDataType.CNCT_LOGIN.getCode()).writeByte(8).writeBytes("foo_user".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        packet.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
+        packet.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(1);
+        assertThat(FirebirdConnectPacket.getLength(new FirebirdPacketPayload(packet, StandardCharsets.UTF_8)), is(packet.readableBytes()));
+    }
+    
     private FirebirdConnectPacket createPacketWithSpecificData() {
         when(payload.readInt4()).thenReturn(1, FirebirdArchType.ARCH_GENERIC.getCode(), 1);
         when(payload.readString()).thenReturn("db");

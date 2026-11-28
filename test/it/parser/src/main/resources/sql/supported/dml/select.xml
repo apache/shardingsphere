@@ -89,9 +89,12 @@
     <sql-case id="select_with_force_index_join" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL,Doris" />
     <sql-case id="select_with_index_hint_for_order_by_mysql" value="SELECT * FROM t1 USE INDEX FOR ORDER BY (i1) ORDER BY col1" db-types="MySQL" />
     <sql-case id="select_with_index_hint_for_group_by_mysql" value="SELECT * FROM t1 USE INDEX FOR GROUP BY (i1) GROUP BY col1" db-types="MySQL" />
-    <sql-case id="select_equal_with_geography" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_in_with_geography" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
-    <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_equal_with_geography" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="openGauss" />
+    <sql-case id="select_equal_with_geography_postgresql" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL" />
+    <sql-case id="select_in_with_geography" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="openGauss" />
+    <sql-case id="select_in_with_geography_postgresql" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL" />
+    <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="openGauss" />
+    <sql-case id="select_between_with_geography_postgresql" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL" />
     <sql-case id="select_with_schema" value="SELECT * FROM db1.t_order" />
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_interval_function" value="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
@@ -283,6 +286,7 @@
     <sql-case id="select_with_order_by_index_oracle" value="SELECT * FROM t_order ORDER BY 1 NULLS LAST" db-types="Oracle" />
     <sql-case id="select_is_nan_oracle" value="SELECT to_binary_float('NaN') FROM dual WHERE to_binary_float('NaN') IS NAN" db-types="Oracle" />
     <sql-case id="select_group_by_rollup_oracle_with_rollup" value="SELECT department_id, COUNT(*) FROM employees GROUP BY ROLLUP(department_id)" db-types="Oracle" />
+    <sql-case id="select_oracle_analytic_window_and_trim_parameters" value="SELECT NTH_VALUE(&quot;pri?ce&quot;, ?) OVER (ORDER BY product_id ROWS BETWEEN ? PRECEDING AND ? FOLLOWING), TRIM(? FROM product_name) FROM t_product" db-types="Oracle" case-types="PLACEHOLDER" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
     <sql-case id="select_oracle_quantified_some_subquery" value="SELECT user_id FROM t_user WHERE user_id = SOME (SELECT user_id FROM t_order)" db-types="Oracle" />
@@ -447,6 +451,8 @@
     <sql-case id="select_from_function_table_doris" value="SELECT * FROM table_func(1, 2)" db-types="Doris" />
     <sql-case id="select_from_function_expr_table_doris" value="SELECT * FROM generate_series(1, 3) AS gs" db-types="Doris" />
     <sql-case id="select_interval_firebird" value="SELECT INTERVAL 1 DAY FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_alternative_quoted_literal_with_paired_delimiter_firebird" value="SELECT Q'{it's}' FROM RDB$DATABASE" db-types="Firebird"/>
+    <sql-case id="select_alternative_quoted_literal_with_same_delimiter_firebird" value="SELECT q'!a (b) c!' FROM RDB$DATABASE" db-types="Firebird"/>
     <sql-case id="select_having_firebird" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Firebird"/>
     <sql-case id="select_function_table_firebird" value="SELECT * FROM foo(1)" db-types="Firebird"/>
     <sql-case id="select_cast_int_firebird" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="Firebird"/>

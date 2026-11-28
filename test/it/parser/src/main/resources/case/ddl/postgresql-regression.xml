@@ -487,7 +487,7 @@
         <rename-view name="normalize" start-index="30" stop-index="38" />
     </alter-view>
 
-    <declare sql-case-id="declare_asensitive_cursor_postgresql">
+    <cursor sql-case-id="declare_asensitive_cursor_postgresql">
         <cursor-name name="foo_cursor" start-index="8" stop-index="17" />
         <select>
             <from>
@@ -497,7 +497,7 @@
                 <column-projection name="id" start-index="48" stop-index="49" />
             </projections>
         </select>
-    </declare>
+    </cursor>
 
     <alter-table sql-case-id="alter_table_detach_partition_finalize_postgresql">
         <table name="foo" start-index="12" stop-index="14" />

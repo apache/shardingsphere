@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +49,10 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         Optional<SQLToken> previousToken = Optional.empty();
         for (int i = 0; i < sqlTokens.size(); i++) {
             SQLToken each = sqlTokens.get(i);
-            if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousToken.map(SQLToken::getStopIndex).orElse(0)) {
-                appendRewriteSQL(each, result, i);
+            boolean tableShorthand = each instanceof SubstitutableColumnNameToken && ((SubstitutableColumnNameToken) each).isTableShorthand();
+            int previousStopIndex = previousToken.map(SQLToken::getStopIndex).orElse(tableShorthand ? -1 : 0);
+            if (isContainsAttachableToken(each, previousToken.orElse(null)) || each.getStartIndex() > previousStopIndex) {
+                appendRewriteSQL(each, result, i, tableShorthand);
                 previousToken = Optional.of(each);
             }
         }
@@ -60,8 +63,12 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         return sqlToken instanceof Attachable || previousToken instanceof Attachable;
     }
     
-    private void appendRewriteSQL(final SQLToken sqlToken, final StringBuilder builder, final int currentSQLTokenIndex) {
-        builder.append(getSQLTokenText(sqlToken));
+    private void appendRewriteSQL(final SQLToken sqlToken, final StringBuilder builder, final int currentSQLTokenIndex, final boolean tableShorthand) {
+        if (tableShorthand) {
+            builder.append("SELECT ").append(getSQLTokenText(sqlToken)).append(" FROM");
+        } else {
+            builder.append(getSQLTokenText(sqlToken));
+        }
         builder.append(getConjunctionText(sqlTokens, sql.length(), currentSQLTokenIndex));
     }
     

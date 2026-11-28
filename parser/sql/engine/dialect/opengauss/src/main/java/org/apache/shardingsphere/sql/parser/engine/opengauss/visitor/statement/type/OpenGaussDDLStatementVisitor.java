@@ -571,7 +571,7 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
         for (IndexElemContext each : ctx.indexElem()) {
             if (null != each.colId()) {
-                result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), new IdentifierValue(each.colId().getText())));
+                result.getValue().add(new ColumnSegment(each.colId().start.getStartIndex(), each.colId().stop.getStopIndex(), (IdentifierValue) visit(each.colId().identifier())));
             }
             if (null != each.functionExprWindowless()) {
                 FunctionSegment functionSegment = (FunctionSegment) visit(each.functionExprWindowless());

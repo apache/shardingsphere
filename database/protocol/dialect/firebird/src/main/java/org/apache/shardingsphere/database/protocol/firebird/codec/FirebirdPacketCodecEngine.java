@@ -61,7 +61,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     @Override
     public boolean isValidHeader(final int readableBytes) {
-        return readableBytes >= MESSAGE_TYPE_LENGTH;
+        return !pendingMessages.isEmpty() || readableBytes >= MESSAGE_TYPE_LENGTH;
     }
     
     @Override
@@ -126,7 +126,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     private void processPackets(final ChannelHandlerContext context, final ByteBuf buffer, final List<Object> out) {
         Charset charset = context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get();
         while (buffer.isReadable()) {
-            if (!isValidHeader(buffer.readableBytes())) {
+            if (buffer.readableBytes() < MESSAGE_TYPE_LENGTH) {
                 pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
                 return;
             }

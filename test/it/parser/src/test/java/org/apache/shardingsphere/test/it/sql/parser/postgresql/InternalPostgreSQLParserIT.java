@@ -24,10 +24,12 @@ import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.SubqueryExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.PrivilegeObjectSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
@@ -38,12 +40,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.List
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.TemporalLiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.DeleteMultiTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.FunctionTableSegment;
@@ -53,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CursorStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.FetchStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
@@ -66,6 +71,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT;
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.registry.SQLParserTestCasesRegistry;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.SQLCasesRegistry;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -89,9 +100,45 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @InternalSQLParserITSettings("PostgreSQL")
 class InternalPostgreSQLParserIT extends InternalSQLParserIT {
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getValuesRowsArguments")
+    void assertValuesRows(final String name, final String sql, final int parameterCount, final int subqueryCount) {
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getValues().size(), is(2));
+        assertThat(actual.getProjections().getProjections().stream().map(ProjectionSegment::getColumnLabel).collect(Collectors.toList()), is(Arrays.asList("column1", "column2")));
+        Collection<ExpressionSegment> expressions = new ArrayList<>(4);
+        for (InsertValuesSegment each : actual.getValues()) {
+            assertThat(each.getValues().size(), is(2));
+            assertThat(sql.charAt(each.getStartIndex()), is('('));
+            assertThat(sql.charAt(each.getStopIndex()), is(')'));
+            expressions.addAll(each.getValues());
+        }
+        assertThat(actual.getParameterCount(), is(parameterCount));
+        assertThat(ExpressionExtractor.getParameterMarkerExpressions(expressions).stream().sorted(Comparator.comparingInt(ParameterMarkerSegment::getStartIndex))
+                .map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(IntStream.range(0, parameterCount).boxed().collect(Collectors.toList())));
+        assertThat(SubqueryExtractor.extractSubquerySegments(actual, false).size(), is(subqueryCount));
+    }
+    
+    private static Stream<Arguments> getValuesRowsArguments() {
+        return Stream.of(Arguments.of("plain rows", "VALUES (?, ?), (?, ?) ORDER BY column1", 4, 0),
+                Arguments.of("later scalar subquery", "VALUES (?, ?), (?, (SELECT LOWER(email) FROM t_user WHERE user_id = ?)) ORDER BY column1", 4, 1),
+                Arguments.of("mixed encrypted rows",
+                        "VALUES (?, (SELECT user_name FROM t_user WHERE user_id = ?)), (?, COALESCE((SELECT user_name || ? FROM t_user WHERE user_id = ?), ?)) ORDER BY column1", 6, 2));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @ValueSource(strings = {"drop_materialized_view_schema_targets", "drop_materialized_view_multiple_targets", "drop_materialized_view_quoted_targets"})
+    void assertDropMaterializedViewTargets(final String caseId) {
+        SQLParserTestCase expected = SQLParserTestCasesRegistry.getInstance().getCases().get(caseId);
+        String sql = SQLCasesRegistry.getInstance().getCases().getSQL(caseId, SQLCaseType.LITERAL, expected.getParameters());
+        SQLStatement actual = new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        SQLStatementAssert.assertIs(new SQLCaseAssertContext(caseId, sql, expected.getParameters(), SQLCaseType.LITERAL), actual, expected);
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getQuotedIdentifierCases")
@@ -242,27 +289,62 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         return Stream.of("CREATE TABLE t (b bool DEFAULT 1 IN (1, 2))", "CREATE TABLE t (b bool DEFAULT 1 = 2 = 3)", "CREATE STATISTICS s ON y + z FROM t", "CREATE STATISTICS s ON (x, y) FROM t");
     }
     
+    @ParameterizedTest
+    @MethodSource("getFilteredFunctionColumnLabels")
+    void assertFilteredFunctionColumnLabel(final String expression, final String columnLabel) {
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse("SELECT " + expression + " FROM t_order", false));
+        ExpressionProjectionSegment actualProjection = (ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        assertThat(actualProjection.getDefaultColumnLabel().getValue(), is(columnLabel));
+    }
+    
+    private static Stream<Arguments> getFilteredFunctionColumnLabels() {
+        return Stream.of(
+                Arguments.of("COUNT(*) FILTER (WHERE status = ?)", "COUNT"),
+                Arguments.of("COUNT(*) FILTER (WHERE status = ?) OVER (PARTITION BY user_id)", "COUNT"),
+                Arguments.of("SUM(order_id) FILTER (WHERE status = ?)::text::varchar", "SUM"),
+                Arguments.of("((COUNT(*) FILTER (WHERE status = ?)))", "COUNT"),
+                Arguments.of("CAST(COUNT(*) FILTER (WHERE status = ?) AS TEXT)", "COUNT"),
+                Arguments.of("pg_catalog.count(*) FILTER (WHERE status = ?)", "count"),
+                Arguments.of("percentile_cont(?) WITHIN GROUP (ORDER BY order_id)", "percentile_cont"));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {"COUNT(*) FILTER (WHERE status = ?) + 1", "COUNT(*) FILTER (WHERE status = ?) IS NULL", "ABS(1)"})
+    void assertCompoundFilteredFunctionHasNoDefaultLabel(final String expression) {
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL")
+                .visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse("SELECT " + expression + " FROM t_order", false));
+        ExpressionProjectionSegment actualProjection = (ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        assertNull(actualProjection.getDefaultColumnLabel());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getFilteredAggregateCases")
-    void assertFilteredAggregate(final String expression, final Class<?> aggregateType, final boolean window, final int parameterCount) {
+    void assertFilteredAggregate(final String expression, final Class<?> aggregateType, final boolean window, final int parameterCount, final String expectedFilter) {
         String sql = "SELECT " + expression;
         SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
         CommonExpressionSegment filtered = (CommonExpressionSegment) ((ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next()).getExpr();
         assertThat(filtered.getText(), is(sql.substring(filtered.getStartIndex(), filtered.getStopIndex() + 1)));
         assertThat(filtered.getChildren().size(), is(2));
-        AggregationProjectionSegment aggregate = (AggregationProjectionSegment) filtered.getChildren().iterator().next();
+        Iterator<ExpressionSegment> actualChildren = filtered.getChildren().iterator();
+        AggregationProjectionSegment aggregate = (AggregationProjectionSegment) actualChildren.next();
+        ExpressionSegment actualFilter = actualChildren.next();
+        assertThat(sql.substring(actualFilter.getStartIndex(), actualFilter.getStopIndex() + 1), is(expectedFilter));
+        assertThat(sql.substring(aggregate.getStartIndex(), aggregate.getStopIndex() + 1), is(aggregate.getExpression()));
         assertThat(aggregate.getClass(), is(aggregateType));
-        assertThat(aggregate.getWindow().isPresent(), is(window));
+        assertTrue(window == aggregate.getWindow().isPresent());
         assertThat(actual.getParameterCount(), is(parameterCount));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()),
+                is(IntStream.range(0, parameterCount).boxed().collect(Collectors.toList())));
     }
     
     private static Stream<Arguments> getFilteredAggregateCases() {
         return Stream.of(
-                Arguments.of("SUM(id) FILTER (WHERE TRUE) FROM foo_table", AggregationProjectionSegment.class, false, 0),
-                Arguments.of("COUNT(*) FILTER (WHERE FALSE)", AggregationProjectionSegment.class, false, 0),
-                Arguments.of("COUNT(DISTINCT ?) FILTER (WHERE ?)", AggregationDistinctProjectionSegment.class, false, 2),
-                Arguments.of("SUM(?) FILTER (WHERE ?) OVER (PARTITION BY ? ORDER BY ? ROWS ? PRECEDING)", AggregationProjectionSegment.class, true, 5),
-                Arguments.of("SUM((SELECT ?)) FILTER (WHERE EXISTS (SELECT ?))", AggregationProjectionSegment.class, false, 2));
+                Arguments.of("SUM(id) FILTER (WHERE TRUE) FROM foo_table", AggregationProjectionSegment.class, false, 0, "TRUE"),
+                Arguments.of("COUNT(*) FILTER (WHERE FALSE)", AggregationProjectionSegment.class, false, 0, "FALSE"),
+                Arguments.of("COUNT(DISTINCT ?) FILTER (WHERE ?)", AggregationDistinctProjectionSegment.class, false, 2, "?"),
+                Arguments.of("SUM(?) FILTER (WHERE ?) OVER (PARTITION BY ? ORDER BY ? ROWS ? PRECEDING)", AggregationProjectionSegment.class, true, 5, "?"),
+                Arguments.of("SUM((SELECT ?)) FILTER (WHERE EXISTS (SELECT ?))", AggregationProjectionSegment.class, false, 2, "EXISTS (SELECT ?)"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -317,6 +399,106 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         assertThat(((ParameterMarkerExpressionSegment) aggregate.getParameters().iterator().next()).getParameterMarkerIndex(), is(0));
         assertThat(((ParameterMarkerExpressionSegment) children.next()).getParameterMarkerIndex(), is(1));
         assertThat(actual.getParameterCount(), is(2));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(Arrays.asList(0, 1)));
+    }
+    
+    @ParameterizedTest
+    @ValueSource(strings = {"FOR UPDATE SKIP LOCKED", "FOR NO KEY UPDATE SKIP LOCKED", "FOR SHARE SKIP LOCKED", "FOR KEY SHARE SKIP LOCKED"})
+    void assertSkipLocked(final String lockingClause) {
+        String sql = "SELECT foo_id FROM foo_table WHERE foo_id = ? " + lockingClause;
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(sql.substring(actual.getLock().get().getStartIndex(), actual.getLock().get().getStopIndex() + 1), is(lockingClause));
+        assertThat(actual.getParameterCount(), is(1));
+        assertThat(actual.getParameterMarkers().iterator().next().getParameterIndex(), is(0));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getBinaryAssignmentCases")
+    void assertBinaryAssignment(final String expression, final String expectedOperator, final Collection<Integer> expectedParams) {
+        String sql = "UPDATE foo_table SET foo_value = " + expression + " WHERE foo_id = ?";
+        UpdateStatement actual = (UpdateStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        BinaryOperationExpression actualExpression = (BinaryOperationExpression) actual.getSetAssignment().getAssignments().iterator().next().getValue();
+        assertThat(actualExpression.getOperator(), is(expectedOperator));
+        assertThat(sql.substring(actualExpression.getStartIndex(), actualExpression.getStopIndex() + 1), is(expression));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(expectedParams));
+    }
+    
+    private static Stream<Arguments> getBinaryAssignmentCases() {
+        return Stream.of(
+                Arguments.of("COALESCE(foo_value, ?) || ?", "||", Arrays.asList(0, 1, 2)),
+                Arguments.of("ABS(foo_value) % ?", "%", Arrays.asList(0, 1)),
+                Arguments.of("foo_value ^ ?", "^", Arrays.asList(0, 1)),
+                Arguments.of("foo_value & ?", "&", Arrays.asList(0, 1)),
+                Arguments.of("foo_value | ?", "|", Arrays.asList(0, 1)),
+                Arguments.of("JSON_BUILD_OBJECT('key', foo_value) ->> 'key'", "->>", Collections.singletonList(0)));
+    }
+    
+    @ParameterizedTest
+    @MethodSource("tableQueries")
+    void assertTableQuerySourceAndProjections(final String sql) {
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        SimpleTableSegment actualFrom = (SimpleTableSegment) actual.getFrom().get();
+        assertThat(actualFrom.getTableName().getIdentifier().getValue(), is("foo_table"));
+        assertTrue(actual.getProjections().isTableShorthand());
+        ShorthandProjectionSegment actualProjection = (ShorthandProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        assertThat(actualProjection.getStartIndex(), is(0));
+        assertThat(actualProjection.getStopIndex(), is(4));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(Collections.singletonList(0)));
+    }
+    
+    private static Stream<String> tableQueries() {
+        return Stream.of("TABLE foo_table ORDER BY foo_id LIMIT ?", "TABLE ONLY foo_table ORDER BY foo_id LIMIT ?");
+    }
+    
+    @Test
+    void assertValuesNativeDefaultLabelsAndParameterOrder() {
+        String sql = "VALUES (?, ?), (?, ?) ORDER BY column1";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        List<ProjectionSegment> actualProjections = new ArrayList<>(actual.getProjections().getProjections());
+        assertThat(((ExpressionProjectionSegment) actualProjections.get(0)).getDefaultColumnLabel().getValue(), is("column1"));
+        assertThat(((ExpressionProjectionSegment) actualProjections.get(1)).getDefaultColumnLabel().getValue(), is("column2"));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(Arrays.asList(0, 1, 2, 3)));
+    }
+    
+    @Test
+    void assertParenthesizedRowExpansion() {
+        String sql = "SELECT (u).* FROM foo_table u WHERE foo_id = ?";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        ExpressionProjectionSegment actualProjection = (ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next();
+        assertThat(actualProjection.getStartIndex(), is(7));
+        assertThat(actualProjection.getStopIndex(), is(11));
+        CommonExpressionSegment actualExpression = (CommonExpressionSegment) actualProjection.getExpr();
+        assertTrue(actualExpression.isRowExpansion());
+        assertThat(actualExpression.getChildren().size(), is(1));
+        ColumnSegment actualColumn = (ColumnSegment) actualExpression.getChildren().iterator().next();
+        assertThat(actualColumn.getIdentifier().getValue(), is("u"));
+        assertThat(actualColumn.getStartIndex(), is(8));
+        assertThat(actualColumn.getStopIndex(), is(8));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(Collections.singletonList(0)));
+    }
+    
+    @Test
+    void assertDistinctOnExpressionsAndParameterOrder() {
+        String sql = "SELECT DISTINCT ON (COALESCE(foo_id, ?), foo_column) ? FROM foo_table WHERE foo_id = ?";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertTrue(actual.getProjections().isDistinctRow());
+        assertThat(actual.getProjections().getDistinctOnItems().size(), is(2));
+        FunctionSegment actualFunction = (FunctionSegment) actual.getProjections().getDistinctOnItems().get(0);
+        assertThat(actualFunction.getFunctionName(), is("COALESCE"));
+        assertThat(actualFunction.getStartIndex(), is(sql.indexOf("COALESCE")));
+        assertThat(actualFunction.getStopIndex(), is(sql.indexOf(")")));
+        assertThat(((ColumnSegment) actualFunction.getParameters().iterator().next()).getIdentifier().getValue(), is("foo_id"));
+        assertThat(((ColumnSegment) actual.getProjections().getDistinctOnItems().get(1)).getIdentifier().getValue(), is("foo_column"));
+        assertThat(((ParameterMarkerExpressionSegment) ((ExpressionProjectionSegment) actual.getProjections().getProjections().iterator().next()).getExpr()).getParameterMarkerIndex(), is(1));
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(Arrays.asList(0, 1, 2)));
+    }
+    
+    @Test
+    void assertGroupingExtensionParameters() {
+        String sql = "SELECT COUNT(*) FROM foo_table GROUP BY ROLLUP(COALESCE(foo_id, ?))";
+        SelectStatement actual = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertTrue(actual.getGroupBy().get().isContainsGroupingExtension());
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()), is(Collections.singletonList(0)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -810,6 +992,63 @@ class InternalPostgreSQLParserIT extends InternalSQLParserIT {
         assertNull(actualColumn.getNestedObjectAttributes());
         assertThat(sql.substring(actualColumn.getStartIndex(), actualColumn.getStopIndex() + 1), is("foo_column"));
         assertThat(actual.getParameterCount(), is(1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getConflictTargetCases")
+    void assertConflictTarget(final String name, final String conflict, final Collection<String> expectedColumns,
+                              final int expectedParameterCount, final String expectedTargetWhere, final String expectedActionWhere) {
+        String sql = "INSERT INTO foo_table (foo) VALUES (?) ON CONFLICT " + conflict;
+        InsertStatement actual = (InsertStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        Collection<ColumnSegment> actualColumns = actual.getOnDuplicateKeyColumns().get().getConflictColumns();
+        assertThat(actual.getOnDuplicateKeyColumns().get().getConflictTargetWhere().map(optional -> sql.substring(optional.getStartIndex(), optional.getStopIndex() + 1)).orElse(""),
+                is(expectedTargetWhere));
+        assertThat(actual.getWhere().map(optional -> sql.substring(optional.getStartIndex(), optional.getStopIndex() + 1)).orElse(""), is(expectedActionWhere));
+        assertThat(actualColumns.stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()), is(expectedColumns));
+        for (ColumnSegment each : actualColumns) {
+            assertThat(sql.substring(each.getStartIndex(), each.getStopIndex() + 1), is(each.getIdentifier().getValueWithQuoteCharacters()));
+        }
+        assertThat(actual.getParameterMarkers().stream().map(ParameterMarkerSegment::getParameterIndex).collect(Collectors.toList()),
+                is(IntStream.range(0, expectedParameterCount).boxed().collect(Collectors.toList())));
+    }
+    
+    private static Stream<Arguments> getConflictTargetCases() {
+        return Stream.of(
+                Arguments.of("quoted composite target", "(\"Foo\", bar) DO NOTHING", Arrays.asList("Foo", "bar"), 1, "", ""),
+                Arguments.of("function and predicates", "(lower(foo)) WHERE bar > ? DO UPDATE SET foo = ? WHERE foo <> ? RETURNING ?",
+                        Collections.singletonList("foo"), 5, "WHERE bar > ?", "WHERE foo <> ?"),
+                Arguments.of("expression target", "((foo || bar)) WHERE foo = ? DO NOTHING", Arrays.asList("foo", "bar"), 2, "WHERE foo = ?", ""),
+                Arguments.of("named constraint", "ON CONSTRAINT foo_pk DO NOTHING", Collections.emptyList(), 1, "", ""));
+    }
+    
+    @ParameterizedTest
+    @MethodSource("getTemporalLiteralCases")
+    void assertTemporalLiteralValues(final String expression, final String expectedValue) {
+        String sql = "INSERT INTO foo (bar) VALUES (" + expression + ")";
+        InsertStatement actual = (InsertStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        TemporalLiteralExpressionSegment actualValue = (TemporalLiteralExpressionSegment) actual.getValues().iterator().next().getValues().get(0);
+        assertThat(actualValue.getLiterals(), is(expectedValue));
+        assertThat(actualValue.getText(), is(expression));
+        assertThat(actualValue.getStartIndex(), is(sql.indexOf(expression)));
+        assertThat(actualValue.getStopIndex(), is(sql.length() - 2));
+    }
+    
+    private static Stream<Arguments> getTemporalLiteralCases() {
+        return Stream.of(Arguments.of("DATE '2024-10-24'", "2024-10-24"), Arguments.of("time '12:34:56'", "12:34:56"), Arguments.of("TIMESTAMP  '2024-10-24 12:34:56.123'", "2024-10-24 12:34:56.123"));
+    }
+    
+    @Test
+    void assertDeclareCursorSelectAndParameterMarkers() {
+        String sql = "DECLARE foo_cursor NO SCROLL CURSOR FOR SELECT * FROM t_product_detail WHERE detail_id = ? FOR UPDATE";
+        CursorStatement actual = (CursorStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false));
+        assertThat(actual.getCursorName().getIdentifier().getValue(), is("foo_cursor"));
+        assertThat(actual.getSelect().getDatabaseType().getType(), is("PostgreSQL"));
+        assertThat(actual.getParameterMarkers().size(), is(1));
+        assertThat(actual.getParameterMarkers().iterator().next().getParameterIndex(), is(0));
+        assertThat(actual.getSelect().getParameterMarkers().size(), is(1));
+        BinaryOperationExpression actualPredicate = (BinaryOperationExpression) actual.getSelect().getWhere().get().getExpr();
+        assertThat(((ColumnSegment) actualPredicate.getLeft()).getIdentifier().getValue(), is("detail_id"));
+        assertThat(((ParameterMarkerExpressionSegment) actualPredicate.getRight()).getParameterIndex(), is(0));
     }
     
     @ParameterizedTest(name = "{0}")

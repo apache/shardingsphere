@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.infra.binder.context.statement.type.dml;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.context.extractor.SQLStatementContextExtractor;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -42,6 +45,8 @@ public final class DeleteStatementBaseContext implements SQLStatementContext {
     
     private final DeleteStatement sqlStatement;
     
+    private final Collection<SQLStatementContext> dataModificationBaseContexts;
+    
     private final TablesContext tablesContext;
     
     private final Collection<WhereSegment> whereSegments;
@@ -51,7 +56,14 @@ public final class DeleteStatementBaseContext implements SQLStatementContext {
     private final Collection<BinaryOperationExpression> joinConditions = new LinkedList<>();
     
     public DeleteStatementBaseContext(final DeleteStatement sqlStatement) {
+        this(sqlStatement, null, null);
+    }
+    
+    public DeleteStatementBaseContext(final DeleteStatement sqlStatement, final ShardingSphereMetaData metaData, final String currentDatabaseName) {
         this.sqlStatement = sqlStatement;
+        dataModificationBaseContexts = null != metaData && sqlStatement.getWith().isPresent()
+                ? SQLStatementContextExtractor.createDataModificationBaseContexts(sqlStatement.getWith().get().getCommonTableExpressions(), metaData, currentDatabaseName)
+                : Collections.emptyList();
         tablesContext = new TablesContext(getAllSimpleTableSegments());
         whereSegments = createWhereSegments(sqlStatement);
         columnSegments = ColumnExtractor.extractColumnSegments(whereSegments);

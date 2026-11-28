@@ -175,6 +175,14 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     }
     
     @Override
+    protected void setParameter(final int parameterIndex, final Object value) throws SQLException {
+        int parameterCount = getParameterMetaData().getParameterCount();
+        ShardingSpherePreconditions.checkState(parameterIndex >= 1 && parameterIndex <= parameterCount,
+                () -> new SQLException(String.format("Parameter index '%d' is out of range. Number of parameters: %d.", parameterIndex, parameterCount)));
+        super.setParameter(parameterIndex, value);
+    }
+    
+    @Override
     public ResultSet executeQuery() throws SQLException {
         try {
             if (statementsCacheable && !statements.isEmpty()) {

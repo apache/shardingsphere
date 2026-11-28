@@ -26,6 +26,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AexprConstContext;
@@ -74,6 +75,11 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Ins
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.IntoClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinQualContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JoinedTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonExtractContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonExtractTextContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonOperatorContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonPathExtractContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.JsonPathExtractTextContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.LimitClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NameListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.NaturalJoinTypeContext;
@@ -120,6 +126,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Win
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParserBaseVisitor;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -216,6 +223,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -226,7 +234,13 @@ import java.util.stream.Collectors;
 @Getter(AccessLevel.PROTECTED)
 public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParserBaseVisitor<ASTNode> {
     
+    private static final String INVALID_UNICODE_ESCAPE_CHARACTERS = "0123456789ABCDEFabcdef+'\" \t\n\r\f";
+    
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+    
+    private static final Pattern UNICODE_ESCAPE_PATTERN = Pattern.compile("[0-9A-Fa-f]{4}|\\+[0-9A-Fa-f]{6}");
+    
+    private static final Pattern UNPAIRED_SURROGATE_PATTERN = Pattern.compile("[\\uD800-\\uDFFF]");
     
     private final DatabaseType databaseType;
     
@@ -246,8 +260,50 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public final ASTNode visitIdentifier(final IdentifierContext ctx) {
+        if (null != ctx.UNICODE_ESCAPE()) {
+            return visitUnicodeIdentifier(ctx);
+        }
         UnreservedWordContext unreservedWord = ctx.unreservedWord();
         return null == unreservedWord ? new IdentifierValue(ctx.getText()) : visit(unreservedWord);
+    }
+    
+    private IdentifierValue visitUnicodeIdentifier(final IdentifierContext ctx) {
+        String quoted = ctx.IDENTIFIER_().getText();
+        ShardingSpherePreconditions.checkState('"' == quoted.charAt(0), () -> new SQLParsingException("Unicode identifiers must be quoted"));
+        ShardingSpherePreconditions.checkState(ctx.UNICODE_ESCAPE().getSymbol().getStopIndex() + 1 == ctx.IDENTIFIER_().getSymbol().getStartIndex(),
+                () -> new SQLParsingException("Unicode escape prefix must immediately precede the quoted identifier"));
+        char escape = null == ctx.uescape() ? '\\' : getUnicodeEscapeCharacter(ctx.uescape().STRING_().getText());
+        return IdentifierValue.fromDecodedQuotedName(decodeUnicodeIdentifier(quoted.substring(1, quoted.length() - 1), escape));
+    }
+    
+    private char getUnicodeEscapeCharacter(final String literal) {
+        ShardingSpherePreconditions.checkState(3 == literal.length(), () -> new SQLParsingException("UESCAPE requires a single character"));
+        char result = literal.charAt(1);
+        ShardingSpherePreconditions.checkState(INVALID_UNICODE_ESCAPE_CHARACTERS.indexOf(result) < 0, () -> new SQLParsingException("Invalid Unicode escape character"));
+        return result;
+    }
+    
+    private String decodeUnicodeIdentifier(final String value, final char escape) {
+        StringBuilder result = new StringBuilder(value.length());
+        Matcher matcher = UNICODE_ESCAPE_PATTERN.matcher(value);
+        int index = 0;
+        while (index < value.length()) {
+            char each = value.charAt(index++);
+            if (escape != each) {
+                result.append(each);
+            } else if (index < value.length() && escape == value.charAt(index)) {
+                result.append(each);
+                index++;
+            } else {
+                ShardingSpherePreconditions.checkState(matcher.region(index, value.length()).lookingAt(), () -> new SQLParsingException("Invalid Unicode escape in identifier"));
+                int codePoint = Integer.parseInt(matcher.group(), 16);
+                ShardingSpherePreconditions.checkState(0 != codePoint && Character.isValidCodePoint(codePoint), () -> new SQLParsingException("Invalid Unicode code point in identifier"));
+                result.appendCodePoint(codePoint);
+                index = matcher.end();
+            }
+        }
+        ShardingSpherePreconditions.checkState(!UNPAIRED_SURROGATE_PATTERN.matcher(result).find(), () -> new SQLParsingException("Invalid Unicode surrogate pair in identifier"));
+        return result.toString();
     }
     
     @Override
@@ -353,6 +409,13 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         if (null != ctx.orOperator()) {
             return Optional.of(ctx.orOperator().getText());
+        }
+        if (null != ctx.qualOp()) {
+            JsonOperatorContext jsonOperator = ctx.qualOp().jsonOperator();
+            if (jsonOperator instanceof JsonExtractContext || jsonOperator instanceof JsonExtractTextContext
+                    || jsonOperator instanceof JsonPathExtractContext || jsonOperator instanceof JsonPathExtractTextContext) {
+                return Optional.of(ctx.qualOp().getText());
+            }
         }
         if (null != ctx.PLUS_()) {
             return Optional.of(ctx.PLUS_().getText());

@@ -49,167 +49,167 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     private final List<Object> parameters = new ArrayList<>();
     
     @Override
-    public final void setNull(final int parameterIndex, final int sqlType) {
+    public final void setNull(final int parameterIndex, final int sqlType) throws SQLException {
         setParameter(parameterIndex, null);
     }
     
     @Override
-    public final void setNull(final int parameterIndex, final int sqlType, final String typeName) {
+    public final void setNull(final int parameterIndex, final int sqlType, final String typeName) throws SQLException {
         setParameter(parameterIndex, null);
     }
     
     @Override
-    public final void setBoolean(final int parameterIndex, final boolean x) {
+    public final void setBoolean(final int parameterIndex, final boolean x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setByte(final int parameterIndex, final byte x) {
+    public final void setByte(final int parameterIndex, final byte x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setShort(final int parameterIndex, final short x) {
+    public final void setShort(final int parameterIndex, final short x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setInt(final int parameterIndex, final int x) {
+    public final void setInt(final int parameterIndex, final int x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setLong(final int parameterIndex, final long x) {
+    public final void setLong(final int parameterIndex, final long x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setFloat(final int parameterIndex, final float x) {
+    public final void setFloat(final int parameterIndex, final float x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setDouble(final int parameterIndex, final double x) {
+    public final void setDouble(final int parameterIndex, final double x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setString(final int parameterIndex, final String x) {
+    public final void setString(final int parameterIndex, final String x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBigDecimal(final int parameterIndex, final BigDecimal x) {
+    public final void setBigDecimal(final int parameterIndex, final BigDecimal x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setDate(final int parameterIndex, final Date x) {
+    public final void setDate(final int parameterIndex, final Date x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setDate(final int parameterIndex, final Date x, final Calendar cal) {
+    public final void setDate(final int parameterIndex, final Date x, final Calendar cal) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setTime(final int parameterIndex, final Time x) {
+    public final void setTime(final int parameterIndex, final Time x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setTime(final int parameterIndex, final Time x, final Calendar cal) {
+    public final void setTime(final int parameterIndex, final Time x, final Calendar cal) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setTimestamp(final int parameterIndex, final Timestamp x) {
+    public final void setTimestamp(final int parameterIndex, final Timestamp x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) {
+    public final void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBytes(final int parameterIndex, final byte[] x) {
+    public final void setBytes(final int parameterIndex, final byte[] x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBlob(final int parameterIndex, final Blob x) {
+    public final void setBlob(final int parameterIndex, final Blob x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBlob(final int parameterIndex, final InputStream x) {
+    public final void setBlob(final int parameterIndex, final InputStream x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBlob(final int parameterIndex, final InputStream x, final long length) {
+    public final void setBlob(final int parameterIndex, final InputStream x, final long length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setClob(final int parameterIndex, final Clob x) {
+    public final void setClob(final int parameterIndex, final Clob x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setClob(final int parameterIndex, final Reader x) {
+    public final void setClob(final int parameterIndex, final Reader x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setClob(final int parameterIndex, final Reader x, final long length) {
+    public final void setClob(final int parameterIndex, final Reader x, final long length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public void setArray(final int parameterIndex, final Array x) {
+    public void setArray(final int parameterIndex, final Array x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setAsciiStream(final int parameterIndex, final InputStream x) {
+    public final void setAsciiStream(final int parameterIndex, final InputStream x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setAsciiStream(final int parameterIndex, final InputStream x, final int length) {
+    public final void setAsciiStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setAsciiStream(final int parameterIndex, final InputStream x, final long length) {
+    public final void setAsciiStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
+    public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBinaryStream(final int parameterIndex, final InputStream x) {
+    public final void setBinaryStream(final int parameterIndex, final InputStream x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) {
+    public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) {
+    public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setCharacterStream(final int parameterIndex, final Reader x) {
+    public final void setCharacterStream(final int parameterIndex, final Reader x) throws SQLException {
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
@@ -218,7 +218,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     @Override
-    public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) {
+    public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) throws SQLException {
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
@@ -227,7 +227,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     @Override
-    public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) {
+    public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) throws SQLException {
         try {
             setParameter(parameterIndex, CharStreams.toString(x));
         } catch (final IOException ex) {
@@ -236,31 +236,38 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     @Override
-    public final void setURL(final int parameterIndex, final URL x) {
+    public final void setURL(final int parameterIndex, final URL x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setSQLXML(final int parameterIndex, final SQLXML x) {
+    public final void setSQLXML(final int parameterIndex, final SQLXML x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setObject(final int parameterIndex, final Object x) {
+    public final void setObject(final int parameterIndex, final Object x) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) {
+    public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
     @Override
-    public final void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) {
+    public final void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) throws SQLException {
         setParameter(parameterIndex, x);
     }
     
-    private void setParameter(final int parameterIndex, final Object value) {
+    /**
+     * Set parameter.
+     *
+     * @param parameterIndex parameter index
+     * @param value parameter value, or {@code null} for SQL NULL
+     * @throws SQLException if the parameter cannot be set
+     */
+    protected void setParameter(final int parameterIndex, final Object value) throws SQLException {
         if (parameters.size() == parameterIndex - 1) {
             parameters.add(value);
             return;
