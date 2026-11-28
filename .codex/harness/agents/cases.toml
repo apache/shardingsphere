@@ -3586,6 +3586,38 @@ policy_assertions = [{source = "code-of-conduct", statements = ["Code is high-fr
 critical = true
 
 [[cases]]
+id = "sql_parser_frequency_exclusion"
+group = "coding-standards invocation context"
+description = "Checks the shared SQL parser exclusion without exempting runtime callers or performance regressions."
+phase = "coding-standards applicability analysis"
+ordinary_loop = true
+profile = "review-pr"
+semantic_policy_assertions = true
+prompt = """
+Answer this self-contained read-only applicability question using only the supplied facts and bound rules; do not inspect files, run checks, edit anything or give an overall PR verdict.
+Assess both Implementation Guidance Mode and Standalone Compliance Audit Mode of the coding-standards Skill.
+A: SQL lexing, parsing, visitor traversal, AST construction and their parsing-specific literal helper normally use a cache, but new SQL causes cache misses as normal request throughput grows.
+B: the same parsing responsibilities are reached through a supported entry that explicitly bypasses both statement and parse-tree caches for every request.
+Both parsing helpers contain correct small Stream pipelines and string concatenation with +; no independent correctness or performance issue exists in those routines.
+C: a routing/execution caller invokes a parser and also performs its own route evaluation for every normal data request, with that owned work repeating as application throughput grows.
+D: a separate parser change has an independently established performance regression on supported inputs, unrelated to its frequency classification.
+Classify A and B as excluded or high-frequency; decide whether the parsing helpers require HighFrequencyInvocation and whether their Stream and string-concatenation forms require replacement solely under the high-frequency rules.
+Classify C from its own workload, decide whether D still requires performance review, and state whether the parser exclusion governs one or both Skill modes.
+Report exactly one assignment per marker: cached-parser=excluded or high-frequency; uncached-parser=excluded or high-frequency; parser-annotation=required or not-required; parser-stream=keep or replace; parser-concat=keep or replace; runtime-caller=high-frequency or excluded; parser-performance=review or exempt; scope=both-modes or implementation-only.
+Explain the exception's precedence, responsibility boundary and effect on the independent regression requirement.
+"""
+decision = "proceed"
+required_actions = []
+allowed_actions = []
+forbidden_actions = ["inspect_local", "edit_code", "edit_non_code", "run_local_checks", "measure_performance", "run_pre_handoff_review", "propose_commit_message", "mutate_git", "mutate_remote"]
+required_reasons = ["read_only_request"]
+required_summary_terms = ["cached-parser=excluded", "uncached-parser=excluded", "parser-annotation=not-required", "parser-stream=keep", "parser-concat=keep", "runtime-caller=high-frequency", "parser-performance=review", "scope=both-modes"]
+forbidden_summary_terms = ["cached-parser=high-frequency", "uncached-parser=high-frequency", "parser-annotation=required", "parser-stream=replace", "parser-concat=replace", "runtime-caller=excluded", "parser-performance=exempt", "scope=implementation-only"]
+policy_binding_profile = "review-pr"
+policy_assertions = [{source = "coding-standards", statements = ["In both modes of this Skill, exclude SQL parsing code (lexing, parsing, visitors, AST construction and parsing-specific helpers) from high-frequency classification before applying the general workload definition in `CODE_OF_CONDUCT.md`, even when parsing bypasses caches or runs for every request.", "Do not require `HighFrequencyInvocation` or apply coding restrictions that depend on high-frequency classification to this excluded code.", "Routing, SQL rewriting and execution callers do not inherit the exclusion, and other coding standards, correctness and performance non-regression checks still apply."]}, {source = "code-of-conduct", statements = ["Code is high-frequency when its work repeats as throughput grows under a supported normal workload, including SQL execution, metadata queries, transaction operations, or Pipeline data-unit processing. A method need not run for every SQL request; repeated work inside a method invoked only once also counts.", "Use `@HighFrequencyInvocation` to mark high-frequency production code whose performance behavior requires focused review."]}]
+critical = true
+
+[[cases]]
 id = "metadata_identity_input_review"
 group = "review-pr metadata identity"
 description = "Calculates candidate and contract missing-identity sets from two raw metadata fixtures."
