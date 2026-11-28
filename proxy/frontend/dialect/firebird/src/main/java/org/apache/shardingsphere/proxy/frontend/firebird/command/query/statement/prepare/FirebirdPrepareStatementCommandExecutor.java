@@ -682,17 +682,17 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                               final Supplier<Optional<ShardingSphereSchema>> schema) {
         int result = Types.NULL;
         for (ExpressionSegment each : params) {
-            int paramType = getOperandType(each, sqlStatementContext, database, schema);
-            if (Types.NULL != paramType) {
-                result = Types.NULL == result ? paramType : getCommonDataType(result, paramType);
-            }
+            result = getCommonDataType(result, getOperandType(each, sqlStatementContext, database, schema));
         }
         return result;
     }
     
     private int getCommonDataType(final int leftType, final int rightType) {
-        if (leftType == rightType) {
+        if (leftType == rightType || Types.NULL == rightType) {
             return leftType;
+        }
+        if (Types.NULL == leftType) {
+            return rightType;
         }
         if (isNumericType(leftType) && isNumericType(rightType)) {
             return getCommonNumericType(leftType, rightType);

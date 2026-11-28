@@ -448,6 +448,8 @@ class FirebirdPrepareStatementCommandExecutorTest {
                 Arguments.of("Aggregation subquery date subtraction", "SELECT (SELECT MAX(end_date) FROM bar_tbl) - start_date FROM bar_tbl", FirebirdBinaryColumnType.LONG),
                 Arguments.of("Union subquery mixed numeric arithmetic", "SELECT (SELECT 1 FROM bar_tbl UNION ALL SELECT price FROM bar_tbl WHERE 1 = 0) + 1 FROM bar_tbl",
                         FirebirdBinaryColumnType.DOUBLE),
+                Arguments.of("Union subquery with null branch arithmetic", "SELECT (SELECT NULL FROM bar_tbl WHERE 1 = 0 UNION ALL SELECT 1 FROM bar_tbl) + 1 FROM bar_tbl",
+                        FirebirdBinaryColumnType.INT64),
                 Arguments.of("Union subquery date subtraction", "SELECT (SELECT start_date FROM bar_tbl UNION ALL SELECT end_date FROM bar_tbl) - start_date FROM bar_tbl",
                         FirebirdBinaryColumnType.LONG),
                 Arguments.of("Insert returning date subtraction", "INSERT INTO bar_tbl (price) VALUES (1) RETURNING end_date - CURRENT_DATE", FirebirdBinaryColumnType.LONG),
