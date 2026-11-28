@@ -28,11 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Last allocated object registry for Firebird.
  *
- * <p>On a connection that accepted the lazy send protocol type, a client can send the invalid object handle {@code 0xFFFF}
- * instead of the handle of the object allocated last on the connection, which it has not received yet. The Firebird server
- * replaces it with the handle of that object, so it resolves to a statement only when the object allocated last is a statement
- * rather than, for example, a transaction or a BLOB.</p>
- *
  * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/remote.h#L1494-L1506">Firebird remote port getHandle</a>
  */
 @NoArgsConstructor(access = AccessLevel.NONE)

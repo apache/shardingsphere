@@ -61,10 +61,7 @@ public final class FirebirdStatementIdGenerator {
     }
     
     /**
-     * Generate next statement ID for connection.
-     *
-     * <p>The invalid object handle {@code 0xFFFF} is skipped like the Firebird server does, because clients send it on a lazy send
-     * connection to refer to the object allocated last.</p>
+     * Generate next statement ID for connection, skipping the invalid object handle {@code 0xFFFF}.
      *
      * @param connectionId connection ID
      * @return generated statement ID

@@ -158,7 +158,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         ByteBuf slice = buffer.retainedSlice();
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
-            List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType);
+            List<FirebirdBatchColumnDescriptor> columnDescriptors = getDeferredBatchFormat(buffer, commandType, charset);
             int expectedLength = null == columnDescriptors
                     ? FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
                             context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get())
@@ -177,9 +177,9 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         }
     }
     
-    private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType) {
+    private List<FirebirdBatchColumnDescriptor> getDeferredBatchFormat(final ByteBuf buffer, final FirebirdCommandPacketType commandType, final Charset charset) {
         return FirebirdCommandPacketType.BATCH_MSG == commandType && buffer.readableBytes() >= 8
-                ? deferredBatchFormats.get(buffer.getInt(buffer.readerIndex() + MESSAGE_TYPE_LENGTH))
+                ? deferredBatchFormats.get(new FirebirdPacketPayload(buffer.slice(buffer.readerIndex() + MESSAGE_TYPE_LENGTH, 4), charset).readObjectHandle())
                 : null;
     }
     

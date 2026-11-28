@@ -441,6 +441,16 @@ class FirebirdPacketCodecEngineTest {
     }
     
     @Test
+    void assertDecodeCoalescedBatchCreateAndMessageWithSignExtendedStatementHandle() {
+        ByteBuf in = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate().setInt(4, 0xFFFF8001), buildBatchMessage(0xFFFF8001, 100));
+        List<Object> out = new LinkedList<>();
+        codecEngine.decode(context, in, out);
+        assertThat(out.size(), is(2));
+        assertThat(createBatchSendMessagePacket((ByteBuf) out.get(1)).getStatementHandle(), is(0x8001));
+        verify(context.channel(), never()).writeAndFlush(any());
+    }
+    
+    @Test
     void assertDecodeCoalescedBatchCreateAndSplitMessage() {
         ByteBuf batchMessage = buildBatchMessage(BATCH_STATEMENT_HANDLE, 100);
         ByteBuf firstFrame = Unpooled.wrappedUnmodifiableBuffer(buildBatchCreate(), batchMessage.readRetainedSlice(18));

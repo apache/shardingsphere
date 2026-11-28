@@ -193,10 +193,7 @@ public final class FirebirdPacketPayload implements PacketPayload {
     }
     
     /**
-     * Read an object handle from the buffer.
-     *
-     * <p>Clients encoding a Firebird object handle as a 16-bit XDR short sign-extend it, so a negative handle is read
-     * as its unsigned 16-bit value, the same way as the Firebird server does. Other handles are read as they are.</p>
+     * Read an object handle from the buffer, reading a sign-extended negative handle as its unsigned 16-bit value.
      *
      * @return object handle
      * @see <a href="https://github.com/FirebirdSQL/firebird/blob/v5.0.4/src/remote/protocol.cpp#L512-L516">Firebird remote protocol handle decoding</a>
