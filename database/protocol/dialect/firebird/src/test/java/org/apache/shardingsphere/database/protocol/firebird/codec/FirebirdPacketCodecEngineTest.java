@@ -589,6 +589,16 @@ class FirebirdPacketCodecEngineTest {
         return result;
     }
     
+    private ByteBuf buildMixedBatchCreate() {
+        ByteBuf blr = Unpooled.buffer()
+                .writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0).writeShortLE(6)
+                .writeByte(BlrConstants.blr_text).writeShortLE(3).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_varying2).writeShortLE(4).writeShortLE(5).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_long).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
+                .writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
+        return buildBatchCreate(blr, 22);
+    }
+    
     private ByteBuf buildBatchCreate() {
         ByteBuf blr = Unpooled.buffer()
                 .writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0)
@@ -601,16 +611,6 @@ class FirebirdPacketCodecEngineTest {
         int blrLength = blr.readableBytes();
         return Unpooled.buffer().writeInt(FirebirdCommandPacketType.BATCH_CREATE.getValue()).writeInt(BATCH_STATEMENT_HANDLE)
                 .writeInt(blrLength).writeBytes(blr).writeZero((4 - blrLength % 4) % 4).writeInt(messageLength).writeInt(0);
-    }
-    
-    private ByteBuf buildMixedBatchCreate() {
-        ByteBuf blr = Unpooled.buffer()
-                .writeByte(BlrConstants.blr_version5).writeByte(BlrConstants.blr_begin).writeByte(BlrConstants.blr_message).writeByte(0).writeShortLE(6)
-                .writeByte(BlrConstants.blr_text).writeShortLE(3).writeByte(BlrConstants.blr_short).writeByte(0)
-                .writeByte(BlrConstants.blr_varying2).writeShortLE(4).writeShortLE(5).writeByte(BlrConstants.blr_short).writeByte(0)
-                .writeByte(BlrConstants.blr_long).writeByte(0).writeByte(BlrConstants.blr_short).writeByte(0)
-                .writeByte(BlrConstants.blr_end).writeByte(BlrConstants.blr_eoc);
-        return buildBatchCreate(blr, 22);
     }
     
     private ByteBuf buildMixedBatchMessage() {
@@ -643,14 +643,6 @@ class FirebirdPacketCodecEngineTest {
         result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
         result.writeInt(1).writeInt(0);
         result.writeInt(FirebirdProtocolVersion.PROTOCOL_VERSION13.getCode()).writeInt(FirebirdArchType.ARCH_GENERIC.getCode()).writeInt(0).writeInt(5).writeInt(2);
-        return result;
-    }
-    
-    private static ByteBuf createAttachPacket() {
-        ByteBuf result = Unpooled.buffer();
-        result.writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0);
-        result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
-        result.writeInt(5).writeByte(1).writeByte(FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode()).writeByte(2).writeBytes("ok".getBytes(StandardCharsets.US_ASCII)).writeZero(3);
         return result;
     }
     
@@ -694,6 +686,14 @@ class FirebirdPacketCodecEngineTest {
                 Arguments.of("connect with 3 bytes last fragment", createConnectPacket(), 3),
                 Arguments.of("attach with 1 byte last fragment", createAttachPacket(), 1),
                 Arguments.of("attach with 3 bytes last fragment", createAttachPacket(), 3));
+    }
+    
+    private static ByteBuf createAttachPacket() {
+        ByteBuf result = Unpooled.buffer();
+        result.writeInt(FirebirdCommandPacketType.ATTACH.getValue()).writeInt(0);
+        result.writeInt(6).writeBytes("foo_db".getBytes(StandardCharsets.US_ASCII)).writeZero(2);
+        result.writeInt(5).writeByte(1).writeByte(FirebirdDatabaseParameterBufferType.LC_CTYPE.getCode()).writeByte(2).writeBytes("ok".getBytes(StandardCharsets.US_ASCII)).writeZero(3);
+        return result;
     }
     
     private static Stream<Arguments> fixedLengthCommandCases() {
