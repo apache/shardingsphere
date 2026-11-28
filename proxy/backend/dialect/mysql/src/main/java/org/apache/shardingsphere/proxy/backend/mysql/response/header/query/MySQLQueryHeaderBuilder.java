@@ -17,23 +17,32 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.response.header.query;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetMetaData;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
+import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 /**
  * Query header builder for MySQL.
  */
 public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
+    
+    public static final String MYSQL_DATETIME = "mysqlDatetime";
     
     @Override
     @HighFrequencyInvocation
@@ -72,6 +81,32 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         }
         int result = columnLength - 11;
         return result >= 1 && result <= 6 ? result : decimals;
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public void appendProtocolAttributes(final QueryHeader queryHeader, final ResultSet resultSet) throws SQLException {
+        appendProtocolAttributes(Collections.singleton(queryHeader), resultSet);
+    }
+    
+    @Override
+    @HighFrequencyInvocation
+    public void appendProtocolAttributes(final Collection<QueryHeader> queryHeaders, final ResultSet resultSet) throws SQLException {
+        if (ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class).isSqlFederationEnabled()) {
+            return;
+        }
+        DatabaseType storageType = null;
+        for (QueryHeader each : queryHeaders) {
+            if (Types.TIMESTAMP != each.getColumnType() || !"DATETIME".equalsIgnoreCase(each.getColumnTypeName())) {
+                continue;
+            }
+            if (null == storageType) {
+                storageType = DatabaseTypeFactory.get(resultSet.getStatement().getConnection().getMetaData());
+            }
+            if ("MySQL".equals(storageType.getType())) {
+                each.getProtocolAttributes().put(MYSQL_DATETIME, true);
+            }
+        }
     }
     
     @Override

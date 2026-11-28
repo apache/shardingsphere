@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import com.google.common.io.ByteStreams;
+import com.mysql.cj.jdbc.JdbcConnection;
+import com.mysql.cj.jdbc.ServerPreparedStatement;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -40,30 +45,51 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExt
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@StaticMockSettings({ProxyContext.class, DatabaseTypeFactory.class})
 class MySQLPreparedStatementMetadataFactoryTest {
     
     @Mock
@@ -110,6 +136,277 @@ class MySQLPreparedStatementMetadataFactoryTest {
         }
     }
     
+    @Test
+    void assertLoadMetadataWithoutExecution() throws SQLException {
+        ResultSetMetaData expected = mock(ResultSetMetaData.class);
+        PreparedStatement serverPreparedStatement = mock(PreparedStatement.class);
+        when(serverPreparedStatement.getMetaData()).thenReturn(expected);
+        Connection connection = mock(Connection.class);
+        PreparedStatement clientPreparedStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(clientPreparedStatement);
+        JdbcConnection nativeConnection = mock(JdbcConnection.class);
+        when(connection.unwrap(JdbcConnection.class)).thenReturn(nativeConnection);
+        when(nativeConnection.serverPrepareStatement("SELECT 1")).thenReturn(serverPreparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement()), sameInstance(expected));
+        }
+        InOrder inOrder = inOrder(clientPreparedStatement, nativeConnection, serverPreparedStatement);
+        inOrder.verify(clientPreparedStatement).close();
+        inOrder.verify(nativeConnection).serverPrepareStatement("SELECT 1");
+        inOrder.verify(serverPreparedStatement).getMetaData();
+        inOrder.verify(serverPreparedStatement).close();
+        verify(clientPreparedStatement, never()).getMetaData();
+    }
+    
+    private void mockStorageType(final Connection connection, final String storageType) throws SQLException {
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(databaseType.getType()).thenReturn(storageType);
+        when(DatabaseTypeFactory.get(databaseMetaData)).thenReturn(databaseType);
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithServerPreparedStatement() throws SQLException {
+        ResultSetMetaData expected = mock(ResultSetMetaData.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.isWrapperFor(ServerPreparedStatement.class)).thenReturn(true);
+        when(preparedStatement.getMetaData()).thenReturn(expected);
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement()), sameInstance(expected));
+        }
+        verify(preparedStatement).close();
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("preparationErrors")
+    void assertLoadMetadataWithoutExecutionWithPreparationError(final String name, final Throwable expected) throws SQLException {
+        Connection connection = mock(Connection.class);
+        PreparedStatement clientPreparedStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(clientPreparedStatement);
+        JdbcConnection nativeConnection = mock(JdbcConnection.class);
+        when(connection.unwrap(JdbcConnection.class)).thenReturn(nativeConnection);
+        when(nativeConnection.serverPrepareStatement("SELECT 1")).thenThrow(expected);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(assertThrows(expected.getClass(),
+                    () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement())), sameInstance(expected));
+        }
+        verify(clientPreparedStatement).close();
+        verify(clientPreparedStatement, never()).getMetaData();
+    }
+    
+    private static Stream<Arguments> preparationErrors() {
+        return Stream.of(
+                Arguments.of("sql-exception", new SQLException("foo_error")),
+                Arguments.of("runtime-exception", new IllegalStateException("foo_error")),
+                Arguments.of("error", new AssertionError("foo_error")));
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithUnwrapError() throws SQLException {
+        SQLException expected = new SQLException("foo_error");
+        Connection connection = mock(Connection.class);
+        PreparedStatement clientPreparedStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(clientPreparedStatement);
+        when(connection.unwrap(JdbcConnection.class)).thenThrow(expected);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(assertThrows(SQLException.class,
+                    () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement())), sameInstance(expected));
+        }
+        verify(clientPreparedStatement).close();
+        verify(clientPreparedStatement, never()).getMetaData();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("preparationErrors")
+    void assertLoadMetadataWithoutExecutionWithWrapperError(final String name, final Throwable expected) throws SQLException {
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.isWrapperFor(ServerPreparedStatement.class)).thenThrow(expected);
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(assertThrows(expected.getClass(),
+                    () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement())), sameInstance(expected));
+        }
+        verify(preparedStatement).close();
+        verify(preparedStatement, never()).getMetaData();
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithWrapperAndCloseError() throws SQLException {
+        IllegalStateException expected = new IllegalStateException("foo_error");
+        SQLException expectedCloseError = new SQLException("foo_close_error");
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.isWrapperFor(ServerPreparedStatement.class)).thenThrow(expected);
+        doThrow(expectedCloseError).when(preparedStatement).close();
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            IllegalStateException actual = assertThrows(IllegalStateException.class,
+                    () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement()));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getSuppressed(), arrayContaining(expectedCloseError));
+        }
+        verify(preparedStatement, never()).getMetaData();
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithClientCloseError() throws SQLException {
+        SQLException expected = new SQLException("foo_close_error");
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        doThrow(expected).when(preparedStatement).close();
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(assertThrows(SQLException.class,
+                    () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement())), sameInstance(expected));
+        }
+        verify(preparedStatement, never()).getMetaData();
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithMetadataError() throws SQLException {
+        SQLException expected = new SQLException("foo_error");
+        SQLException expectedCloseError = new SQLException("foo_close_error");
+        PreparedStatement serverPreparedStatement = mock(PreparedStatement.class);
+        when(serverPreparedStatement.getMetaData()).thenThrow(expected);
+        doThrow(expectedCloseError).when(serverPreparedStatement).close();
+        PreparedStatement clientPreparedStatement = mock(PreparedStatement.class);
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(clientPreparedStatement);
+        JdbcConnection nativeConnection = mock(JdbcConnection.class);
+        when(connection.unwrap(JdbcConnection.class)).thenReturn(nativeConnection);
+        when(nativeConnection.serverPrepareStatement("SELECT 1")).thenReturn(serverPreparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            SQLException actual = assertThrows(SQLException.class, () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement()));
+            assertThat(actual, sameInstance(expected));
+            assertThat(actual.getSuppressed(), arrayContaining(expectedCloseError));
+        }
+        verify(clientPreparedStatement).close();
+        verify(clientPreparedStatement, never()).getMetaData();
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithCachedMetadataError() throws SQLException {
+        SQLException expected = new SQLException("foo_error");
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.isWrapperFor(ServerPreparedStatement.class)).thenReturn(true);
+        when(preparedStatement.getMetaData()).thenThrow(expected);
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertThat(assertThrows(SQLException.class,
+                    () -> MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement())), sameInstance(expected));
+        }
+        verify(preparedStatement).close();
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithNullMetadata() throws SQLException {
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.isWrapperFor(ServerPreparedStatement.class)).thenReturn(true);
+        Connection connection = mock(Connection.class);
+        when(connection.prepareStatement("SELECT 1")).thenReturn(preparedStatement);
+        mockStorageType(connection, "MySQL");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertNull(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement()));
+        }
+        verify(preparedStatement).close();
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithOtherStorage() throws SQLException {
+        Connection connection = mock(Connection.class);
+        mockStorageType(connection, "SQLServer");
+        mockMetaDataWithDatabase();
+        mockDatabaseConnectionManager(Collections.singletonList(connection));
+        try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
+            assertNull(MySQLPreparedStatementMetadataFactory.loadMetadataWithoutExecution(connectionSession, createPreparedStatement()));
+        }
+        verify(connection, never()).prepareStatement(anyString());
+        verify(connection, never()).unwrap(any());
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithNoDriver() throws IOException, ReflectiveOperationException {
+        Class<?> factoryClass = loadFactoryWithout("com.mysql.cj.jdbc.");
+        Method method = factoryClass.getMethod("loadMetadataWithoutExecution", ConnectionSession.class, MySQLServerPreparedStatement.class);
+        MySQLServerPreparedStatement preparedStatement = mock(MySQLServerPreparedStatement.class);
+        InvocationTargetException actual = assertThrows(InvocationTargetException.class, () -> method.invoke(null, connectionSession, preparedStatement));
+        assertThat(actual.getCause(), isA(SQLFeatureNotSupportedException.class));
+        assertThat(actual.getCause().getMessage(), is("Native MySQL prepared statement metadata is unavailable."));
+        verifyNoInteractions(connectionSession, preparedStatement);
+    }
+    
+    private Class<?> loadFactoryWithout(final String unavailableClassPrefix) throws IOException {
+        byte[] classBytes;
+        try (InputStream input = MySQLPreparedStatementMetadataFactory.class.getResourceAsStream("MySQLPreparedStatementMetadataFactory.class")) {
+            classBytes = ByteStreams.toByteArray(input);
+        }
+        return new ClassLoader(MySQLPreparedStatementMetadataFactory.class.getClassLoader()) {
+            
+            @Override
+            protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
+                if (name.startsWith(unavailableClassPrefix)) {
+                    throw new ClassNotFoundException(name);
+                }
+                return super.loadClass(name, resolve);
+            }
+            
+            private Class<?> defineFactory() {
+                return defineClass(MySQLPreparedStatementMetadataFactory.class.getName(), classBytes, 0, classBytes.length, MySQLPreparedStatementMetadataFactory.class.getProtectionDomain());
+            }
+        }.defineFactory();
+    }
+    
+    @Test
+    void assertLoadMetadataWithoutExecutionWithNoNativeStatementClass() throws IOException, ReflectiveOperationException {
+        Class<?> factoryClass = loadFactoryWithout("com.mysql.cj.jdbc.ServerPreparedStatement");
+        Method method = factoryClass.getMethod("loadMetadataWithoutExecution", ConnectionSession.class, MySQLServerPreparedStatement.class);
+        MySQLServerPreparedStatement preparedStatement = mock(MySQLServerPreparedStatement.class);
+        InvocationTargetException actual = assertThrows(InvocationTargetException.class, () -> method.invoke(null, connectionSession, preparedStatement));
+        assertThat(actual.getCause(), isA(SQLFeatureNotSupportedException.class));
+        assertThat(actual.getCause().getMessage(), is("Native MySQL prepared statement metadata is unavailable."));
+        verifyNoInteractions(connectionSession, preparedStatement);
+    }
+    
     private MySQLServerPreparedStatement createPreparedStatement() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
@@ -136,7 +433,8 @@ class MySQLPreparedStatementMetadataFactoryTest {
     }
     
     private MockedConstruction<KernelProcessor> mockKernelProcessor(final ExecutionContext executionContext) {
-        return mockConstruction(KernelProcessor.class, (mock, context) -> when(mock.generateExecutionContext(any(), any(), any())).thenReturn(executionContext));
+        return mockConstruction(KernelProcessor.class, (mock, context) -> when(mock.generateExecutionContext(any(), any(), any()))
+                .thenAnswer(invocation -> new ExecutionContext(invocation.getArgument(0), executionContext.getExecutionUnits(), executionContext.getRouteContext())));
     }
     
     private ExecutionContext createExecutionContext(final Collection<ExecutionUnit> executionUnits) {

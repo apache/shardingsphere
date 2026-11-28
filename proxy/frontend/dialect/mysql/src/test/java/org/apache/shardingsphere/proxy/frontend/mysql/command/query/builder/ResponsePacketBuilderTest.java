@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLEof
 import org.apache.shardingsphere.database.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.mysql.response.header.query.MySQLQueryHeaderBuilder;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -105,6 +106,8 @@ class ResponsePacketBuilderTest {
     }
     
     private static Stream<Arguments> queryResponsePacketsProvider() {
+        QueryHeader mysqlDatetimeHeader = new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false);
+        mysqlDatetimeHeader.getProtocolAttributes().put(MySQLQueryHeaderBuilder.MYSQL_DATETIME, true);
         return Stream.of(
                 Arguments.of(
                         "Non-binary column uses session charset and unsigned/auto_increment flags",
@@ -156,6 +159,13 @@ class ResponsePacketBuilderTest {
                 Arguments.of("time-milliseconds", new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 14, 3, true, false, false, false),
                         SESSION_CHARACTER_SET, 0, MySQLCharacterSets.BINARY.getId(), MySQLBinaryColumnType.TIME, 0, 3),
                 Arguments.of("time-microseconds", new QueryHeader("foo_db", "foo_table", "foo_time", "foo_time", Types.TIME, "TIME", 17, 6, true, false, false, false),
-                        SESSION_CHARACTER_SET, 0, MySQLCharacterSets.BINARY.getId(), MySQLBinaryColumnType.TIME, 0, 6));
+                        SESSION_CHARACTER_SET, 0, MySQLCharacterSets.BINARY.getId(), MySQLBinaryColumnType.TIME, 0, 6),
+                Arguments.of("mysql-datetime", mysqlDatetimeHeader, SESSION_CHARACTER_SET, 0, SESSION_CHARACTER_SET, MySQLBinaryColumnType.DATETIME, 0, 6),
+                Arguments.of("timestamp", new QueryHeader("foo_db", "foo_table", "foo_timestamp", "foo_timestamp", Types.TIMESTAMP, "TIMESTAMP", 26, 6, true, false, false, false),
+                        SESSION_CHARACTER_SET, 0, SESSION_CHARACTER_SET, MySQLBinaryColumnType.TIMESTAMP, 0, 6),
+                Arguments.of("unconfirmed-datetime", new QueryHeader("foo_db", "foo_table", "foo_datetime", "foo_datetime", Types.TIMESTAMP, "DATETIME", 26, 6, true, false, false, false),
+                        SESSION_CHARACTER_SET, 0, SESSION_CHARACTER_SET, MySQLBinaryColumnType.TIMESTAMP, 0, 6),
+                Arguments.of("missing-type-name", new QueryHeader("foo_db", "foo_table", "foo_timestamp", "foo_timestamp", Types.TIMESTAMP, "", 26, 6, true, false, false, false),
+                        SESSION_CHARACTER_SET, 0, SESSION_CHARACTER_SET, MySQLBinaryColumnType.TIMESTAMP, 0, 6));
     }
 }

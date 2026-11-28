@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.database.protocol.mysql.constant;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Types;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -52,6 +56,19 @@ class MySQLBinaryColumnTypeTest {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BLOB), is(MySQLBinaryColumnType.BLOB));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.CLOB), is(MySQLBinaryColumnType.BLOB));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.NCLOB), is(MySQLBinaryColumnType.BLOB));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("mysqlDatetimeArguments")
+    void assertValueOfJDBCTypeWithMysqlDatetime(final String name, final int jdbcType, final boolean mysqlDatetime, final MySQLBinaryColumnType expected) {
+        assertThat(MySQLBinaryColumnType.valueOfJDBCType(jdbcType, mysqlDatetime), is(expected));
+    }
+    
+    private static Stream<Arguments> mysqlDatetimeArguments() {
+        return Stream.of(
+                Arguments.of("mysql-datetime", Types.TIMESTAMP, true, MySQLBinaryColumnType.DATETIME),
+                Arguments.of("timestamp", Types.TIMESTAMP, false, MySQLBinaryColumnType.TIMESTAMP),
+                Arguments.of("non-temporal", Types.INTEGER, true, MySQLBinaryColumnType.LONG));
     }
     
     @Test

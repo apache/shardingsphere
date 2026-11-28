@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.binary.BinaryColumnType;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
 import java.sql.Types;
 import java.util.HashMap;
@@ -146,6 +147,18 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
     public static MySQLBinaryColumnType valueOfJDBCType(final int jdbcType) {
         Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in column type", jdbcType);
         return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
+    }
+    
+    /**
+     * Value of JDBC type with MySQL DATETIME metadata.
+     *
+     * @param jdbcType JDBC type
+     * @param mysqlDatetime whether the column is a MySQL DATETIME
+     * @return column type enum
+     */
+    @HighFrequencyInvocation
+    public static MySQLBinaryColumnType valueOfJDBCType(final int jdbcType, final boolean mysqlDatetime) {
+        return mysqlDatetime && Types.TIMESTAMP == jdbcType ? DATETIME : valueOfJDBCType(jdbcType);
     }
     
     /**

@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Query header builder engine.
@@ -106,5 +107,16 @@ public final class QueryHeaderBuilderEngine {
         }
         ShardingSpherePreconditions.checkState(columnIndex <= mapping.getColumnCount(), () -> new ColumnIndexOutOfRangeException(columnIndex));
         return mapping.findProjection(columnIndex);
+    }
+    
+    /**
+     * Append protocol attributes to query headers.
+     *
+     * @param queryHeaders query headers
+     * @param resultSet JDBC result set
+     * @throws SQLException SQL exception
+     */
+    public void appendProtocolAttributes(final Collection<QueryHeader> queryHeaders, final ResultSet resultSet) throws SQLException {
+        queryHeaderBuilder.appendProtocolAttributes(queryHeaders, resultSet);
     }
 }
