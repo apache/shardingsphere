@@ -121,6 +121,8 @@ class FirebirdBatchExecuteCommandExecutorTest {
             assertThat(getUpdateCounts(actualResponse), is(new int[0]));
             verify(batchRegistry).getBatchStatement(CONNECTION_ID, STATEMENT_ID);
             verify(connectionSession.getServerPreparedStatementRegistry()).getPreparedStatement(STATEMENT_ID);
+            verify(preparedStatement).convertExactNumericParameters(Arrays.asList(1, "foo_1"));
+            verify(preparedStatement).convertExactNumericParameters(Arrays.asList(2, "foo_2"));
             verify(batchStatement).reset();
         }
     }

@@ -251,6 +251,26 @@ class FirebirdExecuteStatementCommandExecutorTest {
     }
     
     @Test
+    void assertBindExactNumericParameterDescribedAsText() throws SQLException {
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2);
+        preparedStatement.getExactNumericParameterIndexes().add(0);
+        mockParameter(FirebirdBinaryColumnType.VARYING, "10");
+        List<Object> actualParams = executeAndGetParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), is(10L));
+    }
+    
+    @Test
+    void assertBindExactNumericParameterWithSurroundingSpacesDescribedAsText() throws SQLException {
+        FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(2);
+        preparedStatement.getExactNumericParameterIndexes().add(0);
+        mockParameter(FirebirdBinaryColumnType.VARYING, " 10 ");
+        List<Object> actualParams = executeAndGetParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), is(10L));
+    }
+    
+    @Test
     void assertSkipBlobParameterWhenNotLong() throws SQLException {
         mockParameter(FirebirdBinaryColumnType.BLOB, "text");
         List<Object> actualParams = executeAndGetParameters();
