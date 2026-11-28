@@ -85,4 +85,13 @@ public final class DriverExecuteUpdateExecutor {
                 ? jdbcPushDownExecutor.executeUpdate(database, executionContext, prepareEngine, updateCallback, addCallback, replayCallback)
                 : rawPushDownExecutor.executeUpdate(database, executionContext);
     }
+    
+    /**
+     * Judge whether the last execution splits one INSERT statement into multiple route units.
+     *
+     * @return is insert value split or not
+     */
+    public boolean isInsertValueSplit() {
+        return jdbcPushDownExecutor.isInsertValueSplit();
+    }
 }

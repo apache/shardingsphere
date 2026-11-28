@@ -57,6 +57,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
@@ -517,6 +518,7 @@ class StandardDatabaseProxyConnectorTest {
         ExecutionContext executionContext = mock(ExecutionContext.class);
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
+        when(executionContext.getRouteContext()).thenReturn(new RouteContext());
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
@@ -672,6 +674,7 @@ class StandardDatabaseProxyConnectorTest {
         ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext().getRouteUnitInsertValueIndexes()).thenReturn(Collections.emptyMap());
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Arrays.asList(new UpdateResult(1, 4L), new UpdateResult(2, 5L)));
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
@@ -682,6 +685,34 @@ class StandardDatabaseProxyConnectorTest {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
             UpdateResponseHeader actual = (UpdateResponseHeader) engine.execute();
             assertThat(actual.getUpdateCount(), is(1L));
+            assertThat(mockedKernelProcessor.constructed().size(), is(1));
+            assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
+        }
+    }
+    
+    @Test
+    void assertExecuteWithUpdateResultAndShadowInsertSplit() throws SQLException {
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+        setField(engine, "proxySQLExecutor", mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS));
+        ExecutionContext executionContext = mock(ExecutionContext.class, RETURNS_DEEP_STUBS);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
+        when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnitInsertValueIndexes().put(mock(RouteUnit.class), Collections.singletonList(0));
+        when(executionContext.getRouteContext()).thenReturn(routeContext);
+        AdvancedProxySQLExecutor advancedProxySQLExecutor = mock(AdvancedProxySQLExecutor.class);
+        when(advancedProxySQLExecutor.execute(any(ExecutionContext.class), any(ContextManager.class), any(ShardingSphereDatabase.class), any(DatabaseProxyConnector.class)))
+                .thenReturn(Arrays.asList(new UpdateResult(1, 4L), new UpdateResult(2, 5L)));
+        try (
+                MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext));
+                MockedConstruction<DatabaseTypeRegistry> mockedDatabaseTypeRegistry = mockConstruction(DatabaseTypeRegistry.class,
+                        (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(mock(DialectDatabaseMetaData.class)));
+                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
+            serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.singleton(advancedProxySQLExecutor));
+            UpdateResponseHeader actual = (UpdateResponseHeader) engine.execute();
+            assertThat(actual.getUpdateCount(), is(3L));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
         }
@@ -714,6 +745,7 @@ class StandardDatabaseProxyConnectorTest {
         ExecutionContext executionContext = mock(ExecutionContext.class);
         when(executionContext.getExecutionUnits()).thenReturn(Collections.singletonList(mock(ExecutionUnit.class)));
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext()).thenReturn(new RouteContext());
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));
         try (
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
@@ -759,6 +791,7 @@ class StandardDatabaseProxyConnectorTest {
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
         ExecutionContext executionContext = mock(ExecutionContext.class);
         when(executionContext.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(executionContext.getRouteContext()).thenReturn(new RouteContext());
         when(executionContext.getExecutionUnits()).thenReturn(IntStream.range(0, executionUnitCount)
                 .mapToObj(index -> new ExecutionUnit("foo_ds", new SQLUnit("SELECT id FROM foo_table", Collections.emptyList()))).collect(Collectors.toList()));
         when(proxySQLExecutor.execute(executionContext)).thenReturn(Collections.singletonList(new UpdateResult(1, 0L)));

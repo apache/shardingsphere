@@ -53,6 +53,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.stream.IteratorStreamMe
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
@@ -253,7 +254,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         Object executeResultSample = executeResults.iterator().next();
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(queryContext.getSqlStatementContext(), executeResults.stream().map(QueryResult.class::cast).collect(Collectors.toList()), (QueryResult) executeResultSample)
-                : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()));
+                : processExecuteUpdate(executeResults.stream().map(UpdateResult.class::cast).collect(Collectors.toList()), executionContext.getRouteContext());
     }
     
     private boolean isCurrentTransactionCommitRequired(final SQLStatement sqlStatement) {
@@ -326,7 +327,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         return mergeEngine.merge(queryResults, queryContext);
     }
     
-    private UpdateResponseHeader processExecuteUpdate(final Collection<UpdateResult> updateResults) {
+    private UpdateResponseHeader processExecuteUpdate(final Collection<UpdateResult> updateResults, final RouteContext routeContext) {
         Optional<GeneratedKeyContext> generatedKeyContext = queryContext.getSqlStatementContext() instanceof InsertStatementContext
                 ? ((InsertStatementContext) queryContext.getSqlStatementContext()).getGeneratedKeyContext()
                 : Optional.empty();
@@ -335,7 +336,7 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
                 .map(GeneratedKeyContext::getGeneratedValues).orElseGet(Collections::emptyList);
         
         UpdateResponseHeader result = new UpdateResponseHeader(queryContext.getSqlStatementContext().getSqlStatement(), updateResults, autoIncrementGeneratedValues);
-        if (isNeedAccumulate()) {
+        if (isNeedAccumulate() || !routeContext.getRouteUnitInsertValueIndexes().isEmpty()) {
             result.mergeUpdateCount();
         }
         return result;

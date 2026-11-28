@@ -28,6 +28,7 @@ import java.sql.Statement;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ShadowStatementTest extends AbstractShadowDriverTest {
     
@@ -50,6 +51,11 @@ class ShadowStatementTest extends AbstractShadowDriverTest {
     private static final String SELECT_SHADOW_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt WHERE id = 1";
     
     private static final String RESULT_SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
+    
+    private static final String MIXED_BATCH_INSERT_SQL =
+            "INSERT INTO t_encrypt (id, cipher_pwd, plain_pwd) VALUES (1, 'cipher', 'plain'), (2, 'cipher', 'plain'), (3, 'cipher', 'plain')";
+    
+    private static final String MIXED_BATCH_INSERT_WITH_SKIP_REWRITE_SQL = "/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */ " + MIXED_BATCH_INSERT_SQL;
     
     @AfterEach
     void clean() throws SQLException {
@@ -90,6 +96,36 @@ class ShadowStatementTest extends AbstractShadowDriverTest {
         }
         assertResultSet(true, 1, "cipher");
         assertResultSet(false, 0, "cipher");
+    }
+    
+    @Test
+    void assertInsertMixedBatchCase() throws SQLException {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            assertThat(statement.executeUpdate(MIXED_BATCH_INSERT_SQL), is(3));
+        }
+        assertInsertedIds("shadow_jdbc_1", 1);
+        assertInsertedIds("shadow_jdbc_0", 2, 3);
+    }
+    
+    @Test
+    void assertInsertMixedBatchUpdateCountCase() throws SQLException {
+        int actual;
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            assertFalse(statement.execute(MIXED_BATCH_INSERT_SQL));
+            actual = statement.getUpdateCount();
+        }
+        assertThat(actual, is(3));
+        assertInsertedIds("shadow_jdbc_1", 1);
+        assertInsertedIds("shadow_jdbc_0", 2, 3);
+    }
+    
+    @Test
+    void assertInsertMixedBatchWhenSQLRewriteSkippedCase() throws SQLException {
+        try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
+            assertThat(statement.executeUpdate(MIXED_BATCH_INSERT_WITH_SKIP_REWRITE_SQL), is(3));
+        }
+        assertInsertedIds("shadow_jdbc_1");
+        assertInsertedIds("shadow_jdbc_0", 1, 2, 3);
     }
     
     @Test

@@ -25,13 +25,20 @@ import org.junit.jupiter.api.BeforeAll;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 public abstract class AbstractShadowDriverTest extends AbstractDriverTest {
     
@@ -58,6 +65,18 @@ public abstract class AbstractShadowDriverTest extends AbstractDriverTest {
     
     protected final ShardingSphereDataSource getShadowDataSource() {
         return dataSource;
+    }
+    
+    protected final void assertInsertedIds(final String dataSourceName, final Integer... expectedIds) throws SQLException {
+        Collection<Integer> actualIds = new LinkedList<>();
+        try (
+                Statement statement = getActualDataSources().get(dataSourceName).getConnection().createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT id FROM t_encrypt ORDER BY id")) {
+            while (resultSet.next()) {
+                actualIds.add(resultSet.getInt("id"));
+            }
+        }
+        assertThat(actualIds, is(Arrays.asList(expectedIds)));
     }
     
     @AfterAll

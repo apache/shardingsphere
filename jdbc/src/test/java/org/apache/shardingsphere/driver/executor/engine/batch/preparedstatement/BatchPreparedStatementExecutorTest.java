@@ -112,7 +112,7 @@ class BatchPreparedStatementExecutorTest {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{0, 0});
         setExecutionGroups(Collections.singleton(preparedStatement));
-        assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{0, 0}));
+        assertThat(executor.executeBatch(sqlStatementContext, false), is(new int[]{0, 0}));
     }
     
     @Test
@@ -120,7 +120,7 @@ class BatchPreparedStatementExecutorTest {
         PreparedStatement preparedStatement = getPreparedStatement();
         when(preparedStatement.executeBatch()).thenReturn(new int[]{10, 20});
         setExecutionGroups(Collections.singleton(preparedStatement));
-        assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{10, 20}));
+        assertThat(executor.executeBatch(sqlStatementContext, false), is(new int[]{10, 20}));
         verify(preparedStatement).executeBatch();
     }
     
@@ -131,7 +131,7 @@ class BatchPreparedStatementExecutorTest {
         when(preparedStatement1.executeBatch()).thenReturn(new int[]{10, 20});
         when(preparedStatement2.executeBatch()).thenReturn(new int[]{20, 40});
         setExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        assertThat(executor.executeBatch(sqlStatementContext), is(new int[]{30, 60}));
+        assertThat(executor.executeBatch(sqlStatementContext, false), is(new int[]{30, 60}));
         verify(preparedStatement1).executeBatch();
         verify(preparedStatement2).executeBatch();
     }
@@ -142,7 +142,7 @@ class BatchPreparedStatementExecutorTest {
         SQLException ex = new SQLException("");
         when(preparedStatement.executeBatch()).thenThrow(ex);
         setExecutionGroups(Collections.singleton(preparedStatement));
-        assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext));
+        assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext, false));
         verify(preparedStatement).executeBatch();
     }
     
@@ -153,7 +153,7 @@ class BatchPreparedStatementExecutorTest {
         SQLException ex = new SQLException("");
         when(preparedStatement1.executeBatch()).thenThrow(ex);
         setExecutionGroups(Arrays.asList(preparedStatement1, preparedStatement2));
-        assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext));
+        assertThrows(SQLException.class, () -> executor.executeBatch(sqlStatementContext, false));
     }
     
     private PreparedStatement getPreparedStatement() throws SQLException {

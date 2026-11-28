@@ -56,6 +56,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -123,7 +124,7 @@ class DriverExecuteBatchExecutorTest {
                     }));
             verifyNoInteractions(prepareEngines.constructed().get(0), replayCallback);
             verify(batchExecutors.constructed().get(0), never()).init(any());
-            verify(batchExecutors.constructed().get(0), never()).executeBatch(any());
+            verify(batchExecutors.constructed().get(0), never()).executeBatch(any(), anyBoolean());
         }
     }
     
@@ -132,7 +133,7 @@ class DriverExecuteBatchExecutorTest {
         for (String each : dataSourceNames) {
             executionUnits.add(new ExecutionUnit(each, new SQLUnit("ANALYZE foo_table", Collections.emptyList())));
         }
-        return new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class));
+        return new ExecutionContext(queryContext, executionUnits, new RouteContext());
     }
     
     private static Stream<Arguments> getRejectedBatches() {
@@ -162,7 +163,7 @@ class DriverExecuteBatchExecutorTest {
                         (mock, context) -> doReturn(mock(ExecutionGroupContext.class)).when(mock).prepare(any(), any(), any(), any()));
                 MockedConstruction<BatchPreparedStatementExecutor> batchExecutors = mockConstruction(BatchPreparedStatementExecutor.class, (mock, context) -> {
                     when(mock.getBatchExecutionUnits()).thenReturn(batchExecutionUnits);
-                    when(mock.executeBatch(any())).thenReturn(new int[]{1});
+                    when(mock.executeBatch(any(), anyBoolean())).thenReturn(new int[]{1});
                 })) {
             DriverExecuteBatchExecutor executor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, mock(StatementManager.class), database);
             executor.addBatch(queryContext, database);

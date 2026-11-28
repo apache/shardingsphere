@@ -63,6 +63,8 @@ public final class DriverExecuteBatchExecutor {
     
     private ExecutionContext executionContext;
     
+    private boolean insertValueSplit;
+    
     public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final StatementOption statementOption, final StatementManager statementManager,
                                       final ShardingSphereDatabase usedDatabase) {
         this.connection = connection;
@@ -87,6 +89,7 @@ public final class DriverExecuteBatchExecutor {
      */
     public void addBatch(final QueryContext queryContext, final ShardingSphereDatabase database) {
         executionContext = createExecutionContext(queryContext, database);
+        insertValueSplit = insertValueSplit || !executionContext.getRouteContext().getRouteUnitInsertValueIndexes().isEmpty();
         batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
     }
     
@@ -117,7 +120,7 @@ public final class DriverExecuteBatchExecutor {
         }
         // TODO add raw SQL executor
         initBatchPreparedStatementExecutor(database, batchPreparedStatementExecutor, executionContext, replayCallback);
-        int[] result = batchPreparedStatementExecutor.executeBatch(sqlStatementContext);
+        int[] result = batchPreparedStatementExecutor.executeBatch(sqlStatementContext, insertValueSplit);
         if (statementOption.isReturnGeneratedKeys() && generatedValues.isEmpty()) {
             addCallback.add(batchPreparedStatementExecutor.getStatements(), Collections.emptyList());
             generatedKeyCallback.generateKeys();
@@ -152,5 +155,6 @@ public final class DriverExecuteBatchExecutor {
      */
     public void clear() {
         batchPreparedStatementExecutor.clear();
+        insertValueSplit = false;
     }
 }

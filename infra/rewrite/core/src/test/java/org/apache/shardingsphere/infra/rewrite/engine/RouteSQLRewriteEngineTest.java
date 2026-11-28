@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -201,6 +202,33 @@ class RouteSQLRewriteEngineTest {
     }
     
     @Test
+    void assertRewriteWithGroupedParameterBuilderForInsertValueIndexes() {
+        InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
+        when(statementContext.getInsertSelectContext()).thenReturn(null);
+        when(statementContext.getGroupedParameters()).thenReturn(Arrays.asList(Collections.singletonList(1), Collections.singletonList(2), Collections.singletonList(3)));
+        when(statementContext.getOnDuplicateKeyUpdateParameters()).thenReturn(Collections.emptyList());
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        ShardingSphereDatabase database = mockDatabase(databaseType);
+        QueryContext queryContext = mockQueryContext(statementContext, "INSERT INTO tbl VALUES (?), (?), (?)");
+        when(queryContext.getParameters()).thenReturn(Arrays.asList(1, 2, 3));
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
+        RouteUnit firstRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl")));
+        RouteUnit secondRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_1"), Collections.singletonList(new RouteMapper("tbl", "tbl")));
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnits().add(firstRouteUnit);
+        routeContext.getRouteUnits().add(secondRouteUnit);
+        routeContext.getRouteUnitInsertValueIndexes().put(firstRouteUnit, Arrays.asList(0, 2));
+        routeContext.getRouteUnitInsertValueIndexes().put(secondRouteUnit, Collections.singletonList(1));
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, queryContext);
+        assertThat(actual.getSqlRewriteUnits().size(), is(2));
+        assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getParameters(), is(Arrays.asList(1, 3)));
+        assertThat(actual.getSqlRewriteUnits().get(secondRouteUnit).getParameters(), is(Collections.singletonList(2)));
+    }
+    
+    @Test
     void assertRewriteWithGroupedParameterBuilderForRouteWithEmptyDataNode() {
         InsertStatementContext statementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getTablesContext().getDatabaseName().isPresent()).thenReturn(false);
@@ -247,9 +275,12 @@ class RouteSQLRewriteEngineTest {
     }
     
     private Map<String, StorageUnit> mockStorageUnits(final DatabaseType databaseType) {
-        StorageUnit result = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(result.getStorageType()).thenReturn(databaseType);
-        return Collections.singletonMap("ds_0", result);
+        StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        Map<String, StorageUnit> result = new HashMap<>(2, 1F);
+        result.put("ds_0", storageUnit);
+        result.put("ds_1", storageUnit);
+        return result;
     }
     
     @Test

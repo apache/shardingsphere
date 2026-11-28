@@ -168,9 +168,22 @@ public final class RouteSQLRewriteEngine {
         if (parameterBuilder instanceof StandardParameterBuilder) {
             return parameterBuilder.getParameters();
         }
+        Collection<Integer> insertValueIndexes = routeContext.getRouteUnitInsertValueIndexes().get(routeUnit);
+        if (null != insertValueIndexes) {
+            return buildInsertValueParameters((GroupedParameterBuilder) parameterBuilder, insertValueIndexes);
+        }
         return routeContext.getOriginalDataNodes().isEmpty()
                 ? ((GroupedParameterBuilder) parameterBuilder).getParameters()
                 : buildRouteParameters((GroupedParameterBuilder) parameterBuilder, routeContext, routeUnit);
+    }
+    
+    private List<Object> buildInsertValueParameters(final GroupedParameterBuilder paramBuilder, final Collection<Integer> insertValueIndexes) {
+        List<Object> result = new LinkedList<>(paramBuilder.getBeforeGenericParameterBuilder().getParameters());
+        for (int each : insertValueIndexes) {
+            result.addAll(paramBuilder.getParameters(each));
+        }
+        result.addAll(paramBuilder.getAfterGenericParameterBuilder().getParameters());
+        return result;
     }
     
     private List<Object> buildRouteParameters(final GroupedParameterBuilder paramBuilder, final RouteContext routeContext, final RouteUnit routeUnit) {
