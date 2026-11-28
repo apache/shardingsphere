@@ -66,8 +66,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class ShardingTableRuleStatementCheckerTest {
@@ -81,9 +82,9 @@ class ShardingTableRuleStatementCheckerTest {
     
     @BeforeEach
     void setUp() {
-        when(database.getName()).thenReturn("schema");
-        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        lenient().when(database.getName()).thenReturn("schema");
+        lenient().when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        lenient().when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
     }
     
     @Test
@@ -296,10 +297,51 @@ class ShardingTableRuleStatementCheckerTest {
     }
     
     @Test
+    void assertIsValidBindingTableGroupsWithAlphabeticalSuffix() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration orderConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_${['a','b']}");
+        orderConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "inline_table"));
+        ruleConfig.getTables().add(orderConfig);
+        ShardingTableRuleConfiguration itemConfig = new ShardingTableRuleConfiguration("t_order_item", "ds_0.t_order_item_${['a','b']}");
+        itemConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "inline_table"));
+        ruleConfig.getTables().add(itemConfig);
+        ruleConfig.getShardingAlgorithms().put("inline_table", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "${order_id % 2}"))));
+        Collection<ShardingTableReferenceRuleConfiguration> groups = Collections.singleton(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        assertFalse(ShardingTableRuleStatementChecker.isValidBindingTableGroups(groups, ruleConfig));
+    }
+    
+    @Test
+    void assertCheckAlterationWithAlphabeticalSuffixOnBindingTables() {
+        ShardingRuleConfiguration ruleConfig = createBindingTableRuleConfiguration();
+        Collection<AbstractTableRuleSegment> rules = Arrays.asList(createAlteredBindingTableRule("t_order", "ds_0.t_order_${['a','b']}"),
+                createAlteredBindingTableRule("t_order_item", "ds_0.t_order_item_${['a','b']}"));
+        assertThrows(InvalidRuleConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, ruleConfig));
+    }
+    
+    @Test
+    void assertCheckAlterationWithNumericSuffixOnBindingTables() {
+        ShardingRuleConfiguration ruleConfig = createBindingTableRuleConfiguration();
+        Collection<AbstractTableRuleSegment> rules = Arrays.asList(createAlteredBindingTableRule("t_order", "ds_0.t_order_${0..1}"),
+                createAlteredBindingTableRule("t_order_item", "ds_0.t_order_item_${0..1}"));
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, ruleConfig));
+    }
+    
+    @Test
     void assertCheckTableRuleWithNoneStrategyTypeThrows() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createWrongTableRuleWithNoneTypeStrategy());
         assertThrows(InvalidShardingStrategyConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+    }
+    
+    @Test
+    void assertCheckTableRuleWithAlphanumericSuffixAndInlineAlgorithm() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_tenant_order_${tenant_id}"));
+        TableRuleSegment tableRuleSegment = new TableRuleSegment("t_tenant_order", Collections.singleton("ds_0.t_tenant_order_${['mgm','wz3k9d']}"),
+                new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())), null);
+        tableRuleSegment.setDatabaseStrategySegment(new ShardingStrategySegment("none", null, null));
+        tableRuleSegment.setTableStrategySegment(new ShardingStrategySegment("standard", "tenant_id", new AlgorithmSegment("INLINE", props)));
+        Collection<AbstractTableRuleSegment> rules = Collections.singleton(tableRuleSegment);
+        assertDoesNotThrow(() -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
@@ -348,6 +390,22 @@ class ShardingTableRuleStatementCheckerTest {
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         result.getKeyGenerators().put("existing_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        return result;
+    }
+    
+    private static ShardingRuleConfiguration createBindingTableRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_${0..1}"));
+        result.getTables().add(new ShardingTableRuleConfiguration("t_order_item", "ds_0.t_order_item_${0..1}"));
+        result.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
+        result.getShardingAlgorithms().put("inline_table", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"))));
+        return result;
+    }
+    
+    private AbstractTableRuleSegment createAlteredBindingTableRule(final String logicTable, final String dataNodes) {
+        TableRuleSegment result = new TableRuleSegment(logicTable, Collections.singleton(dataNodes), null, null);
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("INLINE",
+                PropertiesBuilder.build(new Property("algorithm-expression", logicTable + "_${order_id % 2}")))));
         return result;
     }
     
